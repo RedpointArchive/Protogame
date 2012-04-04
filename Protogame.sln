@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protogame", "Protogame\Protogame.csproj", "{DF7D4601-0061-4329-9803-6917AF416B70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example\Example.csproj", "{EAEFDD6B-3870-4782-8A59-F36AAE16E15D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Content", "Example\Example.Content\Example.Content.contentproj", "{447D9CB3-27B5-41FF-B9D6-A62E427B0CAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF7D4601-0061-4329-9803-6917AF416B70}.Debug|x86.ActiveCfg = Debug|x86
+		{DF7D4601-0061-4329-9803-6917AF416B70}.Debug|x86.Build.0 = Debug|x86
+		{DF7D4601-0061-4329-9803-6917AF416B70}.Release|x86.ActiveCfg = Release|x86
+		{DF7D4601-0061-4329-9803-6917AF416B70}.Release|x86.Build.0 = Release|x86
+		{EAEFDD6B-3870-4782-8A59-F36AAE16E15D}.Debug|x86.ActiveCfg = Debug|x86
+		{EAEFDD6B-3870-4782-8A59-F36AAE16E15D}.Debug|x86.Build.0 = Debug|x86
+		{EAEFDD6B-3870-4782-8A59-F36AAE16E15D}.Release|x86.ActiveCfg = Release|x86
+		{EAEFDD6B-3870-4782-8A59-F36AAE16E15D}.Release|x86.Build.0 = Release|x86
+		{447D9CB3-27B5-41FF-B9D6-A62E427B0CAF}.Debug|x86.ActiveCfg = Debug|x86
+		{447D9CB3-27B5-41FF-B9D6-A62E427B0CAF}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+syntax: glob
+*/obj/*
+*/bin/*
+*.cachefile
+*.suo
+*.user
