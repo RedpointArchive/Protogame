@@ -14,7 +14,8 @@ namespace Protogame
             Root,
             Solids,
             Tiles,
-            Entities
+            Entities,
+            Ignore
         }
 
         private static Dictionary<TileNameAttribute, Type> TileTypes = null;
@@ -27,7 +28,7 @@ namespace Protogame
             this.m_Current = XmlLoadMode.Root;
         }
 
-        private Tileset LoadXml(string filename)
+        private Tileset LoadXml(string mode, string filename)
         {
             Tileset tileset = new Tileset();
             using (XmlReader reader = XmlReader.Create(filename))
@@ -37,36 +38,30 @@ namespace Protogame
                     switch (reader.NodeType)
                     {
                         case XmlNodeType.Element:
-                            switch (reader.Name.ToLower())
+                            if (reader.Name.ToLower() == "level")
+                                this.m_Current = XmlLoadMode.Root;
+                            else if (reader.Name.ToLower() == mode.ToLower() + "solids")
+                                this.m_Current = XmlLoadMode.Solids;
+                            else if (reader.Name.ToLower() == mode.ToLower() + "tiles")
                             {
-                                case "level":
-                                    this.m_Current = XmlLoadMode.Root;
-                                    break;
-                                case "solids":
-                                    this.m_Current = XmlLoadMode.Solids;
-                                    break;
-                                case "tiles":
-                                    this.m_Current = XmlLoadMode.Tiles;
-                                    this.m_TilesetType = reader.GetAttribute("tileset").ToLower();
-                                    break;
-                                case "entities":
-                                    this.m_Current = XmlLoadMode.Entities;
-                                    break;
-                                default:
-                                    this.ProcessNode(reader, tileset);
-                                    break;
+                                this.m_Current = XmlLoadMode.Tiles;
+                                this.m_TilesetType = reader.GetAttribute("tileset").ToLower();
                             }
+                            else if (reader.Name.ToLower() == mode.ToLower() + "entities")
+                                this.m_Current = XmlLoadMode.Entities;
+                            else if (reader.Name.ToLower().EndsWith("solids") ||
+                                reader.Name.ToLower().EndsWith("tiles") ||
+                                reader.Name.ToLower().EndsWith("entities"))
+                                this.m_Current = XmlLoadMode.Ignore;
+                            else if (this.m_Current != XmlLoadMode.Ignore)
+                                this.ProcessNode(reader, tileset);
                             break;
                         case XmlNodeType.EndElement:
-                            switch (reader.Name)
-                            {
-                                case "level":
-                                case "solids":
-                                case "tiles":
-                                case "entities":
-                                    this.m_Current = XmlLoadMode.Root;
-                                    break;
-                            }
+                            if (reader.Name.ToLower() == "level" || reader.Name.ToLower() == mode.ToLower() + "solids" ||
+                                reader.Name.ToLower() == mode.ToLower() + "tiles" || reader.Name.ToLower() == mode.ToLower() + "entities" ||
+                                reader.Name.ToLower().EndsWith("solids") || reader.Name.ToLower().EndsWith("tiles") ||
+                                reader.Name.ToLower().EndsWith("entities"))
+                                this.m_Current = XmlLoadMode.Root;
                             break;
                     }
                 }
@@ -154,7 +149,17 @@ namespace Protogame
         {
             if (TilesetXmlLoader.TileTypes == null)
                 TilesetXmlLoader.LoadTypes();
-            return new TilesetXmlLoader().LoadXml(filename);
+            return new TilesetXmlLoader().LoadXml("", filename);
+        }
+
+        public static Tileset[] MultiLoad(string filename, string[] levelNames)
+        {
+            if (TilesetXmlLoader.TileTypes == null)
+                TilesetXmlLoader.LoadTypes();
+            List<Tileset> tilesets = new List<Tileset>();
+            for (int i = 0; i < levelNames.Length; i++)
+                tilesets.Add(new TilesetXmlLoader().LoadXml(levelNames[i], filename));
+            return tilesets.ToArray();
         }
     }
 }

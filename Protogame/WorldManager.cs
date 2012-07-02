@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Protogame.Particles;
+using Protogame.RTS;
 
 namespace Protogame
 {
@@ -56,9 +57,15 @@ namespace Protogame
             // Render all of the tiles.
             for (int z = 0; z < Tileset.TILESET_DEPTH; z += 1)
             {
-                for (int x = 0; x < Tileset.TILESET_WIDTH; x += 1)
+                for (int x = context.Graphics.GraphicsDevice.Viewport.X / Tileset.TILESET_CELL_WIDTH;
+                            x < Math.Min(context.Graphics.GraphicsDevice.Viewport.X + context.Graphics.GraphicsDevice.Viewport.Width / Tileset.TILESET_CELL_WIDTH,
+                                            Tileset.TILESET_WIDTH);
+                            x += 1)
                 {
-                    for (int y = 0; y < Tileset.TILESET_HEIGHT; y += 1)
+                    for (int y = context.Graphics.GraphicsDevice.Viewport.Y / Tileset.TILESET_CELL_HEIGHT;
+                            y < Math.Min(context.Graphics.GraphicsDevice.Viewport.Y + context.Graphics.GraphicsDevice.Viewport.Height / Tileset.TILESET_CELL_HEIGHT,
+                                            Tileset.TILESET_HEIGHT);
+                            y += 1)
                     {
                         Tile t = context.World.Tileset[x, y, z];
                         if (t == null) continue;
@@ -78,7 +85,7 @@ namespace Protogame
                 if ((a is ParticleEntity) && (a as ParticleEntity).Definition.RenderMode == ParticleMode.Background)
                     this.HandleRenderOfEntity(context, a);
             foreach (IEntity a in context.World.Entities)
-                if (a.Image != null && !(a is ParticleEntity))
+                if (a.Image != null && !(a is ParticleEntity) && (!(a is IDynamicRenderingEntity) || (a as IDynamicRenderingEntity).ShouldRender(context.World)))
                     this.HandleRenderOfEntity(context, a);
             foreach (IEntity a in context.World.Entities)
                 if ((a is ParticleEntity) && (a as ParticleEntity).Definition.RenderMode == ParticleMode.Foreground)

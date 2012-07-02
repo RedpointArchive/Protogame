@@ -18,6 +18,7 @@ namespace Protogame
         public Dictionary<string, Texture2D> Textures { get; set; }
         public Dictionary<string, SpriteFont> Fonts { get; set; }
         public Dictionary<string, SoundEffect> Sounds { get; set; }
+        public GameTime GameTime { get; set; }
 
         internal GameContext()
         {

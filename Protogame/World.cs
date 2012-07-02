@@ -5,11 +5,22 @@ using System.Text;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
+using System.IO;
 
 namespace Protogame
 {
     public abstract class World
     {
+        /// <summary>
+        /// The base directory in which the Resources/ folder is located.
+        /// </summary>
+        public static string BaseDirectory = "";
+
+        /// <summary>
+        /// The base directory in which the Content/ folder is located.
+        /// </summary>
+        public static string RuntimeDirectory = "";
+
         /// <summary>
         /// The current game context.  Only used by audio entities so that they can
         /// access the Sounds property on creation without the developer having to specify
@@ -21,17 +32,17 @@ namespace Protogame
         /// <summary>
         /// The current tileset.
         /// </summary>
-        public Tileset Tileset { get; private set; }
+        public virtual Tileset Tileset { get; protected set; }
 
         /// <summary>
         /// A list of entities that are currently active in the world.
         /// </summary>
-        public List<IEntity> Entities { get; private set; }
+        public virtual List<IEntity> Entities { get; private set; }
 
         /// <summary>
         /// The name of the current level that is loaded.
         /// </summary>
-        public string CurrentLevel { get; private set; }
+        public string CurrentLevel { get; protected set; }
 
         /// <summary>
         /// The current world tick.
@@ -69,7 +80,7 @@ namespace Protogame
                 if (ee is AudioEntity)
                     (ee as AudioEntity).Stop();
             this.Entities.Clear();
-            this.Tileset = TilesetXmlLoader.Load("Resources/" + name + ".oel");
+            this.Tileset = TilesetXmlLoader.Load(Path.Combine(World.BaseDirectory, "Resources/" + name + ".oel"));
             this.CurrentLevel = name;
 
             foreach (Tile t in this.Tileset.AsLinear())

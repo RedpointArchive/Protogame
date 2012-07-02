@@ -23,7 +23,7 @@ namespace Protogame
         
         public CoreGame()
         {
-            this.Content.RootDirectory = "Content";
+            this.Content.RootDirectory = System.IO.Path.Combine(Protogame.World.RuntimeDirectory, "Content");
             this.m_GameContext = new GameContext
             {
                 Content = this.Content,
@@ -78,6 +78,7 @@ namespace Protogame
                 this.Exit();
 
             // Update the game.
+            this.m_GameContext.GameTime = gameTime;
             this.m_WorldManager.Update(this.m_GameContext);
 
             base.Update(gameTime);
@@ -94,6 +95,7 @@ namespace Protogame
                 throw new ProtogameException("The sprite batch instance was not set when it came time to draw the game.  Ensure that you are calling base.LoadContent in the overridden LoadContent method of your game.");
 
             // Draw the game.
+            this.m_GameContext.GameTime = gameTime;
             this.m_WorldManager.Draw(this.m_GameContext);
 
             base.Draw(gameTime);

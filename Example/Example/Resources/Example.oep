@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <OgmoVersion>2.0.0.38</OgmoVersion>
   <Name>Protogame Example</Name>
   <BackgroundColor A="255" R="125" G="160" B="255" />
   <GridColor A="255" R="255" G="240" B="90" />
@@ -15,7 +16,7 @@
     <Width>800</Width>
     <Height>600</Height>
   </LevelMaximumSize>
-  <Filename>G:\Secure Data\Projects\Protogame\Example\Example\Resources\Example.oep</Filename>
+  <Filename>C:\Server Storage\Projects\Community\Protogame\Example\Example\Resources\Example.oep</Filename>
   <AngleMode>Radians</AngleMode>
   <CameraEnabled>false</CameraEnabled>
   <CameraSize>
