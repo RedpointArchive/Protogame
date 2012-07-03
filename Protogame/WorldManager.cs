@@ -92,7 +92,8 @@ namespace Protogame
                     this.HandleRenderOfEntity(context, a);
             XnaGraphics gr = new XnaGraphics(context);
             foreach (IEntity a in context.World.Entities)
-                a.Draw(context.World, gr);
+                if (!(a is IDynamicRenderingEntity) || (a as IDynamicRenderingEntity).ShouldRender(context.World))
+                    a.Draw(context.World, gr);
 
             // Draw world above.
             context.World.DrawAbove(context);

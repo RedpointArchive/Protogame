@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Process4Assembler" AssemblyFile="..\Libraries\Dx\Process4.Task.exe" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -16,7 +17,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MULTIPLAYER</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -26,7 +27,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;MULTIPLAYER</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -34,11 +35,20 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Data4">
+      <HintPath>..\Libraries\Dx\Data4.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Process4">
+      <HintPath>..\Libraries\Dx\Process4.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -60,6 +70,22 @@
     <Compile Include="IEntity.cs" />
     <Compile Include="ISolid.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="ExampleContent\OgmoRunner.cs" />
+    <Compile Include="ExampleContent\OgmoState.cs" />
+    <Compile Include="MultiLevel\IMultiLevelEntity.cs" />
+    <Compile Include="MultiLevel\Level.cs" />
+    <Compile Include="MultiLevel\MultiLevelEntity.cs" />
+    <Compile Include="MultiLevel\MultiLevelEntityTile.cs" />
+    <Compile Include="MultiLevel\MultiLevelWorld.cs" />
+    <Compile Include="MultiLevel\PathFindingLevel.cs" />
+    <Compile Include="RTS\AttackingUnit.cs" />
+    <Compile Include="RTS\IUnitFactory.cs" />
+    <Compile Include="RTS\MovableUnit.cs" />
+    <Compile Include="RTS\Multiplayer\GlobalSession.cs" />
+    <Compile Include="RTS\Multiplayer\Player.cs" />
+    <Compile Include="RTS\Multiplayer\TeamSynchronisationData.cs" />
+    <Compile Include="RTS\Multiplayer\UnitSynchronisationData.cs" />
+    <Compile Include="RTS\RTSWorld.cs" />
     <Compile Include="Particles\ParticleDefinition.cs" />
     <Compile Include="Particles\ParticleEntity.cs" />
     <Compile Include="Platformer\GravityEntity.cs" />
@@ -70,8 +96,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtogameException.cs" />
     <Compile Include="RTS\IDynamicRenderingEntity.cs" />
-    <Compile Include="RTS\RTSWorld.cs" />
     <Compile Include="RTS\RTSGame.cs" />
+    <Compile Include="RTS\Spawners\NeutralUnitSpawner.cs" />
+    <Compile Include="RTS\Spawners\TeamUnitSpawner.cs" />
+    <Compile Include="RTS\Team.cs" />
+    <Compile Include="RTS\UiManager.cs" />
+    <Compile Include="RTS\Unit.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TileNameAttribute.cs" />
     <Compile Include="Tileset.cs" />
@@ -82,7 +112,17 @@
     <Compile Include="XnaGraphics.cs" />
     <Compile Include="XnaHardware.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\AStarPathFinder\AStarPathFinder.csproj">
+      <Project>{74FD2B9A-7400-4487-9401-CC78855C739C}</Project>
+      <Name>AStarPathFinder</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -90,4 +130,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <Process4Assembler AssemblyFile="$(TargetPath)" />
+  </Target>
 </Project>

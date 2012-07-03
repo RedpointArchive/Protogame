@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <OgmoVersion>1.0</OgmoVersion>
+  <Name>RTS Levels</Name>
+  <BackgroundColor A="255" R="0" G="128" B="64" />
+  <GridColor A="255" R="255" G="240" B="90" />
+  <LevelDefaultSize>
+    <Width>800</Width>
+    <Height>600</Height>
+  </LevelDefaultSize>
+  <LevelMinimumSize>
+    <Width>800</Width>
+    <Height>600</Height>
+  </LevelMinimumSize>
+  <LevelMaximumSize>
+    <Width>8000</Width>
+    <Height>6000</Height>
+  </LevelMaximumSize>
+  <Filename>C:\Server Storage\Projects\Community\Protogame\Example.RTS\Resources\RTS.oep</Filename>
+  <AngleMode>Radians</AngleMode>
+  <CameraEnabled>false</CameraEnabled>
+  <CameraSize>
+    <Width>640</Width>
+    <Height>480</Height>
+  </CameraSize>
+  <ExportCameraPosition>false</ExportCameraPosition>
+  <CustomPluginEntries>
+    <item>
+      <key>
+        <string>ProtogamePath</string>
+      </key>
+      <value>
+        <string>C:\Server Storage\Projects\Community\Protogame\Example.RTS\bin\x86\Debug\Example.RTS.exe</string>
+      </value>
+    </item>
+  </CustomPluginEntries>
+  <LevelValueDefinitions />
+  <LayerDefinitions>
+    <LayerDefinition xsi:type="GridLayerDefinition">
+      <Name>PocketSolids</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <Color A="255" R="0" G="0" B="0" />
+      <ExportMode>Rectangles</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="TileLayerDefinition">
+      <Name>PocketTiles</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <ExportMode>XMLCoords</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="EntityLayerDefinition">
+      <Name>PocketEntities</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="GridLayerDefinition">
+      <Name>CaveSolids</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <Color A="255" R="0" G="0" B="0" />
+      <ExportMode>Rectangles</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="TileLayerDefinition">
+      <Name>CaveTiles</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <ExportMode>XMLCoords</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="EntityLayerDefinition">
+      <Name>CaveEntities</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="GridLayerDefinition">
+      <Name>SmallMilSolids</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <Color A="255" R="0" G="0" B="0" />
+      <ExportMode>Rectangles</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="TileLayerDefinition">
+      <Name>SmallMilTiles</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <ExportMode>XMLCoords</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="EntityLayerDefinition">
+      <Name>SmallMilEntities</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="GridLayerDefinition">
+      <Name>MilitarySolids</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <Color A="255" R="0" G="0" B="0" />
+      <ExportMode>Rectangles</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="TileLayerDefinition">
+      <Name>MilitaryTiles</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <ExportMode>XMLCoords</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="EntityLayerDefinition">
+      <Name>MilitaryEntities</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="GridLayerDefinition">
+      <Name>SurfaceSolids</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <Color A="255" R="0" G="0" B="0" />
+      <ExportMode>Rectangles</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="TileLayerDefinition">
+      <Name>SurfaceTiles</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+      <ExportMode>XMLCoords</ExportMode>
+    </LayerDefinition>
+    <LayerDefinition xsi:type="EntityLayerDefinition">
+      <Name>SurfaceEntities</Name>
+      <Grid>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Grid>
+      <ScrollFactor>
+        <X>1</X>
+        <Y>1</Y>
+      </ScrollFactor>
+    </LayerDefinition>
+  </LayerDefinitions>
+  <Tilesets>
+    <Tileset>
+      <Name>SurfaceTiles</Name>
+      <FilePath>..\..\Example.RTS.Content\SurfaceTiles.png</FilePath>
+      <TileSize>
+        <Width>16</Width>
+        <Height>16</Height>
+      </TileSize>
+      <TileSep>0</TileSep>
+    </Tileset>
+  </Tilesets>
+  <EntityDefinitions>
+    <EntityDefinition Name="NeutralUnitSpawner" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="90">
+      <Size>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Size>
+      <Origin>
+        <X>0</X>
+        <Y>0</Y>
+      </Origin>
+      <ImageDefinition DrawMode="Rectangle" ImagePath="..\..\RTSGameContent\CircleUnit.png" Tiled="false">
+        <RectColor A="255" R="192" G="192" B="192" />
+      </ImageDefinition>
+      <ValueDefinitions>
+        <ValueDefinition xsi:type="StringValueDefinition" Name="Unit" Default="BasicUnit" MaxChars="-1" MultiLine="false" />
+      </ValueDefinitions>
+      <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
+    </EntityDefinition>
+    <EntityDefinition Name="TeamUnitSpawner" Limit="-1" ResizableX="false" ResizableY="false" Rotatable="false" RotateIncrement="15">
+      <Size>
+        <Width>16</Width>
+        <Height>16</Height>
+      </Size>
+      <Origin>
+        <X>0</X>
+        <Y>0</Y>
+      </Origin>
+      <ImageDefinition DrawMode="Rectangle" ImagePath="" Tiled="false">
+        <RectColor A="255" R="255" G="0" B="0" />
+      </ImageDefinition>
+      <ValueDefinitions>
+        <ValueDefinition xsi:type="StringValueDefinition" Name="Unit" Default="" MaxChars="-1" MultiLine="false" />
+        <ValueDefinition xsi:type="IntValueDefinition" Name="GroupingID" Default="0" Min="0" Max="100" ShowSlider="false" />
+      </ValueDefinitions>
+      <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
+    </EntityDefinition>
+  </EntityDefinitions>
+</project>

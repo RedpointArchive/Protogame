@@ -131,16 +131,13 @@ namespace Protogame
         private static void LoadTypes()
         {
             TilesetXmlLoader.TileTypes = new Dictionary<TileNameAttribute, Type>();
-            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Type t in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()))
             {
-                foreach (Type t in a.GetTypes())
+                if (typeof(Tile).IsAssignableFrom(t))
                 {
-                    if (typeof(Tile).IsAssignableFrom(t))
-                    {
-                        object[] tnas = t.GetCustomAttributes(typeof(TileNameAttribute), false);
-                        if (tnas.Length < 1) continue;
-                        TilesetXmlLoader.TileTypes.Add(tnas[0] as TileNameAttribute, t);
-                    }
+                    object[] tnas = t.GetCustomAttributes(typeof(TileNameAttribute), false);
+                    if (tnas.Length < 1) continue;
+                    TilesetXmlLoader.TileTypes.Add(tnas[0] as TileNameAttribute, t);
                 }
             }
         }

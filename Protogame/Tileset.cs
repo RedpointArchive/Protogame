@@ -8,8 +8,8 @@ namespace Protogame
 {
     public class Tileset
     {
-        public const int TILESET_PIXEL_WIDTH = 800;
-        public const int TILESET_PIXEL_HEIGHT = 600;
+        public const int TILESET_PIXEL_WIDTH = 4000;
+        public const int TILESET_PIXEL_HEIGHT = 4000;
         public const int TILESET_CELL_WIDTH = 16;
         public const int TILESET_CELL_HEIGHT = 16;
         public static readonly int TILESET_WIDTH = (int)Math.Ceiling((float)TILESET_PIXEL_WIDTH / (float)TILESET_CELL_WIDTH);

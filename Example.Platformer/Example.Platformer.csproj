@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Example</RootNamespace>
-    <AssemblyName>Example</AssemblyName>
+    <RootNamespace>Example.Platformer</RootNamespace>
+    <AssemblyName>Example.Platformer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
@@ -120,13 +120,13 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Protogame\Protogame.csproj">
+    <ProjectReference Include="..\Protogame\Protogame.csproj">
       <Project>{DF7D4601-0061-4329-9803-6917AF416B70}</Project>
       <Name>Protogame</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Example.Content\Example.Content.contentproj">
+    <ProjectReference Include="..\Example.Content\Example.Platformer.Content.contentproj">
       <Project>{447D9CB3-27B5-41FF-B9D6-A62E427B0CAF}</Project>
-      <Name>Example.Content %28Content%29</Name>
+      <Name>Example.Platformer.Content %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
     </ProjectReference>
   </ItemGroup>
