@@ -3,6 +3,7 @@ bin
 obj
 
 # Generated solution and project files
+*.userprefs
 *.Linux.csproj
 *.Linux.sln
 *.Windows.csproj
