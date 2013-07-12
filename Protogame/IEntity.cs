@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace Protogame
@@ -16,7 +12,7 @@ namespace Protogame
         Color Color { get; set; }
         bool ImageFlipX { get; set; }
 
-        void Update(World world);
-        void Draw(World world, XnaGraphics graphics);
+        void Update(IUpdateContext context);
+        void Render(IRenderContext context);
     }
 }

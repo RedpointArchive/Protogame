@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,8 +12,8 @@ namespace Protogame
         private int m_ImageIndex = 0;
         private int m_ImageFrameAlarm = 0;
 
-        public float X { get; set; }
-        public float Y { get; set; }
+        public virtual float X { get; set; }
+        public virtual float Y { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public string[] Images { get; set; }
@@ -33,6 +33,8 @@ namespace Protogame
         {
             get
             {
+                if (this.Images == null)
+                    return null;
                 if (this.m_ImageIndex >= this.Images.Length)
                     this.m_ImageIndex = 0;
                 return this.Images[this.m_ImageIndex];
@@ -41,11 +43,6 @@ namespace Protogame
             {
                 throw new NotSupportedException();
             }
-        }
-
-        public T CollidesAt<T>(World world, int x, int y) where T : Entity
-        {
-            return Helpers.CollidesAt<T>(this, world, x, y);
         }
 
         public string[] GetTexture(string name)
@@ -70,41 +67,24 @@ namespace Protogame
             return result.ToArray();
         }
 
-        public virtual void Update(World world)
+        public virtual void Update(IUpdateContext context)
         {
-            if (this.m_ImageFrameAlarm == 0)
+            if (this.Images != null)
             {
-                this.m_ImageIndex++;
-                this.m_ImageFrameAlarm = this.ImageSpeed - 1;
-            }
-            else
-                this.m_ImageFrameAlarm -= 1;
-            if (this.m_ImageIndex >= this.Images.Length)
-                this.m_ImageIndex = 0;
-        }
-
-        public virtual void Draw(World world, XnaGraphics graphics)
-        {
-        }
-
-        public void PerformAlignment(int cellAlignment, int maxAdjust, Action simulateLeft, Action simulateRight)
-        {
-            // Perform cell alignment.
-            float rem = this.X % Tileset.TILESET_CELL_WIDTH;
-            if (rem > Tileset.TILESET_CELL_WIDTH - cellAlignment ||
-                rem < cellAlignment)
-            {
-                float targetX = (float)Math.Round(this.X / Tileset.TILESET_CELL_WIDTH) * Tileset.TILESET_CELL_WIDTH;
-                if (Math.Abs(targetX - this.X) > maxAdjust)
+                if (this.m_ImageFrameAlarm == 0)
                 {
-                    if (targetX > this.X)
-                        simulateRight();
-                    else if (targetX < this.X)
-                        simulateLeft();
+                    this.m_ImageIndex++;
+                    this.m_ImageFrameAlarm = this.ImageSpeed - 1;
                 }
                 else
-                    this.X = targetX;
+                    this.m_ImageFrameAlarm -= 1;
+                if (this.m_ImageIndex >= this.Images.Length)
+                    this.m_ImageIndex = 0;
             }
+        }
+
+        public virtual void Render(IRenderContext context)
+        {
         }
     }
 }

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Name="Protogame.Efficiency" Path="Protogame.Efficiency" Type="Library">
+  <References>
+    <Reference Include="MonoGame" />
+    <Reference Include="System" />
+  </References>
+  <Files>
+    <Compile Include="DepthSpriteBatch.cs" />
+    <Compile Include="OccludingSpriteBatch.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.cs" />
+    <Compile Include="SpriteEffect.cs" />
+  </Files>
+</Project>

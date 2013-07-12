@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +8,13 @@ using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
+#if NOT_MIGRATED
     public class AudioEntity : Entity
     {
         internal SoundEffectInstance m_Instance = null;
         internal bool m_IsPlaying = false;
         internal bool m_HasPlayed = false;
-        internal World m_World = null;
+        internal IWorld m_World = null;
         private static Dictionary<Type, long> m_UniquePlayPerTickTracker = new Dictionary<Type, long>();
 
         public event EventHandler OnPlay;
@@ -23,7 +24,7 @@ namespace Protogame
                 this.OnPlay(this, new EventArgs());
         }
 
-        protected AudioEntity(World world, string name)
+        protected AudioEntity(IWorld world, string name)
         {
             this.m_World = world;
             this.m_Instance = world.GameContext.Sounds[name].CreateInstance();
@@ -87,4 +88,5 @@ namespace Protogame
             }
         }
     }
+#endif
 }

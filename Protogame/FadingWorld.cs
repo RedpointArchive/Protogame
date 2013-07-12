@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +8,8 @@ using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
-    public abstract class FadingWorld : World
+#if LEGACY
+    public abstract class FadingWorld : IWorld
     {
         private string m_LevelChangeTarget = null;
         private bool m_ChangingLevel = false;
@@ -72,4 +73,5 @@ namespace Protogame
             }
         }
     }
+#endif
 }

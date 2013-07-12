@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Protogame
 {
@@ -17,16 +13,11 @@ namespace Protogame
             this.TY = -1;
         }
 
-        public T CollidesAt<T>(World world, int x, int y) where T : Entity
-        {
-            return Helpers.CollidesAt<T>(this, world, x, y);
-        }
-
-        public virtual void Update(World world)
+        public virtual void Update(IUpdateContext context)
         {
         }
 
-        public virtual void Draw(World world, XnaGraphics graphics)
+        public virtual void Render(IRenderContext context)
         {
         }
     }

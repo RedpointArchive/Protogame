@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Name="Protogame.Noise" Path="Protogame.Noise" Type="Library">
+  <References>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </References>
+  <Files>
+    <Compile Include="OctaveNoise.cs" />
+    <Compile Include="PerlinNoise.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </Files>
+</Project>

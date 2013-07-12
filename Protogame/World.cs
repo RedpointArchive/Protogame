@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +7,11 @@ using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using System.IO;
 
+#if FALSE
+
 namespace Protogame
 {
-    public abstract class World
+    public abstract class World : IWorld
     {
         /// <summary>
         /// The base directory in which the Resources/ folder is located.
@@ -22,12 +24,14 @@ namespace Protogame
         public static string RuntimeDirectory = "";
 
         /// <summary>
-        /// The current game context.  Only used by audio entities so that they can
-        /// access the Sounds property on creation without the developer having to specify
-        /// the GameContext (and without the world having to expose a copy of the Sounds
-        /// list).
+        /// The current game context.
         /// </summary>
-        internal GameContext GameContext { get; set; }
+        public GameContext GameContext { get; set; }
+
+        /// <summary>
+        /// The current game reference.
+        /// </summary>
+        public Game Game { get; internal set; }
 
         /// <summary>
         /// The current tileset.
@@ -87,7 +91,7 @@ namespace Protogame
                 if (t is EntityTile)
                     this.Entities.Add(t as EntityTile);
         }
-        
+
         /// <summary>
         /// Performs any custom drawing events for this world, prior to everything else being drawn.
         /// </summary>
@@ -107,5 +111,11 @@ namespace Protogame
         /// <param name="context">The current context of the game.</param>
         /// <returns>Whether processing should continue in this tick.</returns>
         public abstract bool Update(GameContext context);
+
+        public byte RenderDepthValue { get; set; }
+        public byte RenderDepthUpRange { get; set; }
+        public byte RenderDepthDownRange { get; set; }
     }
 }
+
+#endif
