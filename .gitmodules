@@ -1,3 +1,6 @@
 [submodule "ThirdParty/MonoGame"]
 	path = ThirdParty/MonoGame
 	url = git://github.com/mono/MonoGame.git
+[submodule "ThirdParty/Dx"]
+	path = ThirdParty/Dx
+	url = git://github.com/hach-que/Dx.git

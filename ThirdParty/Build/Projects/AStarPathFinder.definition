@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExternalProject Name="AStarPathFinder">
+  
+  <Project
+    Name="AStarPathFinder"
+    Guid="74FD2B9A-7400-4487-9401-CC78855C739C"
+    Path="AStarPathFinder/AStarPathFinder.csproj" />
+  
+</ExternalProject>

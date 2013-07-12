@@ -8,7 +8,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="Tychaia.Globals" />
   </References>
   <Files>
     <Compile Include="PositionOctree.cs" />
