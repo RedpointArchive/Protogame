@@ -1,3 +1,10 @@
 # Ignore files.
 bin
 obj
+
+# Generated solution and project files
+*.Linux.csproj
+*.Linux.sln
+*.Windows.csproj
+*.Windows.sln
+
