@@ -8,4 +8,5 @@ obj
 *.Linux.sln
 *.Windows.csproj
 *.Windows.sln
-
+*.nuspec
+*.nupkg
