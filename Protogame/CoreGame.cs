@@ -1,16 +1,11 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Ninject;
-using System;
 using Ninject.Parameters;
 
 namespace Protogame
 {
-    public abstract class CoreGame<TInitialWorld, TWorldManager> : Game, ICoreGame where TInitialWorld : IWorld, new() where TWorldManager : IWorldManager, new()
+    public abstract class CoreGame<TInitialWorld, TWorldManager> : Game, ICoreGame where TInitialWorld : IWorld where TWorldManager : IWorldManager
     {
-        private IKernel m_Kernel;
-        private IWorldManager m_WorldManager = null;
-        
         public IGameContext GameContext { get; private set; }
         public IUpdateContext UpdateContext { get; private set; }
         public IRenderContext RenderContext { get; private set; }
@@ -21,6 +16,12 @@ namespace Protogame
 
         public CoreGame(IKernel kernel)
         {
+            // TODO: Fix this because it means we can't have more than one
+            // game using the same IoC container.
+            var assetContentManager = new AssetContentManager(this.Services);
+            this.Content = assetContentManager;
+            kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+            
             // Create the game context.
             this.GameContext = kernel.Get<IGameContext>(
                 new ConstructorArgument("game", this),
@@ -35,12 +36,6 @@ namespace Protogame
             
             // Set up defaults.
             this.Window.Title = "Protogame!";
-        
-            // TODO: Fix this because it means we can't have more than one
-            // game using the same IoC container.
-            var assetContentManager = new AssetContentManager(this.Services);
-            this.Content = assetContentManager;
-            kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
         }
         
         /// <summary>
@@ -138,7 +133,7 @@ namespace Protogame
 
             // Update the game.
             this.GameContext.GameTime = gameTime;
-            this.m_WorldManager.Update(this);
+            this.GameContext.WorldManager.Update(this);
 
             base.Update(gameTime);
         }
@@ -165,7 +160,7 @@ namespace Protogame
 
             // Render the game.
             this.GameContext.GameTime = gameTime;
-            this.m_WorldManager.Render(this);
+            this.GameContext.WorldManager.Render(this);
 
             base.Draw(gameTime);
         }

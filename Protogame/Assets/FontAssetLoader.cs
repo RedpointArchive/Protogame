@@ -4,6 +4,8 @@
 // license on the website apply retroactively.
 //
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Protogame
 {
@@ -23,12 +25,14 @@ namespace Protogame
 
         public IAsset Handle(string name, dynamic data)
         {
+            var xnaData = ((List<object>)data.FontData)
+                .Cast<int>().Select(x => (byte)x).ToArray();
             return new FontAsset(
                 this.m_AssetContentManager,
                 name,
                 data.FontName,
                 data.FontSize,
-                data.FontData);
+                xnaData);
         }
 
         public IAsset GetDefault(string name)

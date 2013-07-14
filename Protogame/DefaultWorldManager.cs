@@ -1,10 +1,11 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
 
 namespace Protogame
 {
-    class DefaultWorldManager : IWorldManager
+    public class DefaultWorldManager : IWorldManager
     {
         private Effect m_Effect;
         
@@ -15,16 +16,21 @@ namespace Protogame
             
             game.RenderContext.Render(game.GameContext);
             
+            game.RenderContext.SpriteBatch.Begin();
+            
             foreach (var pass in this.m_Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
             
                 game.GameContext.World.RenderBelow(game.GameContext, game.RenderContext);
             
-                // TODO: Do entity rendering here.
+                foreach (var entity in game.GameContext.World.Entities)
+                    entity.Render(game.RenderContext);
             
                 game.GameContext.World.RenderAbove(game.GameContext, game.RenderContext);
             }
+            
+            game.RenderContext.SpriteBatch.End();
         }
         
         public void Update<T>(T game) where T : Game, ICoreGame

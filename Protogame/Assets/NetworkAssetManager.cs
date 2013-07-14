@@ -89,7 +89,7 @@ namespace Protogame
                     {
                         raw = this.m_RawAssetLoader.LoadRawAsset(asset);
                     }
-                    catch (AssetNotFoundException ex)
+                    catch (AssetNotFoundException)
                     {
                         result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>(), null, asset, this);
                         this.m_Assets.Add(asset, result);
@@ -105,6 +105,11 @@ namespace Protogame
                 this.m_Assets.Add(asset, result);
                 return result;
             }
+        }
+
+        public T Get<T>(string asset) where T : class, IAsset
+        {
+            return this.Get(asset).Resolve<T>();
         }
 
         public void Save(IAsset asset)

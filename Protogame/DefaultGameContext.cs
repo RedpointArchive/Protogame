@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using Ninject;
 
 namespace Protogame
@@ -30,7 +25,7 @@ namespace Protogame
         public IWorldManager WorldManager { get; internal set; }
         public int FrameCount { get; set; }
         
-        internal DefaultGameContext(
+        public DefaultGameContext(
             IKernel kernel,
             Game game,
             GraphicsDeviceManager graphics,
@@ -48,9 +43,13 @@ namespace Protogame
         
         public void ResizeWindow(int width, int height)
         {
+            if (this.Window.ClientBounds.Width == width &&
+                this.Window.ClientBounds.Height == height)
+                return;
             this.Graphics.PreferredBackBufferWidth = width;
             this.Graphics.PreferredBackBufferHeight = height;
             this.Camera = new Camera(width, height);
+            this.Graphics.ApplyChanges();
         }
 
         #if LEGACY

@@ -104,6 +104,11 @@ namespace Protogame
                 "No loader for this asset could be found.");
         }
 
+        public T Get<T>(string asset) where T : class, IAsset
+        {
+            return this.Get(asset).Resolve<T>();
+        }
+
         public IAsset[] GetAll()
         {
             lock (this.m_Assets)
