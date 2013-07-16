@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Name="Protogame.Tests" Path="Protogame.Tests" Type="Tests">
   <References>
-    <Reference Include="Protogame.Math" />
+    <Reference Include="Protogame" />
     <Reference Include="System" />
   </References>
   <Files>
     <Compile Include="CircumcentreSolverTest.cs" />
+    <None Include="packages.config" />
   </Files>
 </Project>
