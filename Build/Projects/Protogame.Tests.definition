@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Name="Protogame.Math.Tests" Path="Protogame.Math.Tests" Type="Tests">
+<Project Name="Protogame.Tests" Path="Protogame.Tests" Type="Tests">
   <References>
     <Reference Include="Protogame.Math" />
     <Reference Include="System" />
-    <Reference Include="xunit" />
   </References>
   <Files>
     <Compile Include="CircumcentreSolverTest.cs" />

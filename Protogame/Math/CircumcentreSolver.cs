@@ -1,9 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+//
+// This source code is licensed in accordance with the licensing outlined
+// on the main Tychaia website (www.tychaia.com).  Changes to the
+// license on the website apply retroactively.
+//
 
-namespace Protogame.Math
+namespace Protogame
 {
     /// <summary>
     /// Given four points in 3D space, solves for a sphere such that all four points

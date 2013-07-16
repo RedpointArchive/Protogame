@@ -55,6 +55,10 @@
     <Compile Include="DefaultWorldManager.cs" />
     <Compile Include="DynamicJsonConverter.cs" />
     <Compile Include="DynamicJsonUnconverter.cs" />
+    <Compile Include="Efficiency\DepthSpriteBatch.cs" />
+    <Compile Include="Efficiency\OccludingSpriteBatch.cs" />
+    <Compile Include="Efficiency\Resources.cs" />
+    <Compile Include="Efficiency\SpriteEffect.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityTile.cs" />
     <Compile Include="Extensions.cs" />
@@ -75,7 +79,10 @@
     <Compile Include="IWorldManager.cs" />
     <Compile Include="KeyboardStateExtensions.cs" />
     <Compile Include="KeyboardStringReader.cs" />
+    <Compile Include="Math\CircumcentreSolver.cs" />
     <Compile Include="MouseStateExtensions.cs" />
+    <Compile Include="Noise\OctaveNoise.cs" />
+    <Compile Include="Noise\PerlinNoise.cs" />
     <Compile Include="ParticleDefinition.cs" />
     <Compile Include="ParticleEntity.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />
@@ -85,6 +92,8 @@
     <Compile Include="RenderMode.cs" />
     <Compile Include="RenderUtilities.cs" />
     <Compile Include="SolidTile.cs" />
+    <Compile Include="Structure\PositionOctree.cs" />
+    <Compile Include="Structure\PositionOctreeNode.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TileNameAttribute.cs" />
     <Compile Include="Tileset.cs" />

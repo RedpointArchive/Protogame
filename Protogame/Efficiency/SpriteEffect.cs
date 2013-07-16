@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 #endregion
 
-namespace Protogame.Efficiency
+namespace Protogame
 {
     /// <summary>
     /// The default effect used by SpriteBatch.
