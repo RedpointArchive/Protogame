@@ -33,6 +33,9 @@
     <Compile Include="Assets\LanguageAsset.cs" />
     <Compile Include="Assets\LanguageAssetLoader.cs" />
     <Compile Include="Assets\LanguageAssetSaver.cs" />
+    <Compile Include="Assets\LevelAsset.cs" />
+    <Compile Include="Assets\LevelAssetLoader.cs" />
+    <Compile Include="Assets\LevelAssetSaver.cs" />
     <Compile Include="Assets\LocalAssetManager.cs" />
     <Compile Include="Assets\NetworkAsset.cs" />
     <Compile Include="Assets\NetworkAssetManager.cs" />
@@ -45,9 +48,9 @@
     <Compile Include="AudioEntity.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="Collision\CollisionIoCModule.cs" />
     <Compile Include="Collision\DefaultCollision.cs" />
     <Compile Include="Collision\ICollision.cs" />
-    <Compile Include="Collision\IoCModule.cs" />
     <Compile Include="CoreGame.cs" />
     <Compile Include="DefaultGameContext.cs" />
     <Compile Include="DefaultRenderContext.cs" />
@@ -66,19 +69,26 @@
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="IBoundingBox.cs" />
     <Compile Include="ICoreGame.cs" />
-    <Compile Include="IDynamicRenderingEntity.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IGameContext.cs" />
     <Compile Include="IoCModule.cs" />
     <Compile Include="IRenderContext.cs" />
     <Compile Include="IRenderState.cs" />
     <Compile Include="IRenderUtilities.cs" />
-    <Compile Include="ISolid.cs" />
+    <Compile Include="ISolidEntity.cs" />
+    <Compile Include="ITileEntity.cs" />
     <Compile Include="IUpdateContext.cs" />
     <Compile Include="IWorld.cs" />
     <Compile Include="IWorldManager.cs" />
     <Compile Include="KeyboardStateExtensions.cs" />
     <Compile Include="KeyboardStringReader.cs" />
+    <Compile Include="Level\DefaultLevelManager.cs" />
+    <Compile Include="Level\DefaultTileset.cs" />
+    <Compile Include="Level\ILevelManager.cs" />
+    <Compile Include="Level\ILevelReader.cs" />
+    <Compile Include="Level\ITileset.cs" />
+    <Compile Include="Level\LevelIoCModule.cs" />
+    <Compile Include="Level\OgmoLevelReader.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
     <Compile Include="MouseStateExtensions.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
@@ -86,8 +96,8 @@
     <Compile Include="ParticleDefinition.cs" />
     <Compile Include="ParticleEntity.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />
-    <Compile Include="Platforming\IoCModule.cs" />
     <Compile Include="Platforming\IPlatforming.cs" />
+    <Compile Include="Platforming\PlatformingIoCModule.cs" />
     <Compile Include="ProtogameException.cs" />
     <Compile Include="RenderMode.cs" />
     <Compile Include="RenderUtilities.cs" />
@@ -103,5 +113,6 @@
     <Compile Include="World.cs" />
     <Compile Include="WorldManager.cs" />
     <None Include="Protogame.Linux.csproj" />
+    <None Include="Protogame.Linux.nuspec" />
   </Files>
 </Project>

@@ -1,6 +1,6 @@
 using System;
 
-namespace Protogame.Collision
+namespace Protogame
 {
     public interface ICollision
     {

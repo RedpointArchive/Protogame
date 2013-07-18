@@ -14,11 +14,10 @@ namespace Protogame
 
         public virtual float X { get; set; }
         public virtual float Y { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
         public string[] Images { get; set; }
         public Color Color { get; set; }
-        public bool ImageFlipX { get; set; }
         public float XSpeed { get; set; }
         public float YSpeed { get; set; }
         public int ImageSpeed { get; set; }

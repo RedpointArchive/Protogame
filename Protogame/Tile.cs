@@ -14,8 +14,8 @@ namespace Protogame
         public Color Color { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
         public int TX { get; set; }
         public int TY { get; set; }
         public float XSpeed { get { return 0; } }

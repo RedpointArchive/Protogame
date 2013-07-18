@@ -3,8 +3,6 @@ namespace Protogame
 {
     public class EntityTile : Tile, IEntity
     {
-        public bool ImageFlipX { get; set; }
-
         protected EntityTile()
         {
             this.Width = Tileset.TILESET_CELL_WIDTH;

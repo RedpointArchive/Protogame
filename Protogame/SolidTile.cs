@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+#if LEGACY
+
 namespace Protogame
 {
     [TileName("rect", TilesetXmlLoader.XmlLoadMode.Solids)]
@@ -16,3 +18,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

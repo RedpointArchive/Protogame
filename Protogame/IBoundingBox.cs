@@ -9,9 +9,11 @@ namespace Protogame
     {
         float X { get; }
         float Y { get; }
-        int Width { get; }
-        int Height { get; }
+        float Width { get; }
+        float Height { get; }
+        #if LEGACY
         float XSpeed { get; }
         float YSpeed { get; }
+        #endif
     }
 }

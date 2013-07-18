@@ -1,6 +1,6 @@
 using System;
 
-namespace Protogame.Platforming
+namespace Protogame
 {
     public interface IPlatforming
     {

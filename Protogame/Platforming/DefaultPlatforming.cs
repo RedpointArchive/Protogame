@@ -1,6 +1,6 @@
 using System;
 
-namespace Protogame.Platforming
+namespace Protogame
 {
     class DefaultPlatforming : IPlatforming
     {
