@@ -27,9 +27,9 @@ namespace Protogame
             this.Lifetime = (float)Random.NextDouble() * (this.Definition.LifetimeMax - this.Definition.LifetimeMin) + this.Definition.LifetimeMin;
         }
 
-        public override void Update(IUpdateContext context)
+        public override void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            base.Update(context);
+            base.Update(gameContext, updateContext);
 
             // Check to see if this particle should be removed.
             if (this.Tick >= this.Lifetime)

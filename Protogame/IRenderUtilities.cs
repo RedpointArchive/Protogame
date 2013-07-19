@@ -36,6 +36,17 @@ namespace Protogame
             Color? shadowColor = null);
         
         /// <summary>
+        /// Measures text as if it was rendered with the font asset.
+        /// </summary>
+        /// <param name="context">The rendering context.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="font">The font to use for rendering.</param>
+        Vector2 MeasureText(
+            IRenderContext context,
+            string text,
+            FontAsset font);
+        
+        /// <summary>
         /// Renders a texture at the specified position.
         /// </summary>
         /// <param name="context">The rendering context.</param>

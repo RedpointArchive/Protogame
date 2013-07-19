@@ -44,16 +44,16 @@ namespace Protogame
             this.m_TilesetHeight = (int)tilesetSize.Y;
         }
         
-        public void Update(IUpdateContext context)
+        public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             for (var i = 0; i < this.m_Entities.Length; i++)
-                this.m_Entities[i].Update(context);
+                this.m_Entities[i].Update(gameContext, updateContext);
         }
         
-        public void Render(IRenderContext context)
+        public void Render(IGameContext gameContext, IRenderContext renderContext)
         {
             for (var i = 0; i < this.m_Entities.Length; i++)
-                this.m_Entities[i].Render(context);
+                this.m_Entities[i].Render(gameContext, renderContext);
         }
     }
 }

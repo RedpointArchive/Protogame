@@ -5,7 +5,7 @@ namespace Protogame
         float X { get; set; }
         float Y { get; set; }
         
-        void Update(IUpdateContext context);
-        void Render(IRenderContext context);
+        void Update(IGameContext gameContext, IUpdateContext updateContext);
+        void Render(IGameContext gameContext, IRenderContext renderContext);
     }
 }

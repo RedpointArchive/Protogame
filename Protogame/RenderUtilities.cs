@@ -77,6 +77,18 @@ namespace Protogame
                 new Vector2(xx, yy),
                 textColor.Value);
         }
+        
+        public Vector2 MeasureText(
+            IRenderContext context,
+            string text,
+            FontAsset font)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (string.IsNullOrWhiteSpace(text)) return new Vector2(0, 0);
+            if (font == null) throw new ArgumentNullException("font");
+            
+            return font.Font.MeasureString(text);
+        }
             
         public void RenderTexture(
             IRenderContext context,

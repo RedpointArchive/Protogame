@@ -11,11 +11,11 @@ namespace Protogame
             this.TY = -1;
         }
 
-        public virtual void Update(IUpdateContext context)
+        public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
         }
 
-        public virtual void Render(IRenderContext context)
+        public virtual void Render(IGameContext gameContext, IRenderContext renderContext)
         {
         }
     }

@@ -66,7 +66,7 @@ namespace Protogame
             return result.ToArray();
         }
 
-        public virtual void Update(IUpdateContext context)
+        public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             if (this.Images != null)
             {
@@ -82,7 +82,7 @@ namespace Protogame
             }
         }
 
-        public virtual void Render(IRenderContext context)
+        public virtual void Render(IGameContext gameContext, IRenderContext renderContext)
         {
         }
     }

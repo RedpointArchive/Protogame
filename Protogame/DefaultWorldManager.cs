@@ -25,7 +25,7 @@ namespace Protogame
                 game.GameContext.World.RenderBelow(game.GameContext, game.RenderContext);
             
                 foreach (var entity in game.GameContext.World.Entities)
-                    entity.Render(game.RenderContext);
+                    entity.Render(game.GameContext, game.RenderContext);
             
                 game.GameContext.World.RenderAbove(game.GameContext, game.RenderContext);
             }
