@@ -50,13 +50,15 @@ namespace Protogame
         private void RescanAssets(string prefixes = "")
         {
             var directoryInfo = new DirectoryInfo(this.m_Path + "/" + prefixes.Replace('.', '/'));
+            if (!directoryInfo.Exists)
+                directoryInfo.Create();
             foreach (var file in directoryInfo.GetFiles())
             {
                 if (file.Extension != ".asset")
                     continue;
                 var name = file.Name.Substring(0, file.Name.Length - ".asset".Length);
                 var asset = (prefixes.Trim('.') + "." + name).Trim('.');
-                this.Get(asset);
+                this.GetUnresolved(asset);
             }
             foreach (var directory in directoryInfo.GetDirectories())
             {
@@ -64,7 +66,7 @@ namespace Protogame
             }
         }
 
-        public IAsset Get(string asset)
+        public IAsset GetUnresolved(string asset)
         {
             object obj;
             if (this.m_Assets.ContainsKey(asset))
@@ -106,7 +108,7 @@ namespace Protogame
 
         public T Get<T>(string asset) where T : class, IAsset
         {
-            return this.Get(asset).Resolve<T>();
+            return this.GetUnresolved(asset).Resolve<T>();
         }
 
         public IAsset[] GetAll()

@@ -3,7 +3,7 @@ using Protogame;
 
 namespace ProtogameAssetManager
 {
-    public class IoCModule : NinjectModule
+    public class AssetManagerIoCModule : NinjectModule
     {
         public override void Load()
         {

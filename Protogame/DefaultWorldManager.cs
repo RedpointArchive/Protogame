@@ -37,6 +37,9 @@ namespace Protogame
         {
             game.UpdateContext.Update(game.GameContext);
             
+            foreach (var entity in game.GameContext.World.Entities)
+                entity.Update(game.GameContext, game.UpdateContext);
+            
             game.GameContext.World.Update(game.GameContext, game.UpdateContext);
         }
     }

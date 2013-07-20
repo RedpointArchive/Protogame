@@ -104,7 +104,7 @@ namespace Protogame
                     layout.Center.X + offset,
                     layout.Center.Y + offset),
                 button.Text,
-                this.m_AssetManager.Get<FontAsset>("font.Arial"),
+                this.m_AssetManager.Get<FontAsset>("font.Default"),
                 horizontalAlignment: HorizontalAlignment.Center,
                 verticalAlignment: VerticalAlignment.Center);
         }
@@ -130,7 +130,7 @@ namespace Protogame
                     layout.Center.X,
                     layout.Center.Y),
                 label.Text,
-                this.m_AssetManager.Get<FontAsset>("font.Arial"),
+                this.m_AssetManager.Get<FontAsset>("font.Default"),
                 horizontalAlignment: HorizontalAlignment.Center,
                 verticalAlignment: VerticalAlignment.Center);
         }
@@ -143,7 +143,7 @@ namespace Protogame
                     layout.Center.X,
                     layout.Center.Y),
                 link.Text,
-                this.m_AssetManager.Get<FontAsset>("font.Arial"),
+                this.m_AssetManager.Get<FontAsset>("font.Default"),
                 horizontalAlignment: HorizontalAlignment.Center,
                 verticalAlignment: VerticalAlignment.Center,
                 textColor: Color.Blue);
@@ -172,8 +172,7 @@ namespace Protogame
                     layout.X + 5,
                     layout.Center.Y),
                 menuItem.Text,
-                this.m_AssetManager.Get<FontAsset>("font.Arial"),
-                horizontalAlignment: HorizontalAlignment.Center,
+                this.m_AssetManager.Get<FontAsset>("font.Default"),
                 verticalAlignment: VerticalAlignment.Center);
         }
 
@@ -208,7 +207,8 @@ namespace Protogame
                     layout.X + 5,
                     layout.Center.Y),
                 treeItem.Text,
-                this.m_AssetManager.Get<FontAsset>("font.Arial"));
+                this.m_AssetManager.Get<FontAsset>("font.Default"),
+                verticalAlignment: VerticalAlignment.Center);
         }
 
         public void DrawSingleContainer(IRenderContext context, Rectangle layout, SingleContainer singleContainer)
@@ -229,7 +229,7 @@ namespace Protogame
                         layout.X,
                         layout.Center.Y),
                     textBox.Hint,
-                    this.m_AssetManager.Get<FontAsset>("font.Arial"),
+                    this.m_AssetManager.Get<FontAsset>("font.Default"),
                     textColor: Color.DimGray,
                     horizontalAlignment: HorizontalAlignment.Center);
             else
@@ -239,8 +239,16 @@ namespace Protogame
                         layout.X,
                         layout.Center.Y),
                     textToRender,
-                    this.m_AssetManager.Get<FontAsset>("font.Arial"),
+                    this.m_AssetManager.Get<FontAsset>("font.Default"),
                     horizontalAlignment: HorizontalAlignment.Center);
+        }
+        
+        public Vector2 MeasureText(IRenderContext context, string text)
+        {
+            return this.m_RenderUtilities.MeasureText(
+                context,
+                text,
+                this.m_AssetManager.Get<FontAsset>("font.Default"));
         }
 
         public int HeightForTreeItem

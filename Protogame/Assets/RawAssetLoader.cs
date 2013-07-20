@@ -1,13 +1,9 @@
-//
-// This source code is licensed in accordance with the licensing outlined
-// on the main Tychaia website (www.tychaia.com).  Changes to the
-// license on the website apply retroactively.
-//
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Web.Script.Serialization;
 using System.Text;
+using System.Web.Script.Serialization;
 
 namespace Protogame
 {
@@ -26,15 +22,35 @@ namespace Protogame
                     Path.Combine(
                         assetDirectory.FullName,
                         name.Replace('.', Path.DirectorySeparatorChar) + ".asset"));
-                using (var reader = new StreamReader(file.FullName, Encoding.UTF8))
+                if (file.Exists)
                 {
-                    var serializer = new JavaScriptSerializer();
-                    serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
-                    return serializer.Deserialize<object>(reader.ReadToEnd());
+                    using (var reader = new StreamReader(file.FullName, Encoding.UTF8))
+                    {
+                        var serializer = new JavaScriptSerializer();
+                        serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
+                        return serializer.Deserialize<object>(reader.ReadToEnd());
+                    }
                 }
+                var embedded = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                                where !assembly.IsDynamic
+                                from resource in assembly.GetManifestResourceNames()
+                                where resource == assembly.GetName().Name + "." + name + ".asset"
+                                select assembly.GetManifestResourceStream(resource)).ToList();
+                if (embedded.Any())
+                {
+                    using (var reader = new StreamReader(embedded.First(), Encoding.UTF8))
+                    {
+                        var serializer = new JavaScriptSerializer();
+                        serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
+                        return serializer.Deserialize<object>(reader.ReadToEnd());
+                    }
+                }
+                throw new AssetNotFoundException(name);
             }
             catch (Exception ex)
             {
+                if (ex is AssetNotFoundException)
+                    throw;
                 throw new AssetNotFoundException(name, ex);
             }
         }

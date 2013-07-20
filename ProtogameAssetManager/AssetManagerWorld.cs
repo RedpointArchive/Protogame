@@ -21,12 +21,6 @@ namespace ProtogameAssetManager
         {
             LoadEditorsForAssets();
         }
-        
-        public AssetManagerWorld(ISkin skin)
-        {
-            this.Entities = new List<IEntity>();
-            this.m_Skin = skin;
-        }
 
         public static void LoadEditorsForAssets()
         {
@@ -45,8 +39,10 @@ namespace ProtogameAssetManager
             }
         }
 
-        public AssetManagerWorld(IAssetManagerProvider assetManagerProvider, IRenderUtilities renderUtilities)
+        public AssetManagerWorld(IAssetManagerProvider assetManagerProvider, IRenderUtilities renderUtilities, ISkin skin)
         {
+            this.Entities = new List<IEntity>();
+            this.m_Skin = skin;
             this.m_Start = DateTime.Now;
 
             // Add the asset manager layout.
@@ -86,7 +82,7 @@ namespace ProtogameAssetManager
                 {
                     this.m_CurrentEditor = null;
                     this.m_Layout.EditorContainer.SetChild(
-                        new Label { Text = "No editor for this asset" });
+                        new Label { Text = "No editor for " + (item == null ? "folders" : item.Asset.GetType().Name) });
                 }
             };
         }

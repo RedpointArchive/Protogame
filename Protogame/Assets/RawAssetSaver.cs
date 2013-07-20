@@ -26,6 +26,7 @@ namespace Protogame
                     Path.Combine(
                         assetDirectory.FullName,
                         name.Replace('.', Path.DirectorySeparatorChar) + ".asset"));
+                this.CreateDirectories(file.Directory);
                 using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))
                 {
                     var serializer = new JavaScriptSerializer();
@@ -37,6 +38,14 @@ namespace Protogame
             {
                 throw new AssetNotFoundException(name, ex);
             }
+        }
+        
+        private void CreateDirectories(DirectoryInfo directory)
+        {
+            if (directory.Exists)
+                return;
+            this.CreateDirectories(directory.Parent);
+            directory.Create();
         }
     }
 }

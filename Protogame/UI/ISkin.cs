@@ -18,6 +18,7 @@ namespace Protogame
         void DrawTreeItem(IRenderContext context, Rectangle layout, TreeItem treeItem);
         void DrawSingleContainer(IRenderContext context, Rectangle layout, SingleContainer singleContainer);
         void DrawTextBox(IRenderContext context, Rectangle layout, TextBox textBox);
+        Vector2 MeasureText(IRenderContext context, string text);
 
         int HeightForTreeItem { get; }
         int MainMenuHorizontalPadding { get; }

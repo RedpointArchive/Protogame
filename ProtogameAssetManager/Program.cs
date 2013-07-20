@@ -19,7 +19,7 @@ namespace ProtogameAssetManager
             var connectToRunningGame = false;
             var options = new OptionSet
             {
-                { "connect", "Internal use only (used by the Tychaia game client).", v => connectToRunningGame = true }
+                { "connect", "Internal use only (used by the game client).", v => connectToRunningGame = true }
             };
             try
             {
@@ -27,20 +27,24 @@ namespace ProtogameAssetManager
             }
             catch (OptionException ex)
             {
-                Console.Write("TychaiaAssetManager.exe: ");
+                Console.Write("ProtogameAssetManager.exe: ");
                 Console.WriteLine(ex.Message);
-                Console.WriteLine("Try `Tychaia.exe --help` for more information.");
+                Console.WriteLine("Try `ProtogameAssetManager.exe --help` for more information.");
                 return;
             }
             
             var kernel = new StandardKernel();
+            kernel.Load<IoCModule>();
+            kernel.Load<AssetIoCModule>();
+            kernel.Load<PlatformingIoCModule>();
+            kernel.Load<AssetManagerIoCModule>();
 
             if (connectToRunningGame)
             {
                 var node = new LocalNode();
                 node.Network = new ProtogameAssetManagerNetwork(node, true);
                 node.Join();
-                var assetManagerProvider = new NetworkedAssetManagerProvider(node);
+                var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);
                 kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
             }
             else

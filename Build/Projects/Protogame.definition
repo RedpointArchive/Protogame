@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Name="Protogame" Path="Protogame" Type="Library">
+  <Properties>
+    <Property Name="PostProcessWithDx" Value="True" />
+  </Properties>
   <References>
     <Reference Include="AStarPathFinder" />
     <Reference Include="Dx" />
@@ -54,6 +57,7 @@
     <Compile Include="CoreGame.cs" />
     <Compile Include="DefaultGameContext.cs" />
     <Compile Include="DefaultRenderContext.cs" />
+    <Compile Include="DefaultRenderUtilities.cs" />
     <Compile Include="DefaultUpdateContext.cs" />
     <Compile Include="DefaultWorldManager.cs" />
     <Compile Include="DynamicJsonConverter.cs" />
@@ -101,7 +105,6 @@
     <Compile Include="Platforming\PlatformingIoCModule.cs" />
     <Compile Include="ProtogameException.cs" />
     <Compile Include="RenderMode.cs" />
-    <Compile Include="RenderUtilities.cs" />
     <Compile Include="SolidTile.cs" />
     <Compile Include="Structure\PositionOctree.cs" />
     <Compile Include="Structure\PositionOctreeNode.cs" />
@@ -141,7 +144,6 @@
     <Compile Include="VerticalAlignment.cs" />
     <Compile Include="World.cs" />
     <Compile Include="WorldManager.cs" />
-    <None Include="Protogame.Linux.csproj" />
-    <None Include="Protogame.Linux.nuspec" />
+    <EmbeddedResource Include="font.Default.asset" />
   </Files>
 </Project>

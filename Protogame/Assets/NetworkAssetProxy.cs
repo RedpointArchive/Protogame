@@ -31,7 +31,7 @@ namespace Protogame
         {
             if (this.m_NetworkAsset.Dirty)
             {
-                this.m_NetworkAsset = this.m_Manager.Get(this.m_AssetName) as NetworkAsset;
+                this.m_NetworkAsset = this.m_Manager.GetUnresolved(this.m_AssetName) as NetworkAsset;
                 var proxy = this.m_NetworkAsset.Resolve<T>();
                 if (!RemotingServices.IsTransparentProxy(proxy))
                     throw new InvalidOperationException("Object retrieved was not transparent proxy.");

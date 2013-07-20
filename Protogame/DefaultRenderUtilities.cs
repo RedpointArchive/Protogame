@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
-    public class RenderUtilities : IRenderUtilities
+    public class DefaultRenderUtilities : IRenderUtilities
     {
         public IRenderState BeginRenderMode(IRenderContext context, RenderMode mode)
         {

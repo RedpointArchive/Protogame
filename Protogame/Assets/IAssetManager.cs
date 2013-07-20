@@ -12,7 +12,7 @@ namespace Protogame
         bool IsRemoting { get; }
 
         void Dirty(string asset);
-        IAsset Get(string asset);
+        IAsset GetUnresolved(string asset);
         T Get<T>(string asset) where T : class, IAsset;
         IAsset[] GetAll();
 

@@ -25,6 +25,8 @@ namespace Protogame
         [ClientCallable]
         public bool IsReady()
         {
+            if (this.m_Kernel == null)
+                return false;
             return this.m_Kernel.TryGet<IRawAssetLoader>() != null;
         }
 
@@ -48,6 +50,12 @@ namespace Protogame
             this.m_Assets = new Dictionary<string, NetworkAsset>();
             this.m_RawAssets = new Dictionary<string, object>();
         }
+        
+        [ClientIgnorable]
+        public void SetKernel(IKernel kernel)
+        {
+            this.m_Kernel = kernel;
+        }
 
         public void Dirty(string asset)
         {
@@ -66,7 +74,7 @@ namespace Protogame
         }
 
         [ClientCallable]
-        public IAsset Get(string asset)
+        public IAsset GetUnresolved(string asset)
         {
             lock (this.m_Assets)
             {
@@ -107,9 +115,10 @@ namespace Protogame
             }
         }
 
+        [ClientCallable]
         public T Get<T>(string asset) where T : class, IAsset
         {
-            return this.Get(asset).Resolve<T>();
+            return this.GetUnresolved(asset).Resolve<T>();
         }
 
         public void Save(IAsset asset)

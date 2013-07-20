@@ -152,12 +152,7 @@ namespace Protogame
 
         public virtual void Draw(IRenderContext context, ISkin skin, Rectangle layout)
         {
-            var size = this.m_RenderUtilities.MeasureText(
-                context,
-                this.Text,
-                this.m_AssetManager.Get<FontAsset>("font.Arial"));
-                
-            this.TextWidth = (int)Math.Ceiling(size.X);
+            this.TextWidth = (int)Math.Ceiling(skin.MeasureText(context, this.Text).X);
             skin.DrawMenuItem(context, layout, this);
 
             var childrenLayout = this.GetMenuListLayout(skin, layout);

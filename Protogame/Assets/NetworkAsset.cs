@@ -19,6 +19,8 @@ namespace Protogame
         public string Name { get; private set; }
         private byte[] Data { get; set; }
         private NetworkAssetManager Manager { get; set; }
+        
+        [Local]
         private IEnumerable<IAssetLoader> m_AssetLoaders;
 
         /// <summary>
