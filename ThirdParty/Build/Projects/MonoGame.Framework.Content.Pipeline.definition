@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExternalProject Name="MonoGame.Framework.Content.Pipeline">
+ 
+  <Platform Type="Linux">
+    <Project 
+      Name="MonoGame.Framework.Content.Pipeline.Linux"
+      Guid="B950DE10-AC5D-4BD9-B817-51247C4A732D"
+      Path="MonoGame/MonoGame.Framework.Content.Pipeline/MonoGame.Framework.Content.Pipeline.Linux.csproj">
+    </Project>
+  </Platform>
+  
+  <Platform Type="MacOS">
+    <Project 
+      Name="MonoGame.Framework.Content.Pipeline.MacOS"
+      Guid="B950DE10-AC5D-4BD9-B817-51247C4A732D"
+      Path="MonoGame/MonoGame.Framework.Content.Pipeline/MonoGame.Framework.Content.Pipeline.MacOS.csproj">
+    </Project>
+  </Platform>
+ 
+  <Platform Type="Windows">
+    <Project 
+      Name="MonoGame.Framework.Content.Pipeline.Windows"
+      Guid="B950DE10-AC5D-4BD9-B817-51247C4A732D"
+      Path="MonoGame/MonoGame.Framework.Content.Pipeline/MonoGame.Framework.Content.Pipeline.Windows.csproj">
+    </Project>
+  </Platform>
+ 
+</ExternalProject>

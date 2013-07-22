@@ -11,6 +11,9 @@ namespace Protogame
         bool CanHandle(dynamic data);
         IAsset Handle(string name, dynamic data);
         IAsset GetDefault(string name);
+        
+        bool CanNew();
+        IAsset GetNew(string name);
     }
 }
 

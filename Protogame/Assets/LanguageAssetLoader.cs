@@ -23,6 +23,16 @@ namespace Protogame
         {
             return new LanguageAsset(name, "Default Text");
         }
+        
+        public bool CanNew()
+        {
+            return true;
+        }
+        
+        public IAsset GetNew(string name)
+        {
+            return new LanguageAsset(name, "");
+        }
     }
 }
 

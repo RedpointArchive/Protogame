@@ -13,7 +13,7 @@ namespace Protogame
     {
         public string Name { get; private set; }
         public Texture2D Texture { get; private set; }
-        public byte[] Data { get; private set; }
+        public byte[] Data { get; set; }
 
         public TextureAsset(IAssetContentManager assetContentManager, string name, byte[] data)
         {

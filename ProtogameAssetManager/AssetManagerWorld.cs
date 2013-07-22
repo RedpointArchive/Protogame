@@ -39,17 +39,20 @@ namespace ProtogameAssetManager
             }
         }
 
-        public AssetManagerWorld(IAssetManagerProvider assetManagerProvider, IRenderUtilities renderUtilities, ISkin skin)
+        public AssetManagerWorld(
+            IAssetManagerProvider assetManagerProvider,
+            IRenderUtilities renderUtilities,
+            ISkin skin,
+            IEnumerable<IAssetLoader> loaders)
         {
             this.Entities = new List<IEntity>();
             this.m_Skin = skin;
             this.m_Start = DateTime.Now;
 
             // Add the asset manager layout.
-            
             this.Entities.Add(new CanvasEntity(
                 this.m_Skin,
-                this.m_Layout = new AssetManagerLayout(assetManagerProvider, renderUtilities)));
+                this.m_Layout = new AssetManagerLayout(assetManagerProvider, renderUtilities, loaders)));
 
             this.m_Layout.MarkDirty.Click += (sender, e) =>
             {
@@ -102,6 +105,7 @@ namespace ProtogameAssetManager
                     (int)((DateTime.Now - this.m_Start).TotalSeconds) +
                     " seconds") :
                 "Running Locally";
+            newStatus += " (" + gameContext.FPS + " FPS)";
             if (this.AssetManager.Status != newStatus)
                 this.AssetManager.Status = newStatus;
             this.m_Layout.Status.Text = this.AssetManager.Status;

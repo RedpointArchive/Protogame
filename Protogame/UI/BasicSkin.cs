@@ -53,7 +53,8 @@ namespace Protogame
             this.m_RenderUtilities.RenderRectangle(
                 context,
                 layout,
-                this.m_BasicSkin.SurfaceColor);
+                this.m_BasicSkin.SurfaceColor,
+                filled: true);
             this.m_RenderUtilities.RenderRectangle(
                 context,
                 layout,
@@ -231,7 +232,7 @@ namespace Protogame
                     textBox.Hint,
                     this.m_AssetManager.Get<FontAsset>("font.Default"),
                     textColor: Color.DimGray,
-                    horizontalAlignment: HorizontalAlignment.Center);
+                    verticalAlignment: VerticalAlignment.Center);
             else
                 this.m_RenderUtilities.RenderText(
                     context,
@@ -240,7 +241,28 @@ namespace Protogame
                         layout.Center.Y),
                     textToRender,
                     this.m_AssetManager.Get<FontAsset>("font.Default"),
-                    horizontalAlignment: HorizontalAlignment.Center);
+                    verticalAlignment: VerticalAlignment.Center);
+        }
+        
+        public void DrawForm(IRenderContext context, Rectangle layout, Form form)
+        {
+            this.DrawFlat(context, layout);
+        }
+        
+        public void DrawFontViewer(IRenderContext context, Rectangle layout, FontViewer fontViewer)
+        {
+            this.DrawSunken(context, layout);
+            
+            if (fontViewer.Font != null && fontViewer.Font.FontData != null)
+            {
+                this.m_RenderUtilities.RenderText(
+                    context,
+                    new Vector2(
+                        layout.X,
+                        layout.Y),
+                    "Font Example",
+                    fontViewer.Font);
+            }
         }
         
         public Vector2 MeasureText(IRenderContext context, string text)

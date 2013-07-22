@@ -2,7 +2,7 @@ using Protogame;
 
 namespace ProtogameAssetManager
 {
-    public class TextAssetEditor : AssetEditor<LanguageAsset>
+    public class LanguageAssetEditor : AssetEditor<LanguageAsset>
     {
         private TextBox m_TextBox;
 
@@ -14,7 +14,10 @@ namespace ProtogameAssetManager
                 this.m_Asset.Value = this.m_TextBox.Text;
                 assetManager.Save(this.m_Asset);
             };
-            editorContainer.SetChild(this.m_TextBox);
+            
+            var form = new Form();
+            form.AddControl("English:", this.m_TextBox);
+            editorContainer.SetChild(form);
         }
 
         public override void FinishLayout(SingleContainer editorContainer, IAssetManager assetManager)

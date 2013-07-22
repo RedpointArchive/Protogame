@@ -11,30 +11,63 @@ namespace Protogame
 {
     public class FontAsset : MarshalByRefObject, IAsset
     {
+        private IAssetContentManager m_AssetContentManager;
+        private IContentCompiler m_ContentCompiler;
         public string Name { get; private set; }
         public SpriteFont Font { get; private set; }
-        public string FontName { get; private set; }
-        public int FontSize { get; private set; }
-        public byte[] FontData { get; private set; }
+        public string FontName { get; set; }
+        public int FontSize { get; set; }
+        public byte[] FontData { get; set; }
 
-        public FontAsset(IAssetContentManager assetContentManager, string name, string fontName, int fontSize, byte[] fontData)
+        public FontAsset(
+            IContentCompiler contentCompiler,
+            IAssetContentManager assetContentManager,
+            string name,
+            string fontName,
+            int fontSize,
+            byte[] fontData)
         {
             this.Name = name;
             this.FontName = fontName;
             this.FontSize = fontSize;
             this.FontData = fontData;
+            this.m_AssetContentManager = assetContentManager;
+            this.m_ContentCompiler = contentCompiler;
             
-            if (assetContentManager != null)
+            this.ReloadFont();
+        }
+        
+        public void ReloadFont()
+        {
+            if (this.m_AssetContentManager != null && this.FontData != null)
             {
-                using (var stream = new MemoryStream(fontData))
+                using (var stream = new MemoryStream(this.FontData))
                 {
-                    assetContentManager.SetStream(name, stream);
-                    this.Font = assetContentManager.Load<SpriteFont>(name);
-                    assetContentManager.UnsetStream(name);
+                    this.m_AssetContentManager.SetStream(this.Name, stream);
+                    this.Font = this.m_AssetContentManager.Load<SpriteFont>(this.Name);
+                    this.m_AssetContentManager.UnsetStream(this.Name);
                 }
             }
         }
 
+        public void RebuildFont()
+        {
+            try
+            {
+                var data = this.m_ContentCompiler.BuildSpriteFont(
+                    this.FontName,
+                    this.FontSize,
+                    0,
+                    false);
+                if (data != null)
+                {
+                    this.FontData = data;
+                    this.ReloadFont();
+                }
+            }
+            catch { }
+        }
+        
         public T Resolve<T>() where T : class, IAsset
         {
             if (typeof(T).IsAssignableFrom(typeof(FontAsset)))

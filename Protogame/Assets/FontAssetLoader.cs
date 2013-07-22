@@ -12,10 +12,14 @@ namespace Protogame
     public class FontAssetLoader : IAssetLoader
     {
         private IAssetContentManager m_AssetContentManager;
+        private IContentCompiler m_ContentCompiler;
         
-        public FontAssetLoader(IAssetContentManager assetContentManager)
+        public FontAssetLoader(
+            IAssetContentManager assetContentManager,
+            IContentCompiler contentCompiler)
         {
             this.m_AssetContentManager = assetContentManager;
+            this.m_ContentCompiler = contentCompiler;
         }
     
         public bool CanHandle(dynamic data)
@@ -28,6 +32,7 @@ namespace Protogame
             var xnaData = ((List<object>)data.FontData)
                 .Cast<int>().Select(x => (byte)x).ToArray();
             return new FontAsset(
+                this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
                 data.FontName,
@@ -38,6 +43,22 @@ namespace Protogame
         public IAsset GetDefault(string name)
         {
             throw new InvalidOperationException();
+        }
+        
+        public bool CanNew()
+        {
+            return true;
+        }
+        
+        public IAsset GetNew(string name)
+        {
+            return new FontAsset(
+                this.m_ContentCompiler,
+                this.m_AssetContentManager,
+                name,
+                "Arial",
+                12,
+                null);
         }
     }
 }

@@ -33,6 +33,19 @@ namespace Protogame
         {
             throw new InvalidOperationException();
         }
+        
+        public bool CanNew()
+        {
+            return true;
+        }
+        
+        public IAsset GetNew(string name)
+        {
+            return new TextureAsset(
+                this.m_AssetContentManager,
+                name,
+                null);
+        }
     }
 }
 

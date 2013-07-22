@@ -1,5 +1,7 @@
 using System;
 using Protogame;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ProtogameAssetManager
 {
@@ -12,7 +14,10 @@ namespace ProtogameAssetManager
         public TreeView AssetTree { get; private set; }
         public SingleContainer EditorContainer { get; private set; }
 
-        public AssetManagerLayout(IAssetManagerProvider assetManagerProvider, IRenderUtilities renderUtilities)
+        public AssetManagerLayout(
+            IAssetManagerProvider assetManagerProvider,
+            IRenderUtilities renderUtilities,
+            IEnumerable<IAssetLoader> loaders)
         {
             var toolbarContainer = new HorizontalContainer();
             toolbarContainer.AddChild(new SingleContainer(), "*");
@@ -41,6 +46,23 @@ namespace ProtogameAssetManager
             };
             assetManagerMenuItem.AddChild(exitItem);
             this.MainMenu.AddChild(assetManagerMenuItem);
+            
+            var newAssetMenuItem = new MenuItem(assetManagerProvider, renderUtilities) { Text = "Create New..." };
+            foreach (var loader in loaders.Where(x => x.CanNew()))
+            {
+                var createNewMenuItem = new MenuItem(assetManagerProvider, renderUtilities) { Text = loader.GetType().Name };
+                createNewMenuItem.Click += (sender, e) =>
+                {
+                    var asset = loader.GetNew("test");
+                    this.AssetTree.AddChild(new AssetTreeItem
+                    {
+                        Text = "test",
+                        Asset = asset
+                    });
+                };
+                newAssetMenuItem.AddChild(createNewMenuItem);
+            }
+            this.MainMenu.AddChild(newAssetMenuItem);
         }
     }
 }

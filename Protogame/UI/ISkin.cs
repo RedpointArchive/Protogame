@@ -18,6 +18,8 @@ namespace Protogame
         void DrawTreeItem(IRenderContext context, Rectangle layout, TreeItem treeItem);
         void DrawSingleContainer(IRenderContext context, Rectangle layout, SingleContainer singleContainer);
         void DrawTextBox(IRenderContext context, Rectangle layout, TextBox textBox);
+        void DrawForm(IRenderContext context, Rectangle layout, Form form);
+        void DrawFontViewer(IRenderContext context, Rectangle layout, FontViewer fontViewer);
         Vector2 MeasureText(IRenderContext context, string text);
 
         int HeightForTreeItem { get; }

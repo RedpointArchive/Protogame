@@ -8,6 +8,7 @@
     <Reference Include="Dx" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MonoGame" />
+    <Reference Include="MonoGame.Framework.Content.Pipeline" />
     <Reference Include="Ninject" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -22,6 +23,11 @@
     <Compile Include="Assets\AssetContentManager.cs" />
     <Compile Include="Assets\AssetIoCModule.cs" />
     <Compile Include="Assets\AssetNotFoundException.cs" />
+    <Compile Include="Assets\ContentCompilation\ContentCompilationIoCModule.cs" />
+    <Compile Include="Assets\ContentCompilation\DefaultContentCompiler.cs" />
+    <Compile Include="Assets\ContentCompilation\DummyContentProcessorContext.cs" />
+    <Compile Include="Assets\ContentCompilation\IContentCompiler.cs" />
+    <Compile Include="Assets\ContentCompilation\NullContentCompiler.cs" />
     <Compile Include="Assets\FontAsset.cs" />
     <Compile Include="Assets\FontAssetLoader.cs" />
     <Compile Include="Assets\FontAssetSaver.cs" />
@@ -122,6 +128,8 @@
     <Compile Include="UI\FixedContainer.cs" />
     <Compile Include="UI\FlowContainer.cs" />
     <Compile Include="UI\FocusExtensions.cs" />
+    <Compile Include="UI\FontViewer.cs" />
+    <Compile Include="UI\Form.cs" />
     <Compile Include="UI\HorizontalAlign.cs" />
     <Compile Include="UI\HorizontalContainer.cs" />
     <Compile Include="UI\IBasicSkin.cs" />
