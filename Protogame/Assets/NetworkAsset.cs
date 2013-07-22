@@ -50,9 +50,27 @@ namespace Protogame
                 this.Data = null;
         }
 
+        /// <summary>
+        /// Injects the asset loader enumerable.  This is required since the network asset
+        /// will be passed back to the client without that field set because it is
+        /// local-only.
+        /// </summary>
+        /// <param name="loaders">The asset loaders this network asset should use.</param>
+        [Local]
+        public void InjectLoaders(IEnumerable<IAssetLoader> loaders)
+        {
+            this.m_AssetLoaders = loaders;
+        }
+
         [Local]
         public T Resolve<T>() where T : class, IAsset
         {
+            if (this.m_AssetLoaders == null)
+                throw new InvalidOperationException(
+                    "The asset loaders have not been set on this NetworkAsset.  This can occur if you retrieved " +
+                    "a NetworkAsset via GetUnresolved and have not yet called InjectLoaders.  InjectLoaders is " +
+                    "called for you if you use the Get<> method instead.");
+        
             // We will use the registered asset loaders to resolve an
             // actual, local version of the asset.
             var data = this.GetAssetData();

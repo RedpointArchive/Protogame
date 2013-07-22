@@ -77,6 +77,7 @@ namespace ProtogameAssetManager
                 Console.Write(name + ": ");
                 Console.WriteLine(ex.Message);
                 Console.WriteLine("Try `" + name + " --help` for more information.");
+                Environment.Exit(1);
                 return;
             }
 
@@ -92,6 +93,14 @@ namespace ProtogameAssetManager
 
             if (assetManagerProcess != null)
             {
+                AppDomain.CurrentDomain.ProcessExit += (sender, e) => 
+                {
+                    // Make sure we close down the asset manager process if it's there.
+                    if (assetManagerProcess != null)
+                    {
+                        assetManagerProcess.Kill();
+                    }
+                };
                 AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
                 {
                     // Make sure we close down the asset manager process if it's there.

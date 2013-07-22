@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Ninject;
 using System.Linq;
 using System;
+using System.Diagnostics;
 
 namespace Protogame
 {
@@ -44,6 +45,9 @@ namespace Protogame
 
         [Local]
         private Dictionary<string, object> m_RawAssets;
+        
+        [Local]
+        private Dictionary<string, IAsset> m_ClientCache;
 
         public NetworkAssetManager()
         {
@@ -51,7 +55,7 @@ namespace Protogame
             this.m_RawAssets = new Dictionary<string, object>();
         }
         
-        [ClientIgnorable]
+        [Local]
         public void SetKernel(IKernel kernel)
         {
             this.m_Kernel = kernel;
@@ -115,12 +119,35 @@ namespace Protogame
             }
         }
 
-        [ClientCallable]
+        [Local]
         public T Get<T>(string asset) where T : class, IAsset
         {
+            // Calling GetUnresolved from the client is an expensive operation,
+            // so we do everything we can to cache the result.  The NetworkAsset
+            // proxy magic means that we'll automatically know on the client side
+            // when we need to pull down new data, and this is handled inside
+            // the NetworkAssetProxy.  Thus we can cache our resolved asset
+            // forever.
+            if (!Process4.LocalNode.Singleton.IsServer)
+            {
+                // If the network asset already exists, return it.
+                if (this.m_ClientCache == null)
+                    this.m_ClientCache = new Dictionary<string, IAsset>();
+                if (this.m_ClientCache.ContainsKey(asset))
+                    return (T)this.m_ClientCache[asset];
+                    
+                // Otherwise we really do need to make a request over
+                // the network to get an initial NetworkAsset.
+                var networkAsset = this.GetUnresolved(asset) as NetworkAsset;
+                networkAsset.InjectLoaders(this.m_Kernel.GetAll<IAssetLoader>());
+                this.m_ClientCache.Add(asset, networkAsset.Resolve<T>());
+                return (T)this.m_ClientCache[asset];
+            }
+            
+            // We can efficiently call this on the server as much as we like.
             return this.GetUnresolved(asset).Resolve<T>();
         }
-
+        
         public void Save(IAsset asset)
         {
             var savers = this.m_Kernel.GetAll<IAssetSaver>().ToArray();
