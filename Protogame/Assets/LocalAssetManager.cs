@@ -25,7 +25,6 @@ namespace Protogame
         private IRawAssetSaver m_RawAssetSaver;
         private Dictionary<string, IAsset> m_Assets = new Dictionary<string, IAsset>();
         private Dictionary<string, object> m_RawAssets = new Dictionary<string, object>();
-        private string m_Path;
         private IEnumerable<IAssetLoader> m_AssetLoaders;
         private IEnumerable<IAssetSaver> m_AssetSavers;
 
@@ -33,37 +32,22 @@ namespace Protogame
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
             IEnumerable<IAssetLoader> loaders,
-            IEnumerable<IAssetSaver> savers,
-            string path)
+            IEnumerable<IAssetSaver> savers)
         {
             this.m_RawAssetLoader = rawLoader;
             this.m_RawAssetSaver = rawSaver;
             this.m_AssetLoaders = loaders;
             this.m_AssetSavers = savers;
-            this.m_Path = new DirectoryInfo(path).FullName;
         }
 
         public void Dirty(string asset)
         {
         }
-
-        private void RescanAssets(string prefixes = "")
+        
+        public void RescanAssets()
         {
-            var directoryInfo = new DirectoryInfo(this.m_Path + "/" + prefixes.Replace('.', '/'));
-            if (!directoryInfo.Exists)
-                directoryInfo.Create();
-            foreach (var file in directoryInfo.GetFiles())
-            {
-                if (file.Extension != ".asset")
-                    continue;
-                var name = file.Name.Substring(0, file.Name.Length - ".asset".Length);
-                var asset = (prefixes.Trim('.') + "." + name).Trim('.');
+            foreach (var asset in this.m_RawAssetLoader.ScanRawAssets())
                 this.GetUnresolved(asset);
-            }
-            foreach (var directory in directoryInfo.GetDirectories())
-            {
-                this.RescanAssets(prefixes + directory.Name + ".");
-            }
         }
 
         public IAsset GetUnresolved(string asset)

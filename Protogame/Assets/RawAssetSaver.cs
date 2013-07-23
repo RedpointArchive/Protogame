@@ -1,30 +1,33 @@
-//
-// This source code is licensed in accordance with the licensing outlined
-// on the main Tychaia website (www.tychaia.com).  Changes to the
-// license on the website apply retroactively.
-//
 using System;
 using System.IO;
-using System.Reflection;
-using System.Web.Script.Serialization;
 using System.Text;
+using System.Web.Script.Serialization;
 
 namespace Protogame
 {
     public class RawAssetSaver : IRawAssetSaver
     {
+        private string m_Path;
+    
+        public RawAssetSaver()
+        {
+            var directory = new DirectoryInfo(Environment.CurrentDirectory).FullName;
+            var contentDirectory = Path.Combine(directory, "Content");
+            if (Directory.Exists(contentDirectory))
+            {
+                Directory.CreateDirectory(directory);
+                directory = contentDirectory;
+            }
+            this.m_Path = directory;
+        }
+    
         public void SaveRawAsset(string name, object data)
         {
             try
             {
-                var entryAssemblyFileInfo = new FileInfo(Assembly.GetEntryAssembly().Location);
-                var assetDirectory = new DirectoryInfo(
-                     Path.Combine(entryAssemblyFileInfo.Directory.FullName, "Content"));
-                if (!assetDirectory.Exists)
-                    assetDirectory.Create();
                 var file = new FileInfo(
                     Path.Combine(
-                        assetDirectory.FullName,
+                        this.m_Path,
                         name.Replace('.', Path.DirectorySeparatorChar) + ".asset"));
                 this.CreateDirectories(file.Directory);
                 using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))

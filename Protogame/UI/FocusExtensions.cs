@@ -26,13 +26,11 @@ namespace Protogame
 
         private static void DefocusGraph(IContainer container)
         {
-            System.Console.WriteLine("Defocusing graph...");
             DefocusNode(GetRootContainer(container));
         }
 
         private static void DefocusNode(IContainer container)
         {
-            System.Console.WriteLine("Defocusing " + container.GetType().FullName);
             container.Focused = false;
             foreach (var child in container.Children.Where(x => x != null))
                 DefocusNode(child);

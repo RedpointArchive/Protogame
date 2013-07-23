@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Protogame;
+using System;
 
 namespace ProtogameAssetManager
 {
@@ -15,13 +16,11 @@ namespace ProtogameAssetManager
             IEnumerable<IAssetLoader> loaders,
             IEnumerable<IAssetSaver> savers)
         {
-            var file = new FileInfo(Assembly.GetExecutingAssembly().Location);
             this.m_AssetManager = new LocalAssetManager(
                 rawLoader,
                 rawSaver,
                 loaders,
-                savers,
-                Path.Combine(file.Directory.FullName, "Content"));
+                savers);
         }
 
         public bool IsReady
