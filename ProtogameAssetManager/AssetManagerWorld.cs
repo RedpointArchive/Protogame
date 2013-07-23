@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Ninject;
 using Protogame;
+using System.Diagnostics;
 
 namespace ProtogameAssetManager
 {
@@ -105,7 +106,7 @@ namespace ProtogameAssetManager
                     (int)((DateTime.Now - this.m_Start).TotalSeconds) +
                     " seconds") :
                 "Running Locally";
-            newStatus += " (" + gameContext.FPS + " FPS)";
+            newStatus += " (" + gameContext.FPS + " FPS; " + (Process.GetCurrentProcess().WorkingSet64 / 1024 / 1024) + "MB)";
             if (this.AssetManager.Status != newStatus)
                 this.AssetManager.Status = newStatus;
             this.m_Layout.Status.Text = this.AssetManager.Status;

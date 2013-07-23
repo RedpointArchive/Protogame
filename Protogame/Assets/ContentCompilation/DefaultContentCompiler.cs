@@ -6,6 +6,8 @@ using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using MonoGame.Framework.Content.Pipeline.Builder;
+using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace Protogame
 {
@@ -29,10 +31,27 @@ namespace Protogame
             var context = new DummyContentProcessorContext(TargetPlatform.Linux);
             var content = processor.Process(description, context);
             var compiler = new Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler.ContentCompiler();
-            using (var stream = new MemoryStream())
+            var temp = Path.GetTempFileName();
+            try
             {
-                compiler.Compile(stream, content, context.TargetPlatform, context.TargetProfile, false, Environment.CurrentDirectory, Environment.CurrentDirectory);
-                return stream.GetBuffer();
+                using (var stream = new FileStream(temp, FileMode.Open, FileAccess.Write))
+                {
+                    compiler.Compile(stream, content, TargetPlatform.Windows, GraphicsProfile.Reach, false, Environment.CurrentDirectory, Environment.CurrentDirectory);
+                }
+                using (var stream = new FileStream(temp, FileMode.Open, FileAccess.Read))
+                {
+                    stream.Position = 0;
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        var result = reader.ReadBytes((int)stream.Length);
+                        File.Delete(temp);
+                        return result;
+                    }
+                }
+            }
+            finally
+            {
+                File.Delete(temp);
             }
         }
     }

@@ -6,6 +6,7 @@
 using System;
 using System.IO;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace Protogame
 {
@@ -44,28 +45,25 @@ namespace Protogame
                 using (var stream = new MemoryStream(this.FontData))
                 {
                     this.m_AssetContentManager.SetStream(this.Name, stream);
+                    this.m_AssetContentManager.Purge(this.Name);
                     this.Font = this.m_AssetContentManager.Load<SpriteFont>(this.Name);
                     this.m_AssetContentManager.UnsetStream(this.Name);
                 }
             }
         }
-
+        
         public void RebuildFont()
         {
-            try
+            var data = this.m_ContentCompiler.BuildSpriteFont(
+                this.FontName,
+                this.FontSize,
+                0,
+                false);
+            if (data != null)
             {
-                var data = this.m_ContentCompiler.BuildSpriteFont(
-                    this.FontName,
-                    this.FontSize,
-                    0,
-                    false);
-                if (data != null)
-                {
-                    this.FontData = data;
-                    this.ReloadFont();
-                }
+                this.FontData = data;
+                this.ReloadFont();
             }
-            catch { }
         }
         
         public T Resolve<T>() where T : class, IAsset

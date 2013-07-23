@@ -13,6 +13,16 @@ namespace Protogame
             : base(serviceProvider)
         {
         }
+        
+        public void Purge(string assetName)
+        {
+            if (!this.LoadedAssets.ContainsKey(assetName))
+                return;
+            var asset = this.LoadedAssets[assetName];
+            if (asset is IDisposable)
+                (asset as IDisposable).Dispose();
+            this.LoadedAssets.Remove(assetName);
+        }
     
         public void SetStream(string assetName, Stream stream)
         {
