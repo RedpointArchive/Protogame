@@ -13,6 +13,32 @@ namespace Protogame
             : base(serviceProvider)
         {
         }
+
+        public override T Load<T>(string assetName)
+        {
+            if (string.IsNullOrEmpty(assetName))
+            {
+                throw new ArgumentNullException("assetName");
+            }
+
+            T result = default(T);
+
+            // Check for a previously loaded asset first
+            object asset = null;
+            if (LoadedAssets.TryGetValue(assetName, out asset))
+            {
+                if (asset is T)
+                {
+                    return (T)asset;
+                }
+            }
+
+            // Load the asset.
+            result = ReadAsset<T>(assetName, x => {});
+
+            LoadedAssets[assetName] = result;
+            return result;
+        }
         
         public void Purge(string assetName)
         {

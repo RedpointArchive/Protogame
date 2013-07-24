@@ -54,11 +54,15 @@ namespace Protogame
         
         public void RebuildFont()
         {
+            if (string.IsNullOrWhiteSpace(this.FontName))
+                return;
+            if (this.FontSize <= 0)
+                return;
             var data = this.m_ContentCompiler.BuildSpriteFont(
                 this.FontName,
                 this.FontSize,
                 0,
-                false);
+                true);
             if (data != null)
             {
                 this.FontData = data;
