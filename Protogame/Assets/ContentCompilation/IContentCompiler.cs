@@ -1,12 +1,14 @@
 #if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX
 
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using System.IO;
 
 namespace Protogame
 {
     public interface IContentCompiler
     {
         byte[] BuildSpriteFont(string fontName, float size, float spacing, bool useKerning);
+        byte[] BuildTexture2D(Stream source);
+        byte[] BuildSoundEffect(Stream source);
     }
 }
 

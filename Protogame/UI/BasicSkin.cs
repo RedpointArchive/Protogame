@@ -264,6 +264,47 @@ namespace Protogame
                     fontViewer.Font);
             }
         }
+
+        public void DrawFileSelect(IRenderContext context, Rectangle layout, FileSelect fileSelect)
+        {
+            var offset = 0;
+            if (fileSelect.State == ButtonUIState.Clicked)
+            {
+                this.DrawSunken(context, layout);
+                offset = 1;
+            }
+            else
+                this.DrawRaised(context, layout);
+            var text = fileSelect.Path;
+            while (text.Length > 0 && this.MeasureText(context, "(file select) ..." + text).X > layout.Width - 10)
+                text = text.Substring(1);
+            if (text.Length != fileSelect.Path.Length)
+                text = "..." + text;
+            this.m_RenderUtilities.RenderText(
+                context,
+                new Vector2(
+                    layout.Center.X + offset,
+                    layout.Center.Y + offset),
+                "(file select) " + text,
+                this.m_AssetManager.Get<FontAsset>("font.Default"),
+                horizontalAlignment: HorizontalAlignment.Center,
+                verticalAlignment: VerticalAlignment.Center);
+        }
+        
+        public void DrawTextureViewer(IRenderContext context, Rectangle layout, TextureViewer textureViewer)
+        {
+            this.DrawSunken(context, layout);
+            
+            if (textureViewer.Texture != null && textureViewer.Texture.Data != null)
+            {
+                this.m_RenderUtilities.RenderTexture(
+                    context,
+                    new Vector2(
+                        layout.X,
+                        layout.Y),
+                    textureViewer.Texture);
+            }
+        }
         
         public Vector2 MeasureText(IRenderContext context, string text)
         {

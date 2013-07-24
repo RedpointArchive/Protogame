@@ -23,7 +23,7 @@ namespace ProtogameAssetManager
         {
         }
 
-        public virtual void Bake()
+        public virtual void Bake(IAssetManager assetManager)
         {
         }
     }

@@ -1,19 +1,20 @@
-//
-// This source code is licensed in accordance with the licensing outlined
-// on the main Tychaia website (www.tychaia.com).  Changes to the
-// license on the website apply retroactively.
-//
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Protogame
 {
     public class TextureAssetLoader : IAssetLoader
     {
         private IAssetContentManager m_AssetContentManager;
+        private IContentCompiler m_ContentCompiler;
         
-        public TextureAssetLoader(IAssetContentManager assetContentManager)
+        public TextureAssetLoader(
+            IAssetContentManager assetContentManager,
+            IContentCompiler contentCompiler)
         {
             this.m_AssetContentManager = assetContentManager;
+            this.m_ContentCompiler = contentCompiler;
         }
     
         public bool CanHandle(dynamic data)
@@ -23,10 +24,14 @@ namespace Protogame
 
         public IAsset Handle(string name, dynamic data)
         {
+            var xnaData = ((List<object>)data.TextureData)
+                .Cast<int>().Select(x => (byte)x).ToArray();
             return new TextureAsset(
+                this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
-                data.TextureData);
+                data.SourcePath,
+                xnaData);
         }
 
         public IAsset GetDefault(string name)
@@ -42,8 +47,10 @@ namespace Protogame
         public IAsset GetNew(string name)
         {
             return new TextureAsset(
+                this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
+                "",
                 null);
         }
     }

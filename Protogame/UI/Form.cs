@@ -12,7 +12,13 @@ namespace Protogame
         public IContainer Parent { get; set; }
         public int Order { get; set; }
         public bool Focused { get; set; }
+        public int LabelMaxWidth { get; set; }
         private Dictionary<IContainer, IContainer> m_Controls = new Dictionary<IContainer, IContainer>();
+        
+        public Form()
+        {
+            this.LabelMaxWidth = 200;
+        }
         
         public void AddControl(string name, IContainer control)
         {
@@ -36,7 +42,7 @@ namespace Protogame
                     new Rectangle(
                         layout.X,
                         layout.Y + i * 20,
-                        layout.Width / 2,
+                        Math.Min(layout.Width / 2, this.LabelMaxWidth),
                         20));
                 i++;
             }
@@ -50,9 +56,9 @@ namespace Protogame
                 yield return new KeyValuePair<IContainer, Rectangle>(
                     kv.Value,
                     new Rectangle(
-                        layout.X + layout.Width / 2,
+                        layout.X + Math.Min(layout.Width / 2, this.LabelMaxWidth),
                         layout.Y + i * 20,
-                        layout.Width / 2,
+                        layout.Width - Math.Min(layout.Width / 2, this.LabelMaxWidth),
                         20));
                 i++;
             }

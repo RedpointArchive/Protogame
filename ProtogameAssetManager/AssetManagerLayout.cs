@@ -29,8 +29,8 @@ namespace ProtogameAssetManager
             assetContainer.AddChild(this.EditorContainer = new SingleContainer(), "*");
 
             var contentContainer = new HorizontalContainer();
-            contentContainer.AddChild(this.AssetTree = new TreeView(), "50%");
-            contentContainer.AddChild(assetContainer, "50%");
+            contentContainer.AddChild(this.AssetTree = new TreeView(), "210");
+            contentContainer.AddChild(assetContainer, "*");
 
             var menuContainer = new VerticalContainer();
             menuContainer.AddChild(this.MainMenu = new MainMenu(assetManagerProvider, renderUtilities), "24");

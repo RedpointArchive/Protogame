@@ -1,12 +1,6 @@
-//
-// This source code is licensed in accordance with the licensing outlined
-// on the main Tychaia website (www.tychaia.com).  Changes to the
-// license on the website apply retroactively.
-//
 using System;
 using System.IO;
 using Microsoft.Xna.Framework.Graphics;
-using System.Diagnostics;
 
 namespace Protogame
 {

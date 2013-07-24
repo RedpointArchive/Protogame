@@ -46,8 +46,10 @@ namespace ProtogameAssetManager
         {
         }
 
-        public override void Bake()
+        public override void Bake(IAssetManager assetManager)
         {
+            assetManager.Save(this.m_Asset);
+            assetManager.Bake(this.m_Asset);
         }
     }
 }

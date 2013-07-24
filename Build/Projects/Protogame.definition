@@ -14,6 +14,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -125,6 +126,7 @@
     <Compile Include="UI\ButtonUIState.cs" />
     <Compile Include="UI\Canvas.cs" />
     <Compile Include="UI\CanvasEntity.cs" />
+    <Compile Include="UI\FileSelect.cs" />
     <Compile Include="UI\FixedContainer.cs" />
     <Compile Include="UI\FlowContainer.cs" />
     <Compile Include="UI\FocusExtensions.cs" />
@@ -145,6 +147,7 @@
     <Compile Include="UI\SelectedItemChangedEventHandler.cs" />
     <Compile Include="UI\SingleContainer.cs" />
     <Compile Include="UI\TextBox.cs" />
+    <Compile Include="UI\TextureViewer.cs" />
     <Compile Include="UI\TreeItem.cs" />
     <Compile Include="UI\TreeView.cs" />
     <Compile Include="UI\VerticalAlign.cs" />

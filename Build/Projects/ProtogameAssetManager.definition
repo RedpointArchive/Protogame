@@ -31,6 +31,7 @@
     <Compile Include="LocalAssetManagerProvider.cs" />
     <Compile Include="NetworkedAssetManagerProvider.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="TextureAssetEditor.cs" />
     <None Include="packages.config" />
   </Files>
 </Project>

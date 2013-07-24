@@ -101,6 +101,7 @@ namespace Protogame
         {
             if (size == null)
                 size = new Vector2(texture.Texture.Width, texture.Texture.Height);
+            if (color == null) color = Color.White;
             context.SpriteBatch.Draw(
                 texture.Texture,
                 new Rectangle((int)position.X, (int)position.Y, (int)size.Value.X, (int)size.Value.Y),

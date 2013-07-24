@@ -64,7 +64,7 @@ namespace ProtogameAssetManager
             this.m_Layout.Bake.Click += (sender, e) =>
             {
                 if (this.m_CurrentEditor != null)
-                    this.m_CurrentEditor.Bake();
+                    this.m_CurrentEditor.Bake(this.AssetManager);
                 var item = this.m_Layout.AssetTree.SelectedItem as AssetTreeItem;
                 if (item == null)
                     return;
