@@ -17,20 +17,24 @@ namespace ProtogameAssetManager
         /// (for example the main game) and then rebinds the IoC providers
         /// for asset management so that assets can be changed in real-time.
         /// </summary>
-        public static Process RunAndConnect(IKernel kernel)
+        public static Process RunAndConnect(IKernel kernel, bool startProcess)
         {
-            var process = new Process();
-            process.StartInfo = new ProcessStartInfo
+            Process process = null;
+            if (startProcess)
             {
-                FileName = Assembly.GetExecutingAssembly().Location,
-                Arguments = "--connect"
-            };
-            process.EnableRaisingEvents = true;
-            process.Exited += (sender, e) =>
-            {
-                Environment.Exit(1);
-            };
-            process.Start();
+                process = new Process();
+                process.StartInfo = new ProcessStartInfo
+                {
+                    FileName = Assembly.GetExecutingAssembly().Location,
+                    Arguments = "--connect"
+                };
+                process.EnableRaisingEvents = true;
+                process.Exited += (sender, e) =>
+                {
+                    Environment.Exit(1);
+                };
+                process.Start();
+            }
 
             var node = new LocalNode(
                 Assembly.GetExecutingAssembly(),
@@ -44,7 +48,7 @@ namespace ProtogameAssetManager
             kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
 
             // Wait until the networked asset manager is ready.
-            while (!assetManagerProvider.IsReady && !process.HasExited)
+            while (!assetManagerProvider.IsReady && (process == null || !process.HasExited))
                 Thread.Sleep(100);
 
             return process;
@@ -64,9 +68,11 @@ namespace ProtogameAssetManager
         {
             var name = new FileInfo(Assembly.GetCallingAssembly().Location).Name;
             var startAssetManager = false;
+            var listen = false;
             var options = new OptionSet
             {
-                { "asset-manager", "Start the asset manager with the game.", v => startAssetManager = true }
+                { "asset-manager", "Start the asset manager with the game.", v => startAssetManager = true },
+                { "asset-manager-listen", "Start the game and wait for the asset manager to connect.", v => { startAssetManager = true; listen = true; } }
             };
             try
             {
@@ -84,7 +90,7 @@ namespace ProtogameAssetManager
             Process assetManagerProcess = null;
             if (startAssetManager)
             {
-                assetManagerProcess = AssetManagerClient.RunAndConnect(kernel);
+                assetManagerProcess = AssetManagerClient.RunAndConnect(kernel, !listen);
             }
             else
             {
