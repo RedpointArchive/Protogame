@@ -24,8 +24,10 @@ namespace Protogame
 
         public IAsset Handle(string name, dynamic data)
         {
-            var xnaData = ((List<object>)data.FontData)
-                .Cast<int>().Select(x => (byte)x).ToArray();
+            byte[] xnaData = null;
+            if (data.FontData != null)
+                xnaData = ((List<object>)data.FontData)
+                    .Cast<int>().Select(x => (byte)x).ToArray();
             return new FontAsset(
                 this.m_ContentCompiler,
                 this.m_AssetContentManager,
@@ -51,8 +53,8 @@ namespace Protogame
                 this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
-                "Arial",
-                12,
+                "",
+                0,
                 null);
         }
     }

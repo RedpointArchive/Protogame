@@ -6,11 +6,16 @@ namespace Protogame
     {
         public string Name { get; private set; }
         public string Value { get; set; }
+        public string SourcePath { get; set; }
 
-        public LevelAsset(string name, string value)
+        public LevelAsset(
+            string name,
+            string value,
+            string sourcePath)
         {
             this.Name = name;
             this.Value = value;
+            this.SourcePath = sourcePath;
         }
 
         public T Resolve<T>() where T : class, IAsset

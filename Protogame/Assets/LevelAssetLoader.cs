@@ -11,7 +11,7 @@ namespace Protogame
 
         public IAsset Handle(string name, dynamic data)
         {
-            return new LevelAsset(name, data.Value);
+            return new LevelAsset(name, data.Value, data.SourcePath);
         }
 
         public IAsset GetDefault(string name)
@@ -26,7 +26,7 @@ namespace Protogame
         
         public IAsset GetNew(string name)
         {
-            return new LevelAsset(name, null);
+            return new LevelAsset(name, null, "");
         }
     }
 }

@@ -22,6 +22,7 @@ namespace Protogame
         void DrawFontViewer(IRenderContext context, Rectangle layout, FontViewer fontViewer);
         void DrawFileSelect(IRenderContext context, Rectangle layout, FileSelect fileSelect);
         void DrawTextureViewer(IRenderContext context, Rectangle layout, TextureViewer textureViewer);
+        void DrawWindow(IRenderContext context, Rectangle layout, Window window);
         Vector2 MeasureText(IRenderContext context, string text);
 
         int HeightForTreeItem { get; }

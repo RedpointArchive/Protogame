@@ -51,9 +51,10 @@ namespace ProtogameAssetManager
             this.m_Start = DateTime.Now;
 
             // Add the asset manager layout.
-            this.Entities.Add(new CanvasEntity(
-                this.m_Skin,
-                this.m_Layout = new AssetManagerLayout(assetManagerProvider, renderUtilities, loaders)));
+            var entity = new CanvasEntity(this.m_Skin);
+            this.m_Layout = new AssetManagerLayout(assetManagerProvider, renderUtilities, loaders, entity);
+            entity.Canvas = this.m_Layout;
+            this.Entities.Add(entity);
 
             this.m_Layout.MarkDirty.Click += (sender, e) =>
             {
@@ -88,6 +89,28 @@ namespace ProtogameAssetManager
                     this.m_Layout.EditorContainer.SetChild(
                         new Label { Text = "No editor for " + (item == null ? "folders" : item.Asset.GetType().Name) });
                 }
+            };
+            
+            this.m_Layout.ExitClick += (sender, e) => 
+            {
+                Environment.Exit(0);
+            };
+            
+            this.m_Layout.BakeAllClick += (sender, e) => 
+            {
+                foreach (var asset in this.AssetManager.GetAll())
+                    this.AssetManager.Bake(asset);
+            };
+            
+            this.m_Layout.CreateNameEntered += (sender, e) => 
+            {
+                var asset = e.Loader.GetNew(this.m_Layout.PromptName.Text);
+                assetManagerProvider.GetAssetManager(false).Bake(asset);
+                this.m_Layout.AssetTree.AddChild(new AssetTreeItem
+                {
+                    Text = this.m_Layout.PromptName.Text,
+                    Asset = asset
+                });
             };
         }
 

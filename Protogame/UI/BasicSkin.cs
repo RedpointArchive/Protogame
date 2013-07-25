@@ -275,10 +275,10 @@ namespace Protogame
             }
             else
                 this.DrawRaised(context, layout);
-            var text = fileSelect.Path;
+            var text = fileSelect.Path ?? "";
             while (text.Length > 0 && this.MeasureText(context, "(file select) ..." + text).X > layout.Width - 10)
                 text = text.Substring(1);
-            if (text.Length != fileSelect.Path.Length)
+            if (text.Length != (fileSelect.Path ?? "").Length)
                 text = "..." + text;
             this.m_RenderUtilities.RenderText(
                 context,
@@ -304,6 +304,11 @@ namespace Protogame
                         layout.Y),
                     textureViewer.Texture);
             }
+        }
+
+        public void DrawWindow(IRenderContext context, Rectangle layout, Window window)
+        {
+            this.DrawRaised(context, layout);
         }
         
         public Vector2 MeasureText(IRenderContext context, string text)

@@ -28,6 +28,7 @@
     <Compile Include="FontAssetEditor.cs" />
     <Compile Include="IAssetEditor.cs" />
     <Compile Include="LanguageAssetEditor.cs" />
+    <Compile Include="LevelAssetEditor.cs" />
     <Compile Include="LocalAssetManagerProvider.cs" />
     <Compile Include="NetworkedAssetManagerProvider.cs" />
     <Compile Include="Program.cs" />

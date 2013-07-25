@@ -152,6 +152,7 @@
     <Compile Include="UI\TreeView.cs" />
     <Compile Include="UI\VerticalAlign.cs" />
     <Compile Include="UI\VerticalContainer.cs" />
+    <Compile Include="UI\Window.cs" />
     <Compile Include="VerticalAlignment.cs" />
     <Compile Include="World.cs" />
     <Compile Include="WorldManager.cs" />
