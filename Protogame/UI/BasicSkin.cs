@@ -305,6 +305,24 @@ namespace Protogame
                     textureViewer.Texture);
             }
         }
+        
+        public void DrawAudioPlayer(IRenderContext context, Rectangle layout, AudioPlayer audioPlayer)
+        {
+            this.DrawSunken(context, layout);
+            
+            if (audioPlayer.Audio != null && audioPlayer.Audio.Data != null)
+            {
+                this.m_RenderUtilities.RenderText(
+                    context,
+                    new Vector2(
+                        layout.Center.X,
+                        layout.Center.Y + 12),
+                    "No visualization available.",
+                    this.m_AssetManager.Get<FontAsset>("font.Default"),
+                    horizontalAlignment: HorizontalAlignment.Center,
+                    verticalAlignment: VerticalAlignment.Center);
+            }
+        }
 
         public void DrawWindow(IRenderContext context, Rectangle layout, Window window)
         {

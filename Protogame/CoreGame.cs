@@ -110,7 +110,7 @@ namespace Protogame
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected sealed override void Update(GameTime gameTime)
+        protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
             //if (Keyboard.GetState().IsKeyDown(Keys.Escape))

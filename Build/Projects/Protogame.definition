@@ -24,6 +24,9 @@
     <Compile Include="Assets\AssetContentManager.cs" />
     <Compile Include="Assets\AssetIoCModule.cs" />
     <Compile Include="Assets\AssetNotFoundException.cs" />
+    <Compile Include="Assets\AudioAsset.cs" />
+    <Compile Include="Assets\AudioAssetLoader.cs" />
+    <Compile Include="Assets\AudioAssetSaver.cs" />
     <Compile Include="Assets\ContentCompilation\ContentCompilationIoCModule.cs" />
     <Compile Include="Assets\ContentCompilation\DefaultContentCompiler.cs" />
     <Compile Include="Assets\ContentCompilation\DummyContentProcessorContext.cs" />
@@ -120,6 +123,7 @@
     <Compile Include="Tileset.cs" />
     <Compile Include="TilesetXmlLoader.cs" />
     <Compile Include="TransparentTile.cs" />
+    <Compile Include="UI\AudioPlayer.cs" />
     <Compile Include="UI\BaseContainer.cs" />
     <Compile Include="UI\BasicSkin.cs" />
     <Compile Include="UI\Button.cs" />
