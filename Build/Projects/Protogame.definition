@@ -65,6 +65,8 @@
     <Compile Include="Collision\DefaultCollision.cs" />
     <Compile Include="Collision\ICollision.cs" />
     <Compile Include="CoreGame.cs" />
+    <Compile Include="DefaultAudioHandle.cs" />
+    <Compile Include="DefaultAudioUtilities.cs" />
     <Compile Include="DefaultGameContext.cs" />
     <Compile Include="DefaultRenderContext.cs" />
     <Compile Include="DefaultRenderUtilities.cs" />
@@ -81,6 +83,8 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="FadingWorld.cs" />
     <Compile Include="HorizontalAlignment.cs" />
+    <Compile Include="IAudioHandle.cs" />
+    <Compile Include="IAudioUtilities.cs" />
     <Compile Include="IBoundingBox.cs" />
     <Compile Include="ICoreGame.cs" />
     <Compile Include="IEntity.cs" />
