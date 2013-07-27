@@ -19,6 +19,11 @@ namespace ProtogameAssetManager
             IAssetManager assetManager) : base(kernel)
         {
             this.m_AssetManager = assetManager;
+        }
+        
+        protected override void LoadContent()
+        {
+            base.LoadContent();
 
             this.GameContext.ResizeWindow(420, 800);
             this.IsMouseVisible = true;
