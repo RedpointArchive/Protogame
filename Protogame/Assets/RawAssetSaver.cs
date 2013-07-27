@@ -33,6 +33,7 @@ namespace Protogame
                 using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))
                 {
                     var serializer = new JavaScriptSerializer();
+                    serializer.MaxJsonLength = Int32.MaxValue;
                     serializer.RegisterConverters(new[] { new DynamicJsonUnconverter() });
                     writer.Write(serializer.Serialize(data));
                 }

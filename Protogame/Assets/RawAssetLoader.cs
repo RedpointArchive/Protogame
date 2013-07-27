@@ -61,6 +61,7 @@ namespace Protogame
                     using (var reader = new StreamReader(file.FullName, Encoding.UTF8))
                     {
                         var serializer = new JavaScriptSerializer();
+                        serializer.MaxJsonLength = Int32.MaxValue;
                         serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
                         return serializer.Deserialize<object>(reader.ReadToEnd());
                     }
@@ -75,6 +76,7 @@ namespace Protogame
                     using (var reader = new StreamReader(embedded.First(), Encoding.UTF8))
                     {
                         var serializer = new JavaScriptSerializer();
+                        serializer.MaxJsonLength = Int32.MaxValue;
                         serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
                         return serializer.Deserialize<object>(reader.ReadToEnd());
                     }

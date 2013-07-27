@@ -42,6 +42,7 @@ namespace Protogame
             if (data != null)
             {
                 var serializer = new JavaScriptSerializer();
+                serializer.MaxJsonLength = Int32.MaxValue;
                 serializer.RegisterConverters(new[] { new DynamicJsonUnconverter() });
                 var raw = serializer.Serialize(data);
                 this.Data = Encoding.UTF8.GetBytes(raw);
@@ -78,6 +79,7 @@ namespace Protogame
             if (data != null)
             {
                 var serializer = new JavaScriptSerializer();
+                serializer.MaxJsonLength = Int32.MaxValue;
                 serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
                 var obj = (dynamic)serializer.Deserialize<object>(Encoding.UTF8.GetString(data));
                 foreach (var loader in loaders)
