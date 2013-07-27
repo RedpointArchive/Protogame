@@ -2,7 +2,7 @@ using Ninject.Modules;
 
 namespace Protogame
 {
-    public class PlatformingIoCModule : NinjectModule
+    public class ProtogamePlatformingIoCModule : NinjectModule
     {
         public override void Load()
         {

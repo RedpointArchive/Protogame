@@ -22,7 +22,6 @@
   </References>
   <Files>
     <Compile Include="Assets\AssetContentManager.cs" />
-    <Compile Include="Assets\AssetIoCModule.cs" />
     <Compile Include="Assets\AssetNotFoundException.cs" />
     <Compile Include="Assets\AudioAsset.cs" />
     <Compile Include="Assets\AudioAssetLoader.cs" />
@@ -53,6 +52,7 @@
     <Compile Include="Assets\NetworkAsset.cs" />
     <Compile Include="Assets\NetworkAssetManager.cs" />
     <Compile Include="Assets\NetworkAssetProxy.cs" />
+    <Compile Include="Assets\ProtogameAssetIoCModule.cs" />
     <Compile Include="Assets\RawAssetLoader.cs" />
     <Compile Include="Assets\RawAssetSaver.cs" />
     <Compile Include="Assets\TextureAsset.cs" />
@@ -60,9 +60,9 @@
     <Compile Include="Assets\TextureAssetSaver.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="Collision\CollisionIoCModule.cs" />
     <Compile Include="Collision\DefaultCollision.cs" />
     <Compile Include="Collision\ICollision.cs" />
+    <Compile Include="Collision\ProtogameCollisionIoCModule.cs" />
     <Compile Include="CoreGame.cs" />
     <Compile Include="DefaultAudioHandle.cs" />
     <Compile Include="DefaultAudioUtilities.cs" />
@@ -90,7 +90,6 @@
     <Compile Include="ICoreGame.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IGameContext.cs" />
-    <Compile Include="IoCModule.cs" />
     <Compile Include="IRenderContext.cs" />
     <Compile Include="IRenderState.cs" />
     <Compile Include="IRenderUtilities.cs" />
@@ -106,8 +105,8 @@
     <Compile Include="Level\ILevelManager.cs" />
     <Compile Include="Level\ILevelReader.cs" />
     <Compile Include="Level\ITileset.cs" />
-    <Compile Include="Level\LevelIoCModule.cs" />
     <Compile Include="Level\OgmoLevelReader.cs" />
+    <Compile Include="Level\ProtogameLevelIoCModule.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
     <Compile Include="Network\ProtogameAssetManagerNetwork.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
@@ -116,8 +115,9 @@
     <Compile Include="ParticleEntity.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />
     <Compile Include="Platforming\IPlatforming.cs" />
-    <Compile Include="Platforming\PlatformingIoCModule.cs" />
+    <Compile Include="Platforming\ProtogamePlatformingIoCModule.cs" />
     <Compile Include="ProtogameException.cs" />
+    <Compile Include="ProtogameIoCModule.cs" />
     <Compile Include="RenderMode.cs" />
     <Compile Include="SolidTile.cs" />
     <Compile Include="Structure\PositionOctree.cs" />
@@ -144,13 +144,13 @@
     <Compile Include="UI\HorizontalContainer.cs" />
     <Compile Include="UI\IBasicSkin.cs" />
     <Compile Include="UI\IContainer.cs" />
-    <Compile Include="UI\IoCModule.cs" />
     <Compile Include="UI\ISkin.cs" />
     <Compile Include="UI\Label.cs" />
     <Compile Include="UI\Link.cs" />
     <Compile Include="UI\LinkState.cs" />
     <Compile Include="UI\MainMenu.cs" />
     <Compile Include="UI\MenuItem.cs" />
+    <Compile Include="UI\ProtogameUIIoCModule.cs" />
     <Compile Include="UI\SelectedItemChangedEventArgs.cs" />
     <Compile Include="UI\SelectedItemChangedEventHandler.cs" />
     <Compile Include="UI\SingleContainer.cs" />
