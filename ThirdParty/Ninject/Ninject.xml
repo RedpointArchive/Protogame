@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>D:\BuildAgent-03\work\be1662092ef73669\build\mono-4.0\release\Ninject</name>
+        <name>C:\Projects\Ninject\ninject\build\mono-4.0\release\Ninject</name>
     </assembly>
     <members>
         <member name="T:Ninject.Activation.Blocks.ActivationBlock">
@@ -1481,12 +1481,11 @@
             <param name="name">The module name.</param>
             <returns>The exception message.</returns>
         </member>
-        <member name="M:Ninject.Infrastructure.Introspection.ExceptionFormatter.CouldNotUniquelyResolveBinding(Ninject.Activation.IRequest,System.String[])">
+        <member name="M:Ninject.Infrastructure.Introspection.ExceptionFormatter.CouldNotUniquelyResolveBinding(Ninject.Activation.IRequest)">
             <summary>
             Generates a message saying that the binding could not be uniquely resolved.
             </summary>
             <param name="request">The request.</param>
-            <param name="formattedMatchingBindings">The matching bindings, already formatted as strings</param>
             <returns>The exception message.</returns>
         </member>
         <member name="M:Ninject.Infrastructure.Introspection.ExceptionFormatter.CouldNotResolveBinding(Ninject.Activation.IRequest)">
@@ -1998,7 +1997,7 @@
         </member>
         <member name="T:Ninject.Modules.AssemblyNameRetriever.AssemblyChecker">
             <summary>
-            This class is loaded into the temporary appdomain to load and check if the assemblies match the filter.
+            This class is loaded into the temporary appdomain to load and check if the asseblies match the filter.
             </summary>
         </member>
         <member name="M:Ninject.Modules.AssemblyNameRetriever.AssemblyChecker.GetAssemblyNames(System.Collections.Generic.IEnumerable{System.String},System.Predicate{System.Reflection.Assembly})">
@@ -3341,37 +3340,10 @@
         </member>
         <member name="M:Ninject.Planning.Bindings.BindingConfigurationBuilder`1.WhenAnyAnchestorNamed(System.String)">
             <summary>
-            Indicates that the binding should be used only when any ancestor is bound with the specified name.
+            Indicates that the binding should be used only when the service is being requested
+            by a service bound with the specified name or any of its anchestor services bound with the specified name.
             </summary>
             <param name="name">The name to expect.</param>
-            <returns>The fluent syntax.</returns>
-        </member>
-        <member name="M:Ninject.Planning.Bindings.BindingConfigurationBuilder`1.WhenAnyAncestorNamed(System.String)">
-            <summary>
-            Indicates that the binding should be used only when any ancestor is bound with the specified name.
-            </summary>
-            <param name="name">The name to expect.</param>
-            <returns>The fluent syntax.</returns>
-        </member>
-        <member name="M:Ninject.Planning.Bindings.BindingConfigurationBuilder`1.WhenNoAncestorNamed(System.String)">
-            <summary>
-            Indicates that the binding should be used only when no ancestor is bound with the specified name.
-            </summary>
-            <param name="name">The name to expect.</param>
-            <returns>The fluent syntax.</returns>
-        </member>
-        <member name="M:Ninject.Planning.Bindings.BindingConfigurationBuilder`1.WhenAnyAncestorMatches(System.Predicate{Ninject.Activation.IContext})">
-            <summary>
-            Indicates that the binding should be used only when any ancestor matches the specified predicate.
-            </summary>
-            <param name="predicate">The predicate to match.</param>
-            <returns>The fluent syntax.</returns>
-        </member>
-        <member name="M:Ninject.Planning.Bindings.BindingConfigurationBuilder`1.WhenNoAncestorMatches(System.Predicate{Ninject.Activation.IContext})">
-            <summary>
-            Indicates that the binding should be used only when no ancestor matches the specified predicate.
-            </summary>
-            <param name="predicate">The predicate to match.</param>
             <returns>The fluent syntax.</returns>
         </member>
         <member name="M:Ninject.Planning.Bindings.BindingConfigurationBuilder`1.Named(System.String)">
@@ -4362,15 +4334,6 @@
             <param name="target">The target.</param>
             <returns>Whether a binding exists for the target in the given context.</returns>
         </member>
-        <member name="M:Ninject.Selection.Heuristics.StandardConstructorScorer.BindingExists(Ninject.IKernel,Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
-            <summary>
-            Checkes whether a binding exists for a given target on the specified kernel.
-            </summary>
-            <param name="kernel">The kernel.</param>
-            <param name="context">The context.</param>
-            <param name="target">The target.</param>
-            <returns>Whether a binding exists for the target in the given context.</returns>
-        </member>
         <member name="M:Ninject.Selection.Heuristics.StandardConstructorScorer.ParameterExists(Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
             <summary>
             Checks whether any parameters exist for the geiven target..
@@ -5148,7 +5111,7 @@
         </member>
         <member name="M:Ninject.Syntax.IBindingToSyntax`1.ToConstructor``1(System.Linq.Expressions.Expression{System.Func{Ninject.Syntax.IConstructorArgumentSyntax,``0}})">
             <summary>
-            Indicates that the service should be bound to the specified constructor.
+            Indicates that the service should be bound to the speecified constructor.
             </summary>
             <typeparam name="TImplementation">The type of the implementation.</typeparam>
             <param name="newExpression">The expression that specifies the constructor.</param>
@@ -5265,37 +5228,10 @@
         </member>
         <member name="M:Ninject.Syntax.IBindingWhenSyntax`1.WhenAnyAnchestorNamed(System.String)">
             <summary>
-            Indicates that the binding should be used only when any ancestor is bound with the specified name.
+            Indicates that the binding should be used only when the service is being requested
+            by a service bound with the specified name or any of its anchestor services bound with the specified name.
             </summary>
             <param name="name">The name to expect.</param>
-            <returns>The fluent syntax.</returns>
-        </member>
-        <member name="M:Ninject.Syntax.IBindingWhenSyntax`1.WhenAnyAncestorNamed(System.String)">
-            <summary>
-            Indicates that the binding should be used only when any ancestor is bound with the specified name.
-            </summary>
-            <param name="name">The name to expect.</param>
-            <returns>The fluent syntax.</returns>
-        </member>
-        <member name="M:Ninject.Syntax.IBindingWhenSyntax`1.WhenNoAncestorNamed(System.String)">
-            <summary>
-            Indicates that the binding should be used only when no ancestor is bound with the specified name.
-            </summary>
-            <param name="name">The name to expect.</param>
-            <returns>The fluent syntax.</returns>
-        </member>
-        <member name="M:Ninject.Syntax.IBindingWhenSyntax`1.WhenAnyAncestorMatches(System.Predicate{Ninject.Activation.IContext})">
-            <summary>
-            Indicates that the binding should be used only when any ancestor matches the specified predicate.
-            </summary>
-            <param name="predicate">The predicate to match.</param>
-            <returns>The fluent syntax.</returns>
-        </member>
-        <member name="M:Ninject.Syntax.IBindingWhenSyntax`1.WhenNoAncestorMatches(System.Predicate{Ninject.Activation.IContext})">
-            <summary>
-            Indicates that the binding should be used only when no ancestor matches the specified predicate.
-            </summary>
-            <param name="predicate">The predicate to match.</param>
             <returns>The fluent syntax.</returns>
         </member>
         <member name="T:Ninject.Syntax.IBindingWithOrOnSyntax`1">
