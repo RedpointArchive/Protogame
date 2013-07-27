@@ -58,7 +58,6 @@
     <Compile Include="Assets\TextureAsset.cs" />
     <Compile Include="Assets\TextureAssetLoader.cs" />
     <Compile Include="Assets\TextureAssetSaver.cs" />
-    <Compile Include="AudioEntity.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Collision\CollisionIoCModule.cs" />
@@ -81,6 +80,8 @@
     <Compile Include="Entity.cs" />
     <Compile Include="EntityTile.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Extensions\MouseStateExtensions.cs" />
+    <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="FadingWorld.cs" />
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="IAudioHandle.cs" />
@@ -108,7 +109,6 @@
     <Compile Include="Level\LevelIoCModule.cs" />
     <Compile Include="Level\OgmoLevelReader.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
-    <Compile Include="MouseStateExtensions.cs" />
     <Compile Include="Network\ProtogameAssetManagerNetwork.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
     <Compile Include="Noise\PerlinNoise.cs" />
