@@ -32,23 +32,5 @@ namespace ProtogameAssetManager
             this.m_AssetManager.Status = "Initializing...";
             this.AssetWorld.AssetManager = this.m_AssetManager;
         }
-        
-        protected override void Update(Microsoft.Xna.Framework.GameTime gameTime)
-        {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            base.Update(gameTime);
-            stopwatch.Stop();
-            Console.WriteLine("UPDATE: " + stopwatch.Elapsed);
-        }
-        
-        protected override void Draw(Microsoft.Xna.Framework.GameTime gameTime)
-        {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            base.Draw(gameTime);
-            stopwatch.Stop();
-            Console.WriteLine("DRAW  : " + stopwatch.Elapsed);
-        }
     }
 }

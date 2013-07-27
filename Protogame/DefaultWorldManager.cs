@@ -1,10 +1,11 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Linq;
 
 namespace Protogame
 {
+    /// <remarks>
+    /// If changing this class, update ProfiledWorldManager as well.
+    /// </remarks>
     public class DefaultWorldManager : IWorldManager
     {
         private Effect m_Effect;

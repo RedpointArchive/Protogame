@@ -10,6 +10,7 @@ namespace Protogame
         private int m_TotalFrames = 0;
         private float m_ElapsedTime = 0.0f;
         private GraphicsDeviceManager m_GraphicsDeviceManager;
+        private IProfiler m_Profiler;
     
         public IGameContext GameContext { get; private set; }
         public IUpdateContext UpdateContext { get; private set; }
@@ -19,6 +20,12 @@ namespace Protogame
         {
             this.m_Kernel = kernel;
             this.m_GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            this.m_Profiler = kernel.TryGet<IProfiler>();
+            if (this.m_Profiler == null)
+            {
+                kernel.Bind<IProfiler>().To<NullProfiler>();
+                this.m_Profiler = kernel.Get<IProfiler>();
+            }
         
             // TODO: Fix this because it means we can't have more than one game using the same IoC container.
             var assetContentManager = new AssetContentManager(this.Services);
@@ -46,43 +53,58 @@ namespace Protogame
 
         protected override void Update(GameTime gameTime)
         {
-            // Measure FPS.
-            this.GameContext.FrameCount += 1;
-            this.m_ElapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            if (this.m_ElapsedTime >= 1000f)
+            using (this.m_Profiler.Measure("update"))
             {
-                this.GameContext.FPS = this.m_TotalFrames;
-                this.m_TotalFrames = 0;
-                this.m_ElapsedTime = 0;
+                // Measure FPS.
+                using (this.m_Profiler.Measure("measure_fps"))
+                {
+                    this.GameContext.FrameCount += 1;
+                    this.m_ElapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                    if (this.m_ElapsedTime >= 1000f)
+                    {
+                        this.GameContext.FPS = this.m_TotalFrames;
+                        this.m_TotalFrames = 0;
+                        this.m_ElapsedTime = 0;
+                    }
+                }
+    
+                // If this is before the 60th frame, skip so that MonoGame can initialize properly.
+                if (this.GameContext.FrameCount < 60)
+                    return;
+    
+                // Update the game.
+                using (this.m_Profiler.Measure("main"))
+                {
+                    this.GameContext.GameTime = gameTime;
+                    this.GameContext.WorldManager.Update(this);
+                }
+    
+                base.Update(gameTime);
             }
-
-            // If this is before the 60th frame, skip so that MonoGame can initialize properly.
-            if (this.GameContext.FrameCount < 60)
-                return;
-
-            // Update the game.
-            this.GameContext.GameTime = gameTime;
-            this.GameContext.WorldManager.Update(this);
-
-            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            this.m_TotalFrames++;
-
-            // If this is before the 60th frame, skip so that MonoGame can initialize properly.
-            if (this.GameContext.FrameCount < 60)
+            using (this.m_Profiler.Measure("render"))
             {
-                this.GraphicsDevice.Clear(Color.Black);
-                return;
+                this.m_TotalFrames++;
+    
+                // If this is before the 60th frame, skip so that MonoGame can initialize properly.
+                if (this.GameContext.FrameCount < 60)
+                {
+                    this.GraphicsDevice.Clear(Color.Black);
+                    return;
+                }
+    
+                // Render the game.
+                using (this.m_Profiler.Measure("main"))
+                {
+                    this.GameContext.GameTime = gameTime;
+                    this.GameContext.WorldManager.Render(this);
+                }
+    
+                base.Draw(gameTime);
             }
-
-            // Render the game.
-            this.GameContext.GameTime = gameTime;
-            this.GameContext.WorldManager.Render(this);
-
-            base.Draw(gameTime);
         }
     }
 }

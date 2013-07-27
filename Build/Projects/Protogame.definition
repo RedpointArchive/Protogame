@@ -113,6 +113,14 @@
     <Compile Include="Noise\PerlinNoise.cs" />
     <Compile Include="ParticleDefinition.cs" />
     <Compile Include="ParticleEntity.cs" />
+    <Compile Include="Performance\DefaultProfiler.cs" />
+    <Compile Include="Performance\DefaultProfilerHandle.cs" />
+    <Compile Include="Performance\IProfiler.cs" />
+    <Compile Include="Performance\NullProfiler.cs" />
+    <Compile Include="Performance\NullProfilerHandle.cs" />
+    <Compile Include="Performance\ProfiledRenderUtilities.cs" />
+    <Compile Include="Performance\ProfiledWorldManager.cs" />
+    <Compile Include="Performance\ProtogamePerformanceIoCModule.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />
     <Compile Include="Platforming\IPlatforming.cs" />
     <Compile Include="Platforming\ProtogamePlatformingIoCModule.cs" />
