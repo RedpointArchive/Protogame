@@ -9,11 +9,11 @@ namespace Protogame
     public interface IAssetLoader
     {
         bool CanHandle(dynamic data);
-        IAsset Handle(string name, dynamic data);
-        IAsset GetDefault(string name);
+        IAsset Handle(IAssetManager assetManager, string name, dynamic data);
+        IAsset GetDefault(IAssetManager assetManager, string name);
         
         bool CanNew();
-        IAsset GetNew(string name);
+        IAsset GetNew(IAssetManager assetManager, string name);
     }
 }
 

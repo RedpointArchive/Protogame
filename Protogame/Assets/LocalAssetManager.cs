@@ -77,7 +77,7 @@ namespace Protogame
                     }
                     if (canLoad)
                     {
-                        var result = loader.Handle(asset, obj);
+                        var result = loader.Handle(this, asset, obj);
                         this.m_Assets.Add(asset, result);
                         return result;
                     }

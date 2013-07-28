@@ -105,7 +105,7 @@ namespace ProtogameAssetManager
             
             this.m_Layout.CreateNameEntered += (sender, e) => 
             {
-                var asset = e.Loader.GetNew(this.m_Layout.PromptName.Text);
+                var asset = e.Loader.GetNew(this.AssetManager, this.m_Layout.PromptName.Text);
                 assetManagerProvider.GetAssetManager(false).Bake(asset);
                 this.m_Layout.AssetTree.AddChild(new AssetTreeItem
                 {

@@ -13,13 +13,13 @@ namespace Protogame
             return data.Loader == typeof(LanguageAssetLoader).FullName;
         }
 
-        public IAsset Handle(string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             // The text key is the asset name.
             return new LanguageAsset(name, data.Value);
         }
 
-        public IAsset GetDefault(string name)
+        public IAsset GetDefault(IAssetManager assetManager, string name)
         {
             return new LanguageAsset(name, "Default Text");
         }
@@ -29,7 +29,7 @@ namespace Protogame
             return true;
         }
         
-        public IAsset GetNew(string name)
+        public IAsset GetNew(IAssetManager assetManager, string name)
         {
             return new LanguageAsset(name, "");
         }

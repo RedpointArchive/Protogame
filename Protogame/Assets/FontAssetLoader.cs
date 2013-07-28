@@ -22,7 +22,7 @@ namespace Protogame
             return data.Loader == typeof(FontAssetLoader).FullName;
         }
 
-        public IAsset Handle(string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             byte[] xnaData = null;
             if (data.FontData != null)
@@ -37,7 +37,7 @@ namespace Protogame
                 xnaData);
         }
 
-        public IAsset GetDefault(string name)
+        public IAsset GetDefault(IAssetManager assetManager, string name)
         {
             throw new InvalidOperationException();
         }
@@ -47,7 +47,7 @@ namespace Protogame
             return true;
         }
         
-        public IAsset GetNew(string name)
+        public IAsset GetNew(IAssetManager assetManager, string name)
         {
             return new FontAsset(
                 this.m_ContentCompiler,

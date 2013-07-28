@@ -22,7 +22,7 @@ namespace Protogame
             return data.Loader == typeof(TextureAssetLoader).FullName;
         }
 
-        public IAsset Handle(string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             byte[] xnaData = null;
             if (data.TextureData != null)
@@ -36,7 +36,7 @@ namespace Protogame
                 xnaData);
         }
 
-        public IAsset GetDefault(string name)
+        public IAsset GetDefault(IAssetManager assetManager, string name)
         {
             throw new InvalidOperationException();
         }
@@ -46,7 +46,7 @@ namespace Protogame
             return true;
         }
         
-        public IAsset GetNew(string name)
+        public IAsset GetNew(IAssetManager assetManager, string name)
         {
             return new TextureAsset(
                 this.m_ContentCompiler,

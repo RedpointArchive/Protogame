@@ -9,12 +9,12 @@ namespace Protogame
             return data.Loader == typeof(LevelAssetLoader).FullName;
         }
 
-        public IAsset Handle(string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             return new LevelAsset(name, data.Value, data.SourcePath);
         }
 
-        public IAsset GetDefault(string name)
+        public IAsset GetDefault(IAssetManager assetManager, string name)
         {
             throw new InvalidOperationException();
         }
@@ -24,7 +24,7 @@ namespace Protogame
             return true;
         }
         
-        public IAsset GetNew(string name)
+        public IAsset GetNew(IAssetManager assetManager, string name)
         {
             return new LevelAsset(name, null, "");
         }

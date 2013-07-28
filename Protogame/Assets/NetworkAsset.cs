@@ -98,13 +98,13 @@ namespace Protogame
                         // that we can automatically discard the instance
                         // when we consider it to be dirty.
                         return this.FormProxyIfPossible<T>(
-                            loader.Handle(this.Name, obj));
+                            loader.Handle(this.Manager, this.Name, obj));
                     }
                 }
             }
             foreach (var loader in loaders)
             {
-                var loadDefault = loader.GetDefault(this.Name);
+                var loadDefault = loader.GetDefault(this.Manager, this.Name);
                 if (loadDefault is T)
                 {
                     return this.FormProxyIfPossible<T>(loadDefault as T);

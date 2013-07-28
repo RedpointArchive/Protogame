@@ -22,21 +22,19 @@ namespace Protogame
             return data.Loader == typeof(AudioAssetLoader).FullName;
         }
 
-        public IAsset Handle(string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             byte[] xnaData = null;
             if (data.AudioData != null)
                 xnaData = ((List<object>)data.AudioData)
                     .Cast<int>().Select(x => (byte)x).ToArray();
             return new AudioAsset(
-                //this.m_ContentCompiler,
-                //this.m_AssetContentManager,
                 name,
                 data.SourcePath,
                 xnaData);
         }
 
-        public IAsset GetDefault(string name)
+        public IAsset GetDefault(IAssetManager assetManager, string name)
         {
             throw new InvalidOperationException();
         }
@@ -46,11 +44,9 @@ namespace Protogame
             return true;
         }
         
-        public IAsset GetNew(string name)
+        public IAsset GetNew(IAssetManager assetManager, string name)
         {
             return new AudioAsset(
-                //this.m_ContentCompiler,
-                //this.m_AssetContentManager,
                 name,
                 "",
                 null);
