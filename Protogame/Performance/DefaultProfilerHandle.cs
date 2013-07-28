@@ -2,7 +2,7 @@ using System;
 
 namespace Protogame
 {
-    public class DefaultProfilerHandle : IDisposable
+    internal class DefaultProfilerHandle : IDisposable
     {
         private DefaultProfiler m_Profiler;
         private string m_Name;

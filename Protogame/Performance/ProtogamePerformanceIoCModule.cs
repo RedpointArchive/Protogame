@@ -1,5 +1,6 @@
 using Ninject;
 using Ninject.Modules;
+using Ninject.Extensions.Interception.Infrastructure.Language;
 
 namespace Protogame
 {
@@ -9,8 +10,8 @@ namespace Protogame
         {
 #if DEBUG
             this.Bind<IProfiler>().To<DefaultProfiler>().InSingletonScope();
-            if (this.Kernel.Get<IRenderUtilities>() is DefaultRenderUtilities)
-                this.Rebind<IRenderUtilities>().To<ProfiledRenderUtilities>();
+            var x = new DefaultProfilingInterceptor(this.Kernel.Get<IProfiler>() as DefaultProfiler);
+            this.Kernel.Intercept(p => p.Request.Service.IsInterface).With(x);
 #elif RELEASE
             this.Bind<IProfiler>().To<NullProfiler>().InSingletonScope();
 #else

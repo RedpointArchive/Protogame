@@ -35,12 +35,24 @@ namespace Protogame
         
         protected override void LoadContent()
         {
+            // The interception library can't properly intercept class types, which
+            // means we can't simply do this.m_Kernel.Get<TInitialWorld>() because
+            // none of the calls will be intercepted.  Instead, we need to bind the
+            // IWorld and IWorldManager to their initial types and then unbind them
+            // after they've been constructed.
+            this.m_Kernel.Bind<IWorld>().To<TInitialWorld>();
+            this.m_Kernel.Bind<IWorldManager>().To<TWorldManager>();
+            var world = this.m_Kernel.Get<IWorld>();
+            var worldManager = this.m_Kernel.Get<IWorldManager>();
+            this.m_Kernel.Unbind<IWorld>();
+            this.m_Kernel.Unbind<IWorldManager>();
+        
             // Create the game context.
             this.GameContext = this.m_Kernel.Get<IGameContext>(
                 new ConstructorArgument("game", this),
                 new ConstructorArgument("graphics", this.m_GraphicsDeviceManager),
-                new ConstructorArgument("world", this.m_Kernel.Get<TInitialWorld>()),
-                new ConstructorArgument("worldManager", this.m_Kernel.Get<TWorldManager>()),
+                new ConstructorArgument("world", world),
+                new ConstructorArgument("worldManager", worldManager),
                 new ConstructorArgument("window", this.Window));
             
             // Create the update and render contexts.
@@ -53,7 +65,7 @@ namespace Protogame
 
         protected override void Update(GameTime gameTime)
         {
-            using (this.m_Profiler.Measure("update"))
+            using (this.m_Profiler.Measure("update", this.GameContext.FrameCount.ToString()))
             {
                 // Measure FPS.
                 using (this.m_Profiler.Measure("measure_fps"))
@@ -85,7 +97,7 @@ namespace Protogame
 
         protected override void Draw(GameTime gameTime)
         {
-            using (this.m_Profiler.Measure("render"))
+            using (this.m_Profiler.Measure("render", (this.GameContext.FrameCount - 1).ToString()))
             {
                 this.m_TotalFrames++;
     

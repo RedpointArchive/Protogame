@@ -2,7 +2,7 @@ using System;
 
 namespace Protogame
 {
-    public class NullProfilerHandle : IDisposable
+    internal class NullProfilerHandle : IDisposable
     {
         public void Dispose()
         {
