@@ -148,6 +148,19 @@ namespace Protogame
             return this.GetUnresolved(asset).Resolve<T>();
         }
         
+        [Local]
+        public T TryGet<T>(string asset) where T : class, IAsset
+        {
+            try
+            {
+                return this.Get<T>(asset);
+            }
+            catch (AssetNotFoundException ex)
+            {
+                return null;
+            }
+        }
+        
         public void Save(IAsset asset)
         {
             var savers = this.m_Kernel.GetAll<IAssetSaver>().ToArray();

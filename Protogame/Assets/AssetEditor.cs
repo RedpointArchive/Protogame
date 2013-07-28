@@ -1,7 +1,7 @@
 using System;
 using Protogame;
 
-namespace ProtogameAssetManager
+namespace Protogame
 {
     public abstract class AssetEditor<T> : IAssetEditor
     {

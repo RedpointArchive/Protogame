@@ -4,12 +4,40 @@ using Ninject;
 using NDesk.Options;
 using Process4.Attributes;
 using Protogame;
+using System.Reflection;
+using System.IO;
 
 namespace ProtogameAssetManager
 {
     [Distributed(Architecture.ServerClient, Caching.PushOnChange)]
     static class Program
     {
+        static void RegisterEditorsFromAssembly(Assembly assembly, IKernel kernel)
+        {
+            foreach (var type in assembly.GetTypes())
+            {
+                if (type.IsAbstract || type.IsInterface)
+                    continue;
+                if (type.Assembly == typeof(FontAsset).Assembly)
+                    continue;
+                if (typeof(IAssetEditor).IsAssignableFrom(type))
+                {
+                    Console.WriteLine("Binding IAssetEditor: " + type.Name);
+                    kernel.Bind<IAssetEditor>().To(type);
+                }
+                if (typeof(IAssetLoader).IsAssignableFrom(type))
+                {
+                    Console.WriteLine("Binding IAssetLoader: " + type.Name);
+                    kernel.Bind<IAssetLoader>().To(type);
+                }
+                if (typeof(IAssetSaver).IsAssignableFrom(type))
+                {
+                    Console.WriteLine("Binding IAssetSaver: " + type.Name);
+                    kernel.Bind<IAssetSaver>().To(type);
+                }
+            }
+        }
+    
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -39,6 +67,18 @@ namespace ProtogameAssetManager
             kernel.Load<ProtogamePlatformingIoCModule>();
             kernel.Load<AssetManagerIoCModule>();
 
+            var runningFile = new FileInfo(Assembly.GetExecutingAssembly().Location);
+            foreach (var file in runningFile.Directory.GetFiles("*.dll"))
+            {
+                Console.WriteLine("Scanning " + file.Name);
+                RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+            }
+            foreach (var file in runningFile.Directory.GetFiles("*.exe"))
+            {
+                Console.WriteLine("Scanning " + file.Name);
+                RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+            }
+            
             if (connectToRunningGame)
             {
                 var node = new LocalNode();

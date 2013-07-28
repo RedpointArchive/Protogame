@@ -94,6 +94,18 @@ namespace Protogame
         {
             return this.GetUnresolved(asset).Resolve<T>();
         }
+        
+        public T TryGet<T>(string asset) where T : class, IAsset
+        {
+            try
+            {
+                return this.GetUnresolved(asset).Resolve<T>();
+            }
+            catch (AssetNotFoundException ex)
+            {
+                return null;
+            }
+        }
 
         public IAsset[] GetAll()
         {

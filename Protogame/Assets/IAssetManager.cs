@@ -14,6 +14,7 @@ namespace Protogame
         void Dirty(string asset);
         IAsset GetUnresolved(string asset);
         T Get<T>(string asset) where T : class, IAsset;
+        T TryGet<T>(string asset) where T : class, IAsset;
         IAsset[] GetAll();
 
         /// <summary>

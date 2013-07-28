@@ -27,7 +27,8 @@ namespace ProtogameAssetManager
         {
             m_Editors = new Dictionary<Type, IAssetEditor>();
             foreach (var mapping in
-                from type in Assembly.GetExecutingAssembly().GetTypes()
+                from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                from type in assembly.GetTypes()
                 where typeof(IAssetEditor).IsAssignableFrom(type)
                 where !type.IsInterface
                 where !type.IsAbstract
