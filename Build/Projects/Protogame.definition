@@ -22,6 +22,7 @@
   </References>
   <Files>
     <Compile Include="Assets\AssetContentManager.cs" />
+    <Compile Include="Assets\AssetEditor.cs" />
     <Compile Include="Assets\AssetNotFoundException.cs" />
     <Compile Include="Assets\AudioAsset.cs" />
     <Compile Include="Assets\AudioAssetLoader.cs" />
@@ -36,6 +37,7 @@
     <Compile Include="Assets\FontAssetSaver.cs" />
     <Compile Include="Assets\IAsset.cs" />
     <Compile Include="Assets\IAssetContentManager.cs" />
+    <Compile Include="Assets\IAssetEditor.cs" />
     <Compile Include="Assets\IAssetLoader.cs" />
     <Compile Include="Assets\IAssetManager.cs" />
     <Compile Include="Assets\IAssetManagerProvider.cs" />

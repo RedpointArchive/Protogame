@@ -17,7 +17,6 @@
     <Reference Include="Ninject" />
   </References>
   <Files>
-    <Compile Include="AssetEditor.cs" />
     <Compile Include="AssetManagerBasicSkin.cs" />
     <Compile Include="AssetManagerClient.cs" />
     <Compile Include="AssetManagerGame.cs" />
@@ -27,7 +26,6 @@
     <Compile Include="AssetTreeItem.cs" />
     <Compile Include="AudioAssetEditor.cs" />
     <Compile Include="FontAssetEditor.cs" />
-    <Compile Include="IAssetEditor.cs" />
     <Compile Include="LanguageAssetEditor.cs" />
     <Compile Include="LevelAssetEditor.cs" />
     <Compile Include="LocalAssetManagerProvider.cs" />
