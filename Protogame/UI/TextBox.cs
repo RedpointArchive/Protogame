@@ -3,7 +3,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Protogame;
-using Wedge.XNA.Input;
 
 namespace Protogame
 {
@@ -17,7 +16,7 @@ namespace Protogame
         public int UpdateCounter { get; set; }
         private StringBuilder m_TextBuilder = new StringBuilder();
         private string m_PreviousValue = "";
-        private KeyboardStringReader m_KeyboardReader = new KeyboardStringReader();
+        private DefaultKeyboardStringReader m_KeyboardReader = new DefaultKeyboardStringReader();
         public event EventHandler TextChanged;
 
         public string Text

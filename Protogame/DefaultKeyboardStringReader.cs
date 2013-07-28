@@ -26,10 +26,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-
-namespace Wedge.XNA.Input
+namespace Protogame
 {
-    public class KeyboardStringReader
+    public class DefaultKeyboardStringReader : IKeyboardStringReader
     {
         #region Key Maps
         // Not super happy about having to do this, but it was either this or a giant switch statement and this kept
@@ -156,7 +155,7 @@ namespace Wedge.XNA.Input
         /// <summary>
         /// Initializes a new instance of the KeyboardStringBuilder class.
         /// </summary>
-        public KeyboardStringReader()
+        public DefaultKeyboardStringReader()
         {
             this.FirstRepeatKeyInterval = 450;
             this.RepeatKeyInterval = 50;

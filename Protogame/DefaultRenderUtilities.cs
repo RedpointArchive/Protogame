@@ -33,7 +33,7 @@ namespace Protogame
             
             // Determine position to draw.
             var size = font.Font.MeasureString(text);
-            float xx, yy;
+            float xx = 0, yy = 0;
             switch (horizontalAlignment)
             {
                 case HorizontalAlignment.Left:

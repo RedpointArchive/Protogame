@@ -113,8 +113,8 @@ namespace Protogame
                     case Keys.Space: key = ' '; return true;
 
                     //Special special keys
-                    case Keys.Delete: special = Keys.Delete; return true;
-                    case Keys.Back: special = Keys.Back; return true;
+                    case Keys.Delete: key = (char)0; special = Keys.Delete; return true;
+                    case Keys.Back: key = (char)0; special = Keys.Back; return true;
                 }
             }
 

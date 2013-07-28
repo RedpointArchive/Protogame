@@ -11,6 +11,7 @@ namespace Protogame
             this.Bind<IGameContext>().To<DefaultGameContext>();
             this.Bind<IUpdateContext>().To<DefaultUpdateContext>();
             this.Bind<IRenderContext>().To<DefaultRenderContext>();
+            this.Bind<IKeyboardStringReader>().To<DefaultKeyboardStringReader>();
         }
     }
 }
