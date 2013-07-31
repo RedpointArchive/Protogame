@@ -26,7 +26,7 @@ namespace Protogame
             var doc = XDocument.Load(stream);
             
             // Load the solids.
-            var solids = doc
+            var solids = doc.Root
                 .Element(XName.Get("Solids")).Elements()
                 .Where(x => x.Name.LocalName == "rect");
             
@@ -49,6 +49,7 @@ namespace Protogame
             // implement the required tiles and entities.
             foreach (var solid in solids)
             {
+                // TODO: Use Ninject.Extensions.Factory for the solid entity.
                 var entity = this.m_Kernel.Get<ISolidEntity>();
                 entity.X = Convert.ToSingle(solid.Attribute(XName.Get("x")).Value);
                 entity.Y = Convert.ToSingle(solid.Attribute(XName.Get("y")).Value);

@@ -20,7 +20,8 @@ namespace Protogame
             return new
             {
                 Loader = typeof(LevelAssetLoader).FullName,
-                Value = levelAsset.Value
+                Value = levelAsset.Value,
+                SourcePath = levelAsset.SourcePath
             };
         }
     }
