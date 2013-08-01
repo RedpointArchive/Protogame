@@ -1,5 +1,3 @@
-using System;
-
 namespace Protogame
 {
     public interface ICollision

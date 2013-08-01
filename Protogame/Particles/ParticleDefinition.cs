@@ -1,10 +1,12 @@
 using Microsoft.Xna.Framework;
 
+#if LEGACY
+
 namespace Protogame
 {
     public class ParticleDefinition
     {
-        public string[] Images { get; set; }
+        public TextureAsset[] Images { get; set; }
         public float DirectionMin { get; set; }
         public float DirectionMax { get; set; }
         public float SpeedMin { get; set; }
@@ -26,3 +28,5 @@ namespace Protogame
         Foreground
     }
 }
+
+#endif

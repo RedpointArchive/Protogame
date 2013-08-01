@@ -1,5 +1,7 @@
 using System;
 
+#if LEGACY
+
 namespace Protogame
 {
     public class ParticleEntity : Entity
@@ -45,3 +47,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

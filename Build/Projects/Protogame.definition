@@ -71,6 +71,9 @@
     <Compile Include="CoreGame.cs" />
     <Compile Include="DefaultAudioHandle.cs" />
     <Compile Include="DefaultAudioUtilities.cs" />
+    <Compile Include="DefaultBoundingBoxUtilities.cs">
+      <DependentUpon>DefaultGameContext.cs</DependentUpon>
+    </Compile>
     <Compile Include="DefaultGameContext.cs" />
     <Compile Include="DefaultKeyboardStringReader.cs" />
     <Compile Include="DefaultRenderContext.cs" />
@@ -85,7 +88,6 @@
     <Compile Include="Efficiency\Resources.cs" />
     <Compile Include="Efficiency\SpriteEffect.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="EntityTile.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Extensions\KeyboardStateExtensions.cs" />
     <Compile Include="Extensions\MouseStateExtensions.cs" />
@@ -95,9 +97,13 @@
     <Compile Include="IAudioHandle.cs" />
     <Compile Include="IAudioUtilities.cs" />
     <Compile Include="IBoundingBox.cs" />
+    <Compile Include="IBoundingBoxUtilities.cs" />
     <Compile Include="ICoreGame.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IGameContext.cs" />
+    <Compile Include="IHasPosition.cs" />
+    <Compile Include="IHasSize.cs" />
+    <Compile Include="IHasVelocity.cs" />
     <Compile Include="IKeyboardStringReader.cs" />
     <Compile Include="IRenderContext.cs" />
     <Compile Include="IRenderState.cs" />
@@ -119,8 +125,8 @@
     <Compile Include="Network\ProtogameAssetManagerNetwork.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
     <Compile Include="Noise\PerlinNoise.cs" />
-    <Compile Include="ParticleDefinition.cs" />
-    <Compile Include="ParticleEntity.cs" />
+    <Compile Include="Particles\ParticleDefinition.cs" />
+    <Compile Include="Particles\ParticleEntity.cs" />
     <Compile Include="Performance\DefaultProfiler.cs" />
     <Compile Include="Performance\DefaultProfilerHandle.cs" />
     <Compile Include="Performance\DefaultProfilingInterceptor.cs" />
@@ -134,14 +140,8 @@
     <Compile Include="ProtogameException.cs" />
     <Compile Include="ProtogameIoCModule.cs" />
     <Compile Include="RenderMode.cs" />
-    <Compile Include="SolidTile.cs" />
     <Compile Include="Structure\PositionOctree.cs" />
     <Compile Include="Structure\PositionOctreeNode.cs" />
-    <Compile Include="Tile.cs" />
-    <Compile Include="TileNameAttribute.cs" />
-    <Compile Include="Tileset.cs" />
-    <Compile Include="TilesetXmlLoader.cs" />
-    <Compile Include="TransparentTile.cs" />
     <Compile Include="UI\AudioPlayer.cs" />
     <Compile Include="UI\BaseContainer.cs" />
     <Compile Include="UI\BasicSkin.cs" />
