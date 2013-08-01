@@ -4,5 +4,7 @@ namespace Protogame
     {
         int TX { get; set; }
         int TY { get; set; }
+        float Width { get; set; }
+        float Height { get; set; }
     }
 }

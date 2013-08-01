@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Ninject;
+using Ninject.Parameters;
 
 namespace Protogame
 {
@@ -31,7 +32,7 @@ namespace Protogame
                 .Where(x => x.Name.LocalName == "rect");
             
             // Load the tiles.
-            var tilesets = from e in doc.Elements()
+            var tilesets = from e in doc.Root.Elements()
                            where e.Name.LocalName == "Tiles"
                            select new {
                                Tileset = e.Attribute(XName.Get("tileset")).Value,
@@ -50,22 +51,23 @@ namespace Protogame
             foreach (var solid in solids)
             {
                 // TODO: Use Ninject.Extensions.Factory for the solid entity.
-                var entity = this.m_Kernel.Get<ISolidEntity>();
-                entity.X = Convert.ToSingle(solid.Attribute(XName.Get("x")).Value);
-                entity.Y = Convert.ToSingle(solid.Attribute(XName.Get("y")).Value);
-                entity.Width = Convert.ToSingle(solid.Attribute(XName.Get("w")).Value);
-                entity.Height = Convert.ToSingle(solid.Attribute(XName.Get("h")).Value);
+                var entity = this.m_Kernel.Get<ISolidEntity>(
+                    new ConstructorArgument("x", Convert.ToSingle(solid.Attribute(XName.Get("x")).Value)),
+                    new ConstructorArgument("y", Convert.ToSingle(solid.Attribute(XName.Get("y")).Value)),
+                    new ConstructorArgument("width", Convert.ToSingle(solid.Attribute(XName.Get("w")).Value)),
+                    new ConstructorArgument("height", Convert.ToSingle(solid.Attribute(XName.Get("h")).Value)));
                 yield return entity;
             }
             foreach (var tileset in tilesets)
             {
                 foreach (var tile in tileset.Tiles)
                 {
-                    var entity = this.m_Kernel.Get<ITileEntity>(tileset.Tileset);
-                    entity.X = tile.X;
-                    entity.Y = tile.Y;
-                    entity.TX = tile.TX;
-                    entity.TY = tile.TY;
+                    var entity = this.m_Kernel.Get<ITileEntity>(
+                        tileset.Tileset,
+                        new ConstructorArgument("x", tile.X),
+                        new ConstructorArgument("y", tile.Y),
+                        new ConstructorArgument("tx", tile.TX),
+                        new ConstructorArgument("ty", tile.TY));
                     yield return entity;
                 }
             }
