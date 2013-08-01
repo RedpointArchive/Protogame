@@ -60,6 +60,9 @@
     <Compile Include="Assets\TextureAsset.cs" />
     <Compile Include="Assets\TextureAssetLoader.cs" />
     <Compile Include="Assets\TextureAssetSaver.cs" />
+    <Compile Include="Assets\TilesetAsset.cs" />
+    <Compile Include="Assets\TilesetAssetLoader.cs" />
+    <Compile Include="Assets\TilesetAssetSaver.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Collision\DefaultCollision.cs" />
@@ -72,6 +75,7 @@
     <Compile Include="DefaultKeyboardStringReader.cs" />
     <Compile Include="DefaultRenderContext.cs" />
     <Compile Include="DefaultRenderUtilities.cs" />
+    <Compile Include="DefaultTileUtilities.cs" />
     <Compile Include="DefaultUpdateContext.cs" />
     <Compile Include="DefaultWorldManager.cs" />
     <Compile Include="DynamicJsonConverter.cs" />
@@ -100,6 +104,7 @@
     <Compile Include="IRenderUtilities.cs" />
     <Compile Include="ISolidEntity.cs" />
     <Compile Include="ITileEntity.cs" />
+    <Compile Include="ITileUtilities.cs" />
     <Compile Include="IUpdateContext.cs" />
     <Compile Include="IWorld.cs" />
     <Compile Include="IWorldManager.cs" />

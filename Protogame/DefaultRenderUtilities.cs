@@ -97,7 +97,8 @@ namespace Protogame
             Vector2? size = null,
             Color? color = null,
             bool flipHorizontally = false,
-            bool flipVertically = false)
+            bool flipVertically = false,
+            Rectangle? sourceArea = null)
         {
             if (size == null)
                 size = new Vector2(texture.Texture.Width, texture.Texture.Height);
@@ -105,7 +106,7 @@ namespace Protogame
             context.SpriteBatch.Draw(
                 texture.Texture,
                 new Rectangle((int)position.X, (int)position.Y, (int)size.Value.X, (int)size.Value.Y),
-                null,
+                sourceArea,
                 color.Value.ToPremultiplied(),
                 0,
                 new Vector2(0, 0),

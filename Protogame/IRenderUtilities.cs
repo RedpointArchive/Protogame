@@ -63,7 +63,8 @@ namespace Protogame
             Vector2? size = null,
             Color? color = null,
             bool flipHorizontally = false,
-            bool flipVertically = false);
+            bool flipVertically = false,
+            Rectangle? sourceArea = null);
         
         /// <summary>
         /// Renders a 2D line.

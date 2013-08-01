@@ -6,5 +6,6 @@ namespace Protogame
         int TY { get; set; }
         float Width { get; set; }
         float Height { get; set; }
+        TilesetAsset Tileset { get; set; }
     }
 }
