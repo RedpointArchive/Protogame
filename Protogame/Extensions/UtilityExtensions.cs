@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
 using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
-    public static class Extensions
+    public static class UtilityExtensions
     {
         /// <remarks>
         /// http://stackoverflow.com/questions/273313/randomize-a-listt-in-c-sharp
         /// </remarks>
-        internal static void Shuffle<T>(this IList<T> list)
+        public static void Shuffle<T>(this IList<T> list)
         {
             RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
             int n = list.Count;

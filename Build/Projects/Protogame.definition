@@ -88,10 +88,11 @@
     <Compile Include="Efficiency\Resources.cs" />
     <Compile Include="Efficiency\SpriteEffect.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="Extensions\BoundingBoxExtensions.cs" />
     <Compile Include="Extensions\KeyboardStateExtensions.cs" />
     <Compile Include="Extensions\MouseStateExtensions.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
+    <Compile Include="Extensions\UtilityExtensions.cs" />
     <Compile Include="FadingWorld.cs" />
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="IAudioHandle.cs" />
