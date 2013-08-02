@@ -25,15 +25,23 @@ namespace Protogame
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             byte[] xnaData = null;
-            if (data.TextureData != null)
+            if (data.TextureData != null && data.TextureData is List<object>)
                 xnaData = ((List<object>)data.TextureData)
                     .Cast<int>().Select(x => (byte)x).ToArray();
-            return new TextureAsset(
+            var texture = new TextureAsset(
                 this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
                 data.SourcePath,
                 xnaData);
+            #if DEBUG
+            if (data.TextureData != null && data.TextureData is byte[])
+            {
+                texture.Data = (byte[])data.TextureData;
+                texture.RebuildTexture();
+            }
+            #endif
+            return texture;
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)

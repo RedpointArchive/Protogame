@@ -10,6 +10,7 @@ namespace Protogame
     public class RawAssetLoader : IRawAssetLoader
     {
         private string m_Path;
+        private List<ILoadStrategy> m_Strategies;
     
         public RawAssetLoader()
         {
@@ -21,6 +22,13 @@ namespace Protogame
                 directory = contentDirectory;
             }
             this.m_Path = directory;
+            
+            this.m_Strategies = new List<ILoadStrategy>();
+            this.m_Strategies.Add(new LocalLoadStrategy());
+            #if DEBUG
+            this.m_Strategies.Add(new RawTextureLoadStrategy());
+            #endif
+            this.m_Strategies.Add(new EmbeddedLoadStrategy());
         }
     
         public IEnumerable<string> RescanAssets(string path, string prefixes = "")
@@ -52,9 +60,34 @@ namespace Protogame
         {
             try
             {
+                foreach (var strategy in this.m_Strategies)
+                {
+                    var result = strategy.AttemptLoad(this.m_Path, name);
+                    if (result != null)
+                        return result;
+                }
+                throw new AssetNotFoundException(name);
+            }
+            catch (Exception ex)
+            {
+                if (ex is AssetNotFoundException)
+                    throw;
+                throw new AssetNotFoundException(name, ex);
+            }
+        }
+        
+        private interface ILoadStrategy
+        {
+            object AttemptLoad(string path, string name);
+        }
+        
+        private class LocalLoadStrategy : ILoadStrategy
+        {
+            public object AttemptLoad(string path, string name)
+            {
                 var file = new FileInfo(
                     Path.Combine(
-                        this.m_Path,
+                        path,
                         name.Replace('.', Path.DirectorySeparatorChar) + ".asset"));
                 if (file.Exists)
                 {
@@ -66,6 +99,14 @@ namespace Protogame
                         return serializer.Deserialize<object>(reader.ReadToEnd());
                     }
                 }
+                return null;
+            }
+        }
+        
+        private class EmbeddedLoadStrategy : ILoadStrategy
+        {
+            public object AttemptLoad(string path, string name)
+            {
                 var embedded = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                                 where !assembly.IsDynamic
                                 from resource in assembly.GetManifestResourceNames()
@@ -81,15 +122,39 @@ namespace Protogame
                         return serializer.Deserialize<object>(reader.ReadToEnd());
                     }
                 }
-                throw new AssetNotFoundException(name);
-            }
-            catch (Exception ex)
-            {
-                if (ex is AssetNotFoundException)
-                    throw;
-                throw new AssetNotFoundException(name, ex);
+                return null;
             }
         }
+        
+        #if DEBUG
+            
+        private class RawTextureLoadStrategy : ILoadStrategy
+        {
+            public object AttemptLoad(string path, string name)
+            {
+                var file = new FileInfo(
+                    Path.Combine(
+                        path,
+                        name.Replace('.', Path.DirectorySeparatorChar) + ".png"));
+                if (file.Exists)
+                {
+                    using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
+                    {
+                        using (var binary = new BinaryReader(fileStream))
+                        {
+                            return new {
+                                Loader = typeof(TextureAssetLoader).FullName,
+                                SourcePath = file.FullName,
+                                TextureData = binary.ReadBytes((int)file.Length)
+                            };
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+        
+        #endif
     }
 }
 
