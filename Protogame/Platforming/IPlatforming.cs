@@ -51,6 +51,17 @@ namespace Protogame
         /// <param name="maximumXSpeed">The maximum positive or negative X speed, or null to indicate no clamping should be done.</param>
         /// <param name="maximumYSpeed">The maximum positive or negative Y speed, or null to indicate no clamping should be done.</param>
         void ClampSpeed(IHasVelocity entity, float? maximumXSpeed, float? maximumYSpeed);
+        
+        /// <summary>
+        /// Applies movement in the given direction either up to the specified amount or until
+        /// one of the entities classified by the ground check is hit.
+        /// </summary>
+        /// <param name="entity">The entity to move.</param>
+        /// <param name="xAmount">The maximum X amount to move.</param>
+        /// <param name="yAmount">The maximum Y amount to move.</param>
+        /// <param name="entities">All of the entities to consider (usually the World.Entities property).</param>
+        /// <param name="collidable">A function invoked on each entity in the enumerable as to whether it should be considered as ground.</param>
+        void ApplyMovement(IBoundingBox entity, int xAmount, int yAmount, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground);
     }
 }
 

@@ -87,6 +87,34 @@ namespace Protogame
                     entity.YSpeed = Math.Abs(maximumYSpeed.Value);
             }
         }
+        
+        public void ApplyMovement(IBoundingBox entity, int xAmount, int yAmount, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground)
+        {
+            var collidableEntities = entities.Where(ground).ToArray();
+            for (var x = 0; x < Math.Abs(xAmount); x++)
+            {
+                entity.X += Math.Sign(xAmount);
+                foreach (var other in collidableEntities)
+                    if (this.m_BoundingBoxUtilities.Overlaps(entity, other))
+                    {
+                        entity.X -= Math.Sign(xAmount);
+                        goto endX;
+                    }
+            }
+            endX:
+            for (var y = 0; y < Math.Abs(yAmount); y++)
+            {
+                entity.Y += Math.Sign(yAmount);
+                foreach (var other in collidableEntities)
+                    if (this.m_BoundingBoxUtilities.Overlaps(entity, other))
+                    {
+                        entity.Y -= Math.Sign(yAmount);
+                        goto endY;
+                    }
+            }
+            endY:
+            return;
+        }
     }
 }
 
