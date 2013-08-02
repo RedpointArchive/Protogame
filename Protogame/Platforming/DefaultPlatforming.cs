@@ -44,6 +44,17 @@ namespace Protogame
             return false;
         }
         
+        public void ApplyActionUntil(IBoundingBox entity, Action<IBoundingBox> action, Func<IBoundingBox, bool> check, int? maximum)
+        {
+            if (maximum == null)
+                while (!check(entity))
+                    action(entity);
+            else
+                for (var i = 0; i < maximum.Value; i++)
+                    if (!check(entity))
+                        action(entity);
+        }
+        
         public void ApplyGravity(IHasVelocity entity, float xGravity, float yGravity)
         {
             entity.XSpeed += xGravity;

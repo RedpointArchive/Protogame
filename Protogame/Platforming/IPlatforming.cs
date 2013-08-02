@@ -28,6 +28,15 @@ namespace Protogame
         bool IsOnGround(IBoundingBox entity, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground);
         
         /// <summary>
+        /// Performs action a number of times either until the maximum is reached or the check returns true.
+        /// </summary>
+        /// <param name="entity">The entity to apply the action to.</param>
+        /// <param name="action">The action to apply.</param> 
+        /// <param name="check">The check to determine whether the criteria is met.</param>
+        /// <param name="maximum">The maximum number of times to perform action, or null to rely only on the check.</param>
+        void ApplyActionUntil(IBoundingBox entity, Action<IBoundingBox> action, Func<IBoundingBox, bool> check, int? maximum);
+        
+        /// <summary>
         /// Applies the specified gravity to the entity.
         /// </summary>
         /// <param name="entity">The entity to apply gravity to.</param>
