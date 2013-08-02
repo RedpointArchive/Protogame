@@ -11,7 +11,7 @@
     Name="Ninject.Extensions.Interception"
     Path="Ninject/Ninject.Extensions.Interception.dll" />
   <Binary
-    Name="Ninject.Extensions.Interception"
+    Name="Ninject.Extensions.Interception.DynamicProxy"
     Path="Ninject/Ninject.Extensions.Interception.DynamicProxy.dll" />
   <Binary
     Name="Castle.Core"
