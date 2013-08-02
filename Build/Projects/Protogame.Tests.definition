@@ -7,6 +7,7 @@
     <Reference Include="Ninject.MockingKernel" />
   </References>
   <Files>
+    <Compile Include="BoundingBoxTests.cs" />
     <Compile Include="CircumcentreSolverTest.cs" />
     <Compile Include="PlatformingModuleTests.cs" />
     <None Include="packages.config" />

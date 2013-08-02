@@ -35,10 +35,19 @@ namespace Protogame
         
         public bool IsOnGround(IBoundingBox entity, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground)
         {
-            var collidableEntities = entities.Where(ground).ToArray();
+            var entityExtended = new BoundingBox
+            {
+                X = entity.X,
+                Y = entity.Y + 1,
+                Width = entity.Width,
+                Height = entity.Height,
+                XSpeed = entity.XSpeed,
+                YSpeed = entity.YSpeed
+            };
+            var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
             foreach (var collidableEntity in collidableEntities)
             {
-                if (this.m_BoundingBoxUtilities.Overlaps(entity, collidableEntity))
+                if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
                     return true;
             }
             return false;

@@ -13,6 +13,11 @@ namespace Protogame
             {
                 var a = boundingBoxes[0];
                 var b = boundingBoxes[1];
+                if (a == b)
+                {
+                    // The same bounding box can't collide with itself.
+                    return false;
+                }
                 var aX2 = a.X + a.Width;
                 var aY2 = a.Y + a.Height;
                 var bX2 = b.X + b.Width;
