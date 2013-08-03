@@ -27,6 +27,35 @@ namespace Protogame
             this.m_ContentCompiler = contentCompiler;
             
             this.ReloadTexture();
+            
+            if (this.Texture == null)
+                throw new InvalidOperationException("Texture asset could not be loaded.");
+        }
+        
+        public TextureAsset(
+            IContentCompiler contentCompiler,
+            IAssetContentManager assetContentManager,
+            string name,
+            Texture2D texture)
+        {
+            if (texture == null)
+                throw new ArgumentNullException("texture");
+            this.Name = name;
+            this.Texture = texture;
+            this.SourcePath = null;
+            this.Data = null;
+            this.m_AssetContentManager = assetContentManager;
+            this.m_ContentCompiler = contentCompiler;
+            
+            // This doesn't work because MonoGame doesn't support SaveAsPng yet.
+            /*
+            using (var memory = new MemoryStream())
+            {
+                this.Texture.SaveAsPng(memory, this.Texture.Width, this.Texture.Height);
+                memory.Read(this.Data, 0, (int)memory.Position);
+            }
+            this.RebuildTexture();
+            */
         }
         
         public void ReloadTexture()
@@ -37,7 +66,9 @@ namespace Protogame
                 {
                     this.m_AssetContentManager.SetStream(this.Name, stream);
                     this.m_AssetContentManager.Purge(this.Name);
-                    this.Texture = this.m_AssetContentManager.Load<Texture2D>(this.Name);
+                    var newTexture = this.m_AssetContentManager.Load<Texture2D>(this.Name);
+                    if (newTexture != null)
+                        this.Texture = newTexture;
                     this.m_AssetContentManager.UnsetStream(this.Name);
                 }
             }
@@ -45,14 +76,25 @@ namespace Protogame
         
         public void RebuildTexture()
         {
-            using (var stream = new MemoryStream(this.Data))
+            try
             {
-                var data = this.m_ContentCompiler.BuildTexture2D(stream);
-                if (data != null)
+                if (this.m_ContentCompiler != null)
                 {
-                    this.Data = data;
-                    this.ReloadTexture();
+                    using (var stream = new MemoryStream(this.Data))
+                    {
+                        var data = this.m_ContentCompiler.BuildTexture2D(stream);
+                        if (data != null)
+                        {
+                            this.Data = data;
+                            this.ReloadTexture();
+                        }
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                // The developer may have supplied an already built XNB asset.
+                this.ReloadTexture();
             }
         }
 

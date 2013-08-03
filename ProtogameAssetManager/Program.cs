@@ -68,6 +68,7 @@ namespace ProtogameAssetManager
             kernel.Load<AssetManagerIoCModule>();
 
             var runningFile = new FileInfo(Assembly.GetExecutingAssembly().Location);
+            var workingDirectoryInfo = new DirectoryInfo(Environment.CurrentDirectory);
             foreach (var file in runningFile.Directory.GetFiles("*.dll"))
             {
                 Console.WriteLine("Scanning " + file.Name);
@@ -78,13 +79,12 @@ namespace ProtogameAssetManager
                 Console.WriteLine("Scanning " + file.Name);
                 RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
             }
-            runningFile = new FileInfo(Environment.CurrentDirectory);
-            foreach (var file in runningFile.Directory.GetFiles("*.dll"))
+            foreach (var file in workingDirectoryInfo.GetFiles("*.dll"))
             {
                 Console.WriteLine("Scanning " + file.Name);
                 RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
             }
-            foreach (var file in runningFile.Directory.GetFiles("*.exe"))
+            foreach (var file in workingDirectoryInfo.GetFiles("*.exe"))
             {
                 Console.WriteLine("Scanning " + file.Name);
                 RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);

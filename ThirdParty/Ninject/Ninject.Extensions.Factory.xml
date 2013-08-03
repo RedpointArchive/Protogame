@@ -1,9 +1,37 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>C:\Projects\Ninject\ninject.extensions.factory\build\mono-4.0\release\Ninject.Extensions.Factory</name>
+        <name>C:\BuildAgent\work\50432bef7f25563d\build\mono-4.0\release\Ninject.Extensions.Factory</name>
     </assembly>
     <members>
+        <member name="T:Ninject.Extensions.Factory.FactoryInterceptor">
+            <summary>
+            Interceptor called by the factory proxies
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FactoryInterceptor.#ctor(Ninject.Syntax.IResolutionRoot,Ninject.Extensions.Factory.IInstanceProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.Extensions.Factory.FactoryInterceptor" /> class.
+            </summary>
+            <param name="resolutionRoot">The resolution root used to create new instances for the factory.</param>
+            <param name="instanceProvider">The instance provider.</param>
+        </member>
+        <member name="F:Ninject.Extensions.Factory.FactoryInterceptor.instanceProvider">
+            <summary>
+            The instance provider.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FactoryInterceptor.Intercept(Castle.DynamicProxy.IInvocation)">
+            <summary>
+            Intercepts the specified invocation.
+            </summary>
+            <param name="invocation">The invocation.</param>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.IFactoryProxy">
+            <summary>
+            Marker for factory proxies
+            </summary>
+        </member>
         <member name="T:Ninject.Extensions.Factory.IInstanceProvider">
             <summary>
             Provides instances to the interceptor.
@@ -122,6 +150,29 @@
             <param name="fallback">if set to <c>true</c> the request fallsback to requesting instances without
             name or constraint if no one can received otherwise.</param>
             <returns>All instances of the specified type.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.ProxyTargetParameter">
+            <summary>
+            Used to define that the target parameter of the factory interception is <c>null</c>.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.ProxyTargetParameter.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.Extensions.Factory.ProxyTargetParameter" /> class.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.ProxyTargetParameter.AppliesToTarget(Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Determines if the parameter applies to the given target.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="target">The target.</param>
+            <returns>
+            True if the parameter applies in the specified context to the specified target.
+            </returns>
+            <remarks>
+            Only one parameter may return <c>true</c>.
+            </remarks>
         </member>
         <member name="T:Ninject.Extensions.Factory.StandardInstanceProvider">
             <summary>
@@ -1042,6 +1093,74 @@
             <param name="resolutionRoot">The resolution root.</param>
             <returns>
             The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.BindToExtensions">
+            <summary>
+            Extension methods for <see cref="!:IBindingToSyntax{TInterface}" /></summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory``1(Ninject.Syntax.IBindingToSyntax{``0})">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <typeparam name="TInterface">The type of the interface.</typeparam>
+            <param name="syntax">The syntax.</param>
+            <returns>The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory(Ninject.Syntax.IBindingToSyntax{System.Object},System.Type)">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <param name="syntax">The syntax.</param>
+            <param name="factoryType">The type of the factory.</param>
+            <returns>
+            The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory``1(Ninject.Syntax.IBindingToSyntax{``0},System.Func{Ninject.Extensions.Factory.IInstanceProvider})">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <typeparam name="TInterface">The type of the interface.</typeparam>
+            <param name="syntax">The syntax.</param>
+            <param name="instanceProvider">The instance provider.</param>
+            <returns>
+            The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory(Ninject.Syntax.IBindingToSyntax{System.Object},System.Func{Ninject.Extensions.Factory.IInstanceProvider},System.Type)">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <param name="syntax">The syntax.</param>
+            <param name="instanceProvider">The instance provider.</param>
+            <param name="factoryType">Type of the factory.</param>
+            <returns>
+            The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.NamedLikeFactoryMethod``2(Ninject.Syntax.IBindingNamedSyntax{``0},System.Linq.Expressions.Expression{System.Action{``1}})">
+            <summary>
+            Defines a named binding with the name taken from the factory method used to create instances.
+            </summary>
+            <typeparam name="TInterface">The type of the interface.</typeparam>
+            <typeparam name="TFactory">¨The type of the factory.</typeparam>
+            <param name="syntax">The syntax.</param>
+            <param name="action">Expression defining the factory method used to get the binding name from.</param>
+            <returns>
+            The <see cref="!:IBindingWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory``1(Ninject.Syntax.IBindingToSyntax{``0},System.Func{Ninject.Activation.IContext,Ninject.Extensions.Factory.IInstanceProvider},System.Type)">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <typeparam name="TInterface">The type of the interface.</typeparam>
+            <param name="syntax">The syntax.</param>
+            <param name="instanceProvider">The instance provider.</param>
+            <param name="factoryType">Type of the factory.</param>
+            <returns>
+            The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
             </returns>
         </member>
         <member name="T:Ninject.Extensions.Factory.FuncModule">

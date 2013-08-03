@@ -132,6 +132,7 @@ namespace Protogame
                 if (canSave)
                 {
                     var result = saver.Handle(asset);
+                    this.m_Assets[asset.Name] = asset;
                     this.m_RawAssets[asset.Name] = result;
                     return;
                 }
