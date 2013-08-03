@@ -12,7 +12,7 @@ namespace ProtogameAssetManager
 
         public override void BuildLayout(SingleContainer editorContainer, IAssetManager assetManager)
         {
-            this.m_TextureAssetName = new TextBox { Text = this.m_TextureAssetName == null ? null : this.m_TextureAssetName.Text };
+            this.m_TextureAssetName = new TextBox { Text = this.m_Asset.TextureName };
             this.m_TextureAssetName.TextChanged += (sender, e) =>
             {
                 if (assetManager.TryGet<TextureAsset>(this.m_TextureAssetName.Text) != null)
@@ -21,7 +21,7 @@ namespace ProtogameAssetManager
                     assetManager.Save(this.m_Asset);
                 }
             };
-            this.m_CellWidth = new TextBox { Text = this.m_CellWidth == null ? null : this.m_CellWidth.Text };
+            this.m_CellWidth = new TextBox { Text = this.m_Asset.CellWidth.ToString() };
             this.m_CellWidth.TextChanged += (sender, e) =>
             {
                 try
@@ -31,7 +31,7 @@ namespace ProtogameAssetManager
                 }
                 catch { }
             };
-            this.m_CellHeight = new TextBox { Text = this.m_CellHeight == null ? null : this.m_CellHeight.Text };
+            this.m_CellHeight = new TextBox { Text = this.m_Asset.CellHeight.ToString() };
             this.m_CellHeight.TextChanged += (sender, e) =>
             {
                 try

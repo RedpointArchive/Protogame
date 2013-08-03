@@ -19,6 +19,16 @@ namespace Protogame
                 directory = contentDirectory;
             }
             this.m_Path = directory;
+            
+            // Check for the existance of a .source file in the directory; if so, we
+            // set our path to that directory instead.
+            if (File.Exists(Path.Combine(this.m_Path, ".source")))
+            {
+                using (var reader = new StreamReader(Path.Combine(this.m_Path, ".source")))
+                {
+                    this.m_Path = reader.ReadLine();
+                }
+            }
         }
     
         public void SaveRawAsset(string name, object data)

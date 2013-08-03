@@ -78,6 +78,17 @@ namespace ProtogameAssetManager
                 Console.WriteLine("Scanning " + file.Name);
                 RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
             }
+            runningFile = new FileInfo(Environment.CurrentDirectory);
+            foreach (var file in runningFile.Directory.GetFiles("*.dll"))
+            {
+                Console.WriteLine("Scanning " + file.Name);
+                RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+            }
+            foreach (var file in runningFile.Directory.GetFiles("*.exe"))
+            {
+                Console.WriteLine("Scanning " + file.Name);
+                RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+            }
             
             if (connectToRunningGame)
             {
