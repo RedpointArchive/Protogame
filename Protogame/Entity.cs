@@ -4,10 +4,10 @@ namespace Protogame
     {
         public virtual float X { get; set; }
         public virtual float Y { get; set; }
-        public float Width { get; set; }
-        public float Height { get; set; }
-        public float XSpeed { get; set; }
-        public float YSpeed { get; set; }
+        public virtual float Width { get; set; }
+        public virtual float Height { get; set; }
+        public virtual float XSpeed { get; set; }
+        public virtual float YSpeed { get; set; }
 
         public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
