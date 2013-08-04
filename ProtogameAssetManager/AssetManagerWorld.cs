@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Ninject;
-using Protogame;
 using System.Diagnostics;
+using System.Linq;
+using Protogame;
 
 namespace ProtogameAssetManager
 {
@@ -21,6 +19,10 @@ namespace ProtogameAssetManager
         static AssetManagerWorld()
         {
             LoadEditorsForAssets();
+        }
+        
+        public void Dispose()
+        {
         }
 
         public static void LoadEditorsForAssets()

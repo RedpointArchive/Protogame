@@ -51,11 +51,15 @@ namespace Protogame
         
         public void SwitchWorld<T>() where T : IWorld
         {
+            if (this.World != null)
+                this.World.Dispose();
             this.World = this.CreateWorld<T>();
         }
         
         public void SwitchWorld<T>(T world) where T : IWorld
         {
+            if (this.World != null)
+                this.World.Dispose();
             this.World = world;
         }
     }

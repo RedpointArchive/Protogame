@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Protogame
 {
-    public interface IWorld
+    public interface IWorld : IDisposable
     {
         List<IEntity> Entities { get; }
         void RenderBelow(IGameContext gameContext, IRenderContext renderContext);
