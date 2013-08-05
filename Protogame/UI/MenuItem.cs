@@ -8,7 +8,7 @@ namespace Protogame
 {
     public class MenuItem : IContainer
     {
-        private IRenderUtilities m_RenderUtilities;
+        private I2DRenderUtilities m_RenderUtilities;
         private IAssetManager m_AssetManager;
         protected List<MenuItem> m_Items = new List<MenuItem>();
 
@@ -25,7 +25,7 @@ namespace Protogame
 
         public MenuItem(
             IAssetManagerProvider assetManagerProvider,
-            IRenderUtilities renderUtilities)
+            I2DRenderUtilities renderUtilities)
         {
             this.m_RenderUtilities = renderUtilities;
             this.m_AssetManager = assetManagerProvider.GetAssetManager(false);

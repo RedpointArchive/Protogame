@@ -7,7 +7,7 @@ namespace Protogame
     {
         public MainMenu(
             IAssetManagerProvider assetManagerProvider,
-            IRenderUtilities renderUtilities) : base(assetManagerProvider, renderUtilities)
+            I2DRenderUtilities renderUtilities) : base(assetManagerProvider, renderUtilities)
         {
         }
         

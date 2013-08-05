@@ -45,7 +45,7 @@ namespace ProtogameAssetManager
 
         public AssetManagerWorld(
             IAssetManagerProvider assetManagerProvider,
-            IRenderUtilities renderUtilities,
+            I2DRenderUtilities renderUtilities,
             ISkin skin,
             IEnumerable<IAssetLoader> loaders)
         {

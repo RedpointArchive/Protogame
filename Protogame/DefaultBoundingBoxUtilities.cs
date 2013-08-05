@@ -20,10 +20,13 @@ namespace Protogame
                 }
                 var aX2 = a.X + a.Width;
                 var aY2 = a.Y + a.Height;
+                var aZ2 = a.Z + a.Depth;
                 var bX2 = b.X + b.Width;
                 var bY2 = b.Y + b.Height;
+                var bZ2 = b.Z + b.Depth;
                 if (a.X - Math.Abs(a.XSpeed) < bX2 + Math.Abs(b.XSpeed) && aX2 + Math.Abs(a.XSpeed) > b.X - Math.Abs(b.XSpeed) &&
-                    a.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed) && aY2 + Math.Abs(a.YSpeed) > b.Y - Math.Abs(b.YSpeed))
+                    a.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed) && aY2 + Math.Abs(a.YSpeed) > b.Y - Math.Abs(b.YSpeed) &&
+                    a.Z - Math.Abs(a.ZSpeed) < bZ2 + Math.Abs(b.ZSpeed) && aZ2 + Math.Abs(a.ZSpeed) > b.Z - Math.Abs(b.ZSpeed))
                     return true;
             }
             
@@ -35,10 +38,13 @@ namespace Protogame
                         continue;
                     var aX2 = a.X + a.Width;
                     var aY2 = a.Y + a.Height;
+                    var aZ2 = a.Z + a.Depth;
                     var bX2 = b.X + b.Width;
                     var bY2 = b.Y + b.Height;
+                    var bZ2 = b.Z + b.Depth;
                     if (a.X - Math.Abs(a.XSpeed) < bX2 + Math.Abs(b.XSpeed) && aX2 + Math.Abs(a.XSpeed) > b.X - Math.Abs(b.XSpeed) &&
-                        a.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed) && aY2 + Math.Abs(a.YSpeed) > b.Y - Math.Abs(b.YSpeed))
+                        a.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed) && aY2 + Math.Abs(a.YSpeed) > b.Y - Math.Abs(b.YSpeed) &&
+                        a.Z - Math.Abs(a.ZSpeed) < bZ2 + Math.Abs(b.ZSpeed) && aZ2 + Math.Abs(a.ZSpeed) > b.Z - Math.Abs(b.ZSpeed))
                         return true;
                 }
             }

@@ -4,6 +4,7 @@ namespace Protogame
     {
         float Width { get; set; }
         float Height { get; set; }
+        float Depth { get; set; }
     }
 }
 

@@ -6,12 +6,12 @@ namespace Protogame
     public class BasicSkin : ISkin
     {
         private IBasicSkin m_BasicSkin;
-        private IRenderUtilities m_RenderUtilities;
+        private I2DRenderUtilities m_RenderUtilities;
         private IAssetManager m_AssetManager;
 
         public BasicSkin(
             IBasicSkin skin,
-            IRenderUtilities renderUtilities,
+            I2DRenderUtilities renderUtilities,
             IAssetManagerProvider assetManagerProvider)
         {
             this.m_BasicSkin = skin;

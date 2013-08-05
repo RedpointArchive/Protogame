@@ -34,7 +34,7 @@ namespace ProtogameAssetManager
 
         public AssetManagerLayout(
             IAssetManagerProvider assetManagerProvider,
-            IRenderUtilities renderUtilities,
+            I2DRenderUtilities renderUtilities,
             IEnumerable<IAssetLoader> loaders,
             CanvasEntity canvasEntity)
         {

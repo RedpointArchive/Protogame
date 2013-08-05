@@ -4,11 +4,11 @@ namespace Protogame
 {
     public class DefaultTileUtilities : ITileUtilities
     {
-        private IRenderUtilities m_RenderUtilities;
+        private I2DRenderUtilities m_RenderUtilities;
         private IAssetManager m_AssetManager;
     
         public DefaultTileUtilities(
-            IRenderUtilities renderUtilities,
+            I2DRenderUtilities renderUtilities,
             IAssetManagerProvider assetManagerProvider)
         {
             this.m_RenderUtilities = renderUtilities;

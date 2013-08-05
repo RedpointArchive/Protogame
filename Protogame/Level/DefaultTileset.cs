@@ -13,6 +13,7 @@ namespace Protogame
         
         public float X { get; set; }
         public float Y { get; set; }
+        public float Z { get; set; }
         
         public IEntity this[int x, int y]
         {

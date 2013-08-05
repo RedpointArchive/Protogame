@@ -4,13 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
-    public class DefaultRenderUtilities : IRenderUtilities
+    public class Default2DRenderUtilities : I2DRenderUtilities
     {
-        public IRenderState BeginRenderMode(IRenderContext context, RenderMode mode)
-        {
-            throw new NotImplementedException();
-        }
-        
         public void RenderText(
             IRenderContext context,
             Vector2 position,

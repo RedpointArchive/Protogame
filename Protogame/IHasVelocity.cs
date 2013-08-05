@@ -4,6 +4,7 @@ namespace Protogame
     {
         float XSpeed { get; set; }
         float YSpeed { get; set; }
+        float ZSpeed { get; set; }
     }
 }
 

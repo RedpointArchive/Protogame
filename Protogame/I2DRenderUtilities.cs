@@ -2,16 +2,8 @@ using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
-    public interface IRenderUtilities
+    public interface I2DRenderUtilities
     {
-        /// <summary>
-        /// Starts a specific render mode.
-        /// </summary>
-        /// <returns>The render mode.</returns>
-        /// <param name="context">The rendering context.</param>
-        /// <param name="mode">The new rendering mode to use.</param>
-        IRenderState BeginRenderMode(IRenderContext context, RenderMode mode);
-        
         /// <summary>
         /// Renders text at the specified position.
         /// </summary>

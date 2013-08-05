@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Ninject;
 using Ninject.Parameters;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -20,6 +21,10 @@ namespace Protogame
         {
             this.m_Kernel = kernel;
             this.m_GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            this.m_GraphicsDeviceManager.PreparingDeviceSettings += (sender, e) => 
+            {
+                e.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
+            };
             this.m_Profiler = kernel.TryGet<IProfiler>();
             if (this.m_Profiler == null)
             {
