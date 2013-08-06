@@ -50,11 +50,13 @@ namespace Protogame
         public void EnableTextures()
         {
             this.m_Effect.TextureEnabled = true;
+            this.m_Effect.VertexColorEnabled = false;
         }
         
         public void EnableVertexColors()
         {
             this.m_Effect.VertexColorEnabled = true;
+            this.m_Effect.TextureEnabled = false;
         }
         
         public void SetActiveTexture(Texture2D texture)
