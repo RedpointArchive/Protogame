@@ -2,7 +2,7 @@ using System;
 
 namespace Protogame
 {
-    internal class NullProfiler : IProfiler
+    public class NullProfiler : IProfiler
     {
         public IDisposable Measure(string name, params string[] parameters)
         {
