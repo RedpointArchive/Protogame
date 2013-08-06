@@ -24,7 +24,7 @@ namespace Protogame.Tests
         public void IsNotOnGroundWhenNoEntities()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             Assert.False(platforming.IsOnGround(
@@ -37,7 +37,7 @@ namespace Protogame.Tests
         public void IsNotOnGroundWhenOnlyEntity()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             var entity = this.CreateBoundingBox(200, 200, 16, 16);
@@ -51,7 +51,7 @@ namespace Protogame.Tests
         public void IsOnGroundWhenStandingDirectlyOnGround()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             var player = this.CreateBoundingBox(200, 200 - 16, 16, 16);
@@ -66,7 +66,7 @@ namespace Protogame.Tests
         public void IsNotOnGroundWhenJustAboveTheGround()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             var player = this.CreateBoundingBox(200, 200 - 17, 16, 16);
@@ -81,7 +81,7 @@ namespace Protogame.Tests
         public void IsOnGroundWhenJustAboveTheGroundAndFalling()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             var player = this.CreateBoundingBox(200, 200 - 17, 16, 16, 0, 2);
@@ -100,7 +100,7 @@ namespace Protogame.Tests
         public void SpeedIsNotClampedWhenSpeedIsZero()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -114,7 +114,7 @@ namespace Protogame.Tests
         public void SpeedIsNotClampedWhenSpeedIsUnderLimit()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -128,7 +128,7 @@ namespace Protogame.Tests
         public void SpeedIsNotClampedWhenSpeedIsNegativeAndUnderLimit()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -142,7 +142,7 @@ namespace Protogame.Tests
         public void SpeedIsNotClampedWhenSpeedIsExactlyAtLimit()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -156,7 +156,7 @@ namespace Protogame.Tests
         public void SpeedIsNotClampedWhenSpeedIsNegativeAndExactlyAtLimit()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -170,7 +170,7 @@ namespace Protogame.Tests
         public void SpeedIsClampedWhenSpeedIsOverLimit()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -184,7 +184,7 @@ namespace Protogame.Tests
         public void SpeedIsClampedWhenSpeedIsNegativeAndOverLimit()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -202,7 +202,7 @@ namespace Protogame.Tests
         public void GravityIsAppliedWhenGravityIsPositive()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -217,7 +217,7 @@ namespace Protogame.Tests
         public void GravityIsAppliedWhenGravityIsNegative()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -236,7 +236,7 @@ namespace Protogame.Tests
         public void ApplyUntilRunsUntilLimit()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             
@@ -254,7 +254,7 @@ namespace Protogame.Tests
         public void ApplyUntilRunsUntilCheck()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             var platforming = kernel.Get<IPlatforming>();
             

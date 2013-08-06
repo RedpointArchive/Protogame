@@ -38,7 +38,7 @@ namespace Protogame.Tests
         public void IsNotOverlappingWhenNoBoundingBoxes()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.False(boundingBoxUtilities.Overlaps());
         }
@@ -47,7 +47,7 @@ namespace Protogame.Tests
         public void IsNotOverlappingWhenOneBoundingBox()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.False(boundingBoxUtilities.Overlaps(this.CreateBoundingBox(200, 200, 16, 16)));
         }
@@ -56,7 +56,7 @@ namespace Protogame.Tests
         public void IsOverlappingWhenDifferentBoundingBoxes()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.True(boundingBoxUtilities.Overlaps(
                 this.CreateBoundingBox(200, 200, 16, 16),
@@ -67,7 +67,7 @@ namespace Protogame.Tests
         public void IsNotOverlappingWhenSameBoundingBoxAndNoOtherBoxes()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             var entity = this.CreateBoundingBox(200, 200, 16, 16);
             Assert.False(boundingBoxUtilities.Overlaps(entity, entity));
@@ -77,7 +77,7 @@ namespace Protogame.Tests
         public void IsNotOverlappingWhenSameBoundingBoxAndOtherBoxesAreNotOverlapping()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             var entity = this.CreateBoundingBox(200, 200, 16, 16);
             var other = this.CreateBoundingBox(400, 400, 16, 16);
@@ -88,7 +88,7 @@ namespace Protogame.Tests
         public void IsOverlappingWhenSameBoundingBoxAndOtherBoxesAreOverlapping()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             var entity = this.CreateBoundingBox(200, 200, 16, 16);
             var other = this.CreateBoundingBox(208, 208, 16, 16);
@@ -99,7 +99,7 @@ namespace Protogame.Tests
         public void IsOverlappingWhenDifferentBoxesOverlap()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             var entity = this.CreateBoundingBox(200, 200, 16, 16);
             var other = this.CreateBoundingBox(204, 204, 16, 16);
@@ -110,7 +110,7 @@ namespace Protogame.Tests
         public void IsNotOverlappingWhenBoxesAreStationary()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             var entity = this.CreateBoundingBox(200, 200, 16, 16);
             var other = this.CreateBoundingBox(216, 200, 16, 16);
@@ -121,7 +121,7 @@ namespace Protogame.Tests
         public void IsOverlappingWhenOneBoxIsMovingTowardTheOther()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             var entity = this.CreateBoundingBox(200, 200, 16, 16);
             var other = this.CreateBoundingBox(216, 200, 16, 16, -2);
@@ -132,7 +132,7 @@ namespace Protogame.Tests
         public void IsOverlappingWhenBothBoxesAreMovingTowardEachOther()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             var entity = this.CreateBoundingBox(200, 200, 16, 16, 2);
             var other = this.CreateBoundingBox(216, 200, 16, 16, -2);
@@ -143,7 +143,7 @@ namespace Protogame.Tests
         public void IsOverlappingOnlyWhen3DBoxesIntersectOuterBefore()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.False(boundingBoxUtilities.Overlaps(
                 this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
@@ -154,7 +154,7 @@ namespace Protogame.Tests
         public void IsOverlappingOnlyWhen3DBoxesIntersectOuter()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.True(boundingBoxUtilities.Overlaps(
                 this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
@@ -165,7 +165,7 @@ namespace Protogame.Tests
         public void IsOverlappingOnlyWhen3DBoxesIntersectMiddle()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.True(boundingBoxUtilities.Overlaps(
                 this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
@@ -176,7 +176,7 @@ namespace Protogame.Tests
         public void IsOverlappingOnlyWhen3DBoxesIntersectInner()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.False(boundingBoxUtilities.Overlaps(
                 this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
@@ -187,7 +187,7 @@ namespace Protogame.Tests
         public void IsOverlappingOnlyWhen3DBoxesIntersectInnerAfter()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.False(boundingBoxUtilities.Overlaps(
                 this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
@@ -198,7 +198,7 @@ namespace Protogame.Tests
         public void IsNotOverlappingWhenBoxesAreNextToEachOther()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.False(boundingBoxUtilities.Overlaps(
                 this.Create3DBoundingBox(50, 50, 50, 50, 50, 50),
@@ -212,7 +212,7 @@ namespace Protogame.Tests
         public void IsOverlappingWhenBoxWithZeroDimensionIsNextToAnother()
         {
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameIoCModule>();
+            kernel.Load<Protogame2DIoCModule>();
             var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
             Assert.False(boundingBoxUtilities.Overlaps(
                 this.Create3DBoundingBox(50, 50, 50, 50, 50, 50),
