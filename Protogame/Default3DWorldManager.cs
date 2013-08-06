@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Protogame
 {
-    public class DefaultWorldManager : IWorldManager
+    public class Default3DWorldManager : IWorldManager
     {
         public void Render<T>(T game) where T : Game, ICoreGame
         {

@@ -5,7 +5,7 @@ using System;
 
 namespace ProtogameAssetManager
 {
-    public class AssetManagerGame : CoreGame<AssetManagerWorld, DefaultWorldManager>
+    public class AssetManagerGame : CoreGame<AssetManagerWorld, Default2DWorldManager>
     {
         private IAssetManager m_AssetManager;
 

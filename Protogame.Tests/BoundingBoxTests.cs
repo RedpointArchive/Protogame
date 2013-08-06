@@ -18,6 +18,22 @@ namespace Protogame.Tests
             };
         }
     
+        private IBoundingBox Create3DBoundingBox(int x, int y, int z, int width, int height, int depth, int xspeed = 0, int yspeed = 0, int zspeed = 0)
+        {
+            return new BoundingBox
+            {
+                X = x,
+                Y = y,
+                Z = z,
+                Width = width,
+                Height = height,
+                Depth = depth,
+                XSpeed = xspeed,
+                YSpeed = yspeed,
+                ZSpeed = zspeed
+            };
+        }
+        
         [Fact]
         public void IsNotOverlappingWhenNoBoundingBoxes()
         {
@@ -121,6 +137,95 @@ namespace Protogame.Tests
             var entity = this.CreateBoundingBox(200, 200, 16, 16, 2);
             var other = this.CreateBoundingBox(216, 200, 16, 16, -2);
             Assert.True(boundingBoxUtilities.Overlaps(entity, other));
+        }
+    
+        [Fact]
+        public void IsOverlappingOnlyWhen3DBoxesIntersectOuterBefore()
+        {
+            var kernel = new StandardKernel();
+            kernel.Load<ProtogameIoCModule>();
+            var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
+            Assert.False(boundingBoxUtilities.Overlaps(
+                this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
+                this.Create3DBoundingBox(0, 0, 0, 200, 200, 0)));
+        }
+    
+        [Fact]
+        public void IsOverlappingOnlyWhen3DBoxesIntersectOuter()
+        {
+            var kernel = new StandardKernel();
+            kernel.Load<ProtogameIoCModule>();
+            var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
+            Assert.True(boundingBoxUtilities.Overlaps(
+                this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
+                this.Create3DBoundingBox(0, 0, 50, 200, 200, 0)));
+        }
+        
+        [Fact]
+        public void IsOverlappingOnlyWhen3DBoxesIntersectMiddle()
+        {
+            var kernel = new StandardKernel();
+            kernel.Load<ProtogameIoCModule>();
+            var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
+            Assert.True(boundingBoxUtilities.Overlaps(
+                this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
+                this.Create3DBoundingBox(0, 0, 100, 200, 200, 0)));
+        }
+        
+        [Fact]
+        public void IsOverlappingOnlyWhen3DBoxesIntersectInner()
+        {
+            var kernel = new StandardKernel();
+            kernel.Load<ProtogameIoCModule>();
+            var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
+            Assert.False(boundingBoxUtilities.Overlaps(
+                this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
+                this.Create3DBoundingBox(0, 0, 150, 200, 200, 0)));
+        }
+        
+        [Fact]
+        public void IsOverlappingOnlyWhen3DBoxesIntersectInnerAfter()
+        {
+            var kernel = new StandardKernel();
+            kernel.Load<ProtogameIoCModule>();
+            var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
+            Assert.False(boundingBoxUtilities.Overlaps(
+                this.Create3DBoundingBox(50, 50, 50, 50, 50, 100),
+                this.Create3DBoundingBox(0, 0, 200, 200, 200, 0)));
+        }
+        
+        [Fact]
+        public void IsNotOverlappingWhenBoxesAreNextToEachOther()
+        {
+            var kernel = new StandardKernel();
+            kernel.Load<ProtogameIoCModule>();
+            var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
+            Assert.False(boundingBoxUtilities.Overlaps(
+                this.Create3DBoundingBox(50, 50, 50, 50, 50, 50),
+                this.Create3DBoundingBox(100, 50, 50, 50, 50, 50)));
+            Assert.False(boundingBoxUtilities.Overlaps(
+                this.CreateBoundingBox(50, 50, 50, 50),
+                this.CreateBoundingBox(100, 50, 50, 50)));
+        }
+    
+        [Fact]
+        public void IsOverlappingWhenBoxWithZeroDimensionIsNextToAnother()
+        {
+            var kernel = new StandardKernel();
+            kernel.Load<ProtogameIoCModule>();
+            var boundingBoxUtilities = kernel.Get<IBoundingBoxUtilities>();
+            Assert.False(boundingBoxUtilities.Overlaps(
+                this.Create3DBoundingBox(50, 50, 50, 50, 50, 50),
+                this.Create3DBoundingBox(100, 50, 50, 0, 50, 50)));
+            Assert.True(boundingBoxUtilities.Overlaps(
+                this.Create3DBoundingBox(50, 50, 50, 50, 50, 50),
+                this.Create3DBoundingBox(50, 50, 50, 0, 50, 50)));
+            Assert.False(boundingBoxUtilities.Overlaps(
+                this.CreateBoundingBox(50, 50, 50, 50),
+                this.CreateBoundingBox(100, 50, 0, 50)));
+            Assert.True(boundingBoxUtilities.Overlaps(
+                this.CreateBoundingBox(50, 50, 50, 50),
+                this.CreateBoundingBox(50, 50, 0, 50)));
         }
     }
 }
