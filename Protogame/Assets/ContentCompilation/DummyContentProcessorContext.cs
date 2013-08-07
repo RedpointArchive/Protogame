@@ -3,16 +3,19 @@
 using System;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Framework.Content.Pipeline.Builder;
 
 namespace Protogame
 {
     public class DummyContentProcessorContext : ContentProcessorContext
     {
         private TargetPlatform m_TargetPlatform;
+        private PipelineBuildLogger m_Logger;
     
         public DummyContentProcessorContext(TargetPlatform targetPlatform)
         {
             this.m_TargetPlatform = targetPlatform;
+            this.m_Logger = new PipelineBuildLogger();
         }
     
         public override void AddDependency(string filename)
@@ -58,10 +61,7 @@ namespace Protogame
         
         public override ContentBuildLogger Logger
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return this.m_Logger; }
         }
         
         public override string OutputDirectory

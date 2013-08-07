@@ -91,10 +91,25 @@ namespace Protogame
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                // This is the type of exception that our dummy content compiler throws.
+                if (ex is NotImplementedException)
+                    throw;
+                
                 // The developer may have supplied an already built XNB asset.
-                this.ReloadTexture();
+                var reloaded = false;
+                try
+                {
+                    this.ReloadTexture();
+                    reloaded = true;
+                }
+                catch { }
+                
+                // If we weren't able to reload the texture, then we really didn't rebuild
+                // correct, so rethrow the original exception.
+                if (!reloaded)
+                    throw;
             }
         }
 
