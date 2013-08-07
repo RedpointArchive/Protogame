@@ -64,6 +64,9 @@
     <Compile Include="Assets\TilesetAssetLoader.cs" />
     <Compile Include="Assets\TilesetAssetSaver.cs" />
     <Compile Include="BoundingBox.cs" />
+    <Compile Include="Caching\DefaultRenderCache.cs" />
+    <Compile Include="Caching\IRenderCache.cs" />
+    <Compile Include="Caching\ProtogameCachingIoCModule.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Collision\DefaultCollision.cs" />
     <Compile Include="Collision\ICollision.cs" />

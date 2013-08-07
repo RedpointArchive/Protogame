@@ -97,6 +97,8 @@ namespace Protogame
         
         public T TryGet<T>(string asset) where T : class, IAsset
         {
+            if (string.IsNullOrWhiteSpace(asset))
+                return null;
             try
             {
                 return this.GetUnresolved(asset).Resolve<T>();
