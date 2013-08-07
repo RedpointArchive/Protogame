@@ -72,22 +72,35 @@ namespace ProtogameAssetManager
             foreach (var file in runningFile.Directory.GetFiles("*.dll"))
             {
                 Console.WriteLine("Scanning " + file.Name);
-                RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                try
+                {
+                    RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                }
+                catch (BadImageFormatException) { }
             }
             foreach (var file in runningFile.Directory.GetFiles("*.exe"))
             {
                 Console.WriteLine("Scanning " + file.Name);
-                RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                try {
+                    RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                }
+                catch (BadImageFormatException) { }
             }
             foreach (var file in workingDirectoryInfo.GetFiles("*.dll"))
             {
                 Console.WriteLine("Scanning " + file.Name);
-                RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                try{
+                    RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                }
+                catch (BadImageFormatException) { }
             }
             foreach (var file in workingDirectoryInfo.GetFiles("*.exe"))
             {
                 Console.WriteLine("Scanning " + file.Name);
-                RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                try{
+                    RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                }
+                catch (BadImageFormatException) { }
             }
             
             if (connectToRunningGame)

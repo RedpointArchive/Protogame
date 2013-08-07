@@ -27,9 +27,6 @@ namespace Protogame
             this.m_ContentCompiler = contentCompiler;
             
             this.ReloadTexture();
-            
-            if (this.Texture == null)
-                throw new InvalidOperationException("Texture asset could not be loaded.");
         }
         
         public TextureAsset(
