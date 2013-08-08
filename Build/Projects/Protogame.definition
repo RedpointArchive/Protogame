@@ -86,10 +86,6 @@
     <Compile Include="DefaultUpdateContext.cs" />
     <Compile Include="DynamicJsonConverter.cs" />
     <Compile Include="DynamicJsonUnconverter.cs" />
-    <Compile Include="Efficiency\DepthSpriteBatch.cs" />
-    <Compile Include="Efficiency\OccludingSpriteBatch.cs" />
-    <Compile Include="Efficiency\Resources.cs" />
-    <Compile Include="Efficiency\SpriteEffect.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Extensions\BoundingBoxExtensions.cs" />
     <Compile Include="Extensions\KeyboardStateExtensions.cs" />

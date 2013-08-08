@@ -7,22 +7,24 @@ namespace Protogame
     class DefaultRenderContext : IRenderContext
     {
         private BasicEffect m_Effect;
+        private BoundingFrustum m_BoundingFrustum;
     
         public GraphicsDevice GraphicsDevice { get; private set; }
         public SpriteBatch SpriteBatch { get; private set; }
         public Texture2D SingleWhitePixel { get; private set; }
         public Effect Effect { get { return this.m_Effect; } }
+        public BoundingFrustum BoundingFrustrum { get { return this.m_BoundingFrustum; } }
         
         public Matrix View
         {
             get { return this.m_Effect.View; }
-            set { this.m_Effect.View = value; }
+            set { this.m_Effect.View = value; this.RecalculateBoundingFrustrum(); }
         }
         
         public Matrix World
         {
             get { return this.m_Effect.View; }
-            set { this.m_Effect.World = value; }
+            set { this.m_Effect.World = value; this.RecalculateBoundingFrustrum(); }
         }
         
         public Matrix Projection
@@ -32,6 +34,11 @@ namespace Protogame
         }
         
         public bool Is3DContext { get; set; }
+        
+        private void RecalculateBoundingFrustrum()
+        {
+            this.m_BoundingFrustum = new BoundingFrustum(this.View * this.Projection);
+        }
         
         public void Render(IGameContext context)
         {

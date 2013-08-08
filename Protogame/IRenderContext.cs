@@ -26,6 +26,12 @@ namespace Protogame
         Effect Effect { get; }
         
         /// <summary>
+        /// The bounding frustrum for the current view and projection matrixes.
+        /// </summary>
+        /// <value>The bounding frustrum.</value>
+        BoundingFrustum BoundingFrustrum { get; }
+        
+        /// <summary>
         /// The view matrix for 3D rendering.
         /// </summary>
         Matrix View { get; set; }
