@@ -29,34 +29,27 @@ namespace Protogame
             this.ReloadTexture();
         }
         
-        public TextureAsset(
-            IContentCompiler contentCompiler,
-            IAssetContentManager assetContentManager,
-            string name,
-            Texture2D texture)
+        /// <summary>
+        /// Create a new TextureAsset from a in-memory texture.  Used when you need to pass in a 
+        /// generated texture into a function that accepts a TextureAsset.  TextureAssets created
+        /// with this constructor can not be saved or baked by an asset manager.
+        /// </summary>
+        public TextureAsset(Texture2D texture)
         {
             if (texture == null)
                 throw new ArgumentNullException("texture");
-            this.Name = name;
+            this.Name = null;
             this.Texture = texture;
             this.SourcePath = null;
             this.Data = null;
-            this.m_AssetContentManager = assetContentManager;
-            this.m_ContentCompiler = contentCompiler;
-            
-            // This doesn't work because MonoGame doesn't support SaveAsPng yet.
-            /*
-            using (var memory = new MemoryStream())
-            {
-                this.Texture.SaveAsPng(memory, this.Texture.Width, this.Texture.Height);
-                memory.Read(this.Data, 0, (int)memory.Position);
-            }
-            this.RebuildTexture();
-            */
+            this.m_AssetContentManager = null;
+            this.m_ContentCompiler = null;
         }
         
         public void ReloadTexture()
         {
+            if (this.m_AssetContentManager == null)
+                throw new InvalidOperationException("Unable to reload dynamic texture.");
             if (this.m_AssetContentManager != null && this.Data != null)
             {
                 using (var stream = new MemoryStream(this.Data))
@@ -73,6 +66,8 @@ namespace Protogame
         
         public void RebuildTexture()
         {
+            if (this.m_ContentCompiler == null)
+                throw new InvalidOperationException("Unable to reload dynamic texture.");
             try
             {
                 if (this.m_ContentCompiler != null)
