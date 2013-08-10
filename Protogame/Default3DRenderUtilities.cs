@@ -103,13 +103,14 @@ namespace Protogame
             
             var vertexes = new VertexPositionTexture[]
             {
-                new VertexPositionTexture(new Vector3(0, 0, 0), new Vector2(0, 1)),
-                new VertexPositionTexture(new Vector3(0, 1, 0), new Vector2(0, 0)),
-                new VertexPositionTexture(new Vector3(1, 0, 0), new Vector2(1, 1)),
-                new VertexPositionTexture(new Vector3(1, 1, 0), new Vector2(1, 0))
+                new VertexPositionTexture(Vector3.Transform(new Vector3(0, 0, 0), matrix), new Vector2(0, 1)),
+                new VertexPositionTexture(Vector3.Transform(new Vector3(0, 1, 0), matrix), new Vector2(0, 0)),
+                new VertexPositionTexture(Vector3.Transform(new Vector3(1, 0, 0), matrix), new Vector2(1, 1)),
+                new VertexPositionTexture(Vector3.Transform(new Vector3(1, 1, 0), matrix), new Vector2(1, 0))
             };
             var indicies = new short[]{ 1, 3, 0, 2 };
             
+            context.GraphicsDevice.BlendState = BlendState.NonPremultiplied;
             foreach (var pass in context.Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -118,11 +119,12 @@ namespace Protogame
                     PrimitiveType.TriangleStrip,
                     vertexes,
                     0,
-                    6,
+                    vertexes.Length,
                     indicies,
                     0,
-                    2);
+                    vertexes.Length -2 );/// 3);
             }
+            context.GraphicsDevice.BlendState = BlendState.Opaque;
         }
         
         public void RenderTexture(
