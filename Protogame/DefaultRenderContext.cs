@@ -23,14 +23,14 @@ namespace Protogame
         
         public Matrix World
         {
-            get { return this.m_Effect.View; }
-            set { this.m_Effect.World = value; this.RecalculateBoundingFrustrum(); }
+            get { return this.m_Effect.World; }
+            set { this.m_Effect.World = value; }
         }
         
         public Matrix Projection
         {
-            get { return this.m_Effect.View; }
-            set { this.m_Effect.Projection = value; }
+            get { return this.m_Effect.Projection; }
+            set { this.m_Effect.Projection = value; this.RecalculateBoundingFrustrum(); }
         }
         
         public bool Is3DContext { get; set; }
