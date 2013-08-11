@@ -8,8 +8,8 @@ namespace Protogame
 {
     public class PositionOctreeNode<T> where T : class
     {
-        private T m_Value;
-        private PositionOctreeNode<T>[] m_Nodes;
+        internal T m_Value;
+        internal PositionOctreeNode<T>[] m_Nodes;
         private int m_CurrentDepth;
         private int m_MaximalDepth;
         private long m_MaskDepth;

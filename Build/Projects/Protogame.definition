@@ -140,8 +140,13 @@
     <Compile Include="Protogame2DIoCModule.cs" />
     <Compile Include="Protogame3DIoCModule.cs" />
     <Compile Include="ProtogameException.cs" />
-    <Compile Include="Structure\PositionOctree.cs" />
+    <Compile Include="Structure\PositionOctree.cs">
+      <DependentUpon>PositionOctreeNode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Structure\PositionOctreeNode.cs" />
+    <Compile Include="Structure\PositionOctreeUtil.cs">
+      <DependentUpon>PositionOctreeUtil.tt</DependentUpon>
+    </Compile>
     <Compile Include="UI\AudioPlayer.cs" />
     <Compile Include="UI\BaseContainer.cs" />
     <Compile Include="UI\BasicSkin.cs" />
@@ -180,5 +185,9 @@
     <Compile Include="World.cs" />
     <Compile Include="WorldManager.cs" />
     <EmbeddedResource Include="font.Default.asset" />
+    <None Include="Structure\PositionOctreeUtil.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PositionOctreeUtil.cs</LastGenOutput>
+    </None>
   </Files>
 </Project>

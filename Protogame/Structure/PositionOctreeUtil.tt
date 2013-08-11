@@ -1,0 +1,54 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+namespace Protogame
+{
+    public static class PositionOctreeUtil
+    {
+        public static T GetFast64<T>(PositionOctree<T> octree, long x, long y, long z) where T : class
+        {
+            try
+            {
+<#
+    for (var i = 0; i < 64; i++)
+    {
+#>
+                const long _mask<#=i#> = 0x1L << <#=(64 - i - 1)#>;
+<#
+    }
+    for (var i = 0; i < 64; i++)
+    {
+        var fixs = "";
+        var fixe = "";
+        if (i == 0)
+        {
+            fixs = "System.Math.Abs(";
+            fixe = ")";
+        }
+#>
+                int _idx<#=i#> = <#=fixs#>(int)(((z & _mask<#=i#>) >> <#=(64 - i - 1)#>) + (((y & _mask<#=i#>) >> <#=(64 - i - 1)#>) << 1) + (((x & _mask<#=i#>) >> <#=(64 - i - 1)#>) << 2))<#=fixe#>;
+<#
+    }
+#>
+                return octree.RootNode<#
+    for (var i = 0; i < 64; i++)
+    {
+#>
+
+                    .m_Nodes[_idx<#=i#>]<#
+    }
+#>
+
+                    .m_Value;
+            }
+            catch (System.NullReferenceException)
+            {
+                return null;
+            }
+        }
+    }
+}

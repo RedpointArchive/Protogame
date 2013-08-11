@@ -10,6 +10,7 @@
     <Compile Include="BoundingBoxTests.cs" />
     <Compile Include="CircumcentreSolverTest.cs" />
     <Compile Include="PlatformingModuleTests.cs" />
+    <Compile Include="PositionOctreeTests.cs" />
     <None Include="packages.config" />
   </Files>
 </Project>
