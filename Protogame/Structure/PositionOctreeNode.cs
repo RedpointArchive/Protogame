@@ -12,21 +12,14 @@ namespace Protogame
         private PositionOctreeNode<T>[] m_Nodes;
         private int m_CurrentDepth;
         private int m_MaximalDepth;
-
-        // 0 = -1, -1, -1
-        // 1 = -1, -1,  1
-        // 2 = -1,  1, -1
-        // 3 = -1,  1,  1
-        // 4 =  1, -1, -1
-        // 5 =  1, -1,  1
-        // 6 =  1,  1, -1
-        // 7 =  1,  1,  1
+        private long m_MaskDepth;
 
         public PositionOctreeNode(int currentDepth, int maximalDepth)
         {
             this.m_Value = null;
             this.m_CurrentDepth = currentDepth;
             this.m_MaximalDepth = maximalDepth;
+            this.m_MaskDepth = 0x1L << (m_MaximalDepth - m_CurrentDepth - 1);
             this.m_Nodes = new PositionOctreeNode<T>[8]
             {
                 null,
@@ -45,11 +38,11 @@ namespace Protogame
             PositionOctreeNode<T> current = this;
             while (current != null && current.m_CurrentDepth != current.m_MaximalDepth)
             {
-                if ((x & current.GetMaskAtDepth()) == 0)
+                if ((x & current.m_MaskDepth) == 0)
                 {
-                    if ((y & current.GetMaskAtDepth()) == 0)
+                    if ((y & current.m_MaskDepth) == 0)
                     {
-                        if ((z & current.GetMaskAtDepth()) == 0)
+                        if ((z & current.m_MaskDepth) == 0)
                         {
                             current = current.m_Nodes[0] ?? null;
                         }
@@ -60,7 +53,7 @@ namespace Protogame
                     }
                     else
                     {
-                        if ((z & current.GetMaskAtDepth()) == 0)
+                        if ((z & current.m_MaskDepth) == 0)
                         {
                             current = current.m_Nodes[2] ?? null;
                         }
@@ -72,9 +65,9 @@ namespace Protogame
                 }
                 else
                 {
-                    if ((y & current.GetMaskAtDepth()) == 0)
+                    if ((y & current.m_MaskDepth) == 0)
                     {
-                        if ((z & current.GetMaskAtDepth()) == 0)
+                        if ((z & current.m_MaskDepth) == 0)
                         {
                             current = current.m_Nodes[4] ?? null;
                         }
@@ -85,7 +78,7 @@ namespace Protogame
                     }
                     else
                     {
-                        if ((z & current.GetMaskAtDepth()) == 0)
+                        if ((z & current.m_MaskDepth) == 0)
                         {
                             current = current.m_Nodes[6] ?? null;
                         }
@@ -101,11 +94,6 @@ namespace Protogame
             return current.m_Value;
         }
 
-        private long GetMaskAtDepth()
-        {
-            return 0x1L << (m_MaximalDepth - m_CurrentDepth - 1);
-        }
-
         private PositionOctreeNode<T> CreateSubnode(long relX, long relY, long relZ)
         {
             return new PositionOctreeNode<T>(this.m_CurrentDepth + 1, this.m_MaximalDepth);
@@ -116,11 +104,11 @@ namespace Protogame
             PositionOctreeNode<T> current = this;
             while (current != null && current.m_CurrentDepth != current.m_MaximalDepth)
             {
-                if ((x & current.GetMaskAtDepth()) == 0)
+                if ((x & current.m_MaskDepth) == 0)
                 {
-                    if ((y & current.GetMaskAtDepth()) == 0)
+                    if ((y & current.m_MaskDepth) == 0)
                     {
-                        if ((z & current.GetMaskAtDepth()) == 0)
+                        if ((z & current.m_MaskDepth) == 0)
                         {
                             if (current.m_Nodes[0] == null)
                                 current.m_Nodes[0] = current.CreateSubnode(-1, -1, -1);
@@ -135,7 +123,7 @@ namespace Protogame
                     }
                     else
                     {
-                        if ((z & current.GetMaskAtDepth()) == 0)
+                        if ((z & current.m_MaskDepth) == 0)
                         {
                             if (current.m_Nodes[2] == null)
                                 current.m_Nodes[2] = current.CreateSubnode(-1, 1, -1);
@@ -151,9 +139,9 @@ namespace Protogame
                 }
                 else
                 {
-                    if ((y & current.GetMaskAtDepth()) == 0)
+                    if ((y & current.m_MaskDepth) == 0)
                     {
-                        if ((z & current.GetMaskAtDepth()) == 0)
+                        if ((z & current.m_MaskDepth) == 0)
                         {
                             if (current.m_Nodes[4] == null)
                                 current.m_Nodes[4] = current.CreateSubnode(1, -1, -1);
@@ -168,7 +156,7 @@ namespace Protogame
                     }
                     else
                     {
-                        if ((z & current.GetMaskAtDepth()) == 0)
+                        if ((z & current.m_MaskDepth) == 0)
                         {
                             if (current.m_Nodes[6] == null)
                                 current.m_Nodes[6] = current.CreateSubnode(1, 1, -1);
