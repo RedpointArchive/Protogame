@@ -24,6 +24,32 @@ namespace Protogame
             };
         }
         
+        public static Microsoft.Xna.Framework.BoundingBox ToXna(this IBoundingBox boundingBox)
+        {
+            return new Microsoft.Xna.Framework.BoundingBox(
+                new Vector3(
+                    boundingBox.X,
+                    boundingBox.Y,
+                    boundingBox.Z),
+                new Vector3(
+                    boundingBox.X + boundingBox.Width,
+                    boundingBox.Y + boundingBox.Height,
+                    boundingBox.Z + boundingBox.Depth));
+        }
+        
+        public static IBoundingBox ToProtogame(this Microsoft.Xna.Framework.BoundingBox boundingBox)
+        {
+            return new BoundingBox
+            {
+                X = boundingBox.Min.X,
+                Y = boundingBox.Min.Y,
+                Z = boundingBox.Min.Z,
+                Width = (boundingBox.Max - boundingBox.Min).X,
+                Height = (boundingBox.Max - boundingBox.Min).Y,
+                Depth = (boundingBox.Max - boundingBox.Min).Z
+            };
+        }
+        
         public static void CopyTo(this IBoundingBox boundingBox, Rectangle rectangle)
         {
             rectangle.X = (int)boundingBox.X;
