@@ -1,10 +1,11 @@
 using System;
+using Ninject;
 
 namespace Protogame
 {
     public class HelpCommand : ICommand
     {
-        private Lazy<ICommand[]> m_Commands;
+        private IKernel m_Kernel;
     
         public string[] Names { get { return new[] { "help" }; } }
         public string[] Descriptions
@@ -19,15 +20,15 @@ namespace Protogame
         }
         
         public HelpCommand(
-            Lazy<ICommand[]> commands)
+            IKernel kernel)
         {
-            this.m_Commands = commands;
+            this.m_Kernel = kernel;
         }
 
         public string Execute(IGameContext gameContext, string name, string[] parameters)
         {
             var buffer = "";
-            foreach (var command in this.m_Commands.Value)
+            foreach (var command in this.m_Kernel.GetAll<ICommand>())
             {
                 for (var i = 0; i < command.Names.Length; i++)
                 {
