@@ -79,6 +79,7 @@
     <Compile Include="DefaultAudioHandle.cs" />
     <Compile Include="DefaultAudioUtilities.cs" />
     <Compile Include="DefaultBoundingBoxUtilities.cs" />
+    <Compile Include="DefaultConsole.cs" />
     <Compile Include="DefaultGameContext.cs" />
     <Compile Include="DefaultKeyboardStringReader.cs" />
     <Compile Include="DefaultRenderContext.cs" />
@@ -92,6 +93,8 @@
     <Compile Include="Extensions\MouseStateExtensions.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\UtilityExtensions.cs" />
+    <Compile Include="Commands\ExitCommand.cs" />
+    <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="FadingWorld.cs" />
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="I2DRenderUtilities.cs" />
@@ -100,6 +103,8 @@
     <Compile Include="IAudioUtilities.cs" />
     <Compile Include="IBoundingBox.cs" />
     <Compile Include="IBoundingBoxUtilities.cs" />
+    <Compile Include="IConsole.cs" />
+    <Compile Include="ICommand.cs" />
     <Compile Include="ICoreGame.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IGameContext.cs" />
