@@ -6,6 +6,14 @@ namespace Protogame
 {
     public class Default3DWorldManager : IWorldManager
     {
+        private IConsole m_Console;
+        
+        public Default3DWorldManager(
+            IConsole console)
+        {
+            this.m_Console = console;
+        }
+    
         public void Render<T>(T game) where T : Game, ICoreGame
         {
             game.RenderContext.Render(game.GameContext);
@@ -35,6 +43,8 @@ namespace Protogame
                 game.GameContext.World.RenderAbove(game.GameContext, game.RenderContext);
             }
             
+            this.m_Console.Render(game.GameContext, game.RenderContext);
+            
             game.RenderContext.SpriteBatch.End();
         }
         
@@ -46,6 +56,8 @@ namespace Protogame
                 entity.Update(game.GameContext, game.UpdateContext);
             
             game.GameContext.World.Update(game.GameContext, game.UpdateContext);
+            
+            this.m_Console.Update(game.GameContext, game.UpdateContext);
         }
     }
 }
