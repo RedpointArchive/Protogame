@@ -5,7 +5,7 @@ namespace Protogame
         string[] Names { get; }
         string[] Descriptions { get; }
         
-        string Execute(string name, string[] parameters);
+        string Execute(IGameContext gameContext, string name, string[] parameters);
     }
 }
 

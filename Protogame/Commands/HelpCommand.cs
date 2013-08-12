@@ -24,7 +24,7 @@ namespace Protogame
             this.m_Commands = commands;
         }
 
-        public string Execute(string name, string[] parameters)
+        public string Execute(IGameContext gameContext, string name, string[] parameters)
         {
             var buffer = "";
             foreach (var command in this.m_Commands.Value)

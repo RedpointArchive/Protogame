@@ -17,7 +17,7 @@ namespace Protogame
             }
         }
 
-        public string Execute(string name, string[] parameters)
+        public string Execute(IGameContext gameContext, string name, string[] parameters)
         {
             Environment.Exit(0);
             return "";

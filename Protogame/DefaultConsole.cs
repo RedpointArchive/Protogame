@@ -34,8 +34,10 @@ namespace Protogame
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             var state = Keyboard.GetState();
+#if DEBUG
             if (state.IsKeyPressed(Keys.OemTilde))
                 this.Open = !this.Open;
+#endif
             
             if (!this.Open)
                 return;
@@ -47,7 +49,7 @@ namespace Protogame
             if (state.IsKeyPressed(Keys.Enter))
             {
                 this.m_Log.Add("> " + this.m_Input);
-                this.Execute(this.Parse(this.m_Input.ToString()));
+                this.Execute(gameContext, this.Parse(this.m_Input.ToString()));
                 this.m_Input = new StringBuilder();
             }
         }
@@ -78,25 +80,31 @@ namespace Protogame
                             parsed.Parameters.Add(buffer);
                     }
                     else if (split[1][i] == ' ' && !inQuote)
+                    {
                         parsed.Parameters.Add(buffer);
+                        buffer = "";
+                    }
                     else
                         buffer += split[1][i];
                 }
                 if (buffer.Length > 0)
+                {
                     parsed.Parameters.Add(buffer);
+                    buffer = "";
+                }
             }
             return parsed;
         }
         
-        private void Execute(ParsedCommand parsedCommand)
+        private void Execute(IGameContext gameContext, ParsedCommand parsedCommand)
         {
             foreach (var command in this.m_Commands)
             {
                 if (command.Names.Contains(parsedCommand.Name))
                 {
-                    var output = command.Execute(parsedCommand.Name, parsedCommand.Parameters.ToArray());
+                    var output = command.Execute(gameContext, parsedCommand.Name, parsedCommand.Parameters.ToArray());
                     var lines = output.Split('\n');
-                    int start = -1, end = -1;
+                    int start = -1, end = lines.Length;
                     for (var i = 0; i < lines.Length; i++)
                     {
                         if (!string.IsNullOrEmpty(lines[i]))
