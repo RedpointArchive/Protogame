@@ -71,6 +71,8 @@
     <Compile Include="Collision\DefaultCollision.cs" />
     <Compile Include="Collision\ICollision.cs" />
     <Compile Include="Collision\ProtogameCollisionIoCModule.cs" />
+    <Compile Include="Commands\ExitCommand.cs" />
+    <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="CoreGame.cs" />
     <Compile Include="Default2DRenderUtilities.cs" />
     <Compile Include="Default2DWorldManager.cs" />
@@ -93,8 +95,6 @@
     <Compile Include="Extensions\MouseStateExtensions.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\UtilityExtensions.cs" />
-    <Compile Include="Commands\ExitCommand.cs" />
-    <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="FadingWorld.cs" />
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="I2DRenderUtilities.cs" />
@@ -103,8 +103,8 @@
     <Compile Include="IAudioUtilities.cs" />
     <Compile Include="IBoundingBox.cs" />
     <Compile Include="IBoundingBoxUtilities.cs" />
-    <Compile Include="IConsole.cs" />
     <Compile Include="ICommand.cs" />
+    <Compile Include="IConsole.cs" />
     <Compile Include="ICoreGame.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IGameContext.cs" />
