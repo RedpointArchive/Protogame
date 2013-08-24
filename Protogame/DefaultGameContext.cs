@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Ninject;
 
@@ -48,12 +49,24 @@ namespace Protogame
         {
             return this.m_Kernel.Get<T>();
         }
+
+        public IWorld CreateWorld<TFactory>(Func<TFactory, IWorld> creator)
+        {
+            return creator(this.m_Kernel.Get<TFactory>());
+        }
         
         public void SwitchWorld<T>() where T : IWorld
         {
             if (this.World != null)
                 this.World.Dispose();
             this.World = this.CreateWorld<T>();
+        }
+
+        public void SwitchWorld<TFactory>(Func<TFactory, IWorld> creator)
+        {
+            if (this.World != null)
+                this.World.Dispose();
+            this.World = this.CreateWorld<TFactory>(creator);
         }
         
         public void SwitchWorld<T>(T world) where T : IWorld

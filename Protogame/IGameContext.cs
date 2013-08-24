@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 
 namespace Protogame
@@ -15,7 +16,9 @@ namespace Protogame
         IWorldManager WorldManager { get; }
         
         IWorld CreateWorld<T>() where T : IWorld;
+        IWorld CreateWorld<TFactory>(Func<TFactory, IWorld> creator);
         void SwitchWorld<T>() where T : IWorld;
+        void SwitchWorld<TFactory>(Func<TFactory, IWorld> creator);
         void SwitchWorld<T>(T world) where T : IWorld;
         void ResizeWindow(int width, int height);
     }
