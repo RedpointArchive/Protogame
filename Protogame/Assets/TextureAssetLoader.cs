@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Protogame
 {
@@ -25,14 +26,13 @@ namespace Protogame
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             byte[] xnaData = null;
-            if (data.TextureData != null && data.TextureData is List<object>)
-                xnaData = ((List<object>)data.TextureData)
-                    .Cast<int>().Select(x => (byte)x).ToArray();
+            if (data.TextureData != null && data.TextureData is JArray)
+                xnaData = ((JArray)data.TextureData).Select(x => (byte)x).ToArray();
             var texture = new TextureAsset(
                 this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
-                data.SourcePath,
+                (string)data.SourcePath,
                 xnaData);
             #if DEBUG
             if (data.TextureData != null && data.TextureData is byte[])

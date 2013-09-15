@@ -11,7 +11,7 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
-            return new LevelAsset(name, data.Value, data.SourcePath);
+            return new LevelAsset(name, (string)data.Value, (string)data.SourcePath);
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)

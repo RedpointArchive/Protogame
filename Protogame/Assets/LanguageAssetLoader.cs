@@ -16,7 +16,7 @@ namespace Protogame
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             // The text key is the asset name.
-            return new LanguageAsset(name, data.Value);
+            return new LanguageAsset(name, (string)data.Value);
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)

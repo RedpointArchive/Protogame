@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace Protogame
 {
@@ -42,10 +42,7 @@ namespace Protogame
                 this.CreateDirectories(file.Directory);
                 using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))
                 {
-                    var serializer = new JavaScriptSerializer();
-                    serializer.MaxJsonLength = Int32.MaxValue;
-                    serializer.RegisterConverters(new[] { new DynamicJsonUnconverter() });
-                    writer.Write(serializer.Serialize(data));
+                    writer.Write(JsonConvert.SerializeObject(data));
                 }
             }
             catch (Exception ex)

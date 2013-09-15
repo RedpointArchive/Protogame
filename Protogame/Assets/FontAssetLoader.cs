@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Protogame
 {
@@ -26,14 +27,13 @@ namespace Protogame
         {
             byte[] xnaData = null;
             if (data.FontData != null)
-                xnaData = ((List<object>)data.FontData)
-                    .Cast<int>().Select(x => (byte)x).ToArray();
+                xnaData = ((JArray)data.FontData).Select(x => (byte)x).ToArray();
             return new FontAsset(
                 this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
-                data.FontName,
-                data.FontSize,
+                (string)data.FontName,
+                (int)data.FontSize,
                 xnaData);
         }
 

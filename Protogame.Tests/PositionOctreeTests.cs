@@ -13,6 +13,8 @@ namespace Protogame.Tests
             Assert.Equal("hello", octree.Find(0, 0, 0));
             octree.Insert("world", -1, -1, -1);
             Assert.Equal("world", octree.Find(-1, -1, -1));
+            octree.Insert("blah", -1, 0, -1);
+            Assert.Equal("blah", octree.Find(-1, 0, -1));
         }
         
         [Fact]
@@ -23,6 +25,8 @@ namespace Protogame.Tests
             Assert.Equal("hello", PositionOctreeUtil.GetFast64(octree, 0, 0, 0));
             octree.Insert("world", -1, -1, -1);
             Assert.Equal("world", PositionOctreeUtil.GetFast64(octree, -1, -1, -1));
+            octree.Insert("blah", -1, 0, -1);
+            Assert.Equal("blah", PositionOctreeUtil.GetFast64(octree, -1, 0, -1));
         }
     }
 }

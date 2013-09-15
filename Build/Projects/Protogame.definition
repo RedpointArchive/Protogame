@@ -15,7 +15,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -87,8 +86,6 @@
     <Compile Include="DefaultRenderContext.cs" />
     <Compile Include="DefaultTileUtilities.cs" />
     <Compile Include="DefaultUpdateContext.cs" />
-    <Compile Include="DynamicJsonConverter.cs" />
-    <Compile Include="DynamicJsonUnconverter.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Extensions\BoundingBoxExtensions.cs" />
     <Compile Include="Extensions\KeyboardStateExtensions.cs" />
@@ -190,6 +187,7 @@
     <Compile Include="World.cs" />
     <Compile Include="WorldManager.cs" />
     <EmbeddedResource Include="font.Default.asset" />
+    <None Include="packages.config" />
     <None Include="Structure\PositionOctreeUtil.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PositionOctreeUtil.cs</LastGenOutput>

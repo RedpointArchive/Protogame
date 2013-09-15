@@ -4,12 +4,12 @@
 // license on the website apply retroactively.
 //
 using Process4.Attributes;
-using System.Web.Script.Serialization;
 using System;
 using Ninject;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Protogame
 {
@@ -41,10 +41,7 @@ namespace Protogame
             this.Dirty = false;
             if (data != null)
             {
-                var serializer = new JavaScriptSerializer();
-                serializer.MaxJsonLength = Int32.MaxValue;
-                serializer.RegisterConverters(new[] { new DynamicJsonUnconverter() });
-                var raw = serializer.Serialize(data);
+                var raw = JsonConvert.SerializeObject(data);
                 this.Data = Encoding.UTF8.GetBytes(raw);
             }
             else
@@ -78,10 +75,7 @@ namespace Protogame
             var loaders = this.m_AssetLoaders.ToArray();
             if (data != null)
             {
-                var serializer = new JavaScriptSerializer();
-                serializer.MaxJsonLength = Int32.MaxValue;
-                serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
-                var obj = (dynamic)serializer.Deserialize<object>(Encoding.UTF8.GetString(data));
+                var obj = (dynamic)JsonConvert.DeserializeObject<dynamic>(Encoding.UTF8.GetString(data));
                 foreach (var loader in loaders)
                 {
                     var result = false;

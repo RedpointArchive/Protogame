@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace Protogame
 {
@@ -103,10 +103,7 @@ namespace Protogame
                 {
                     using (var reader = new StreamReader(file.FullName, Encoding.UTF8))
                     {
-                        var serializer = new JavaScriptSerializer();
-                        serializer.MaxJsonLength = Int32.MaxValue;
-                        serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
-                        return serializer.Deserialize<object>(reader.ReadToEnd());
+                        return JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
                     }
                 }
                 return null;
@@ -126,10 +123,7 @@ namespace Protogame
                 {
                     using (var reader = new StreamReader(embedded.First(), Encoding.UTF8))
                     {
-                        var serializer = new JavaScriptSerializer();
-                        serializer.MaxJsonLength = Int32.MaxValue;
-                        serializer.RegisterConverters(new[] { new DynamicJsonConverter() });
-                        return serializer.Deserialize<object>(reader.ReadToEnd());
+                        return JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
                     }
                 }
                 return null;
