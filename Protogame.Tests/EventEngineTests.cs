@@ -22,8 +22,6 @@ namespace Protogame.Tests
         
         private class BasicStaticEventBinder : StaticEventBinder
         {
-            public BasicStaticEventBinder(IKernel kernel) : base(kernel) { }
-            
             public override void Configure()
             {
                 this.Bind<BasicEvent>(x => true).To<BasicAction>();
@@ -32,8 +30,6 @@ namespace Protogame.Tests
         
         private class FilteredStaticEventBinder : StaticEventBinder
         {
-            public FilteredStaticEventBinder(IKernel kernel) : base(kernel) { }
-            
             public override void Configure()
             {
                 this.Bind<BasicEvent>(x => x.Original == 1).To<BasicAction>();
@@ -44,8 +40,8 @@ namespace Protogame.Tests
         public void TestBasicPropagation()
         {
             var @event = new BasicEvent { Original = 1 };
-            var binder = new BasicStaticEventBinder(new StandardKernel());
-            var engine = new DefaultEventEngine(new[] { binder });
+            var binder = new BasicStaticEventBinder();
+            var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
             engine.Fire(null, @event);
             Assert.Equal(1, @event.HitValue);
         }
@@ -55,8 +51,8 @@ namespace Protogame.Tests
         {
             var event1 = new BasicEvent { Original = 1 };
             var event2 = new BasicEvent { Original = 1 };
-            var binder = new BasicStaticEventBinder(new StandardKernel());
-            var engine = new DefaultEventEngine(new[] { binder });
+            var binder = new BasicStaticEventBinder();
+            var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
             engine.Fire(null, event1);
             Assert.Equal(1, event1.HitValue);
             engine.Fire(null, event2);

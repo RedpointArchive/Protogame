@@ -89,6 +89,7 @@
     <Compile Include="Entity.cs" />
     <Compile Include="Events\DefaultEventEngine.cs" />
     <Compile Include="Events\Event.cs" />
+    <Compile Include="Events\EventEngineHook.cs" />
     <Compile Include="Events\IEventAction.cs" />
     <Compile Include="Events\IEventBinder.cs" />
     <Compile Include="Events\IEventEngine.cs" />
@@ -97,6 +98,10 @@
     <Compile Include="Events\KeyboardEvent.cs" />
     <Compile Include="Events\KeyHeldEvent.cs" />
     <Compile Include="Events\KeyPressEvent.cs" />
+    <Compile Include="Events\MouseButton.cs" />
+    <Compile Include="Events\MouseEvent.cs" />
+    <Compile Include="Events\MouseMoveEvent.cs" />
+    <Compile Include="Events\MousePressEvent.cs" />
     <Compile Include="Events\ProtogameEventsIoCModule.cs" />
     <Compile Include="Events\StaticEventBinder.cs" />
     <Compile Include="Extensions\BoundingBoxExtensions.cs" />
@@ -115,6 +120,7 @@
     <Compile Include="ICommand.cs" />
     <Compile Include="IConsole.cs" />
     <Compile Include="ICoreGame.cs" />
+    <Compile Include="IEngineHook.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IGameContext.cs" />
     <Compile Include="IHasPosition.cs" />

@@ -1,16 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
+using Ninject.Syntax;
 
 namespace Protogame
 {
     public class DefaultEventEngine : IEventEngine
     {
-        private readonly IEnumerable<IEventBinder> m_EventBinders;
+        private readonly IEventBinder[] m_EventBinders;
     
         public DefaultEventEngine(
-            IEnumerable<IEventBinder> eventBinders)
+            IResolutionRoot resolutionRoot,
+            IEventBinder[] eventBinders)
         {
             this.m_EventBinders = eventBinders;
+            foreach (var eventBinder in this.m_EventBinders)
+            {
+                eventBinder.Assign(resolutionRoot);
+            }
         }
         
         public void Fire(IGameContext gameContext, Event @event)

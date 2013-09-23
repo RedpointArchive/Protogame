@@ -2,21 +2,26 @@ using System;
 using System.Collections.Generic;
 using Ninject;
 using System.Linq;
+using Ninject.Syntax;
 
 namespace Protogame
 {
     public abstract class StaticEventBinder : IEventBinder
     {
-        private IKernel m_Kernel;
+        private IResolutionRoot m_ResolutionRoot;
         private List<Func<IGameContext, IEventEngine, Event, bool>> m_Bindings;
         private bool m_Configured;
     
         public int Priority { get { return 100; } }
         
-        protected StaticEventBinder(IKernel kernel)
+        protected StaticEventBinder()
         {
-            this.m_Kernel = kernel;
             this.m_Bindings = new List<Func<IGameContext, IEventEngine, Event, bool>>();
+        }
+        
+        public void Assign(IResolutionRoot resolutionRoot)
+        {
+            this.m_ResolutionRoot = resolutionRoot;
         }
         
         public bool Handle(IGameContext gameContext, IEventEngine eventEngine, Event @event)
@@ -130,7 +135,7 @@ namespace Protogame
             {
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
-                    var action = this.m_StaticEventBinder.m_Kernel.Get<TAction>();
+                    var action = this.m_StaticEventBinder.m_ResolutionRoot.Get<TAction>();
                     action.Handle(gameContext, @event);
                     return true;
                 });
@@ -140,7 +145,7 @@ namespace Protogame
             {
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
-                    var listener = this.m_StaticEventBinder.m_Kernel.Get<TListener>();
+                    var listener = this.m_StaticEventBinder.m_ResolutionRoot.Get<TListener>();
                     return listener.Handle(gameContext, eventEngine, @event);
                 });
             }
@@ -149,7 +154,7 @@ namespace Protogame
             {
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
-                    var command = this.m_StaticEventBinder.m_Kernel.Get<TCommand>();
+                    var command = this.m_StaticEventBinder.m_ResolutionRoot.Get<TCommand>();
                     command.Execute(gameContext, "", parameters);
                     return true;
                 });
@@ -194,7 +199,7 @@ namespace Protogame
             {
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
-                    var action = this.m_StaticEventBinder.m_Kernel.Get<TEntityAction>();
+                    var action = this.m_StaticEventBinder.m_ResolutionRoot.Get<TEntityAction>();
                     if (gameContext.World == null)
                         return false;
                     if (gameContext.World.Entities == null)

@@ -1,7 +1,8 @@
+using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Ninject;
 using Ninject.Parameters;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -12,6 +13,7 @@ namespace Protogame
         private float m_ElapsedTime = 0.0f;
         private GraphicsDeviceManager m_GraphicsDeviceManager;
         private IProfiler m_Profiler;
+        private IEngineHook[] m_EngineHooks;
     
         public IGameContext GameContext { get; private set; }
         public IUpdateContext UpdateContext { get; private set; }
@@ -64,6 +66,10 @@ namespace Protogame
             this.UpdateContext = this.m_Kernel.Get<IUpdateContext>();
             this.RenderContext = this.m_Kernel.Get<IRenderContext>();
             
+            // Retrieve all engine hooks.  These can be set up by additional modules
+            // to change runtime behaviour.
+            this.m_EngineHooks = this.m_Kernel.GetAll<IEngineHook>().ToArray();
+            
             // Set up defaults.
             this.Window.Title = "Protogame!";
         }
@@ -93,6 +99,8 @@ namespace Protogame
                 using (this.m_Profiler.Measure("main"))
                 {
                     this.GameContext.GameTime = gameTime;
+                    foreach (var hook in this.m_EngineHooks)
+                        hook.Update(this.GameContext, this.UpdateContext);
                     this.GameContext.WorldManager.Update(this);
                 }
     
@@ -117,6 +125,8 @@ namespace Protogame
                 using (this.m_Profiler.Measure("main"))
                 {
                     this.GameContext.GameTime = gameTime;
+                    foreach (var hook in this.m_EngineHooks)
+                        hook.Render(this.GameContext, this.RenderContext);
                     this.GameContext.WorldManager.Render(this);
                 }
     
