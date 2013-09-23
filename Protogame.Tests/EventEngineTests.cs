@@ -11,6 +11,10 @@ namespace Protogame.Tests
             public int HitValue { get; set; }
         }
         
+        private class OtherEvent : Event
+        {
+        }
+        
         private class BasicAction : IEventAction
         {
             public void Handle(IGameContext gameContext, Event @event)
@@ -20,11 +24,27 @@ namespace Protogame.Tests
             }
         }
         
+        private class BasicAssertingAction : IEventAction
+        {
+            public void Handle(IGameContext gameContext, Event @event)
+            {
+                Assert.IsType<BasicEvent>(@event);
+            }
+        }
+        
         private class BasicStaticEventBinder : StaticEventBinder
         {
             public override void Configure()
             {
                 this.Bind<BasicEvent>(x => true).To<BasicAction>();
+            }
+        }
+        
+        private class AssertingStaticEventBinder : StaticEventBinder
+        {
+            public override void Configure()
+            {
+                this.Bind<BasicEvent>(x => true).To<BasicAssertingAction>();
             }
         }
         
@@ -47,16 +67,38 @@ namespace Protogame.Tests
         }
     
         [Fact]
-        public void TestFilteredPropagation()
+        public void TestFilteredPropagationInOrder()
         {
             var event1 = new BasicEvent { Original = 1 };
-            var event2 = new BasicEvent { Original = 1 };
-            var binder = new BasicStaticEventBinder();
+            var event2 = new BasicEvent { Original = 2 };
+            var binder = new FilteredStaticEventBinder();
             var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
             engine.Fire(null, event1);
             Assert.Equal(1, event1.HitValue);
             engine.Fire(null, event2);
             Assert.NotEqual(2, event2.HitValue);
+        }
+        
+        [Fact]
+        public void TestFilteredPropagationOutOfOrder()
+        {
+            var event1 = new BasicEvent { Original = 1 };
+            var event2 = new BasicEvent { Original = 2 };
+            var binder = new FilteredStaticEventBinder();
+            var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
+            engine.Fire(null, event2);
+            Assert.NotEqual(2, event2.HitValue);
+            engine.Fire(null, event1);
+            Assert.Equal(1, event1.HitValue);
+        }
+        
+        [Fact]
+        public void TestEventTypeCheck()
+        {
+            var @event = new OtherEvent();
+            var binder = new AssertingStaticEventBinder();
+            var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
+            engine.Fire(null, @event);
         }
     }
 }
