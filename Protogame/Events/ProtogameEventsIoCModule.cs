@@ -8,6 +8,7 @@ namespace Protogame
         {
             this.Bind<IEventEngine>().To<DefaultEventEngine>().InSingletonScope();
             this.Bind<IEngineHook>().To<EventEngineHook>();
+            this.Bind<IEventBinder>().To<ConsoleEventBinder>();
         }
     }
 }

@@ -87,6 +87,8 @@
     <Compile Include="DefaultTileUtilities.cs" />
     <Compile Include="DefaultUpdateContext.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="Events\ConsoleEventBinder.cs" />
+    <Compile Include="Events\ConsoleEventListener.cs" />
     <Compile Include="Events\DefaultEventEngine.cs" />
     <Compile Include="Events\Event.cs" />
     <Compile Include="Events\EventEngineHook.cs" />

@@ -181,8 +181,8 @@ namespace Protogame
                 kv.Item.Update(skin, kv.Layout.Value, gameTime, ref stealFocus);
 
             var keyboard = Keyboard.GetState();
-            var upPressed = keyboard.IsKeyPressed(Keys.Up);
-            var downPressed = keyboard.IsKeyPressed(Keys.Down);
+            var upPressed = keyboard.IsKeyPressed(this, Keys.Up);
+            var downPressed = keyboard.IsKeyPressed(this, Keys.Down);
             if (this.SelectedItem != null && (upPressed || downPressed))
             {
                 var tree = this.BuildEntryGraph(layout);

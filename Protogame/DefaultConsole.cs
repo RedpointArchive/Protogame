@@ -30,14 +30,15 @@ namespace Protogame
             this.m_Commands = commands;
             this.m_DefaultFontAsset = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
         }
+        
+        public void Toggle()
+        {
+            this.Open = !this.Open;
+        }
     
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             var state = Keyboard.GetState();
-#if DEBUG
-            if (state.IsKeyPressed(Keys.OemTilde))
-                this.Open = !this.Open;
-#endif
             
             if (!this.Open)
                 return;
@@ -46,7 +47,7 @@ namespace Protogame
             if (this.m_Input.ToString().LastIndexOf('`') != -1)
                 this.m_Input.Remove(this.m_Input.ToString().LastIndexOf('`'), 1);
             
-            if (state.IsKeyPressed(Keys.Enter))
+            if (state.IsKeyPressed(this, Keys.Enter))
             {
                 this.m_Log.Add("> " + this.m_Input);
                 this.Execute(gameContext, this.Parse(this.m_Input.ToString()));

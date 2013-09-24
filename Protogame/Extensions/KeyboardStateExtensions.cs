@@ -6,12 +6,16 @@ namespace Protogame
 {
     public static class KeyboardStateExtensions
     {
-        private static Dictionary<Keys, KeyState> m_KeyState;
+        private static Dictionary<int, Dictionary<Keys, KeyState>> m_GlobalKeyState;
 
-        public static bool IsKeyPressed(this KeyboardState state, Keys key)
+        public static bool IsKeyPressed(this KeyboardState state, object obj, Keys key)
         {
-            if (m_KeyState == null)
-                m_KeyState = new Dictionary<Keys, KeyState>();
+            if (m_GlobalKeyState == null)
+                m_GlobalKeyState = new Dictionary<int, Dictionary<Keys, KeyState>>();
+            var hash = obj == null ? 0 : obj.GetHashCode();
+            if (!m_GlobalKeyState.ContainsKey(hash))
+                m_GlobalKeyState[hash] = new Dictionary<Keys, KeyState>();
+            var m_KeyState = m_GlobalKeyState[hash];
             var oldPressed = KeyState.Up;
             var newPressed = state[key];
             var result = false;

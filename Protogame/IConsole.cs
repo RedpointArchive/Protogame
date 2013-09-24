@@ -6,6 +6,7 @@ namespace Protogame
     {
         bool Open { get; }
         
+        void Toggle();
         void Update(IGameContext gameContext, IUpdateContext updateContext);
         void Render(IGameContext gameContext, IRenderContext renderContext);
     }
