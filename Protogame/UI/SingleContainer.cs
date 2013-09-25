@@ -29,13 +29,13 @@ namespace Protogame
             this.m_Child.Parent = this;
         }
 
-        public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
+        public virtual void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
             if (this.m_Child != null)
                 this.m_Child.Update(skin, layout, gameTime, ref stealFocus);
         }
 
-        public void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        public virtual void Draw(IRenderContext context, ISkin skin, Rectangle layout)
         {
             skin.DrawSingleContainer(context, layout, this);
             if (this.m_Child != null)
