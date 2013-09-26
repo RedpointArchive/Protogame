@@ -56,6 +56,7 @@ namespace Protogame
             IBindableTo<TEvent, TListener> ToListener<TListener>() where TListener : IEventListener;
             IBindableTo<TEvent, TCommand> ToCommand<TCommand>(params string[] arguments) where TCommand : ICommand;
             IBindableOn<TEvent, TEntity> On<TEntity>() where TEntity : IEntity;
+            IBindableOnTogglable<TEvent, TEntity> OnTogglable<TEntity>() where TEntity : IEntity, IEventTogglable;
         }
         
         protected interface IBindableTo<TEvent, TTarget> where TEvent : Event
@@ -70,10 +71,23 @@ namespace Protogame
                 where TEntityAction : IEventEntityAction<TEntity>;
         }
         
+        protected interface IBindableOnTogglable<TEvent, TEntity> : IBindableOn<TEvent, TEntity>
+            where TEvent : Event
+            where TEntity : IEntity, IEventTogglable
+        {
+            IBindableOnTo<TEvent, TEntity> ToToggle(string id);
+        }
+        
         protected interface IBindableOnTo<TEvent, TEntity, TEntityAction>
             where TEvent : Event
             where TEntity : IEntity
             where TEntityAction : IEventEntityAction<TEntity>
+        {
+        }
+        
+        protected interface IBindableOnTo<TEvent, TEntity>
+            where TEvent : Event
+            where TEntity : IEntity, IEventTogglable
         {
         }
         
@@ -124,6 +138,13 @@ namespace Protogame
             public IBindableOn<T, TEntity> On<TEntity>() where TEntity : IEntity
             {
                 return new DefaultBindableOn<T, TEntity>(
+                    this.m_StaticEventBinder,
+                    this.m_Filter);
+            }
+
+            public IBindableOnTogglable<T, TEntity> OnTogglable<TEntity>() where TEntity : IEntity, IEventTogglable
+            {
+                return new DefaultBindableOnTogglable<T, TEntity>(
                     this.m_StaticEventBinder,
                     this.m_Filter);
             }
@@ -189,8 +210,8 @@ namespace Protogame
             where TEvent : Event
             where TEntity : IEntity
         {
-            private readonly StaticEventBinder m_StaticEventBinder;
-            private readonly Func<TEvent, bool> m_Filter;
+            protected readonly StaticEventBinder m_StaticEventBinder;
+            protected readonly Func<TEvent, bool> m_Filter;
             
             public DefaultBindableOn(
                 StaticEventBinder staticEventBinder,
@@ -207,6 +228,28 @@ namespace Protogame
                     this.m_StaticEventBinder,
                     this.m_Filter);
                 bindable.Bind();
+                return bindable;
+            }
+        }
+        
+        private class DefaultBindableOnTogglable<TEvent, TEntity> : 
+            DefaultBindableOn<TEvent, TEntity>,
+            IBindableOnTogglable<TEvent, TEntity>
+            where TEvent : Event
+            where TEntity : IEntity, IEventTogglable
+        {
+            public DefaultBindableOnTogglable(
+                StaticEventBinder staticEventBinder,
+                Func<TEvent, bool> filter) : base(staticEventBinder, filter)
+            {
+            }
+            
+            public IBindableOnTo<TEvent, TEntity> ToToggle(string id)
+            {
+                var bindable = new DefaultBindableOnToTogglable<TEvent, TEntity>(
+                    this.m_StaticEventBinder,
+                    this.m_Filter);
+                bindable.Bind(id);
                 return bindable;
             }
         }
@@ -251,6 +294,51 @@ namespace Protogame
                     if (exactOrDerivedMatch != null)
                     {
                         action.Handle((TEntity)exactOrDerivedMatch, @event);
+                        return true;
+                    }
+                    return false;
+                });
+            }
+        }
+        
+        private class DefaultBindableOnToTogglable<TEvent, TEntity>
+            : IBindableOnTo<TEvent, TEntity>
+            where TEvent : Event
+            where TEntity : IEntity, IEventTogglable
+        {
+            private readonly StaticEventBinder m_StaticEventBinder;
+            private readonly Func<TEvent, bool> m_Filter;
+            
+            public DefaultBindableOnToTogglable(
+                StaticEventBinder staticEventBinder,
+                Func<TEvent, bool> filter)
+            {
+                this.m_StaticEventBinder = staticEventBinder;
+                this.m_Filter = filter;
+            }
+            
+            public void Bind(string id)
+            {
+                this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
+                {
+                    if (!(@event is TEvent))
+                        return false;
+                    if (!this.m_Filter(@event as TEvent))
+                        return false;
+                    if (gameContext.World == null)
+                        return false;
+                    if (gameContext.World.Entities == null)
+                        return false;
+                    var exactMatch = gameContext.World.Entities.FirstOrDefault(x => x.GetType() == typeof(TEntity));
+                    var exactOrDerivedMatch = gameContext.World.Entities.FirstOrDefault(x => x is TEntity);
+                    if (exactMatch != null)
+                    {
+                        ((TEntity)exactMatch).Toggle(id);
+                        return true;
+                    }
+                    if (exactOrDerivedMatch != null)
+                    {
+                        ((TEntity)exactOrDerivedMatch).Toggle(id);
                         return true;
                     }
                     return false;

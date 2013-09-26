@@ -97,6 +97,7 @@
     <Compile Include="Events\IEventEngine.cs" />
     <Compile Include="Events\IEventEntityAction.cs" />
     <Compile Include="Events\IEventListener.cs" />
+    <Compile Include="Events\IEventTogglable.cs" />
     <Compile Include="Events\KeyboardEvent.cs" />
     <Compile Include="Events\KeyHeldEvent.cs" />
     <Compile Include="Events\KeyPressEvent.cs" />
