@@ -166,13 +166,13 @@ namespace Protogame
             
             public void BindAsAction<TAction>() where TAction : IEventAction
             {
+                var action = this.m_StaticEventBinder.m_ResolutionRoot.Get<TAction>();
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
                     if (!(@event is TEvent))
                         return false;
                     if (!this.m_Filter(@event as TEvent))
                         return false;
-                    var action = this.m_StaticEventBinder.m_ResolutionRoot.Get<TAction>();
                     action.Handle(gameContext, @event);
                     return true;
                 });
@@ -180,26 +180,26 @@ namespace Protogame
             
             public void BindAsListener<TListener>() where TListener : IEventListener
             {
+                var listener = this.m_StaticEventBinder.m_ResolutionRoot.Get<TListener>();
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
                     if (!(@event is TEvent))
                         return false;
                     if (!this.m_Filter(@event as TEvent))
                         return false;
-                    var listener = this.m_StaticEventBinder.m_ResolutionRoot.Get<TListener>();
                     return listener.Handle(gameContext, eventEngine, @event);
                 });
             }
             
             public void BindAsCommand<TCommand>(params string[] parameters) where TCommand : ICommand
             {
+                var command = this.m_StaticEventBinder.m_ResolutionRoot.Get<TCommand>();
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
                     if (!(@event is TEvent))
                         return false;
                     if (!this.m_Filter(@event as TEvent))
                         return false;
-                    var command = this.m_StaticEventBinder.m_ResolutionRoot.Get<TCommand>();
                     command.Execute(gameContext, "", parameters);
                     return true;
                 });
@@ -273,13 +273,13 @@ namespace Protogame
             
             public void Bind()
             {
+                var action = this.m_StaticEventBinder.m_ResolutionRoot.Get<TEntityAction>();
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
                     if (!(@event is TEvent))
                         return false;
                     if (!this.m_Filter(@event as TEvent))
                         return false;
-                    var action = this.m_StaticEventBinder.m_ResolutionRoot.Get<TEntityAction>();
                     if (gameContext.World == null)
                         return false;
                     if (gameContext.World.Entities == null)

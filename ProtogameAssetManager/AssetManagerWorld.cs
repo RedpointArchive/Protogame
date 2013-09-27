@@ -47,7 +47,7 @@ namespace ProtogameAssetManager
             IAssetManagerProvider assetManagerProvider,
             I2DRenderUtilities renderUtilities,
             ISkin skin,
-            IEnumerable<IAssetLoader> loaders)
+            IAssetLoader[] loaders)
         {
             this.Entities = new List<IEntity>();
             this.m_Skin = skin;

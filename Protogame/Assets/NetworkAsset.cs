@@ -21,7 +21,7 @@ namespace Protogame
         private NetworkAssetManager Manager { get; set; }
         
         [Local]
-        private IEnumerable<IAssetLoader> m_AssetLoaders;
+        private IAssetLoader[] m_AssetLoaders;
 
         /// <summary>
         /// Whether the underlying network asset needs to be refreshed from
@@ -33,7 +33,7 @@ namespace Protogame
             set;
         }
 
-        internal NetworkAsset(IEnumerable<IAssetLoader> loaders, object data, string name, NetworkAssetManager manager)
+        internal NetworkAsset(IAssetLoader[] loaders, object data, string name, NetworkAssetManager manager)
         {
             this.m_AssetLoaders = loaders;
             this.Name = name;
@@ -55,7 +55,7 @@ namespace Protogame
         /// </summary>
         /// <param name="loaders">The asset loaders this network asset should use.</param>
         [Local]
-        public void InjectLoaders(IEnumerable<IAssetLoader> loaders)
+        public void InjectLoaders(IAssetLoader[] loaders)
         {
             this.m_AssetLoaders = loaders;
         }

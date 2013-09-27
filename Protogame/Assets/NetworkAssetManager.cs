@@ -103,7 +103,7 @@ namespace Protogame
                     }
                     catch (AssetNotFoundException)
                     {
-                        result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>(), null, asset, this);
+                        result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>().ToArray(), null, asset, this);
                         this.m_Assets.Add(asset, result);
                         return result;
                     }
@@ -113,7 +113,7 @@ namespace Protogame
 
                 // We now have our raw asset and we need to wrap it in
                 // a NetworkAsset.
-                result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>(), raw, asset, this);
+                result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>().ToArray(), raw, asset, this);
                 this.m_Assets.Add(asset, result);
                 return result;
             }
@@ -139,7 +139,7 @@ namespace Protogame
                 // Otherwise we really do need to make a request over
                 // the network to get an initial NetworkAsset.
                 var networkAsset = this.GetUnresolved(asset) as NetworkAsset;
-                networkAsset.InjectLoaders(this.m_Kernel.GetAll<IAssetLoader>());
+                networkAsset.InjectLoaders(this.m_Kernel.GetAll<IAssetLoader>().ToArray());
                 this.m_ClientCache.Add(asset, networkAsset.Resolve<T>());
                 return (T)this.m_ClientCache[asset];
             }
@@ -155,7 +155,7 @@ namespace Protogame
             {
                 return this.Get<T>(asset);
             }
-            catch (AssetNotFoundException ex)
+            catch (AssetNotFoundException)
             {
                 return null;
             }

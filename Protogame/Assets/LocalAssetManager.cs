@@ -25,14 +25,14 @@ namespace Protogame
         private IRawAssetSaver m_RawAssetSaver;
         private Dictionary<string, IAsset> m_Assets = new Dictionary<string, IAsset>();
         private Dictionary<string, object> m_RawAssets = new Dictionary<string, object>();
-        private IEnumerable<IAssetLoader> m_AssetLoaders;
-        private IEnumerable<IAssetSaver> m_AssetSavers;
+        private IAssetLoader[] m_AssetLoaders;
+        private IAssetSaver[] m_AssetSavers;
 
         public LocalAssetManager(
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
-            IEnumerable<IAssetLoader> loaders,
-            IEnumerable<IAssetSaver> savers)
+            IAssetLoader[] loaders,
+            IAssetSaver[] savers)
         {
             this.m_RawAssetLoader = rawLoader;
             this.m_RawAssetSaver = rawSaver;

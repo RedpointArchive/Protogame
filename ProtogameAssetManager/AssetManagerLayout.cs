@@ -35,7 +35,7 @@ namespace ProtogameAssetManager
         public AssetManagerLayout(
             IAssetManagerProvider assetManagerProvider,
             I2DRenderUtilities renderUtilities,
-            IEnumerable<IAssetLoader> loaders,
+            IAssetLoader[] loaders,
             CanvasEntity canvasEntity)
         {
             this.m_CanvasEntity = canvasEntity;

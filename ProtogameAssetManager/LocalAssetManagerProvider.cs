@@ -13,8 +13,8 @@ namespace ProtogameAssetManager
         public LocalAssetManagerProvider(
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
-            IEnumerable<IAssetLoader> loaders,
-            IEnumerable<IAssetSaver> savers)
+            IAssetLoader[] loaders,
+            IAssetSaver[] savers)
         {
             this.m_AssetManager = new LocalAssetManager(
                 rawLoader,
