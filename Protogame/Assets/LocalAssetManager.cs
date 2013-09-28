@@ -6,8 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ninject;
-using System.IO;
 
 namespace Protogame
 {
@@ -24,7 +22,6 @@ namespace Protogame
         private IRawAssetLoader m_RawAssetLoader;
         private IRawAssetSaver m_RawAssetSaver;
         private Dictionary<string, IAsset> m_Assets = new Dictionary<string, IAsset>();
-        private Dictionary<string, object> m_RawAssets = new Dictionary<string, object>();
         private IAssetLoader[] m_AssetLoaders;
         private IAssetSaver[] m_AssetSavers;
 
@@ -48,6 +45,7 @@ namespace Protogame
         {
             foreach (var asset in this.m_RawAssetLoader.ScanRawAssets())
                 this.GetUnresolved(asset);
+            GC.Collect();
         }
 
         public IAsset GetUnresolved(string asset)
@@ -55,13 +53,7 @@ namespace Protogame
             object obj;
             if (this.m_Assets.ContainsKey(asset))
                 return this.m_Assets[asset];
-            if (this.m_RawAssets.ContainsKey(asset))
-                obj = this.m_RawAssets[asset];
-            else
-            {
-                obj = this.m_RawAssetLoader.LoadRawAsset(asset);
-                this.m_RawAssets.Add(asset, obj);
-            }
+            obj = this.m_RawAssetLoader.LoadRawAsset(asset);
             var loaders = this.m_AssetLoaders.ToArray();
             if (obj != null)
             {
@@ -103,7 +95,7 @@ namespace Protogame
             {
                 return this.GetUnresolved(asset).Resolve<T>();
             }
-            catch (AssetNotFoundException ex)
+            catch (AssetNotFoundException)
             {
                 return null;
             }
@@ -117,8 +109,8 @@ namespace Protogame
                 return this.m_Assets.Values.ToArray();
             }
         }
-
-        public void Save(IAsset asset)
+        
+        private void SaveOrBake(IAsset asset, bool bake)
         {
             var savers = this.m_AssetSavers.ToArray();
             foreach (var saver in savers)
@@ -135,7 +127,8 @@ namespace Protogame
                 {
                     var result = saver.Handle(asset);
                     this.m_Assets[asset.Name] = asset;
-                    this.m_RawAssets[asset.Name] = result;
+                    if (bake)
+                        this.m_RawAssetSaver.SaveRawAsset(asset.Name, result);
                     return;
                 }
             }
@@ -144,10 +137,14 @@ namespace Protogame
                 "No saver for this asset could be found.");
         }
 
+        public void Save(IAsset asset)
+        {
+            this.SaveOrBake(asset, false);
+        }
+
         public void Bake(IAsset asset)
         {
-            this.Save(asset);
-            this.m_RawAssetSaver.SaveRawAsset(asset.Name, this.m_RawAssets[asset.Name]);
+            this.SaveOrBake(asset, true);
         }
     }
 }
