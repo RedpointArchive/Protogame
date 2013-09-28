@@ -17,6 +17,7 @@ namespace Protogame
             this.Bind<IConsole>().To<DefaultConsole>().InSingletonScope();
             this.Bind<ICommand>().To<ExitCommand>();
             this.Bind<ICommand>().To<HelpCommand>();
+            this.Bind<ICommand>().To<GCCommand>();
         }
     }
 }

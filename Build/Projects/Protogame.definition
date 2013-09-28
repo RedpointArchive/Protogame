@@ -71,6 +71,7 @@
     <Compile Include="Collision\ICollision.cs" />
     <Compile Include="Collision\ProtogameCollisionIoCModule.cs" />
     <Compile Include="Commands\ExitCommand.cs" />
+    <Compile Include="Commands\GCCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="CoreGame.cs" />
     <Compile Include="Default2DRenderUtilities.cs" />
