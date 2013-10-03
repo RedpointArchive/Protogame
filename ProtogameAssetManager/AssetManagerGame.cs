@@ -14,11 +14,11 @@ namespace ProtogameAssetManager
             get { return this.GameContext.World as AssetManagerWorld; }
         }
 
-        public AssetManagerGame(
-            IKernel kernel,
-            IAssetManager assetManager) : base(kernel)
+        public AssetManagerGame(IKernel kernel) : base(kernel)
         {
-            this.m_AssetManager = assetManager;
+            // We can't pass the asset manager into the game because
+            // we need to wait for CoreGame to register IAssetContentManager.
+            this.m_AssetManager = kernel.Get<IAssetManagerProvider>().GetAssetManager(true);
         }
         
         protected override void LoadContent()

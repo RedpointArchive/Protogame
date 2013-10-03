@@ -6,6 +6,7 @@ using Process4.Attributes;
 using Protogame;
 using System.Reflection;
 using System.IO;
+using System.Collections.Generic;
 
 namespace ProtogameAssetManager
 {
@@ -69,36 +70,52 @@ namespace ProtogameAssetManager
 
             var runningFile = new FileInfo(Assembly.GetExecutingAssembly().Location);
             var workingDirectoryInfo = new DirectoryInfo(Environment.CurrentDirectory);
+            var scannedUnique = new List<string>();
             foreach (var file in runningFile.Directory.GetFiles("*.dll"))
             {
+                if (scannedUnique.Contains(file.FullName))
+                    continue;
                 Console.WriteLine("Scanning " + file.Name);
                 try
                 {
                     RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                    scannedUnique.Add(file.FullName);
                 }
                 catch (BadImageFormatException) { }
             }
             foreach (var file in runningFile.Directory.GetFiles("*.exe"))
             {
+                if (scannedUnique.Contains(file.FullName))
+                    continue;
                 Console.WriteLine("Scanning " + file.Name);
-                try {
+                try
+                {
                     RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                    scannedUnique.Add(file.FullName);
                 }
                 catch (BadImageFormatException) { }
             }
             foreach (var file in workingDirectoryInfo.GetFiles("*.dll"))
             {
+                if (scannedUnique.Contains(file.FullName))
+                    continue;
                 Console.WriteLine("Scanning " + file.Name);
-                try{
+                try
+                {
                     RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                    scannedUnique.Add(file.FullName);
                 }
                 catch (BadImageFormatException) { }
             }
             foreach (var file in workingDirectoryInfo.GetFiles("*.exe"))
             {
+                if (scannedUnique.Contains(file.FullName))
+                    continue;
                 Console.WriteLine("Scanning " + file.Name);
-                try{
+                try
+                {
                     RegisterEditorsFromAssembly(Assembly.LoadFrom(file.FullName), kernel);
+                    scannedUnique.Add(file.FullName);
                 }
                 catch (BadImageFormatException) { }
             }
@@ -112,14 +129,9 @@ namespace ProtogameAssetManager
                 kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
             }
             else
-            {
-                var assetManagerProvider = kernel.Get<LocalAssetManagerProvider>();
-                kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
-            }
+                kernel.Bind<IAssetManagerProvider>().To<LocalAssetManagerProvider>().InSingletonScope();
 
-            using (var game = new AssetManagerGame(
-                kernel,
-                kernel.Get<IAssetManagerProvider>().GetAssetManager(true)))
+            using (var game = new AssetManagerGame(kernel))
             {
                 game.Run();
             }
