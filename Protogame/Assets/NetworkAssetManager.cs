@@ -69,6 +69,7 @@ namespace Protogame
             }
         }
 
+        [ClientCallable]
         public IAsset[] GetAll()
         {
             lock (this.m_Assets)
