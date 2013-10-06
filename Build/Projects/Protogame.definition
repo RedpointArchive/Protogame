@@ -5,7 +5,7 @@
   </Properties>
   <References>
     <Reference Include="AStarPathFinder" />
-    <Reference Include="Dx" />
+    <Reference Include="Dx.Runtime" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MonoGame" />
     <Reference Include="MonoGame.Framework.Content.Pipeline" />

@@ -12,7 +12,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Protogame" />
     <Reference Include="MonoGame" />
-    <Reference Include="Dx" />
+    <Reference Include="Dx.Runtime" />
     <Reference Include="Ninject" />
   </References>
   <Files>

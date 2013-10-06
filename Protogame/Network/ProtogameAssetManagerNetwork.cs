@@ -5,9 +5,7 @@
 //
 using System;
 using System.Net;
-using Data4;
-using Process4;
-using Process4.Interfaces;
+using Dx.Runtime;
 
 namespace Protogame
 {
@@ -26,7 +24,7 @@ namespace Protogame
                 Guid.Parse("1cdb068a-3b00-4442-b7d4-cf051df5db3b"),
                 Guid.Parse("f9db9e39-eb6f-4e1a-8f4b-0ead4c109c2d"));
 
-        public ProtogameAssetManagerNetwork(LocalNode node, bool isAssetManager)
+        public ProtogameAssetManagerNetwork(ILocalNode node, bool isAssetManager)
         {
             this.Node = node;
             this.IsAssetManager = isAssetManager;
@@ -40,7 +38,7 @@ namespace Protogame
 
         #region INetworkProvider Members
 
-        public LocalNode Node { get; private set; }
+        public ILocalNode Node { get; private set; }
 
         public ID ID
         {

@@ -3,12 +3,11 @@
 // on the main Tychaia website (www.tychaia.com).  Changes to the
 // license on the website apply retroactively.
 //
-using Process4.Attributes;
-using System.Collections.Generic;
-using Ninject;
-using System.Linq;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
+using Dx.Runtime;
+using Ninject;
 
 namespace Protogame
 {
@@ -129,7 +128,7 @@ namespace Protogame
             // when we need to pull down new data, and this is handled inside
             // the NetworkAssetProxy.  Thus we can cache our resolved asset
             // forever.
-            if (!Process4.LocalNode.Singleton.IsServer)
+            if (!(this as ITransparent).Node.IsServer)
             {
                 // If the network asset already exists, return it.
                 if (this.m_ClientCache == null)

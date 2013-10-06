@@ -1,16 +1,14 @@
 using System;
-using Process4;
-using Ninject;
-using NDesk.Options;
-using Process4.Attributes;
-using Protogame;
-using System.Reflection;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using Dx.Runtime;
+using NDesk.Options;
+using Ninject;
+using Protogame;
 
 namespace ProtogameAssetManager
 {
-    [Distributed(Architecture.ServerClient, Caching.PushOnChange)]
     static class Program
     {
         static void RegisterEditorsFromAssembly(Assembly assembly, IKernel kernel)
@@ -122,9 +120,12 @@ namespace ProtogameAssetManager
             
             if (connectToRunningGame)
             {
-                var node = new LocalNode();
+                var factory = new DefaultDxFactory();
+                var node = factory.CreateLocalNode(
+                    Caching.PushOnChange,
+                    Architecture.ServerClient); 
                 node.Network = new ProtogameAssetManagerNetwork(node, true);
-                node.Join();
+                node.Join(ID.NewHash("asset manager"));
                 var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);
                 kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
             }

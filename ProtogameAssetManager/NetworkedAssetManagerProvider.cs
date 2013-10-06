@@ -1,13 +1,12 @@
-using Process4;
-using Process4.Collections;
-using Protogame;
+using Dx.Runtime;
 using Ninject;
+using Protogame;
 
 namespace ProtogameAssetManager
 {
     public class NetworkedAssetManagerProvider : IAssetManagerProvider
     {
-        private LocalNode m_Node;
+        private ILocalNode m_Node;
         private IKernel m_Kernel;
 
         public bool IsReady
@@ -17,7 +16,7 @@ namespace ProtogameAssetManager
                 try
                 {
                     var assetManager = (NetworkAssetManager)
-                        new Distributed<NetworkAssetManager>("asset-manager", true);
+                        new Distributed<NetworkAssetManager>(this.m_Node, "asset-manager", true);
                     if (assetManager == null)
                         return false;
                     assetManager.SetKernel(this.m_Kernel);
@@ -30,7 +29,7 @@ namespace ProtogameAssetManager
             }
         }
 
-        public NetworkedAssetManagerProvider(LocalNode node, IKernel kernel)
+        public NetworkedAssetManagerProvider(ILocalNode node, IKernel kernel)
         {
             this.m_Node = node;
             this.m_Kernel = kernel;
@@ -39,7 +38,7 @@ namespace ProtogameAssetManager
         public IAssetManager GetAssetManager(bool permitCreate = false)
         {
             var assetManager = (NetworkAssetManager)
-                (new Distributed<NetworkAssetManager>("asset-manager", !permitCreate));
+                (new Distributed<NetworkAssetManager>(this.m_Node, "asset-manager", !permitCreate));
             assetManager.SetKernel(this.m_Kernel);
             return assetManager;
         }

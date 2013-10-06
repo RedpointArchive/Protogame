@@ -6,7 +6,7 @@
           <xsl:attribute name="Command">
             <xsl:value-of select="concat(
   /Input/Generation/RootPath,
-  'ThirdParty/Dx/Process4.Task/bin/Debug/Process4.Task.exe')" />
+  'ThirdParty/Dx/Dx.Process/bin/Debug/Dx.Process.exe')" />
             <xsl:text> "$(TargetPath)"</xsl:text>
           </xsl:attribute>
         </Exec>
@@ -17,7 +17,7 @@
             <xsl:text>mono </xsl:text>
             <xsl:value-of select="concat(
   /Input/Generation/RootPath,
-  'ThirdParty/Dx/Process4.Task/bin/Debug/Process4.Task.exe')" />
+  'ThirdParty/Dx/Dx.Process/bin/Debug/Dx.Process.exe')" />
             <xsl:text> "$(TargetPath)"</xsl:text>
           </xsl:attribute>
         </Exec>

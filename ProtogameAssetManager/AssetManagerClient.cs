@@ -1,12 +1,12 @@
-using System.Reflection;
-using System.Diagnostics;
-using Process4;
-using Protogame;
 using System;
-using System.Threading;
-using Ninject;
-using NDesk.Options;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Threading;
+using Dx.Runtime;
+using NDesk.Options;
+using Ninject;
+using Protogame;
 
 namespace ProtogameAssetManager
 {
@@ -36,13 +36,12 @@ namespace ProtogameAssetManager
                 process.Start();
             }
 
-            var node = new LocalNode(
-                Assembly.GetExecutingAssembly(),
-                new Process4.Attributes.DistributedAttribute(
-                    Process4.Attributes.Architecture.ServerClient,
-                    Process4.Attributes.Caching.PushOnChange));
+            var factory = new DefaultDxFactory();
+            var node = factory.CreateLocalNode(
+                Caching.PushOnChange,
+                Architecture.ServerClient);
             node.Network = new ProtogameAssetManagerNetwork(node, false);
-            node.Join();
+            node.Join(ID.NewHash("asset manager"));
 
             var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);
             kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
