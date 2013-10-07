@@ -91,7 +91,7 @@ namespace Protogame
                 // If the network asset already exists, return it.
                 if (this.m_Assets.ContainsKey(asset))
                 {
-                    if (!this.m_Assets[asset].Dirty)
+                    if (!this.m_Assets[asset].IsDirty)
                         return this.m_Assets[asset];
                     this.m_Assets.Remove(asset);
                 }

@@ -145,7 +145,7 @@ namespace ProtogameAssetManager
             {
                 var dirtyMark = "";
                 if (@add is NetworkAsset)
-                    dirtyMark = (@add as NetworkAsset).Dirty ? "*" : "";
+                    dirtyMark = (@add as NetworkAsset).IsDirty ? "*" : "";
                 this.m_Layout.AssetTree.AddChild(new AssetTreeItem
                 {
                     Text = @add.Name + dirtyMark,
