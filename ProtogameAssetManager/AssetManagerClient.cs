@@ -41,6 +41,9 @@ namespace ProtogameAssetManager
                 Caching.PushOnChange,
                 Architecture.ServerClient);
             node.Network = new ProtogameAssetManagerNetwork(node, false);
+            var potentialProfiler = kernel.TryGet<IProfiler>() as INetworkProfilerEndpoint;
+            if (potentialProfiler != null)
+                node.ProfilerEndpoint = potentialProfiler;
             node.Join(ID.NewHash("asset manager"));
 
             var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);

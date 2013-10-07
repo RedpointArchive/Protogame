@@ -127,15 +127,13 @@ namespace ProtogameAssetManager
 
         public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            var newStatus = this.AssetManager.IsRemoting ?
+            var status = this.AssetManager.IsRemoting ?
                 ("Connected for " +
                     (int)((DateTime.Now - this.m_Start).TotalSeconds) +
                     " seconds") :
                 "Running Locally";
-            newStatus += " (" + gameContext.FPS + " FPS; " + (Process.GetCurrentProcess().WorkingSet64 / 1024 / 1024) + "MB)";
-            if (this.AssetManager.Status != newStatus)
-                this.AssetManager.Status = newStatus;
-            this.m_Layout.Status.Text = this.AssetManager.Status;
+            status += " (" + gameContext.FPS + " FPS; " + (Process.GetCurrentProcess().WorkingSet64 / 1024 / 1024) + "MB)";
+            this.m_Layout.Status.Text = status;
 
             // Get the new state, and the items in the tree.
             var assets = this.AssetManager.GetAll();

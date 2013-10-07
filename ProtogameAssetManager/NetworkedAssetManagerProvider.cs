@@ -8,6 +8,7 @@ namespace ProtogameAssetManager
     {
         private ILocalNode m_Node;
         private IKernel m_Kernel;
+        private NetworkAssetManager m_NetworkAssetManager;
 
         public bool IsReady
         {
@@ -15,12 +16,15 @@ namespace ProtogameAssetManager
             {
                 try
                 {
+                    if (this.m_NetworkAssetManager != null)
+                        return this.m_NetworkAssetManager.IsReady();
                     var assetManager = (NetworkAssetManager)
                         new Distributed<NetworkAssetManager>(this.m_Node, "asset-manager", true);
                     if (assetManager == null)
                         return false;
-                    assetManager.SetKernel(this.m_Kernel);
-                    return assetManager.IsReady();
+                    this.m_NetworkAssetManager = assetManager;
+                    this.m_NetworkAssetManager.SetKernel(this.m_Kernel);
+                    return this.m_NetworkAssetManager.IsReady();
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -37,10 +41,12 @@ namespace ProtogameAssetManager
 
         public IAssetManager GetAssetManager(bool permitCreate = false)
         {
-            var assetManager = (NetworkAssetManager)
+            if (this.m_NetworkAssetManager != null)
+                return this.m_NetworkAssetManager;
+            this.m_NetworkAssetManager = (NetworkAssetManager)
                 (new Distributed<NetworkAssetManager>(this.m_Node, "asset-manager", !permitCreate));
-            assetManager.SetKernel(this.m_Kernel);
-            return assetManager;
+            this.m_NetworkAssetManager.SetKernel(this.m_Kernel);
+            return this.m_NetworkAssetManager;
         }
     }
 }

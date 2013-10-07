@@ -21,7 +21,7 @@ namespace Protogame
 
         public IAsset GetDefault(IAssetManager assetManager, string name)
         {
-            throw new InvalidOperationException();
+            return null;
         }
         
         public bool CanNew()

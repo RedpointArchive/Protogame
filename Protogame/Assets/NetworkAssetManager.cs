@@ -19,7 +19,6 @@ namespace Protogame
     [Distributed]
     public class NetworkAssetManager : IAssetManager
     {
-        public string Status { get; set; }
         public bool IsRemoting { get { return true; } }
 
         [ClientCallable]
@@ -64,17 +63,24 @@ namespace Protogame
         {
             lock (this.m_Assets)
             {
-                this.m_Assets[asset].Dirty = true;
+                this.m_Assets[asset].Dirty();
             }
         }
 
-        [ClientCallable]
+        [Local]
         public IAsset[] GetAll()
         {
-            lock (this.m_Assets)
+            if ((this as ITransparent).Node.IsServer)
             {
-                return this.m_Assets.Values.ToArray();
+                lock (this.m_Assets)
+                {
+                    return this.m_Assets.Values.ToArray();
+                }
             }
+            
+            if (this.m_ClientCache == null)
+                this.m_ClientCache = new Dictionary<string, IAsset>();
+            return this.m_ClientCache.Values.ToArray();
         }
 
         [ClientCallable]
@@ -138,7 +144,9 @@ namespace Protogame
                     
                 // Otherwise we really do need to make a request over
                 // the network to get an initial NetworkAsset.
-                var networkAsset = this.GetUnresolved(asset) as NetworkAsset;
+                NetworkAsset networkAsset = null;
+                while (networkAsset == null)
+                    networkAsset = (NetworkAsset)this.GetUnresolved(asset);
                 networkAsset.InjectLoaders(this.m_Kernel.GetAll<IAssetLoader>().ToArray());
                 this.m_ClientCache.Add(asset, networkAsset.Resolve<T>());
                 return (T)this.m_ClientCache[asset];
@@ -161,8 +169,20 @@ namespace Protogame
             }
         }
         
+        [Local]
         public void Save(IAsset asset)
         {
+            // If the client saves an asset, it's usually a client-side generated
+            // asset (like a texture atlas calculated when the game is loaded).  Therefore
+            // we just store it in the client cache and don't attempt to send it to the
+            // network asset manager (since the data associated with the asset won't be
+            // implicitly serializable).
+            if (!(this as ITransparent).Node.IsServer)
+            {
+                this.m_ClientCache[asset.Name] = asset;
+                return;
+            }
+            
             var savers = this.m_Kernel.GetAll<IAssetSaver>().ToArray();
             foreach (var saver in savers)
             {
@@ -178,7 +198,7 @@ namespace Protogame
                 {
                     var result = saver.Handle(asset);
                     this.m_RawAssets[asset.Name] = result;
-                    this.m_Assets[asset.Name].Dirty = true;
+                    this.m_Assets[asset.Name].Dirty();
                     return;
                 }
             }

@@ -17,6 +17,7 @@ namespace Protogame
         private NetworkAsset m_NetworkAsset;
         private readonly NetworkAssetManager m_Manager;
         private readonly string m_AssetName;
+        private bool m_Dirty;
 
         public NetworkAssetProxy(NetworkAssetManager manager, NetworkAsset networkAsset, string name, T instance)
              : base(instance.GetType())
@@ -25,12 +26,21 @@ namespace Protogame
             this.m_Manager = manager;
             this.m_NetworkAsset = networkAsset;
             this.m_AssetName = name;
+            this.m_Dirty = false;
+            
+            this.m_NetworkAsset.Dirtied += MarkDirty;
+        }
+
+        private void MarkDirty(object sender, EventArgs e)
+        {
+            this.m_Dirty = true;
         }
 
         public override IMessage Invoke(IMessage msg)
         {
-            if (this.m_NetworkAsset.Dirty)
+            if (this.m_Dirty)
             {
+                this.m_NetworkAsset.Dirtied -= MarkDirty;
                 this.m_NetworkAsset = this.m_Manager.GetUnresolved(this.m_AssetName) as NetworkAsset;
                 var proxy = this.m_NetworkAsset.Resolve<T>();
                 if (!RemotingServices.IsTransparentProxy(proxy))
@@ -40,6 +50,8 @@ namespace Protogame
                 if (newNetworkAssetProxy == null)
                     throw new InvalidOperationException("Unable to cast real proxy back to NetworkAssetProxy<>.");
                 this.m_Instance = newNetworkAssetProxy.m_Instance;
+                this.m_Dirty = false;
+                this.m_NetworkAsset.Dirtied += MarkDirty;
             }
 
             var methodCall = (IMethodCallMessage)msg;

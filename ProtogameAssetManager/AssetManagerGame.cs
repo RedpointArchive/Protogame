@@ -29,7 +29,6 @@ namespace ProtogameAssetManager
             this.IsMouseVisible = true;
             this.Window.Title = "Tychaia Asset Manager";
 
-            this.m_AssetManager.Status = "Initializing...";
             this.AssetWorld.AssetManager = this.m_AssetManager;
         }
     }

@@ -20,23 +20,35 @@ namespace Protogame
         
         [Local]
         private IAssetLoader[] m_AssetLoaders;
+        
+        /// <summary>
+        /// Raised when the network asset is dirtied.
+        /// </summary>
+        [field: NonSerialized]
+        public event EventHandler Dirtied;
 
         /// <summary>
         /// Whether the underlying network asset needs to be refreshed from
         /// the asset manager.
         /// </summary>
-        public bool Dirty
+        public void Dirty()
         {
-            get;
-            set;
+            if (this.Dirtied != null)
+                this.Dirtied(null, new EventArgs());
+            this.IsDirty = true;
         }
+
+        /// <summary>
+        /// Whether the asset has been dirtied.
+        /// </summary>
+        public bool IsDirty { get; private set; }
 
         internal NetworkAsset(IAssetLoader[] loaders, object data, string name, NetworkAssetManager manager)
         {
             this.m_AssetLoaders = loaders;
             this.Name = name;
             this.Manager = manager;
-            this.Dirty = false;
+            this.IsDirty = false;
             if (data != null)
             {
                 var raw = JsonConvert.SerializeObject(data);

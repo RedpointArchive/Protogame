@@ -8,7 +8,6 @@ namespace Protogame
 {
     public interface IAssetManager
     {
-        string Status { get; set; }
         bool IsRemoting { get; }
 
         void Dirty(string asset);
