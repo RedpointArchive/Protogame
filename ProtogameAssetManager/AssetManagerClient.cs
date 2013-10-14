@@ -66,7 +66,7 @@ namespace ProtogameAssetManager
         /// <param name="kernel">The kernel to bind the asset manager provider into.</param>
         /// <param name="args">The command line arguments provided to the program.</param>
         /// <typeparam name="T">The implementation of the asset manager provider if not starting the asset manager tool.</typeparam>
-        public static void AcceptArgumentsAndSetup<T>(IKernel kernel, string[] args) where T : IAssetManagerProvider
+        public static void AcceptArgumentsAndSetup<T>(IKernel kernel, string[] args, params ExtraOption[] extraOptions) where T : IAssetManagerProvider
         {
             var name = new FileInfo(Assembly.GetCallingAssembly().Location).Name;
             var startAssetManager = false;
@@ -76,6 +76,8 @@ namespace ProtogameAssetManager
                 { "asset-manager", "Start the asset manager with the game.", v => startAssetManager = true },
                 { "asset-manager-listen", "Start the game and wait for the asset manager to connect.", v => { startAssetManager = true; listen = true; } }
             };
+            foreach (var e in extraOptions)
+                options.Add(e.Prototype, e.Description, e.Action);
             try
             {
                 options.Parse(args);
@@ -119,5 +121,12 @@ namespace ProtogameAssetManager
                 };
             }
         }
+    }
+    
+    public struct ExtraOption
+    {
+        public string Prototype;
+        public string Description;
+        public Action<string> Action;
     }
 }
