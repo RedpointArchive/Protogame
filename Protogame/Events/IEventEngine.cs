@@ -1,8 +1,8 @@
 namespace Protogame
 {
-    public interface IEventEngine
+    public interface IEventEngine<TContext>
     {
-        void Fire(IGameContext gameContext, Event @event);
+        void Fire(TContext context, Event @event);
     }
 }
 

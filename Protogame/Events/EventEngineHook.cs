@@ -5,11 +5,11 @@ namespace Protogame
 {
     public class EventEngineHook : IEngineHook
     {
-        private readonly IEventEngine m_EventEngine;
+        private readonly IEventEngine<IGameContext> m_EventEngine;
         private Keys[] m_LastPressedKeys;
         private MouseState? m_LastMouseState;
         
-        public EventEngineHook(IEventEngine eventEngine)
+        public EventEngineHook(IEventEngine<IGameContext> eventEngine)
         {
             this.m_EventEngine = eventEngine;
         }

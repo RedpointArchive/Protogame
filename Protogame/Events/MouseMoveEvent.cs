@@ -1,3 +1,5 @@
+using System;
+
 namespace Protogame
 {
     public class MouseMoveEvent : MouseEvent

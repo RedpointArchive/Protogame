@@ -6,17 +6,17 @@ using Ninject.Syntax;
 
 namespace Protogame
 {
-    public abstract class StaticEventBinder : IEventBinder
+    public abstract class StaticEventBinder<TContext> : IEventBinder<TContext>
     {
         private IResolutionRoot m_ResolutionRoot;
-        private List<Func<IGameContext, IEventEngine, Event, bool>> m_Bindings;
+        private List<Func<TContext, IEventEngine<TContext>, Event, bool>> m_Bindings;
         private bool m_Configured;
     
         public int Priority { get { return 100; } }
         
         protected StaticEventBinder()
         {
-            this.m_Bindings = new List<Func<IGameContext, IEventEngine, Event, bool>>();
+            this.m_Bindings = new List<Func<TContext, IEventEngine<TContext>, Event, bool>>();
         }
         
         public void Assign(IResolutionRoot resolutionRoot)
@@ -24,7 +24,7 @@ namespace Protogame
             this.m_ResolutionRoot = resolutionRoot;
         }
         
-        public bool Handle(IGameContext gameContext, IEventEngine eventEngine, Event @event)
+        public bool Handle(TContext context, IEventEngine<TContext> eventEngine, Event @event)
         {
             if (!this.m_Configured)
             {
@@ -33,7 +33,7 @@ namespace Protogame
             }
             foreach (var binding in this.m_Bindings)
             {
-                if (binding(gameContext, eventEngine, @event))
+                if (binding(context, eventEngine, @event))
                     return true;
             }
             return false;
@@ -52,8 +52,8 @@ namespace Protogame
         
         protected interface IBindable<TEvent> where TEvent : Event
         {
-            IBindableTo<TEvent, TAction> To<TAction>() where TAction : IEventAction;
-            IBindableTo<TEvent, TListener> ToListener<TListener>() where TListener : IEventListener;
+            IBindableTo<TEvent, TAction> To<TAction>() where TAction : IEventAction<TContext>;
+            IBindableTo<TEvent, TListener> ToListener<TListener>() where TListener : IEventListener<TContext>;
             IBindableTo<TEvent, TCommand> ToCommand<TCommand>(params string[] arguments) where TCommand : ICommand;
             IBindableOn<TEvent, TEntity> On<TEntity>() where TEntity : IEntity;
             IBindableOnTogglable<TEvent, TEntity> OnTogglable<TEntity>() where TEntity : IEntity, IEventTogglable;
@@ -97,18 +97,18 @@ namespace Protogame
         
         private class DefaultBindable<T> : IBindable<T> where T : Event
         {
-            private readonly StaticEventBinder m_StaticEventBinder;
+            private readonly StaticEventBinder<TContext> m_StaticEventBinder;
             private readonly Func<T, bool> m_Filter;
             
             public DefaultBindable(
-                StaticEventBinder staticEventBinder,
+                StaticEventBinder<TContext> staticEventBinder,
                 Func<T, bool> filter)
             {
                 this.m_StaticEventBinder = staticEventBinder;
                 this.m_Filter = filter;
             }
 
-            public IBindableTo<T, TAction> To<TAction>() where TAction : IEventAction
+            public IBindableTo<T, TAction> To<TAction>() where TAction : IEventAction<TContext>
             {
                 var bindable = new DefaultBindableTo<T, TAction>(
                     this.m_StaticEventBinder,
@@ -117,7 +117,7 @@ namespace Protogame
                 return bindable;
             }
 
-            public IBindableTo<T, TListener> ToListener<TListener>() where TListener : IEventListener
+            public IBindableTo<T, TListener> ToListener<TListener>() where TListener : IEventListener<TContext>
             {
                 var bindable = new DefaultBindableTo<T, TListener>(
                     this.m_StaticEventBinder,
@@ -153,18 +153,18 @@ namespace Protogame
         private class DefaultBindableTo<TEvent, TTarget> : IBindableTo<TEvent, TTarget>
             where TEvent : Event
         {
-            private readonly StaticEventBinder m_StaticEventBinder;
+            private readonly StaticEventBinder<TContext> m_StaticEventBinder;
             private readonly Func<TEvent, bool> m_Filter;
             
             public DefaultBindableTo(
-                StaticEventBinder staticEventBinder,
+                StaticEventBinder<TContext> staticEventBinder,
                 Func<TEvent, bool> filter)
             {
                 this.m_StaticEventBinder = staticEventBinder;
                 this.m_Filter = filter;
             }
             
-            public void BindAsAction<TAction>() where TAction : IEventAction
+            public void BindAsAction<TAction>() where TAction : IEventAction<TContext>
             {
                 var action = this.m_StaticEventBinder.m_ResolutionRoot.Get<TAction>();
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
@@ -178,7 +178,7 @@ namespace Protogame
                 });
             }
             
-            public void BindAsListener<TListener>() where TListener : IEventListener
+            public void BindAsListener<TListener>() where TListener : IEventListener<TContext>
             {
                 var listener = this.m_StaticEventBinder.m_ResolutionRoot.Get<TListener>();
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
@@ -193,6 +193,8 @@ namespace Protogame
             
             public void BindAsCommand<TCommand>(params string[] parameters) where TCommand : ICommand
             {
+                if (typeof(TContext) != typeof(IGameContext))
+                    throw new InvalidOperationException("Command bindings can only be used against IGameContext-based event engines.");
                 var command = this.m_StaticEventBinder.m_ResolutionRoot.Get<TCommand>();
                 this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
                 {
@@ -200,7 +202,7 @@ namespace Protogame
                         return false;
                     if (!this.m_Filter(@event as TEvent))
                         return false;
-                    command.Execute(gameContext, "", parameters);
+                    command.Execute((IGameContext)gameContext, "", parameters);
                     return true;
                 });
             }
@@ -210,11 +212,11 @@ namespace Protogame
             where TEvent : Event
             where TEntity : IEntity
         {
-            protected readonly StaticEventBinder m_StaticEventBinder;
+            protected readonly StaticEventBinder<TContext> m_StaticEventBinder;
             protected readonly Func<TEvent, bool> m_Filter;
             
             public DefaultBindableOn(
-                StaticEventBinder staticEventBinder,
+                StaticEventBinder<TContext> staticEventBinder,
                 Func<TEvent, bool> filter)
             {
                 this.m_StaticEventBinder = staticEventBinder;
@@ -239,7 +241,7 @@ namespace Protogame
             where TEntity : IEntity, IEventTogglable
         {
             public DefaultBindableOnTogglable(
-                StaticEventBinder staticEventBinder,
+                StaticEventBinder<TContext> staticEventBinder,
                 Func<TEvent, bool> filter) : base(staticEventBinder, filter)
             {
             }
@@ -260,11 +262,11 @@ namespace Protogame
             where TEntity : IEntity
             where TEntityAction : IEventEntityAction<TEntity>
         {
-            private readonly StaticEventBinder m_StaticEventBinder;
+            private readonly StaticEventBinder<TContext> m_StaticEventBinder;
             private readonly Func<TEvent, bool> m_Filter;
             
             public DefaultBindableOnTo(
-                StaticEventBinder staticEventBinder,
+                StaticEventBinder<TContext> staticEventBinder,
                 Func<TEvent, bool> filter)
             {
                 this.m_StaticEventBinder = staticEventBinder;
@@ -273,9 +275,12 @@ namespace Protogame
             
             public void Bind()
             {
+                if (typeof(TContext) != typeof(IGameContext))
+                    throw new InvalidOperationException("Entity action bindings can only be used against IGameContext-based event engines.");
                 var action = this.m_StaticEventBinder.m_ResolutionRoot.Get<TEntityAction>();
-                this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
+                this.m_StaticEventBinder.m_Bindings.Add((context, eventEngine, @event) =>
                 {
+                    var gameContext = (IGameContext)context;
                     if (!(@event is TEvent))
                         return false;
                     if (!this.m_Filter(@event as TEvent))
@@ -306,11 +311,11 @@ namespace Protogame
             where TEvent : Event
             where TEntity : IEntity, IEventTogglable
         {
-            private readonly StaticEventBinder m_StaticEventBinder;
+            private readonly StaticEventBinder<TContext> m_StaticEventBinder;
             private readonly Func<TEvent, bool> m_Filter;
             
             public DefaultBindableOnToTogglable(
-                StaticEventBinder staticEventBinder,
+                StaticEventBinder<TContext> staticEventBinder,
                 Func<TEvent, bool> filter)
             {
                 this.m_StaticEventBinder = staticEventBinder;
@@ -319,8 +324,11 @@ namespace Protogame
             
             public void Bind(string id)
             {
-                this.m_StaticEventBinder.m_Bindings.Add((gameContext, eventEngine, @event) =>
+                if (typeof(TContext) != typeof(IGameContext))
+                    throw new InvalidOperationException("Entity action bindings can only be used against IGameContext-based event engines.");
+                this.m_StaticEventBinder.m_Bindings.Add((context, eventEngine, @event) =>
                 {
+                    var gameContext = (IGameContext)context;
                     if (!(@event is TEvent))
                         return false;
                     if (!this.m_Filter(@event as TEvent))

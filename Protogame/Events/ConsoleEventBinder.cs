@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Protogame
 {
-    public class ConsoleEventBinder : StaticEventBinder
+    public class ConsoleEventBinder : StaticEventBinder<IGameContext>
     {
         public override void Configure()
         {

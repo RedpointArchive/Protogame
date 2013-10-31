@@ -1,8 +1,8 @@
 namespace Protogame
 {
-    public interface IEventListener
+    public interface IEventListener<TContext>
     {
-        bool Handle(IGameContext gameContext, IEventEngine eventEngine, Event @event);
+        bool Handle(TContext context, IEventEngine<TContext> eventEngine, Event @event);
     }
 }
 
