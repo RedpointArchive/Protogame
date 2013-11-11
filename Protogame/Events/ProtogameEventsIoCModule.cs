@@ -6,9 +6,9 @@ namespace Protogame
     {
         public override void Load()
         {
-            this.Bind<IEventEngine>().To<DefaultEventEngine>().InSingletonScope();
+            this.Bind<IEventEngine<IGameContext>>().To<DefaultEventEngine<IGameContext>>().InSingletonScope();
             this.Bind<IEngineHook>().To<EventEngineHook>();
-            this.Bind<IEventBinder>().To<ConsoleEventBinder>();
+            this.Bind<IEventBinder<IGameContext>>().To<ConsoleEventBinder>();
         }
     }
 }

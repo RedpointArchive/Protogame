@@ -2,11 +2,11 @@ using Ninject.Syntax;
 
 namespace Protogame
 {
-    public interface IEventBinder
+    public interface IEventBinder<TContext>
     {
         int Priority { get; }
         void Assign(IResolutionRoot resolutionRoot);
-        bool Handle(IGameContext gameContext, IEventEngine eventEngine, Event @event);
+        bool Handle(TContext context, IEventEngine<TContext> eventEngine, Event @event);
     }
 }
 

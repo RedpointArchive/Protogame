@@ -1,8 +1,8 @@
 namespace Protogame
 {
-    public interface IEventAction
+    public interface IEventAction<TContext>
     {
-        void Handle(IGameContext gameContext, Event @event);
+        void Handle(TContext context, Event @event);
     }
 }
 

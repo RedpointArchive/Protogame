@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Protogame
 {
-    public class ConsoleEventListener : IEventListener
+    public class ConsoleEventListener : IEventListener<IGameContext>
     {
         private readonly IConsole m_Console;
     
@@ -17,7 +17,7 @@ namespace Protogame
             this.m_Console = console;
         }
         
-        public bool Handle(IGameContext gameContext, IEventEngine eventEngine, Event @event)
+        public bool Handle(IGameContext gameContext, IEventEngine<IGameContext> eventEngine, Event @event)
         {
             // The console never handles non-keyboard events.
             if (!(@event is KeyboardEvent))

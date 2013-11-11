@@ -1,16 +1,15 @@
-using System.Collections.Generic;
 using System.Linq;
 using Ninject.Syntax;
 
 namespace Protogame
 {
-    public class DefaultEventEngine : IEventEngine
+    public class DefaultEventEngine<TContext> : IEventEngine<TContext>
     {
-        private readonly IEventBinder[] m_EventBinders;
+        private readonly IEventBinder<TContext>[] m_EventBinders;
     
         public DefaultEventEngine(
             IResolutionRoot resolutionRoot,
-            IEventBinder[] eventBinders)
+            IEventBinder<TContext>[] eventBinders)
         {
             this.m_EventBinders = eventBinders;
             foreach (var eventBinder in this.m_EventBinders)
@@ -19,11 +18,11 @@ namespace Protogame
             }
         }
         
-        public void Fire(IGameContext gameContext, Event @event)
+        public void Fire(TContext context, Event @event)
         {
             foreach (var eventBinder in this.m_EventBinders.OrderByDescending(x => x.Priority))
             {
-                if (eventBinder.Handle(gameContext, this, @event))
+                if (eventBinder.Handle(context, this, @event))
                     break;
             }
         }

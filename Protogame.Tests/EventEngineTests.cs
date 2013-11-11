@@ -15,7 +15,7 @@ namespace Protogame.Tests
         {
         }
         
-        private class BasicAction : IEventAction
+        private class BasicAction : IEventAction<IGameContext>
         {
             public void Handle(IGameContext gameContext, Event @event)
             {
@@ -24,7 +24,7 @@ namespace Protogame.Tests
             }
         }
         
-        private class BasicAssertingAction : IEventAction
+        private class BasicAssertingAction : IEventAction<IGameContext>
         {
             public void Handle(IGameContext gameContext, Event @event)
             {
@@ -32,7 +32,7 @@ namespace Protogame.Tests
             }
         }
         
-        private class BasicStaticEventBinder : StaticEventBinder
+        private class BasicStaticEventBinder : StaticEventBinder<IGameContext>
         {
             public override void Configure()
             {
@@ -40,7 +40,7 @@ namespace Protogame.Tests
             }
         }
         
-        private class AssertingStaticEventBinder : StaticEventBinder
+        private class AssertingStaticEventBinder : StaticEventBinder<IGameContext>
         {
             public override void Configure()
             {
@@ -48,7 +48,7 @@ namespace Protogame.Tests
             }
         }
         
-        private class FilteredStaticEventBinder : StaticEventBinder
+        private class FilteredStaticEventBinder : StaticEventBinder<IGameContext>
         {
             public override void Configure()
             {
@@ -61,7 +61,7 @@ namespace Protogame.Tests
         {
             var @event = new BasicEvent { Original = 1 };
             var binder = new BasicStaticEventBinder();
-            var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
+            var engine = new DefaultEventEngine<IGameContext>(new StandardKernel(), new[] { binder });
             engine.Fire(null, @event);
             Assert.Equal(1, @event.HitValue);
         }
@@ -72,7 +72,7 @@ namespace Protogame.Tests
             var event1 = new BasicEvent { Original = 1 };
             var event2 = new BasicEvent { Original = 2 };
             var binder = new FilteredStaticEventBinder();
-            var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
+            var engine = new DefaultEventEngine<IGameContext>(new StandardKernel(), new[] { binder });
             engine.Fire(null, event1);
             Assert.Equal(1, event1.HitValue);
             engine.Fire(null, event2);
@@ -85,7 +85,7 @@ namespace Protogame.Tests
             var event1 = new BasicEvent { Original = 1 };
             var event2 = new BasicEvent { Original = 2 };
             var binder = new FilteredStaticEventBinder();
-            var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
+            var engine = new DefaultEventEngine<IGameContext>(new StandardKernel(), new[] { binder });
             engine.Fire(null, event2);
             Assert.NotEqual(2, event2.HitValue);
             engine.Fire(null, event1);
@@ -97,7 +97,7 @@ namespace Protogame.Tests
         {
             var @event = new OtherEvent();
             var binder = new AssertingStaticEventBinder();
-            var engine = new DefaultEventEngine(new StandardKernel(), new[] { binder });
+            var engine = new DefaultEventEngine<IGameContext>(new StandardKernel(), new[] { binder });
             engine.Fire(null, @event);
         }
     }
