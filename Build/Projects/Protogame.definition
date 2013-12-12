@@ -171,6 +171,8 @@
     <Compile Include="Structure\PositionOctreeNode.cs" />
     <Compile Include="Structure\PositionOctreeUtil.cs">
       <DependentUpon>PositionOctreeUtil.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="UI\AudioPlayer.cs" />
     <Compile Include="UI\BaseContainer.cs" />
