@@ -15,24 +15,31 @@ namespace ProtogameAssetManager
         {
             foreach (var type in assembly.GetTypes())
             {
-                if (type.IsAbstract || type.IsInterface)
-                    continue;
-                if (type.Assembly == typeof(FontAsset).Assembly)
-                    continue;
-                if (typeof(IAssetEditor).IsAssignableFrom(type))
+                try
                 {
-                    Console.WriteLine("Binding IAssetEditor: " + type.Name);
-                    kernel.Bind<IAssetEditor>().To(type);
+                    if (type.IsAbstract || type.IsInterface)
+                        continue;
+                    if (type.Assembly == typeof(FontAsset).Assembly)
+                        continue;
+                    if (typeof(IAssetEditor).IsAssignableFrom(type))
+                    {
+                        Console.WriteLine("Binding IAssetEditor: " + type.Name);
+                        kernel.Bind<IAssetEditor>().To(type);
+                    }
+                    if (typeof(IAssetLoader).IsAssignableFrom(type))
+                    {
+                        Console.WriteLine("Binding IAssetLoader: " + type.Name);
+                        kernel.Bind<IAssetLoader>().To(type);
+                    }
+                    if (typeof(IAssetSaver).IsAssignableFrom(type))
+                    {
+                        Console.WriteLine("Binding IAssetSaver: " + type.Name);
+                        kernel.Bind<IAssetSaver>().To(type);
+                    }
                 }
-                if (typeof(IAssetLoader).IsAssignableFrom(type))
+                catch
                 {
-                    Console.WriteLine("Binding IAssetLoader: " + type.Name);
-                    kernel.Bind<IAssetLoader>().To(type);
-                }
-                if (typeof(IAssetSaver).IsAssignableFrom(type))
-                {
-                    Console.WriteLine("Binding IAssetSaver: " + type.Name);
-                    kernel.Bind<IAssetSaver>().To(type);
+                    // Might not be able to load the assembly, so just skip over it.
                 }
             }
         }

@@ -28,18 +28,27 @@ namespace ProtogameAssetManager
         public static void LoadEditorsForAssets()
         {
             m_Editors = new Dictionary<Type, IAssetEditor>();
-            foreach (var mapping in
-                from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                from type in assembly.GetTypes()
-                where typeof(IAssetEditor).IsAssignableFrom(type)
-                where !type.IsInterface
-                where !type.IsAbstract
-                let a = Activator.CreateInstance(type) as IAssetEditor
-                select new {
-                    AssetType = a.GetAssetType(),
-                    Editor = a })
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                m_Editors.Add(mapping.AssetType, mapping.Editor);
+                try
+                {
+                    foreach (var mapping in
+                        from type in assembly.GetTypes()
+                        where typeof(IAssetEditor).IsAssignableFrom(type)
+                        where !type.IsInterface
+                        where !type.IsAbstract
+                        let a = Activator.CreateInstance(type) as IAssetEditor
+                        select new {
+                            AssetType = a.GetAssetType(),
+                            Editor = a })
+                    {
+                        m_Editors.Add(mapping.AssetType, mapping.Editor);
+                    }
+                }
+                catch
+                {
+                    // Might not be able to load this assembly.
+                }
             }
         }
 
