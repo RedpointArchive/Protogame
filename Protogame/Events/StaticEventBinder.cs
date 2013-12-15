@@ -293,12 +293,12 @@ namespace Protogame
                     var exactOrDerivedMatch = gameContext.World.Entities.FirstOrDefault(x => x is TEntity);
                     if (exactMatch != null)
                     {
-                        action.Handle((TEntity)exactMatch, @event);
+                        action.Handle(gameContext, (TEntity)exactMatch, @event);
                         return true;
                     }
                     if (exactOrDerivedMatch != null)
                     {
-                        action.Handle((TEntity)exactOrDerivedMatch, @event);
+                        action.Handle(gameContext, (TEntity)exactOrDerivedMatch, @event);
                         return true;
                     }
                     return false;

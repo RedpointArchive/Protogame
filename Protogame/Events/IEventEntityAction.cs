@@ -2,7 +2,7 @@ namespace Protogame
 {
     public interface IEventEntityAction<TEntity> where TEntity : IEntity
     {
-        void Handle(TEntity entity, Event @event);
+        void Handle(IGameContext context, TEntity entity, Event @event);
     }
 }
 
