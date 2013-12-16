@@ -2,14 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using MonoGame.Framework.Content.Pipeline.Builder;
-using Microsoft.Xna.Framework.Graphics;
-using System.Diagnostics;
-using System.Drawing;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Framework.Content.Pipeline.Builder;
 
 namespace Protogame
 {
@@ -51,9 +51,8 @@ namespace Protogame
         
         public byte[] BuildSpriteFont(string fontName, float size, float spacing, bool useKerning)
         {
-            var chars = new List<char>();
-            for (int i = 0; i < 256; i++)
-                chars.Add((char)i);
+            var chars = new List<CharacterRegion>();
+            chars.Add(new CharacterRegion((char)0, (char)255));
             var description = new FontDescription(
                 fontName,
                 size,
