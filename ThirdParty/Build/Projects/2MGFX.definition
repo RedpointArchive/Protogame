@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExternalProject Name="2MGFX">
+
+  <Platform Type="Windows">
+    <Project
+      Name="2MGFX"
+      Guid="6362E6BD-4656-4216-B404-9C959C5B3825"
+      Path="MonoGame/Tools/2MGFX/2MGFX.csproj">
+    </Project>
+  </Platform>
+
+</ExternalProject>
