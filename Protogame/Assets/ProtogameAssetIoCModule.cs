@@ -25,7 +25,7 @@ namespace Protogame
             this.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
 
-#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX
+#if PLATFORM_WINDOWS
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
 #endif
