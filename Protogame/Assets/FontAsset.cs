@@ -53,7 +53,7 @@ namespace Protogame
                 return this.FontName == null;
             }
         }
-        
+
         public void ReloadFont()
         {
             if (this.m_AssetContentManager != null && this.PlatformData != null)
@@ -62,12 +62,22 @@ namespace Protogame
                 {
                     this.m_AssetContentManager.SetStream(this.Name, stream);
                     this.m_AssetContentManager.Purge(this.Name);
-                    this.Font = this.m_AssetContentManager.Load<SpriteFont>(this.Name);
+                    try
+                    {
+                        this.Font = this.m_AssetContentManager.Load<SpriteFont>(this.Name);
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        // This occurs when using assets without a game running, in which case we don't
+                        // need the SpriteFont anyway (since we are probably just after the compiled asset).
+                        if (ex.Message != "No Graphics Device Service")
+                            throw;
+                    }
                     this.m_AssetContentManager.UnsetStream(this.Name);
                 }
             }
         }
-        
+
         public T Resolve<T>() where T : class, IAsset
         {
             if (typeof(T).IsAssignableFrom(typeof(FontAsset)))

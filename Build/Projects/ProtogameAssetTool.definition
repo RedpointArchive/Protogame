@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Name="ProtogameAssetTool" Path="ProtogameAssetTool" Type="Console">
+  <Properties>
+    <Property Name="ForceArchitecture" Value="x86" />
+  </Properties>
+  <References>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Protogame" />
+    <Reference Include="MonoGame" />
+    <Reference Include="Ninject" />
+  </References>
+  <Files>
+    <Compile Include="Program.cs" />
+    <None Include="packages.config" />
+  </Files>
+</Project>

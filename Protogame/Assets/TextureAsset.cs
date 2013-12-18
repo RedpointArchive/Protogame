@@ -44,7 +44,7 @@ namespace Protogame
                 return this.RawData == null;
             }
         }
-        
+
         /// <summary>
         /// Create a new TextureAsset from a in-memory texture.  Used when you need to pass in a 
         /// generated texture into a function that accepts a TextureAsset.  TextureAssets created
@@ -60,7 +60,7 @@ namespace Protogame
             this.PlatformData = null;
             this.m_AssetContentManager = null;
         }
-        
+
         public void ReloadTexture()
         {
             if (this.m_AssetContentManager == null)
@@ -71,14 +71,24 @@ namespace Protogame
                 {
                     this.m_AssetContentManager.SetStream(this.Name, stream);
                     this.m_AssetContentManager.Purge(this.Name);
-                    var newTexture = this.m_AssetContentManager.Load<Texture2D>(this.Name);
-                    if (newTexture != null)
-                        this.Texture = newTexture;
+                    try
+                    {
+                        var newTexture = this.m_AssetContentManager.Load<Texture2D>(this.Name);
+                        if (newTexture != null)
+                            this.Texture = newTexture;
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        // This occurs when using assets without a game running, in which case we don't
+                        // need the Texture2D anyway (since we are probably just after the compiled asset).
+                        if (ex.Message != "No Graphics Device Service")
+                            throw;
+                    }
                     this.m_AssetContentManager.UnsetStream(this.Name);
                 }
             }
         }
-        
+
         public T Resolve<T>() where T : class, IAsset
         {
             if (typeof(T).IsAssignableFrom(typeof(TextureAsset)))
