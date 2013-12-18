@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ninject;
 
 namespace Protogame
 {
@@ -19,22 +20,28 @@ namespace Protogame
         public string Status { get; set; }
         public bool IsRemoting { get { return false; } }
 
+        private IKernel m_Kernel;
         private IRawAssetLoader m_RawAssetLoader;
         private IRawAssetSaver m_RawAssetSaver;
         private Dictionary<string, IAsset> m_Assets = new Dictionary<string, IAsset>();
         private IAssetLoader[] m_AssetLoaders;
         private IAssetSaver[] m_AssetSavers;
+        private ITransparentAssetCompiler m_TransparentAssetCompiler;
 
         public LocalAssetManager(
+            IKernel kernel,
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
             IAssetLoader[] loaders,
-            IAssetSaver[] savers)
+            IAssetSaver[] savers,
+            ITransparentAssetCompiler transparentAssetCompiler)
         {
+            this.m_Kernel = kernel;
             this.m_RawAssetLoader = rawLoader;
             this.m_RawAssetSaver = rawSaver;
             this.m_AssetLoaders = loaders;
             this.m_AssetSavers = savers;
+            this.m_TransparentAssetCompiler = transparentAssetCompiler;
         }
 
         public void Dirty(string asset)
@@ -71,6 +78,7 @@ namespace Protogame
                     {
                         var result = loader.Handle(this, asset, obj);
                         this.m_Assets.Add(asset, result);
+                        result = this.m_TransparentAssetCompiler.Handle(result);
                         return result;
                     }
                 }
@@ -125,7 +133,7 @@ namespace Protogame
                 }
                 if (canSave)
                 {
-                    var result = saver.Handle(asset);
+                    var result = saver.Handle(asset, bake ? AssetTarget.SourceFile : AssetTarget.Runtime);
                     this.m_Assets[asset.Name] = asset;
                     if (bake)
                         this.m_RawAssetSaver.SaveRawAsset(asset.Name, result);
@@ -145,6 +153,11 @@ namespace Protogame
         public void Bake(IAsset asset)
         {
             this.SaveOrBake(asset, true);
+        }
+
+        public void Recompile(IAsset asset)
+        {
+            this.m_TransparentAssetCompiler.Handle(asset, true);
         }
     }
 }

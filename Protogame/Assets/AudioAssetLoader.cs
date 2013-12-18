@@ -7,14 +7,11 @@ namespace Protogame
     public class AudioAssetLoader : IAssetLoader
     {
         private IAssetContentManager m_AssetContentManager;
-        private IContentCompiler m_ContentCompiler;
         
         public AudioAssetLoader(
-            IAssetContentManager assetContentManager,
-            IContentCompiler contentCompiler)
+            IAssetContentManager assetContentManager)
         {
             this.m_AssetContentManager = assetContentManager;
-            this.m_ContentCompiler = contentCompiler;
         }
     
         public bool CanHandle(dynamic data)
@@ -24,14 +21,22 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
-            byte[] xnaData = null;
-            if (data.AudioData != null)
-                xnaData = ((List<object>)data.AudioData)
-                    .Cast<int>().Select(x => (byte)x).ToArray();
-            return new AudioAsset(
+            PlatformData platformData = null;
+            if (data.PlatformData != null)
+            {
+                platformData = new PlatformData
+                {
+                    Platform = data.PlatformData.Platform,
+                    Data = data.PlatformData.Data
+                };
+            }
+
+            var texture = new AudioAsset(
                 name,
-                data.SourcePath,
-                xnaData);
+                (string)data.SourcePath,
+                platformData);
+
+            return texture;
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)

@@ -2,6 +2,7 @@
 <Project Name="ProtogameAssetManager" Path="ProtogameAssetManager" Type="XNA">
   <Properties>
     <Property Name="PostProcessWithDx" Value="True" />
+    <Property Name="ForceArchitecture" Value="x86" />
   </Properties>
   <References>
     <Reference Include="System" />
@@ -25,6 +26,7 @@
     <Compile Include="AssetManagerWorld.cs" />
     <Compile Include="AssetTreeItem.cs" />
     <Compile Include="AudioAssetEditor.cs" />
+    <Compile Include="EffectAssetEditor.cs" />
     <Compile Include="FontAssetEditor.cs" />
     <Compile Include="LanguageAssetEditor.cs" />
     <Compile Include="LevelAssetEditor.cs" />

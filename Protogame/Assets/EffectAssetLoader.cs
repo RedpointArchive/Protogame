@@ -6,17 +6,6 @@ namespace Protogame
 {
     public class EffectAssetLoader : IAssetLoader
     {
-        private IAssetContentManager m_AssetContentManager;
-        private IContentCompiler m_ContentCompiler;
-        
-        public EffectAssetLoader(
-            IAssetContentManager assetContentManager,
-            IContentCompiler contentCompiler)
-        {
-            this.m_AssetContentManager = assetContentManager;
-            this.m_ContentCompiler = contentCompiler;
-        }
-    
         public bool CanHandle(dynamic data)
         {
             return data.Loader == typeof(EffectAssetLoader).FullName;
@@ -24,19 +13,22 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
-            byte[] glXnaData = null;
-            byte[] dxXnaData = null;
-            if (data.GLEffectData != null)
-                glXnaData = ((List<object>)data.GLEffectData)
-                    .Cast<int>().Select(x => (byte)x).ToArray();
-            if (data.DXEffectData != null)
-                glXnaData = ((List<object>)data.DXEffectData)
-                    .Cast<int>().Select(x => (byte)x).ToArray();
-            return new EffectAsset(
+            PlatformData platformData = null;
+            if (data.PlatformData != null)
+            {
+                platformData = new PlatformData
+                {
+                    Platform = data.PlatformData.Platform,
+                    Data = data.PlatformData.Data
+                };
+            }
+
+            var effect = new EffectAsset(
                 name,
-                data.SourcePath,
-                glXnaData,
-                dxXnaData);
+                (string)data.SourcePath,
+                platformData);
+
+            return effect;
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)
@@ -54,7 +46,6 @@ namespace Protogame
             return new EffectAsset(
                 name,
                 "",
-                null,
                 null);
         }
     }

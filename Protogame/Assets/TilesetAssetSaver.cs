@@ -7,10 +7,10 @@ namespace Protogame
             return asset is TilesetAsset;
         }
 
-        public dynamic Handle(IAsset asset)
+        public dynamic Handle(IAsset asset, AssetTarget target)
         {
             var tilesetAsset = asset as TilesetAsset;
-            
+
             return new
             {
                 Loader = typeof(TilesetAssetLoader).FullName,

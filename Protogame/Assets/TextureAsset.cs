@@ -7,26 +7,42 @@ namespace Protogame
     public class TextureAsset : MarshalByRefObject, IAsset
     {
         private IAssetContentManager m_AssetContentManager;
-        private IContentCompiler m_ContentCompiler;
         public string Name { get; private set; }
         public Texture2D Texture { get; private set; }
-        public byte[] Data { get; set; }
-        public string SourcePath { get; set; }
+        public byte[] RawData { get; set; }
+        public PlatformData PlatformData { get; set; }
 
         public TextureAsset(
-            IContentCompiler contentCompiler,
             IAssetContentManager assetContentManager,
             string name,
-            string sourcePath,
-            byte[] data)
+            byte[] rawData,
+            PlatformData data)
         {
             this.Name = name;
-            this.SourcePath = sourcePath;
-            this.Data = data;
+            this.RawData = rawData;
+            this.PlatformData = data;
             this.m_AssetContentManager = assetContentManager;
-            this.m_ContentCompiler = contentCompiler;
-            
-            this.ReloadTexture();
+
+            if (this.PlatformData != null)
+            {
+                this.ReloadTexture();
+            }
+        }
+
+        public bool SourceOnly
+        {
+            get
+            {
+                return this.PlatformData == null;
+            }
+        }
+
+        public bool CompiledOnly
+        {
+            get
+            {
+                return this.RawData == null;
+            }
         }
         
         /// <summary>
@@ -40,19 +56,18 @@ namespace Protogame
                 throw new ArgumentNullException("texture");
             this.Name = null;
             this.Texture = texture;
-            this.SourcePath = null;
-            this.Data = null;
+            this.RawData = null;
+            this.PlatformData = null;
             this.m_AssetContentManager = null;
-            this.m_ContentCompiler = null;
         }
         
         public void ReloadTexture()
         {
             if (this.m_AssetContentManager == null)
                 throw new InvalidOperationException("Unable to reload dynamic texture.");
-            if (this.m_AssetContentManager != null && this.Data != null)
+            if (this.m_AssetContentManager != null && this.PlatformData != null)
             {
-                using (var stream = new MemoryStream(this.Data))
+                using (var stream = new MemoryStream(this.PlatformData.Data))
                 {
                     this.m_AssetContentManager.SetStream(this.Name, stream);
                     this.m_AssetContentManager.Purge(this.Name);
@@ -64,47 +79,6 @@ namespace Protogame
             }
         }
         
-        public void RebuildTexture()
-        {
-            if (this.m_ContentCompiler == null)
-                throw new InvalidOperationException("Unable to reload dynamic texture.");
-            try
-            {
-                if (this.m_ContentCompiler != null)
-                {
-                    using (var stream = new MemoryStream(this.Data))
-                    {
-                        var data = this.m_ContentCompiler.BuildTexture2D(stream);
-                        if (data != null)
-                        {
-                            this.Data = data;
-                            this.ReloadTexture();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // This is the type of exception that our dummy content compiler throws.
-                if (ex is NotImplementedException)
-                    throw;
-                
-                // The developer may have supplied an already built XNB asset.
-                var reloaded = false;
-                try
-                {
-                    this.ReloadTexture();
-                    reloaded = true;
-                }
-                catch { }
-                
-                // If we weren't able to reload the texture, then we really didn't rebuild
-                // correct, so rethrow the original exception.
-                if (!reloaded)
-                    throw;
-            }
-        }
-
         public T Resolve<T>() where T : class, IAsset
         {
             if (typeof(T).IsAssignableFrom(typeof(TextureAsset)))

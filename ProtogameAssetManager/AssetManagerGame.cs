@@ -25,9 +25,9 @@ namespace ProtogameAssetManager
         {
             base.LoadContent();
 
-            this.GameContext.ResizeWindow(420, 800);
+            this.GameContext.ResizeWindow(800, 600);
             this.IsMouseVisible = true;
-            this.Window.Title = "Tychaia Asset Manager";
+            this.Window.Title = "Protogame Asset Manager";
 
             this.AssetWorld.AssetManager = this.m_AssetManager;
         }

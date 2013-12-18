@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using Protogame;
 using System;
+using Ninject;
 
 namespace ProtogameAssetManager
 {
@@ -11,16 +12,20 @@ namespace ProtogameAssetManager
         private LocalAssetManager m_AssetManager;
 
         public LocalAssetManagerProvider(
+            IKernel kernel,
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
             IAssetLoader[] loaders,
-            IAssetSaver[] savers)
+            IAssetSaver[] savers,
+            ITransparentAssetCompiler transparentAssetCompiler)
         {
             this.m_AssetManager = new LocalAssetManager(
+                kernel,
                 rawLoader,
                 rawSaver,
                 loaders,
-                savers);
+                savers,
+                transparentAssetCompiler);
         }
 
         public bool IsReady

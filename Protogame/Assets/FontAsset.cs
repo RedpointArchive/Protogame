@@ -7,60 +7,64 @@ namespace Protogame
     public class FontAsset : MarshalByRefObject, IAsset
     {
         private IAssetContentManager m_AssetContentManager;
-        private IContentCompiler m_ContentCompiler;
         public string Name { get; private set; }
         public SpriteFont Font { get; private set; }
+        public PlatformData PlatformData { get; set; }
         public string FontName { get; set; }
         public int FontSize { get; set; }
-        public byte[] FontData { get; set; }
+        public bool UseKerning { get; set; }
+        public int Spacing { get; set; }
 
         public FontAsset(
-            IContentCompiler contentCompiler,
             IAssetContentManager assetContentManager,
             string name,
             string fontName,
             int fontSize,
-            byte[] fontData)
+            bool useKerning,
+            int spacing,
+            PlatformData data)
         {
             this.Name = name;
             this.FontName = fontName;
             this.FontSize = fontSize;
-            this.FontData = fontData;
+            this.UseKerning = useKerning;
+            this.Spacing = spacing;
+            this.PlatformData = data;
             this.m_AssetContentManager = assetContentManager;
-            this.m_ContentCompiler = contentCompiler;
-            
-            this.ReloadFont();
+
+            if (this.PlatformData != null)
+            {
+                this.ReloadFont();
+            }
+        }
+
+        public bool SourceOnly
+        {
+            get
+            {
+                return this.PlatformData == null;
+            }
+        }
+
+        public bool CompiledOnly
+        {
+            get
+            {
+                return this.FontName == null;
+            }
         }
         
         public void ReloadFont()
         {
-            if (this.m_AssetContentManager != null && this.FontData != null)
+            if (this.m_AssetContentManager != null && this.PlatformData != null)
             {
-                using (var stream = new MemoryStream(this.FontData))
+                using (var stream = new MemoryStream(this.PlatformData.Data))
                 {
                     this.m_AssetContentManager.SetStream(this.Name, stream);
                     this.m_AssetContentManager.Purge(this.Name);
                     this.Font = this.m_AssetContentManager.Load<SpriteFont>(this.Name);
                     this.m_AssetContentManager.UnsetStream(this.Name);
                 }
-            }
-        }
-        
-        public void RebuildFont()
-        {
-            if (string.IsNullOrWhiteSpace(this.FontName))
-                return;
-            if (this.FontSize <= 0)
-                return;
-            var data = this.m_ContentCompiler.BuildSpriteFont(
-                this.FontName,
-                this.FontSize,
-                0,
-                true);
-            if (data != null)
-            {
-                this.FontData = data;
-                this.ReloadFont();
             }
         }
         

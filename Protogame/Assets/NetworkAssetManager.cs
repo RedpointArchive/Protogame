@@ -36,6 +36,9 @@ namespace Protogame
         private IRawAssetSaver m_RawAssetSaver;
 
         [Local]
+        private ITransparentAssetCompiler m_TransparentAssetCompiler;
+
+        [Local]
         private IKernel m_Kernel;
 
         [Local]
@@ -109,7 +112,7 @@ namespace Protogame
                     }
                     catch (AssetNotFoundException)
                     {
-                        result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>().ToArray(), null, asset, this);
+                        result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>().ToArray(), this.m_TransparentAssetCompiler, null, asset, this);
                         this.m_Assets.Add(asset, result);
                         return result;
                     }
@@ -119,7 +122,7 @@ namespace Protogame
 
                 // We now have our raw asset and we need to wrap it in
                 // a NetworkAsset.
-                result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>().ToArray(), raw, asset, this);
+                result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>().ToArray(), this.m_TransparentAssetCompiler, raw, asset, this);
                 this.m_Assets.Add(asset, result);
                 return result;
             }
@@ -196,7 +199,7 @@ namespace Protogame
                 }
                 if (canSave)
                 {
-                    var result = saver.Handle(asset);
+                    var result = saver.Handle(asset, AssetTarget.Runtime);
                     this.m_RawAssets[asset.Name] = result;
                     this.m_Assets[asset.Name].Dirty();
                     return;
@@ -213,6 +216,12 @@ namespace Protogame
             if (this.m_RawAssetSaver == null)
                 this.m_RawAssetSaver = this.m_Kernel.Get<IRawAssetSaver>();
             this.m_RawAssetSaver.SaveRawAsset(asset.Name, this.m_RawAssets[asset.Name]);
+        }
+
+        [Local]
+        public void Recompile(IAsset asset)
+        {
+            this.m_TransparentAssetCompiler.Handle(asset, true);
         }
     }
 }

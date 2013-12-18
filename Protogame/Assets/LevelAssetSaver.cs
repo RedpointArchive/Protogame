@@ -13,7 +13,7 @@ namespace Protogame
             return asset is LevelAsset;
         }
 
-        public dynamic Handle(IAsset asset)
+        public dynamic Handle(IAsset asset, AssetTarget target)
         {
             var levelAsset = asset as LevelAsset;
 

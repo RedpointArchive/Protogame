@@ -4,15 +4,16 @@ using System;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Framework.Content.Pipeline.Builder;
+using MonoGamePlatform = Microsoft.Xna.Framework.Content.Pipeline.TargetPlatform;
 
 namespace Protogame
 {
     public class DummyContentProcessorContext : ContentProcessorContext
     {
-        private TargetPlatform m_TargetPlatform;
+        private MonoGamePlatform m_TargetPlatform;
         private PipelineBuildLogger m_Logger;
-    
-        public DummyContentProcessorContext(TargetPlatform targetPlatform)
+
+        public DummyContentProcessorContext(MonoGamePlatform targetPlatform)
         {
             this.m_TargetPlatform = targetPlatform;
             this.m_Logger = new PipelineBuildLogger();
@@ -87,8 +88,8 @@ namespace Protogame
                 throw new NotImplementedException();
             }
         }
-        
-        public override TargetPlatform TargetPlatform
+
+        public override MonoGamePlatform TargetPlatform
         {
             get { return this.m_TargetPlatform; }
         }

@@ -13,7 +13,7 @@ namespace Protogame
             return asset is LanguageAsset;
         }
 
-        public dynamic Handle(IAsset asset)
+        public dynamic Handle(IAsset asset, AssetTarget target)
         {
             var textAsset = asset as LanguageAsset;
 

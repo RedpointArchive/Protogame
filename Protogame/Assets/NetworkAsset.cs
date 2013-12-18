@@ -1,8 +1,3 @@
-//
-// This source code is licensed in accordance with the licensing outlined
-// on the main Tychaia website (www.tychaia.com).  Changes to the
-// license on the website apply retroactively.
-//
 using System;
 using System.Linq;
 using System.Text;
@@ -20,7 +15,10 @@ namespace Protogame
         
         [Local]
         private IAssetLoader[] m_AssetLoaders;
-        
+
+        [Local]
+        private ITransparentAssetCompiler m_TransparentAssetCompiler;
+
         /// <summary>
         /// Raised when the network asset is dirtied.
         /// </summary>
@@ -43,9 +41,15 @@ namespace Protogame
         /// </summary>
         public bool IsDirty { get; private set; }
 
-        internal NetworkAsset(IAssetLoader[] loaders, object data, string name, NetworkAssetManager manager)
+        internal NetworkAsset(
+            IAssetLoader[] loaders,
+            ITransparentAssetCompiler transparentAssetCompiler,
+            object data,
+            string name,
+            NetworkAssetManager manager)
         {
             this.m_AssetLoaders = loaders;
+            this.m_TransparentAssetCompiler = transparentAssetCompiler;
             this.Name = name;
             this.Manager = manager;
             this.IsDirty = false;
@@ -56,6 +60,22 @@ namespace Protogame
             }
             else
                 this.Data = null;
+        }
+
+        public bool SourceOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public bool CompiledOnly
+        {
+            get
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -102,7 +122,7 @@ namespace Protogame
                         // that we can automatically discard the instance
                         // when we consider it to be dirty.
                         return this.FormProxyIfPossible<T>(
-                            loader.Handle(this.Manager, this.Name, obj));
+                            this.m_TransparentAssetCompiler.Handle(loader.Handle(this.Manager, this.Name, obj)));
                     }
                 }
             }

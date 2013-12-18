@@ -37,6 +37,12 @@ namespace Protogame
         /// </remarks>
         /// <param name="asset">Asset.</param>
         void Bake(IAsset asset);
+
+        /// <summary>
+        /// Recompiles the given asset, regardless of whether it already has compiled
+        /// data associated with it.
+        /// </summary>
+        void Recompile(IAsset asset);
     }
 }
 

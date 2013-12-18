@@ -8,14 +8,11 @@ namespace Protogame
     public class FontAssetLoader : IAssetLoader
     {
         private IAssetContentManager m_AssetContentManager;
-        private IContentCompiler m_ContentCompiler;
         
         public FontAssetLoader(
-            IAssetContentManager assetContentManager,
-            IContentCompiler contentCompiler)
+            IAssetContentManager assetContentManager)
         {
             this.m_AssetContentManager = assetContentManager;
-            this.m_ContentCompiler = contentCompiler;
         }
     
         public bool CanHandle(dynamic data)
@@ -25,16 +22,26 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
-            byte[] xnaData = null;
-            if (data.FontData != null)
-                xnaData = ((JArray)data.FontData).Select(x => (byte)x).ToArray();
-            return new FontAsset(
-                this.m_ContentCompiler,
+            PlatformData platformData = null;
+            if (data.PlatformData != null)
+            {
+                platformData = new PlatformData
+                {
+                    Platform = data.PlatformData.Platform,
+                    Data = ByteReader.ReadAsByteArray(data.PlatformData.Data)
+                };
+            }
+
+            var effect = new FontAsset(
                 this.m_AssetContentManager,
                 name,
                 (string)data.FontName,
                 (int)data.FontSize,
-                xnaData);
+                (bool)data.UseKerning,
+                (int)data.Spacing,
+                platformData);
+
+            return effect;
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)
@@ -50,10 +57,11 @@ namespace Protogame
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
             return new FontAsset(
-                this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
                 "",
+                0,
+                true,
                 0,
                 null);
         }

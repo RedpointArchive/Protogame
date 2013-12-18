@@ -253,7 +253,7 @@ namespace Protogame
         {
             this.DrawSunken(context, layout);
             
-            if (fontViewer.Font != null && fontViewer.Font.FontData != null)
+            if (fontViewer.Font != null && fontViewer.Font.PlatformData != null)
             {
                 this.m_RenderUtilities.RenderText(
                     context,
@@ -294,8 +294,8 @@ namespace Protogame
         public void DrawTextureViewer(IRenderContext context, Rectangle layout, TextureViewer textureViewer)
         {
             this.DrawSunken(context, layout);
-            
-            if (textureViewer.Texture != null && textureViewer.Texture.Data != null)
+
+            if (textureViewer.Texture != null && textureViewer.Texture.PlatformData != null)
             {
                 this.m_RenderUtilities.RenderTexture(
                     context,
@@ -309,8 +309,8 @@ namespace Protogame
         public void DrawAudioPlayer(IRenderContext context, Rectangle layout, AudioPlayer audioPlayer)
         {
             this.DrawSunken(context, layout);
-            
-            if (audioPlayer.Audio != null && audioPlayer.Audio.Data != null)
+
+            if (audioPlayer.Audio != null && audioPlayer.Audio.PlatformData != null)
             {
                 this.m_RenderUtilities.RenderText(
                     context,

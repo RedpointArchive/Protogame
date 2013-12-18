@@ -45,6 +45,22 @@ namespace Protogame
             this.CellWidth = cellWidth;
             this.CellHeight = cellHeight;
         }
+
+        public bool SourceOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public bool CompiledOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
         
         public T Resolve<T>() where T : class, IAsset
         {

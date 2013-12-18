@@ -7,7 +7,7 @@ namespace Protogame
             return asset is EffectAsset;
         }
 
-        public dynamic Handle(IAsset asset)
+        public dynamic Handle(IAsset asset, AssetTarget target)
         {
             var effectAsset = asset as EffectAsset;
             
@@ -15,8 +15,7 @@ namespace Protogame
             {
                 Loader = typeof(EffectAssetLoader).FullName,
                 SourcePath = effectAsset.SourcePath,
-                GLEffectData = effectAsset.GLEffectData,
-                DXEffectData = effectAsset.DXEffectData
+                PlatformData = effectAsset.PlatformData
             };
         }
     }

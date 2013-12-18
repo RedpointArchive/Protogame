@@ -13,16 +13,22 @@ namespace Protogame
             this.Bind<IAssetLoader>().To<LevelAssetLoader>();
             this.Bind<IAssetLoader>().To<AudioAssetLoader>();
             this.Bind<IAssetLoader>().To<TilesetAssetLoader>();
+            this.Bind<IAssetLoader>().To<EffectAssetLoader>();
             this.Bind<IAssetSaver>().To<FontAssetSaver>();
             this.Bind<IAssetSaver>().To<LanguageAssetSaver>();
             this.Bind<IAssetSaver>().To<TextureAssetSaver>();
             this.Bind<IAssetSaver>().To<LevelAssetSaver>();
             this.Bind<IAssetSaver>().To<AudioAssetSaver>();
             this.Bind<IAssetSaver>().To<TilesetAssetSaver>();
+            this.Bind<IAssetSaver>().To<EffectAssetSaver>();
             this.Bind<IRawAssetLoader>().To<RawAssetLoader>();
             this.Bind<IRawAssetSaver>().To<RawAssetSaver>();
-            
-            this.Kernel.Load<ContentCompilationIoCModule>();
+            this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
+
+#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX
+            this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
+            this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
+#endif
         }
     }
 }

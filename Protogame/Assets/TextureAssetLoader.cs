@@ -8,14 +8,11 @@ namespace Protogame
     public class TextureAssetLoader : IAssetLoader
     {
         private IAssetContentManager m_AssetContentManager;
-        private IContentCompiler m_ContentCompiler;
         
         public TextureAssetLoader(
-            IAssetContentManager assetContentManager,
-            IContentCompiler contentCompiler)
+            IAssetContentManager assetContentManager)
         {
             this.m_AssetContentManager = assetContentManager;
-            this.m_ContentCompiler = contentCompiler;
         }
     
         public bool CanHandle(dynamic data)
@@ -25,22 +22,22 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
-            byte[] xnaData = null;
-            if (data.TextureData != null && data.TextureData is JArray)
-                xnaData = ((JArray)data.TextureData).Select(x => (byte)x).ToArray();
+            PlatformData platformData = null;
+            if (data.PlatformData != null)
+            {
+                platformData = new PlatformData
+                {
+                    Platform = data.PlatformData.Platform,
+                    Data = data.PlatformData.Data
+                };
+            }
+
             var texture = new TextureAsset(
-                this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
-                (string)data.SourcePath,
-                xnaData);
-            #if DEBUG
-            if (data.TextureData != null && data.TextureData is byte[])
-            {
-                texture.Data = (byte[])data.TextureData;
-                texture.RebuildTexture();
-            }
-            #endif
+                ByteReader.ReadAsByteArray(data.RawData),
+                platformData);
+
             return texture;
         }
 
@@ -57,10 +54,9 @@ namespace Protogame
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
             return new TextureAsset(
-                this.m_ContentCompiler,
                 this.m_AssetContentManager,
                 name,
-                "",
+                null,
                 null);
         }
     }
