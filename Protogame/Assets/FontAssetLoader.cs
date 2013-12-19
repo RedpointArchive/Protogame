@@ -22,6 +22,18 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
+            if (data is CompiledAsset)
+            {
+                return new FontAsset(
+                    this.m_AssetContentManager,
+                    name,
+                    null,
+                    0,
+                    false,
+                    0,
+                    data.PlatformData);
+            }
+
             PlatformData platformData = null;
             if (data.PlatformData != null)
             {

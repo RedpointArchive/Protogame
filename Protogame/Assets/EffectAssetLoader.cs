@@ -13,6 +13,14 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
+            if (data is CompiledAsset)
+            {
+                return new EffectAsset(
+                    name,
+                    null,
+                    data.PlatformData);
+            }
+
             PlatformData platformData = null;
             if (data.PlatformData != null)
             {
