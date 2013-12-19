@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Reflection;
 using Ninject;
-using Ninject.Syntax;
 
 namespace Protogame
 {
@@ -16,6 +14,11 @@ namespace Protogame
 
         public IAsset Handle(IAsset asset, bool force = false)
         {
+            return this.HandlePlatform(asset, TargetPlatformUtility.GetExecutingPlatform(), force);
+        }
+
+        public IAsset HandlePlatform(IAsset asset, TargetPlatform platform, bool force = false)
+        {
             if (asset.SourceOnly || force)
             {
                 var compilerType = typeof(IAssetCompiler<>).MakeGenericType(asset.GetType());
@@ -27,7 +30,7 @@ namespace Protogame
                 var proxyType = typeof(AssetCompilerProxy<>).MakeGenericType(asset.GetType());
                 var proxy = (IAssetCompilerProxyInterface)
                     proxyType.GetConstructor(new Type[] { compilerType }).Invoke(new object[] { compiler });
-                proxy.Compile(asset, TargetPlatformUtility.GetExecutingPlatform());
+                proxy.Compile(asset, platform);
             }
 
             return asset;

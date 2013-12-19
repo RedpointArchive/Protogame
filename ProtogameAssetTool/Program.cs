@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using Microsoft.Xna.Framework;
 using NDesk.Options;
+using Newtonsoft.Json;
 using Ninject;
 using Protogame;
 
@@ -81,8 +83,18 @@ namespace ProtogameAssetTool
                 }
             }
 
+            // Set up the compiled asset saver.
+            var compiledAssetSaver = new CompiledAssetSaver();
+            kernel.Rebind<IRawAssetSaver>().ToMethod(x => compiledAssetSaver);
+
             // Retrieve the asset manager.
             var assetManager = kernel.Get<LocalAssetManager>();
+
+            // Retrieve the transparent asset compiler.
+            var assetCompiler = kernel.Get<ITransparentAssetCompiler>();
+
+            // Retrieve all of the asset savers.
+            var savers = kernel.GetAll<IAssetSaver>();
 
             // For each of the platforms, perform the compilation of assets.
             foreach (var platformName in platforms)
@@ -90,10 +102,69 @@ namespace ProtogameAssetTool
                 Console.WriteLine("Starting compilation for " + platformName);
                 var platform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), platformName);
 
+                compiledAssetSaver.SetOutputPath(Path.Combine(output, platformName));
+
                 foreach (var asset in assetManager.GetAll())
                 {
-                    Console.WriteLine("TODO: Compile " + asset.Name + " for " + platform);
+                    var compiledAsset = assetCompiler.HandlePlatform(asset, platform);
+
+                    foreach (var saver in savers)
+                    {
+                        var canSave = false;
+                        try
+                        {
+                            canSave = saver.CanHandle(asset);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        if (canSave)
+                        {
+                            var result = saver.Handle(asset, AssetTarget.CompiledFile);
+                            compiledAssetSaver.SaveRawAsset(asset.Name, result);
+                            Console.WriteLine("Compiled " + asset.Name + " for " + platform);
+                            break;
+                        }
+                    }
                 }
+            }
+        }
+
+        public class CompiledAssetSaver : IRawAssetSaver
+        {
+            private string m_Path;
+
+            public void SetOutputPath(string outputPath)
+            {
+                this.m_Path = outputPath;
+            }
+
+            public void SaveRawAsset(string name, object data)
+            {
+                try
+                {
+                    var file = new FileInfo(
+                        Path.Combine(
+                            this.m_Path,
+                            name.Replace('.', Path.DirectorySeparatorChar) + ".bin"));
+                    this.CreateDirectories(file.Directory);
+                    using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))
+                    {
+                        writer.Write(JsonConvert.SerializeObject(data));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new AssetNotFoundException(name, ex);
+                }
+            }
+
+            private void CreateDirectories(DirectoryInfo directory)
+            {
+                if (directory.Exists)
+                    return;
+                this.CreateDirectories(directory.Parent);
+                directory.Create();
             }
         }
     }
