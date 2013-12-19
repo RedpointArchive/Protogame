@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ProtogameAssetManager
 {
-    public class TextureAssetEditor : AssetEditor<TextureAsset>
+    internal class TextureAssetEditor : AssetEditor<TextureAsset>
     {
         private FileSelect m_FileSelect;
 

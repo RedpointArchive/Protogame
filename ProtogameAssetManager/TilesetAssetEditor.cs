@@ -4,7 +4,7 @@ using System;
 
 namespace ProtogameAssetManager
 {
-    public class TilesetAssetEditor : AssetEditor<TilesetAsset>
+    internal class TilesetAssetEditor : AssetEditor<TilesetAsset>
     {
         private TextBox m_TextureAssetName;
         private TextBox m_CellWidth;

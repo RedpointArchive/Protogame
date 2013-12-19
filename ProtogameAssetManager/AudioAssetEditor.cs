@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ProtogameAssetManager
 {
-    public class AudioAssetEditor : AssetEditor<AudioAsset>
+    internal class AudioAssetEditor : AssetEditor<AudioAsset>
     {
         private FileSelect m_FileSelect;
 

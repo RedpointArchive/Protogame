@@ -6,7 +6,7 @@ using Protogame;
 
 namespace ProtogameAssetManager
 {
-    public class AssetManagerWorld : IWorld
+    internal class AssetManagerWorld : IWorld
     {
         public IAssetManager AssetManager { get; set; }
         public List<IEntity> Entities { get; set; }

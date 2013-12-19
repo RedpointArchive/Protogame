@@ -19,7 +19,6 @@
   </References>
   <Files>
     <Compile Include="AssetManagerBasicSkin.cs" />
-    <Compile Include="AssetManagerClient.cs" />
     <Compile Include="AssetManagerGame.cs" />
     <Compile Include="AssetManagerIoCModule.cs" />
     <Compile Include="AssetManagerLayout.cs" />
@@ -31,7 +30,6 @@
     <Compile Include="LanguageAssetEditor.cs" />
     <Compile Include="LevelAssetEditor.cs" />
     <Compile Include="LocalAssetManagerProvider.cs" />
-    <Compile Include="NetworkedAssetManagerProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TextureAssetEditor.cs" />
     <Compile Include="TilesetAssetEditor.cs" />

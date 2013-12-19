@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProtogameAssetManager
 {
-    public class LevelAssetEditor : AssetEditor<LevelAsset>
+    internal class LevelAssetEditor : AssetEditor<LevelAsset>
     {
         private FileSelect m_FileSelect;
 

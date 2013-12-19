@@ -67,6 +67,8 @@
     <Compile Include="Assets\LocalAssetManager.cs" />
     <Compile Include="Assets\LocalCompiledLoadStrategy.cs" />
     <Compile Include="Assets\LocalSourceLoadStrategy.cs" />
+    <Compile Include="Assets\Manager\AssetManagerClient.cs" />
+    <Compile Include="Assets\Manager\NetworkedAssetManagerProvider.cs" />
     <Compile Include="Assets\NetworkAsset.cs" />
     <Compile Include="Assets\NetworkAssetManager.cs" />
     <Compile Include="Assets\NetworkAssetProxy.cs" />

@@ -57,32 +57,47 @@ namespace Protogame
 
         public IAsset GetUnresolved(string asset)
         {
-            object obj;
             if (this.m_Assets.ContainsKey(asset))
                 return this.m_Assets[asset];
-            obj = this.m_RawAssetLoader.LoadRawAsset(asset);
+            var candidates = this.m_RawAssetLoader.LoadRawAsset(asset);
             var loaders = this.m_AssetLoaders.ToArray();
-            if (obj != null)
+            var failedDueToCompilation = false;
+
+            foreach (var candidate in candidates)
             {
                 foreach (var loader in loaders)
                 {
                     var canLoad = false;
                     try
                     {
-                        canLoad = loader.CanHandle(obj);
+                        canLoad = loader.CanHandle(candidate);
                     }
                     catch (Exception)
                     {
                     }
                     if (canLoad)
                     {
-                        var result = loader.Handle(this, asset, obj);
+                        var result = loader.Handle(this, asset, candidate);
                         this.m_Assets.Add(asset, result);
                         result = this.m_TransparentAssetCompiler.Handle(result);
+                        if (result.SourceOnly)
+                        {
+                            // We can't have source only assets past this point.  The compilation
+                            // failed, but we definitely do have a source representation, so let's
+                            // keep that around if we need to throw an exception.
+                            failedDueToCompilation = true;
+                            break;
+                        }
                         return result;
                     }
                 }
             }
+
+            if (failedDueToCompilation)
+            {
+                throw new AssetNotCompiledException(asset);
+            }
+
             // NOTE: We don't use asset defaults with the local asset manager, if it
             // doesn't exist, the load fails.
             throw new InvalidOperationException(

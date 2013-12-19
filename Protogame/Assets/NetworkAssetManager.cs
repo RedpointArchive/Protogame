@@ -45,7 +45,7 @@ namespace Protogame
         private Dictionary<string, NetworkAsset> m_Assets;
 
         [Local]
-        private Dictionary<string, object> m_RawAssets;
+        private Dictionary<string, object[]> m_RawAssets;
         
         [Local]
         private Dictionary<string, IAsset> m_ClientCache;
@@ -53,7 +53,7 @@ namespace Protogame
         public NetworkAssetManager()
         {
             this.m_Assets = new Dictionary<string, NetworkAsset>();
-            this.m_RawAssets = new Dictionary<string, object>();
+            this.m_RawAssets = new Dictionary<string, object[]>();
         }
         
         [Local]
@@ -99,8 +99,8 @@ namespace Protogame
                     this.m_Assets.Remove(asset);
                 }
 
-                // Otherwise load the raw asset if that doesn't exist.
-                object raw;
+                // Otherwise load the raw assets if that doesn't exist.
+                object[] candidates;
                 NetworkAsset result;
                 if (!this.m_RawAssets.ContainsKey(asset))
                 {
@@ -108,7 +108,7 @@ namespace Protogame
                         this.m_RawAssetLoader = this.m_Kernel.Get<IRawAssetLoader>();
                     try
                     {
-                        raw = this.m_RawAssetLoader.LoadRawAsset(asset);
+                        candidates = this.m_RawAssetLoader.LoadRawAsset(asset);
                     }
                     catch (AssetNotFoundException)
                     {
@@ -118,11 +118,11 @@ namespace Protogame
                     }
                 }
                 else
-                    raw = this.m_RawAssets[asset];
+                    candidates = this.m_RawAssets[asset];
 
                 // We now have our raw asset and we need to wrap it in
                 // a NetworkAsset.
-                result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>().ToArray(), this.m_TransparentAssetCompiler, raw, asset, this);
+                result = new NetworkAsset(this.m_Kernel.GetAll<IAssetLoader>().ToArray(), this.m_TransparentAssetCompiler, candidates, asset, this);
                 this.m_Assets.Add(asset, result);
                 return result;
             }

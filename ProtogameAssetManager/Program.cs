@@ -9,9 +9,9 @@ using Protogame;
 
 namespace ProtogameAssetManager
 {
-    static class Program
+    internal static class Program
     {
-        static void RegisterEditorsFromAssembly(Assembly assembly, IKernel kernel)
+        private static void RegisterEditorsFromAssembly(Assembly assembly, IKernel kernel)
         {
             foreach (var type in assembly.GetTypes())
             {
@@ -48,7 +48,7 @@ namespace ProtogameAssetManager
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        internal static void Main(string[] args)
         {
             var connectToRunningGame = false;
             var options = new OptionSet

@@ -2,7 +2,7 @@ using Protogame;
 
 namespace ProtogameAssetManager
 {
-    public class LanguageAssetEditor : AssetEditor<LanguageAsset>
+    internal class LanguageAssetEditor : AssetEditor<LanguageAsset>
     {
         private TextBox m_TextBox;
 

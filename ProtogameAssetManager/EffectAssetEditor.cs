@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ProtogameAssetManager
 {
-    public class EffectAssetEditor : AssetEditor<EffectAsset>
+    internal class EffectAssetEditor : AssetEditor<EffectAsset>
     {
         private FileSelect m_FileSelect;
 

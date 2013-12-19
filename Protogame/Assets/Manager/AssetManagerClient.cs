@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -6,9 +6,8 @@ using System.Threading;
 using Dx.Runtime;
 using NDesk.Options;
 using Ninject;
-using Protogame;
 
-namespace ProtogameAssetManager
+namespace Protogame
 {
     public static class AssetManagerClient
     {
@@ -22,10 +21,20 @@ namespace ProtogameAssetManager
             Process process = null;
             if (startProcess)
             {
+                var assemblyPath = Assembly.GetExecutingAssembly().Location;
+                var directory = new FileInfo(assemblyPath).Directory;
+                var filename = Path.Combine(directory.FullName, "ProtogameAssetManager.exe");
+                if (!File.Exists(filename))
+                {
+                    throw new FileNotFoundException(
+                        "You must have ProtogameAssetManager.exe in " +
+                        "the same directory as your game.");
+                }
+
                 process = new Process();
                 process.StartInfo = new ProcessStartInfo
                 {
-                    FileName = Assembly.GetExecutingAssembly().Location,
+                    FileName = filename,
                     Arguments = "--connect"
                 };
                 process.EnableRaisingEvents = true;
@@ -55,7 +64,7 @@ namespace ProtogameAssetManager
 
             return process;
         }
-        
+
         /// <summary>
         /// This is a utility function that accepts the current command line
         /// arguments and parses them to determine whether or not the asset
@@ -122,7 +131,7 @@ namespace ProtogameAssetManager
             }
         }
     }
-    
+
     public struct ExtraOption
     {
         public string Prototype;

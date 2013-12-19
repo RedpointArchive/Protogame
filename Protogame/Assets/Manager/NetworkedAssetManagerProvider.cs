@@ -2,7 +2,7 @@ using Dx.Runtime;
 using Ninject;
 using Protogame;
 
-namespace ProtogameAssetManager
+namespace Protogame
 {
     public class NetworkedAssetManagerProvider : IAssetManagerProvider
     {

@@ -5,7 +5,7 @@ using Protogame;
 using System;
 using Ninject;
 
-namespace ProtogameAssetManager
+namespace Protogame
 {
     public class LocalAssetManagerProvider : IAssetManagerProvider
     {

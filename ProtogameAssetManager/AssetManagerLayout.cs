@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ProtogameAssetManager
 {
-    public class AssetManagerLayout : Canvas
+    internal class AssetManagerLayout : Canvas
     {
         private CanvasEntity m_CanvasEntity;
     

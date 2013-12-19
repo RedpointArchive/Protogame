@@ -22,13 +22,17 @@ namespace Protogame
                 FontDescriptionStyle.Regular,
                 asset.UseKerning,
                 chars);
-
+                
+#if PLATFORM_WINDOWS
             if (IntPtr.Size != 4)
             {
-                throw new NotSupportedException(
-                    "Compilation of SpriteFonts requires that the process " +
-                    "is executing under 32-bit due to native dependencies.");
+                // Compilation of SpriteFonts requires that the process
+                // is executing under 32-bit due to native dependencies.
+                // We just return here and hope that the user has compiled
+                // a version of the font.
+                return;
             }
+#endif
 
             try
             {

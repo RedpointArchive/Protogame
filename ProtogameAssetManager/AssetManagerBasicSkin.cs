@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace ProtogameAssetManager
 {
-    public class AssetManagerBasicSkin : IBasicSkin
+    internal class AssetManagerBasicSkin : IBasicSkin
     {
         public Color LightEdgeColor { get { return new Color(160, 160, 160); } }
         public Color BackSurfaceColor { get { return new Color(96, 96, 96); } }

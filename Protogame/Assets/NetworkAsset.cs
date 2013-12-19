@@ -44,7 +44,7 @@ namespace Protogame
         internal NetworkAsset(
             IAssetLoader[] loaders,
             ITransparentAssetCompiler transparentAssetCompiler,
-            object data,
+            object[] candidates,
             string name,
             NetworkAssetManager manager)
         {
@@ -53,9 +53,9 @@ namespace Protogame
             this.Name = name;
             this.Manager = manager;
             this.IsDirty = false;
-            if (data != null)
+            if (candidates != null)
             {
-                var raw = JsonConvert.SerializeObject(data);
+                var raw = JsonConvert.SerializeObject(candidates);
                 this.Data = Encoding.UTF8.GetBytes(raw);
             }
             else
@@ -105,24 +105,33 @@ namespace Protogame
             var loaders = this.m_AssetLoaders.ToArray();
             if (data != null)
             {
-                var obj = (dynamic)JsonConvert.DeserializeObject<dynamic>(Encoding.UTF8.GetString(data));
-                foreach (var loader in loaders)
+                var candidates = (dynamic[])JsonConvert.DeserializeObject<dynamic>(Encoding.UTF8.GetString(data));
+                foreach (var candidate in candidates)
                 {
-                    var result = false;
-                    try
+                    foreach (var loader in loaders)
                     {
-                        result = loader.CanHandle(obj);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    if (result)
-                    {
-                        // We have to create a proxy around this class so
-                        // that we can automatically discard the instance
-                        // when we consider it to be dirty.
-                        return this.FormProxyIfPossible<T>(
-                            this.m_TransparentAssetCompiler.Handle(loader.Handle(this.Manager, this.Name, obj)));
+                        var canLoad = false;
+                        try
+                        {
+                            canLoad = loader.CanHandle(candidate);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        if (canLoad)
+                        {
+                            // We have to create a proxy around this class so
+                            // that we can automatically discard the instance
+                            // when we consider it to be dirty.
+                            var result = loader.Handle(this.Manager, this.Name, candidate);
+                            result = this.m_TransparentAssetCompiler.Handle(result);
+                            if (result.SourceOnly)
+                            {
+                                // We can't have source only assets past this point.
+                                break;
+                            }
+                            return this.FormProxyIfPossible<T>(result);
+                        }
                     }
                 }
             }

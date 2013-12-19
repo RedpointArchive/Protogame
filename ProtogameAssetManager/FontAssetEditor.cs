@@ -5,7 +5,7 @@ using Protogame;
 
 namespace ProtogameAssetManager
 {
-    public class FontAssetEditor : AssetEditor<FontAsset>
+    internal class FontAssetEditor : AssetEditor<FontAsset>
     {
         private TextBox m_FontNameTextBox;
         private TextBox m_FontSizeTextBox;

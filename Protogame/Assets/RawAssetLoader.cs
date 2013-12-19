@@ -66,33 +66,25 @@ namespace Protogame
             return this.RescanAssets(this.m_Path);
         }
         
-        public object LoadRawAsset(string name)
+        public object[] LoadRawAsset(string name)
         {
-            try
+            var candidates = new List<object>();
+            foreach (var strategy in this.m_Strategies)
             {
-                foreach (var strategy in this.m_Strategies)
+                object result;
+
+                if (strategy.ScanSourcePath && this.m_SourcePath != null)
                 {
-                    object result;
-
-                    if (strategy.ScanSourcePath && this.m_SourcePath != null)
-                    {
-                        result = strategy.AttemptLoad(this.m_SourcePath, name);
-                        if (result != null)
-                            return result;
-                    }
-
-                    result = strategy.AttemptLoad(this.m_Path, name);
+                    result = strategy.AttemptLoad(this.m_SourcePath, name);
                     if (result != null)
-                        return result;
+                        candidates.Add(result);
                 }
-                throw new AssetNotFoundException(name);
+
+                result = strategy.AttemptLoad(this.m_Path, name);
+                if (result != null)
+                    candidates.Add(result);
             }
-            catch (Exception ex)
-            {
-                if (ex is AssetNotFoundException)
-                    throw;
-                throw new AssetNotFoundException(name, ex);
-            }
+            return candidates.ToArray();
         }
     }
 }
