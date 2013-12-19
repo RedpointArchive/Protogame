@@ -1,7 +1,24 @@
 {
     "project_id": "Protogame",
-    "conduit_uri": "http://code.redpointsoftware.com.au/",
+    "conduit_uri": "https://code.redpointsoftware.com.au/",
     "arc.autostash": true,
     "unit.engine": "XUnitTestEngine",
-    "unit.xunit.binary": "packages/xunit.runners.1.9.1/tools/xunit.console.clr4.exe"
+    "unit.csharp.xunit.binary": "packages/xunit.runners.1.9.1/tools/xunit.console.clr4.exe",
+    "unit.csharp.discovery": {
+      "([^/]+)/(.*?)\\.cs": [
+        [ "$1.Tests/$1.Tests.Linux.csproj", "$1.Tests/bin/Debug/$1.Tests.dll" ],
+        [ "$1.Tests/$1.Tests.Windows.csproj", "$1.Tests/bin/Debug/$1.Tests.dll" ]
+      ],
+      "([^\\\\]+)\\\\(.*?)\\.cs": [
+        [ "$1.Tests\\$1.Tests.Windows.csproj", "$1.Tests\\bin\\Debug\\$1.Tests.dll" ]
+      ],
+      "([^/]+)\\.Tests/(.*?)\\.cs": [
+        [ "$1.Tests/$1.Tests.Linux.csproj", "$1.Tests/bin/Debug/$1.Tests.dll" ],
+        [ "$1.Tests/$1.Tests.Windows.csproj", "$1.Tests/bin/Debug/$1.Tests.dll" ]
+      ],
+      "([^\\\\]+)\\.Tests\\\\(.*?)\\.cs": [
+        [ "$1.Tests\\$1.Tests.Windows.csproj", "$1.Tests\\bin\\Debug\\$1.Tests.dll" ]
+      ]
+    }
+
 }
