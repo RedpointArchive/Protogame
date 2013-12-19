@@ -10,14 +10,23 @@ namespace Protogame
         public dynamic Handle(IAsset asset, AssetTarget target)
         {
             var fontAsset = asset as FontAsset;
-            
+
+            if (target == AssetTarget.CompiledFile)
+            {
+                return new CompiledAsset
+                {
+                    Loader = typeof(FontAssetLoader).FullName,
+                    PlatformData = fontAsset.PlatformData
+                };
+            }
+
             return new
             {
                 Loader = typeof(FontAssetLoader).FullName,
-                FontSize = target == AssetTarget.CompiledFile ? 0 : fontAsset.FontSize,
-                FontName = target == AssetTarget.CompiledFile ? null : fontAsset.FontName,
-                UseKerning = target == AssetTarget.CompiledFile ? false : fontAsset.UseKerning,
-                Spacing = target == AssetTarget.CompiledFile ? 0 : fontAsset.Spacing,
+                FontSize = fontAsset.FontSize,
+                FontName = fontAsset.FontName,
+                UseKerning = fontAsset.UseKerning,
+                Spacing = fontAsset.Spacing,
                 PlatformData = target == AssetTarget.SourceFile ? null : fontAsset.PlatformData
             };
         }

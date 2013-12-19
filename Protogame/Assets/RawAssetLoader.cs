@@ -4,15 +4,18 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using ProtoBuf;
+using Protogame.Compression;
 
 namespace Protogame
 {
     public class RawAssetLoader : IRawAssetLoader
     {
         private string m_Path;
-        private List<ILoadStrategy> m_Strategies;
+        private ILoadStrategy[] m_Strategies;
     
-        public RawAssetLoader()
+        public RawAssetLoader(
+            ILoadStrategy[] strategies)
         {
             var directory = new DirectoryInfo(Environment.CurrentDirectory).FullName;
             var contentDirectory = Path.Combine(directory, "Content");
@@ -32,13 +35,8 @@ namespace Protogame
                     this.m_Path = reader.ReadLine();
                 }
             }
-            
-            this.m_Strategies = new List<ILoadStrategy>();
-            this.m_Strategies.Add(new LocalLoadStrategy());
-            #if DEBUG
-            this.m_Strategies.Add(new RawTextureLoadStrategy());
-            #endif
-            this.m_Strategies.Add(new EmbeddedLoadStrategy());
+
+            this.m_Strategies = strategies;
         }
     
         public IEnumerable<string> RescanAssets(string path, string prefixes = "")
@@ -85,80 +83,6 @@ namespace Protogame
                 throw new AssetNotFoundException(name, ex);
             }
         }
-        
-        private interface ILoadStrategy
-        {
-            object AttemptLoad(string path, string name);
-        }
-        
-        private class LocalLoadStrategy : ILoadStrategy
-        {
-            public object AttemptLoad(string path, string name)
-            {
-                var file = new FileInfo(
-                    Path.Combine(
-                        path,
-                        name.Replace('.', Path.DirectorySeparatorChar) + ".asset"));
-                if (file.Exists)
-                {
-                    using (var reader = new StreamReader(file.FullName, Encoding.UTF8))
-                    {
-                        return JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
-                    }
-                }
-                return null;
-            }
-        }
-        
-        private class EmbeddedLoadStrategy : ILoadStrategy
-        {
-            public object AttemptLoad(string path, string name)
-            {
-                var embedded = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                                where !assembly.IsDynamic
-                                from resource in assembly.GetManifestResourceNames()
-                                where resource == assembly.GetName().Name + "." + name + ".asset"
-                                select assembly.GetManifestResourceStream(resource)).ToList();
-                if (embedded.Any())
-                {
-                    using (var reader = new StreamReader(embedded.First(), Encoding.UTF8))
-                    {
-                        return JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
-                    }
-                }
-                return null;
-            }
-        }
-        
-        #if DEBUG
-            
-        private class RawTextureLoadStrategy : ILoadStrategy
-        {
-            public object AttemptLoad(string path, string name)
-            {
-                var file = new FileInfo(
-                    Path.Combine(
-                        path,
-                        name.Replace('.', Path.DirectorySeparatorChar) + ".png"));
-                if (file.Exists)
-                {
-                    using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
-                    {
-                        using (var binary = new BinaryReader(fileStream))
-                        {
-                            return new {
-                                Loader = typeof(TextureAssetLoader).FullName,
-                                SourcePath = file.FullName,
-                                TextureData = binary.ReadBytes((int)file.Length)
-                            };
-                        }
-                    }
-                }
-                return null;
-            }
-        }
-        
-        #endif
     }
 }
 

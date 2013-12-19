@@ -73,6 +73,11 @@ namespace ProtogameAssetManager
             kernel.Load<ProtogamePlatformingIoCModule>();
             kernel.Load<AssetManagerIoCModule>();
 
+            // Only allow the source load strategies.
+            kernel.Unbind<ILoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
+
             var runningFile = new FileInfo(Assembly.GetExecutingAssembly().Location);
             var workingDirectoryInfo = new DirectoryInfo(Environment.CurrentDirectory);
             var scannedUnique = new List<string>();
@@ -87,6 +92,7 @@ namespace ProtogameAssetManager
                     scannedUnique.Add(file.FullName);
                 }
                 catch (BadImageFormatException) { }
+                catch (FileLoadException) { }
             }
             foreach (var file in runningFile.Directory.GetFiles("*.exe"))
             {
@@ -99,6 +105,7 @@ namespace ProtogameAssetManager
                     scannedUnique.Add(file.FullName);
                 }
                 catch (BadImageFormatException) { }
+                catch (FileLoadException) { }
             }
             foreach (var file in workingDirectoryInfo.GetFiles("*.dll"))
             {
@@ -111,6 +118,7 @@ namespace ProtogameAssetManager
                     scannedUnique.Add(file.FullName);
                 }
                 catch (BadImageFormatException) { }
+                catch (FileLoadException) { }
             }
             foreach (var file in workingDirectoryInfo.GetFiles("*.exe"))
             {
@@ -123,6 +131,7 @@ namespace ProtogameAssetManager
                     scannedUnique.Add(file.FullName);
                 }
                 catch (BadImageFormatException) { }
+                catch (FileLoadException) { }
             }
             
             if (connectToRunningGame)

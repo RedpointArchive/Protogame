@@ -10,6 +10,15 @@ namespace Protogame
         public dynamic Handle(IAsset asset, AssetTarget target)
         {
             var effectAsset = asset as EffectAsset;
+
+            if (target == AssetTarget.CompiledFile)
+            {
+                return new CompiledAsset
+                {
+                    Loader = typeof(EffectAssetLoader).FullName,
+                    PlatformData = effectAsset.PlatformData
+                };
+            }
             
             return new
             {

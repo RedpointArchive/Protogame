@@ -45,6 +45,10 @@ namespace ProtogameAssetTool
             var assetContentManager = new AssetContentManager(services);
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
 
+            // Only allow the local source load strategy.
+            kernel.Unbind<ILoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
+
             // Load additional assemblies.
             foreach (var filename in assemblies)
             {
@@ -85,7 +89,6 @@ namespace ProtogameAssetTool
 
             // Set up the compiled asset saver.
             var compiledAssetSaver = new CompiledAssetSaver();
-            kernel.Rebind<IRawAssetSaver>().ToMethod(x => compiledAssetSaver);
 
             // Retrieve the asset manager.
             var assetManager = kernel.Get<LocalAssetManager>();
@@ -101,8 +104,7 @@ namespace ProtogameAssetTool
             {
                 Console.WriteLine("Starting compilation for " + platformName);
                 var platform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), platformName);
-
-                compiledAssetSaver.SetOutputPath(Path.Combine(output, platformName));
+                var outputPath = Path.Combine(output, platformName);
 
                 foreach (var asset in assetManager.GetAll())
                 {
@@ -121,50 +123,12 @@ namespace ProtogameAssetTool
                         if (canSave)
                         {
                             var result = saver.Handle(asset, AssetTarget.CompiledFile);
-                            compiledAssetSaver.SaveRawAsset(asset.Name, result);
+                            compiledAssetSaver.SaveCompiledAsset(outputPath, asset.Name, result, result is CompiledAsset);
                             Console.WriteLine("Compiled " + asset.Name + " for " + platform);
                             break;
                         }
                     }
                 }
-            }
-        }
-
-        public class CompiledAssetSaver : IRawAssetSaver
-        {
-            private string m_Path;
-
-            public void SetOutputPath(string outputPath)
-            {
-                this.m_Path = outputPath;
-            }
-
-            public void SaveRawAsset(string name, object data)
-            {
-                try
-                {
-                    var file = new FileInfo(
-                        Path.Combine(
-                            this.m_Path,
-                            name.Replace('.', Path.DirectorySeparatorChar) + ".bin"));
-                    this.CreateDirectories(file.Directory);
-                    using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))
-                    {
-                        writer.Write(JsonConvert.SerializeObject(data));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new AssetNotFoundException(name, ex);
-                }
-            }
-
-            private void CreateDirectories(DirectoryInfo directory)
-            {
-                if (directory.Exists)
-                    return;
-                this.CreateDirectories(directory.Parent);
-                directory.Create();
             }
         }
     }
