@@ -40,6 +40,8 @@
     <Compile Include="Assets\EffectAssetCompiler.cs" />
     <Compile Include="Assets\EffectAssetLoader.cs" />
     <Compile Include="Assets\EffectAssetSaver.cs" />
+    <Compile Include="Assets\EmbeddedCompiledLoadStrategy.cs" />
+    <Compile Include="Assets\EmbeddedSourceLoadStrategy.cs" />
     <Compile Include="Assets\FontAsset.cs" />
     <Compile Include="Assets\FontAssetCompiler.cs" />
     <Compile Include="Assets\FontAssetLoader.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="Assets\IAssetManager.cs" />
     <Compile Include="Assets\IAssetManagerProvider.cs" />
     <Compile Include="Assets\IAssetSaver.cs" />
+    <Compile Include="Assets\ILoadStrategy.cs" />
     <Compile Include="Assets\IRawAssetLoader.cs" />
     <Compile Include="Assets\IRawAssetSaver.cs" />
     <Compile Include="Assets\ITransparentAssetCompiler.cs" />
@@ -62,6 +65,8 @@
     <Compile Include="Assets\LevelAssetLoader.cs" />
     <Compile Include="Assets\LevelAssetSaver.cs" />
     <Compile Include="Assets\LocalAssetManager.cs" />
+    <Compile Include="Assets\LocalCompiledLoadStrategy.cs" />
+    <Compile Include="Assets\LocalSourceLoadStrategy.cs" />
     <Compile Include="Assets\NetworkAsset.cs" />
     <Compile Include="Assets\NetworkAssetManager.cs" />
     <Compile Include="Assets\NetworkAssetProxy.cs" />
@@ -69,6 +74,7 @@
     <Compile Include="Assets\ProtogameAssetIoCModule.cs" />
     <Compile Include="Assets\RawAssetLoader.cs" />
     <Compile Include="Assets\RawAssetSaver.cs" />
+    <Compile Include="Assets\RawTextureLoadStrategy.cs" />
     <Compile Include="Assets\TargetPlatform.cs" />
     <Compile Include="Assets\TargetPlatformCast.cs" />
     <Compile Include="Assets\TargetPlatformUtility.cs" />
