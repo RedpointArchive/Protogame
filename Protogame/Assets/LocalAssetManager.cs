@@ -78,7 +78,6 @@ namespace Protogame
                     if (canLoad)
                     {
                         var result = loader.Handle(this, asset, candidate);
-                        this.m_Assets.Add(asset, result);
                         result = this.m_TransparentAssetCompiler.Handle(result);
                         if (result.SourceOnly)
                         {
@@ -86,8 +85,10 @@ namespace Protogame
                             // failed, but we definitely do have a source representation, so let's
                             // keep that around if we need to throw an exception.
                             failedDueToCompilation = true;
+                            Console.WriteLine("WARNING: Unable to compile " + asset + " at runtime (a compiled version may be used).");
                             break;
                         }
+                        this.m_Assets.Add(asset, result);
                         return result;
                     }
                 }
