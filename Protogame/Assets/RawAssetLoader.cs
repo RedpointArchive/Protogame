@@ -12,6 +12,7 @@ namespace Protogame
     public class RawAssetLoader : IRawAssetLoader
     {
         private string m_Path;
+        private string m_SourcePath;
         private ILoadStrategy[] m_Strategies;
     
         public RawAssetLoader(
@@ -25,14 +26,15 @@ namespace Protogame
                 directory = contentDirectory;
             }
             this.m_Path = directory;
+            this.m_SourcePath = directory;
             
             // Check for the existance of a .source file in the directory; if so, we
-            // set our path to that directory instead.
+            // also search that path.
             if (File.Exists(Path.Combine(this.m_Path, ".source")))
             {
                 using (var reader = new StreamReader(Path.Combine(this.m_Path, ".source")))
                 {
-                    this.m_Path = reader.ReadLine();
+                    this.m_SourcePath = reader.ReadLine();
                 }
             }
 
@@ -70,7 +72,16 @@ namespace Protogame
             {
                 foreach (var strategy in this.m_Strategies)
                 {
-                    var result = strategy.AttemptLoad(this.m_Path, name);
+                    object result;
+
+                    if (strategy.ScanSourcePath && this.m_SourcePath != null)
+                    {
+                        result = strategy.AttemptLoad(this.m_SourcePath, name);
+                        if (result != null)
+                            return result;
+                    }
+
+                    result = strategy.AttemptLoad(this.m_Path, name);
                     if (result != null)
                         return result;
                 }

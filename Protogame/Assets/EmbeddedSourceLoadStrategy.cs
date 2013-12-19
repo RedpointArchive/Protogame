@@ -8,6 +8,8 @@ namespace Protogame
 {
     public class EmbeddedSourceLoadStrategy : ILoadStrategy
     {
+        public bool ScanSourcePath { get { return false; } }
+
         public object AttemptLoad(string path, string name)
         {
             var embedded = (from assembly in AppDomain.CurrentDomain.GetAssemblies()

@@ -6,6 +6,8 @@ namespace Protogame
 {
     public class LocalSourceLoadStrategy : ILoadStrategy
     {
+        public bool ScanSourcePath { get { return true; } }
+
         public object AttemptLoad(string path, string name)
         {
             var file = new FileInfo(

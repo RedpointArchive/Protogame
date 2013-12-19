@@ -4,6 +4,8 @@ namespace Protogame
 {
     public class RawTextureLoadStrategy : ILoadStrategy
     {
+        public bool ScanSourcePath { get { return false; } }
+
         public object AttemptLoad(string path, string name)
         {
             var file = new FileInfo(
