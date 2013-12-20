@@ -77,6 +77,13 @@ namespace Protogame
         /// </summary>
         /// <param name="texture">The active texture.</param>
         void SetActiveTexture(Texture2D texture);
+
+        /// <summary>
+        /// Change the current active effect used for rendering.
+        /// </summary>
+        /// <typeparam name="T">The effect type.</typeparam>
+        /// <param name="effect">The effect instance.</param>
+        void SetEffect<T>(T effect) where T : Effect;
     }
 }
 

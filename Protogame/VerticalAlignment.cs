@@ -1,10 +1,23 @@
 namespace Protogame
 {
+    /// <summary>
+    /// Represents vertical alignment.
+    /// </summary>
     public enum VerticalAlignment
     {
-        Top,
-        Center,
+        /// <summary>
+        /// The given Y value should indicate the top of what is being aligned.
+        /// </summary>
+        Top, 
+
+        /// <summary>
+        /// The given Y value should indicate the center of what is being aligned.
+        /// </summary>
+        Center, 
+
+        /// <summary>
+        /// The given Y value should indicate the bottom of what is being aligned.
+        /// </summary>
         Bottom
     }
 }
-

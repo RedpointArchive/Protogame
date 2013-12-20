@@ -207,7 +207,6 @@
     <Compile Include="Platforming\ProtogamePlatformingIoCModule.cs" />
     <Compile Include="Protogame2DIoCModule.cs" />
     <Compile Include="Protogame3DIoCModule.cs" />
-    <Compile Include="ProtogameException.cs" />
     <Compile Include="Structure\PositionOctree.cs">
       <DependentUpon>PositionOctreeNode.cs</DependentUpon>
     </Compile>
@@ -252,8 +251,6 @@
     <Compile Include="UI\VerticalContainer.cs" />
     <Compile Include="UI\Window.cs" />
     <Compile Include="VerticalAlignment.cs" />
-    <Compile Include="World.cs" />
-    <Compile Include="WorldManager.cs" />
     <EmbeddedResource Include="font.Default.asset" />
     <EmbeddedResource Include="font.Default-Android.bin" />
     <EmbeddedResource Include="font.Default-iOS.bin" />
