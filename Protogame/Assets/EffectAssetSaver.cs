@@ -23,8 +23,8 @@ namespace Protogame
             return new
             {
                 Loader = typeof(EffectAssetLoader).FullName,
-                SourcePath = effectAsset.SourcePath,
-                PlatformData = effectAsset.PlatformData
+                Code = effectAsset.Code,
+                PlatformData = target == AssetTarget.SourceFile ? null : effectAsset.PlatformData
             };
         }
     }

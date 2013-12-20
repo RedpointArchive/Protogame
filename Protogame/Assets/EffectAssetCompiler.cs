@@ -8,31 +8,49 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using MonoGame.Framework.Content.Pipeline.Builder;
 
 namespace Protogame
 {
-    public class EffectAssetCompiler : MonoGameContentCompiler, IAssetCompiler<EffectAsset>
+    public class EffectAssetCompiler : IAssetCompiler<EffectAsset>
     {
         public void Compile(EffectAsset asset, TargetPlatform platform)
         {
-            var output = new EffectContent();
-            using (var reader = new StreamReader(asset.SourcePath))
+            if (string.IsNullOrEmpty(asset.Code))
             {
-                output.EffectCode = reader.ReadToEnd();
+                return;
             }
+
+            var output = new EffectContent();
+            output.EffectCode = asset.Code;
+
+            var tempPath = Path.GetTempFileName();
+            using (var writer = new StreamWriter(tempPath))
+            {
+                writer.Write(output.EffectCode);
+            }
+            output.Identity = new ContentIdentity(tempPath);
+
+            var tempOutputPath = Path.GetTempFileName();
 
             var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
             var dictionary = new OpaqueDataDictionary();
-            var processor = manager.CreateProcessor("EffectProcessor", dictionary);
+            var processor = new EffectProcessor();
             var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
+            context.ActualOutputFilename = tempOutputPath;
             var content = processor.Process(output, context);
 
             asset.PlatformData = new PlatformData
             {
                 Platform = platform,
-                Data = this.CompileAndGetBytes(content)
+                Data = content.GetEffectCode()
             };
+
+            File.Delete(tempPath);
+            File.Delete(tempOutputPath);
+
+            asset.ReloadEffect();
         }
     }
 }

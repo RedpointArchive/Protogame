@@ -72,13 +72,19 @@ namespace Protogame
                 throw new NotImplementedException();
             }
         }
-        
+
         public override string OutputFilename
         {
             get
             {
-                throw new NotImplementedException();
+                return this.ActualOutputFilename;
             }
+        }
+
+        public string ActualOutputFilename
+        {
+            get;
+            set;
         }
         
         public override OpaqueDataDictionary Parameters

@@ -36,6 +36,7 @@ namespace Protogame
 #if PLATFORM_WINDOWS
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
+            this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
 #elif PLATFORM_LINUX
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();

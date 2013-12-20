@@ -40,6 +40,7 @@
     <Compile Include="Assets\EffectAssetCompiler.cs" />
     <Compile Include="Assets\EffectAssetLoader.cs" />
     <Compile Include="Assets\EffectAssetSaver.cs" />
+    <Compile Include="Assets\Effects\EffectWithMatrices.cs" />
     <Compile Include="Assets\EmbeddedCompiledLoadStrategy.cs" />
     <Compile Include="Assets\EmbeddedSourceLoadStrategy.cs" />
     <Compile Include="Assets\FontAsset.cs" />

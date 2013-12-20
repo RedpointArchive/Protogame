@@ -6,6 +6,14 @@ namespace Protogame
 {
     public class EffectAssetLoader : IAssetLoader
     {
+        private IAssetContentManager m_AssetContentManager;
+
+        public EffectAssetLoader(
+            IAssetContentManager assetContentManager)
+        {
+            this.m_AssetContentManager = assetContentManager;
+        }
+    
         public bool CanHandle(dynamic data)
         {
             return data.Loader == typeof(EffectAssetLoader).FullName;
@@ -16,6 +24,7 @@ namespace Protogame
             if (data is CompiledAsset)
             {
                 return new EffectAsset(
+                    this.m_AssetContentManager,
                     name,
                     null,
                     data.PlatformData);
@@ -32,8 +41,9 @@ namespace Protogame
             }
 
             var effect = new EffectAsset(
+                this.m_AssetContentManager,
                 name,
-                (string)data.SourcePath,
+                (string)data.Code,
                 platformData);
 
             return effect;
@@ -52,6 +62,7 @@ namespace Protogame
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
             return new EffectAsset(
+                this.m_AssetContentManager,
                 name,
                 "",
                 null);

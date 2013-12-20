@@ -6,7 +6,7 @@ namespace Protogame
 {
     class DefaultRenderContext : IRenderContext
     {
-        private BasicEffect m_Effect;
+        private Effect m_Effect;
         private BoundingFrustum m_BoundingFrustum;
     
         public GraphicsDevice GraphicsDevice { get; private set; }
@@ -14,25 +14,68 @@ namespace Protogame
         public Texture2D SingleWhitePixel { get; private set; }
         public Effect Effect { get { return this.m_Effect; } }
         public BoundingFrustum BoundingFrustrum { get { return this.m_BoundingFrustum; } }
-        
+
+        public void SetEffect<T>(T effect) where T : Effect
+        {
+            this.m_Effect = effect;
+        }
+
+        private Matrix GetEffectMatrix(Func<IEffectMatrices, Matrix> prop)
+        {
+            var effectMatrices = this.m_Effect as IEffectMatrices;
+
+            if (effectMatrices != null)
+                return prop(effectMatrices);
+            else
+                return Matrix.Identity;
+        }
+
+        private void SetEffectMatrix(Action<IEffectMatrices> assign)
+        {
+            var effectMatrices = this.m_Effect as IEffectMatrices;
+
+            if (effectMatrices != null)
+                assign(effectMatrices);
+        }
+
         public Matrix View
         {
-            get { return this.m_Effect.View; }
-            set { this.m_Effect.View = value; this.RecalculateBoundingFrustrum(); }
+            get
+            {
+                return this.GetEffectMatrix(x => x.View);
+            }
+            set
+            {
+                this.SetEffectMatrix(x => x.View = value);
+                this.RecalculateBoundingFrustrum();
+            }
         }
         
         public Matrix World
         {
-            get { return this.m_Effect.World; }
-            set { this.m_Effect.World = value; }
+            get
+            {
+                return this.GetEffectMatrix(x => x.World);
+            }
+            set
+            {
+                this.SetEffectMatrix(x => x.World = value);
+            }
         }
         
         public Matrix Projection
         {
-            get { return this.m_Effect.Projection; }
-            set { this.m_Effect.Projection = value; this.RecalculateBoundingFrustrum(); }
+            get
+            {
+                return this.GetEffectMatrix(x => x.Projection);
+            }
+            set
+            {
+                this.SetEffectMatrix(x => x.Projection = value);
+                this.RecalculateBoundingFrustrum();
+            }
         }
-        
+
         public bool Is3DContext { get; set; }
         
         private void RecalculateBoundingFrustrum()
@@ -56,19 +99,34 @@ namespace Protogame
         
         public void EnableTextures()
         {
-            this.m_Effect.TextureEnabled = true;
-            this.m_Effect.VertexColorEnabled = false;
+            var basicEffect = this.m_Effect as BasicEffect;
+
+            if (basicEffect != null)
+            {
+                basicEffect.TextureEnabled = true;
+                basicEffect.VertexColorEnabled = false;
+            }
         }
         
         public void EnableVertexColors()
         {
-            this.m_Effect.VertexColorEnabled = true;
-            this.m_Effect.TextureEnabled = false;
+            var basicEffect = this.m_Effect as BasicEffect;
+
+            if (basicEffect != null)
+            {
+                basicEffect.VertexColorEnabled = true;
+                basicEffect.TextureEnabled = false;
+            }
         }
         
         public void SetActiveTexture(Texture2D texture)
         {
-            this.m_Effect.Texture = texture;
+            var basicEffect = this.m_Effect as BasicEffect;
+
+            if (basicEffect != null)
+            {
+                basicEffect.Texture = texture;
+            }
         }
     }
 }
