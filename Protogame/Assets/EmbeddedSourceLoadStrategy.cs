@@ -8,7 +8,21 @@ namespace Protogame
 {
     public class EmbeddedSourceLoadStrategy : ILoadStrategy
     {
-        public bool ScanSourcePath { get { return false; } }
+        public bool ScanSourcePath
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public string[] AssetExtensions
+        {
+            get
+            {
+                return new[] { "asset" };
+            }
+        }
 
         public object AttemptLoad(string path, string name)
         {

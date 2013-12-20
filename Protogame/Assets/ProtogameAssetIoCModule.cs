@@ -31,6 +31,7 @@ namespace Protogame
             this.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
 #if DEBUG
             this.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
 #endif
 
 #if PLATFORM_WINDOWS

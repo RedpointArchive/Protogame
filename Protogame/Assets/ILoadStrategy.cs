@@ -8,6 +8,7 @@ namespace Protogame
     public interface ILoadStrategy
     {
         bool ScanSourcePath { get; }
+        string[] AssetExtensions { get; }
 
         object AttemptLoad(string path, string name);
     }

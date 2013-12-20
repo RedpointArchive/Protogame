@@ -6,7 +6,21 @@ namespace Protogame
 {
     public class LocalSourceLoadStrategy : ILoadStrategy
     {
-        public bool ScanSourcePath { get { return true; } }
+        public bool ScanSourcePath
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public string[] AssetExtensions
+        {
+            get
+            {
+                return new[] { "asset" };
+            }
+        }
 
         public object AttemptLoad(string path, string name)
         {

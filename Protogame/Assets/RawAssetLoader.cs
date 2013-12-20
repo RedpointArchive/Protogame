@@ -40,7 +40,24 @@ namespace Protogame
 
             this.m_Strategies = strategies;
         }
-    
+
+        private string[] GetExtensions()
+        {
+            return this.m_Strategies.SelectMany(x => x.AssetExtensions).Select(x => "." + x).ToArray();
+        }
+
+        private string StripPlatformPrefix(string name)
+        {
+            foreach (var value in Enum.GetNames(typeof(TargetPlatform)))
+            {
+                if (name.StartsWith(value + "."))
+                {
+                    return name.Substring(value.Length + 1);
+                }
+            }
+            return name;
+        }
+
         public IEnumerable<string> RescanAssets(string path, string prefixes = "")
         {
             var directoryInfo = new DirectoryInfo(path + "/" + prefixes.Replace('.', '/'));
@@ -48,11 +65,20 @@ namespace Protogame
                 directoryInfo.Create();
             foreach (var file in directoryInfo.GetFiles())
             {
-                if (file.Extension != ".asset")
-                    continue;
-                var name = file.Name.Substring(0, file.Name.Length - ".asset".Length);
-                var asset = (prefixes.Trim('.') + "." + name).Trim('.');
-                yield return asset;
+                foreach (var extension in this.GetExtensions())
+                {
+                    if (file.Extension != extension)
+                        continue;
+                    var name = file.Name.Substring(0, file.Name.Length - extension.Length);
+                    var asset = (prefixes.Trim('.') + "." + name).Trim('.');
+
+                    // If the asset is now prefixed with a platform (e.g. "Linux.") then we
+                    // should remove it as this is just an indication that it's probably a
+                    // compiled asset.
+                    asset = this.StripPlatformPrefix(asset);
+
+                    yield return asset;
+                }
             }
             foreach (var directory in directoryInfo.GetDirectories())
             {

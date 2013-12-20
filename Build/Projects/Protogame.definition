@@ -78,6 +78,7 @@
     <Compile Include="Assets\ProtogameAssetIoCModule.cs" />
     <Compile Include="Assets\RawAssetLoader.cs" />
     <Compile Include="Assets\RawAssetSaver.cs" />
+    <Compile Include="Assets\RawEffectLoadStrategy.cs" />
     <Compile Include="Assets\RawTextureLoadStrategy.cs" />
     <Compile Include="Assets\TargetPlatform.cs" />
     <Compile Include="Assets\TargetPlatformCast.cs" />

@@ -2,7 +2,7 @@
 
 namespace Protogame
 {
-    public class RawTextureLoadStrategy : ILoadStrategy
+    public class RawEffectLoadStrategy : ILoadStrategy
     {
         public bool ScanSourcePath
         {
@@ -16,7 +16,7 @@ namespace Protogame
         {
             get
             {
-                return new[] { "png" };
+                return new[] { "fx" };
             }
         }
 
@@ -25,18 +25,18 @@ namespace Protogame
             var file = new FileInfo(
                 Path.Combine(
                     path,
-                    name.Replace('.', Path.DirectorySeparatorChar) + ".png"));
+                    name.Replace('.', Path.DirectorySeparatorChar) + ".fx"));
             if (file.Exists)
             {
                 using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
                 {
-                    using (var binary = new BinaryReader(fileStream))
+                    using (var reader = new StreamReader(fileStream))
                     {
                         return new
                         {
-                            Loader = typeof(TextureAssetLoader).FullName,
+                            Loader = typeof(EffectAssetLoader).FullName,
                             PlatformData = (PlatformData)null,
-                            RawData = binary.ReadBytes((int)file.Length)
+                            Code = reader.ReadToEnd()
                         };
                     }
                 }

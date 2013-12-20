@@ -45,9 +45,11 @@ namespace ProtogameAssetTool
             var assetContentManager = new AssetContentManager(services);
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
 
-            // Only allow the local source load strategy.
+            // Only allow source and raw load strategies.
             kernel.Unbind<ILoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
 
             // Load additional assemblies.
             foreach (var filename in assemblies)
