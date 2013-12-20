@@ -68,6 +68,7 @@
     <Compile Include="Assets\LocalCompiledLoadStrategy.cs" />
     <Compile Include="Assets\LocalSourceLoadStrategy.cs" />
     <Compile Include="Assets\Manager\AssetManagerClient.cs" />
+    <Compile Include="Assets\Manager\LocalAssetManagerProvider.cs" />
     <Compile Include="Assets\Manager\NetworkedAssetManagerProvider.cs" />
     <Compile Include="Assets\NetworkAsset.cs" />
     <Compile Include="Assets\NetworkAssetManager.cs" />
@@ -154,6 +155,7 @@
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\UtilityExtensions.cs" />
     <Compile Include="FadingWorld.cs" />
+    <Compile Include="GameAssetManagerProvider.cs" />
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="I2DRenderUtilities.cs" />
     <Compile Include="I3DRenderUtilities.cs" />

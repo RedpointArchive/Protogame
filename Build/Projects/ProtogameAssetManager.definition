@@ -29,7 +29,6 @@
     <Compile Include="FontAssetEditor.cs" />
     <Compile Include="LanguageAssetEditor.cs" />
     <Compile Include="LevelAssetEditor.cs" />
-    <Compile Include="LocalAssetManagerProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TextureAssetEditor.cs" />
     <Compile Include="TilesetAssetEditor.cs" />

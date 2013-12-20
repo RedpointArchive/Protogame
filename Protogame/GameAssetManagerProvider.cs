@@ -7,14 +7,11 @@ using Ninject;
 
 namespace Protogame
 {
-    /// <summary>
-    /// This is the local asset manager for ProtogameAssetManager.  Do not use it in your game!
-    /// </summary>
-    public class LocalAssetManagerProvider : IAssetManagerProvider
+    public class GameAssetManagerProvider : IAssetManagerProvider
     {
         private LocalAssetManager m_AssetManager;
 
-        public LocalAssetManagerProvider(
+        public GameAssetManagerProvider(
             IKernel kernel,
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
@@ -29,7 +26,6 @@ namespace Protogame
                 loaders,
                 savers,
                 transparentAssetCompiler);
-            this.m_AssetManager.AllowSourceOnly = true;
         }
 
         public bool IsReady

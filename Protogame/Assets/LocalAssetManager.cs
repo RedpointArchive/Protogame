@@ -44,6 +44,16 @@ namespace Protogame
             this.m_TransparentAssetCompiler = transparentAssetCompiler;
         }
 
+        /// <summary>
+        /// Indicates that source-only assets should be returned from the asset manager.  Generally
+        /// this option is only useful for the asset manager.
+        /// </summary>
+        public bool AllowSourceOnly
+        {
+            get;
+            set;
+        }
+
         public void Dirty(string asset)
         {
         }
@@ -79,7 +89,7 @@ namespace Protogame
                     {
                         var result = loader.Handle(this, asset, candidate);
                         result = this.m_TransparentAssetCompiler.Handle(result);
-                        if (result.SourceOnly)
+                        if (result.SourceOnly && !this.AllowSourceOnly)
                         {
                             // We can't have source only assets past this point.  The compilation
                             // failed, but we definitely do have a source representation, so let's
@@ -173,7 +183,14 @@ namespace Protogame
 
         public void Recompile(IAsset asset)
         {
-            this.m_TransparentAssetCompiler.Handle(asset, true);
+            try
+            {
+                this.m_TransparentAssetCompiler.Handle(asset, true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }
