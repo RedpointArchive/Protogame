@@ -79,6 +79,7 @@
     <Compile Include="Assets\NetworkAsset.cs" />
     <Compile Include="Assets\NetworkAssetManager.cs" />
     <Compile Include="Assets\NetworkAssetProxy.cs" />
+    <Compile Include="Assets\NullAssetContentManager.cs" />
     <Compile Include="Assets\PlatformData.cs" />
     <Compile Include="Assets\ProtogameAssetIoCModule.cs" />
     <Compile Include="Assets\RawAssetLoader.cs" />
