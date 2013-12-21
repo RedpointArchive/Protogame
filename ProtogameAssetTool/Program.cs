@@ -11,6 +11,10 @@ using Protogame;
 
 namespace ProtogameAssetTool
 {
+    using System.Diagnostics;
+
+    using Ninject.Planning.Targets;
+
     public static class Program
     {
         public static void Main(string[] args)
@@ -94,6 +98,8 @@ namespace ProtogameAssetTool
 
             // Retrieve the asset manager.
             var assetManager = kernel.Get<LocalAssetManager>();
+            assetManager.AllowSourceOnly = true;
+            assetManager.SkipCompilation = true;
 
             // Retrieve the transparent asset compiler.
             var assetCompiler = kernel.Get<ITransparentAssetCompiler>();
@@ -130,6 +136,8 @@ namespace ProtogameAssetTool
                             break;
                         }
                     }
+
+                    assetManager.Dirty(asset.Name);
                 }
             }
         }

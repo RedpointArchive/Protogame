@@ -53,6 +53,14 @@ namespace Protogame
             set;
         }
 
+        /// <summary>
+        /// Indicates that the local asset manager should not pass assets through
+        /// the <see cref="ITransparentAssetCompiler"/> interface before returning them.  This
+        /// option is used in ProtogameAssetTool where we need to cross-compile for different platforms
+        /// and thus we always want to have the only the source information in the assets.
+        /// </summary>
+        public bool SkipCompilation { get; set; }
+
         public void Dirty(string asset)
         {
 #if DEBUG
@@ -95,15 +103,21 @@ namespace Protogame
                     if (canLoad)
                     {
                         var result = loader.Handle(this, asset, candidate);
-                        result = this.m_TransparentAssetCompiler.Handle(result);
-                        if (result.SourceOnly && !this.AllowSourceOnly)
+                        if (!this.SkipCompilation)
                         {
-                            // We can't have source only assets past this point.  The compilation
-                            // failed, but we definitely do have a source representation, so let's
-                            // keep that around if we need to throw an exception.
-                            failedDueToCompilation = true;
-                            Console.WriteLine("WARNING: Unable to compile " + asset + " at runtime (a compiled version may be used).");
-                            break;
+                            result = this.m_TransparentAssetCompiler.Handle(result);
+
+                            if (result.SourceOnly && !this.AllowSourceOnly)
+                            {
+                                // We can't have source only assets past this point.  The compilation
+                                // failed, but we definitely do have a source representation, so let's
+                                // keep that around if we need to throw an exception.
+                                failedDueToCompilation = true;
+                                Console.WriteLine(
+                                    "WARNING: Unable to compile " + asset
+                                    + " at runtime (a compiled version may be used).");
+                                break;
+                            }
                         }
 #if DEBUG
                         var local = new LocalAsset(asset, result, this);
