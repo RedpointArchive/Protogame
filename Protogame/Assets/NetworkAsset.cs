@@ -143,7 +143,7 @@ namespace Protogame
                     return this.FormProxyIfPossible<T>(loadDefault as T);
                 }
             }
-            throw new InvalidOperationException("Unable to resolve the network asset to a local asset.");
+            throw new InvalidOperationException("Unable to resolve the network asset to actual asset.");
         }
 
         [Local]

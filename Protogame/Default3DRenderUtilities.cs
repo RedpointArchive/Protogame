@@ -122,7 +122,7 @@ namespace Protogame
                     vertexes.Length,
                     indicies,
                     0,
-                    vertexes.Length -2 );/// 3);
+                    vertexes.Length - 2);
             }
             context.GraphicsDevice.BlendState = BlendState.Opaque;
         }

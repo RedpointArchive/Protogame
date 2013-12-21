@@ -67,11 +67,20 @@ namespace Protogame
                     // Load the effect for the first time.
                     var effect = new Effect(graphicsDevice, this.PlatformData.Data);
 
-                    // Determine what kind of effect class we should use.  We automatically "upgrade" the effect to
-                    // an instance of EffectWithMatrices if the shader has a WorldViewProj parameter.
-                    if (effect.Parameters["WorldViewProj"] != null)
+                    // Determine what kind of effect class we should use.
+                    var hasMatrix = effect.Parameters["WorldViewProj"] != null;
+                    var hasTexture = effect.Parameters["Texture"] != null;
+                    if (hasMatrix && hasTexture)
+                    {
+                        this.Effect = new EffectWithMatricesAndTexture(graphicsDevice, this.PlatformData.Data);
+                    }
+                    else if (hasMatrix)
                     {
                         this.Effect = new EffectWithMatrices(graphicsDevice, this.PlatformData.Data);
+                    }
+                    else if (hasTexture)
+                    {
+                        this.Effect = new EffectWithTexture(graphicsDevice, this.PlatformData.Data);
                     }
                     else
                     {

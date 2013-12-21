@@ -1,8 +1,3 @@
-//
-// This source code is licensed in accordance with the licensing outlined
-// on the main Tychaia website (www.tychaia.com).  Changes to the
-// license on the website apply retroactively.
-//
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +18,11 @@ namespace Protogame
         private IKernel m_Kernel;
         private IRawAssetLoader m_RawAssetLoader;
         private IRawAssetSaver m_RawAssetSaver;
+#if DEBUG
+        private Dictionary<string, LocalAsset> m_Assets = new Dictionary<string, LocalAsset>();
+#else
         private Dictionary<string, IAsset> m_Assets = new Dictionary<string, IAsset>();
+#endif
         private IAssetLoader[] m_AssetLoaders;
         private IAssetSaver[] m_AssetSavers;
         private ITransparentAssetCompiler m_TransparentAssetCompiler;
@@ -56,6 +55,14 @@ namespace Protogame
 
         public void Dirty(string asset)
         {
+#if DEBUG
+            lock (this.m_Assets)
+            {
+                var assetObj = this.m_Assets[asset];
+                this.m_Assets.Remove(asset);
+                assetObj.Dirty();
+            }
+#endif
         }
         
         public void RescanAssets()
@@ -98,8 +105,14 @@ namespace Protogame
                             Console.WriteLine("WARNING: Unable to compile " + asset + " at runtime (a compiled version may be used).");
                             break;
                         }
+#if DEBUG
+                        var local = new LocalAsset(asset, result, this);
+                        this.m_Assets.Add(asset, local);
+                        return local;
+#else
                         this.m_Assets.Add(asset, result);
                         return result;
+#endif
                     }
                 }
             }
@@ -140,7 +153,11 @@ namespace Protogame
             lock (this.m_Assets)
             {
                 this.RescanAssets();
+#if DEBUG
+                return this.m_Assets.Values.Select(x => x.Instance).ToArray();
+#else
                 return this.m_Assets.Values.ToArray();
+#endif
             }
         }
         
@@ -160,7 +177,12 @@ namespace Protogame
                 if (canSave)
                 {
                     var result = saver.Handle(asset, bake ? AssetTarget.SourceFile : AssetTarget.Runtime);
+#if DEBUG
+                    this.m_Assets[asset.Name] = 
+                        new LocalAsset(asset.Name, asset, this);
+#else
                     this.m_Assets[asset.Name] = asset;
+#endif
                     if (bake)
                         this.m_RawAssetSaver.SaveRawAsset(asset.Name, result);
                     return;

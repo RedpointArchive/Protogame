@@ -25,14 +25,14 @@ namespace Protogame
             this.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
 
-            this.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
-            this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
-            this.Bind<ILoadStrategy>().To<LocalCompiledLoadStrategy>();
-            this.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
 #if DEBUG
             this.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
 #endif
+            this.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<LocalCompiledLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
 
 #if PLATFORM_WINDOWS
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();

@@ -8,7 +8,7 @@ namespace Protogame
         {
             get
             {
-                return false;
+                return true;
             }
         }
 

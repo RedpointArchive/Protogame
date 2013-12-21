@@ -41,6 +41,9 @@
     <Compile Include="Assets\EffectAssetLoader.cs" />
     <Compile Include="Assets\EffectAssetSaver.cs" />
     <Compile Include="Assets\Effects\EffectWithMatrices.cs" />
+    <Compile Include="Assets\Effects\EffectWithMatricesAndTexture.cs" />
+    <Compile Include="Assets\Effects\EffectWithTexture.cs" />
+    <Compile Include="Assets\Effects\IEffectTexture.cs" />
     <Compile Include="Assets\EmbeddedCompiledLoadStrategy.cs" />
     <Compile Include="Assets\EmbeddedSourceLoadStrategy.cs" />
     <Compile Include="Assets\FontAsset.cs" />
@@ -65,7 +68,9 @@
     <Compile Include="Assets\LevelAsset.cs" />
     <Compile Include="Assets\LevelAssetLoader.cs" />
     <Compile Include="Assets\LevelAssetSaver.cs" />
+    <Compile Include="Assets\LocalAsset.cs" />
     <Compile Include="Assets\LocalAssetManager.cs" />
+    <Compile Include="Assets\LocalAssetProxy.cs" />
     <Compile Include="Assets\LocalCompiledLoadStrategy.cs" />
     <Compile Include="Assets\LocalSourceLoadStrategy.cs" />
     <Compile Include="Assets\Manager\AssetManagerClient.cs" />
