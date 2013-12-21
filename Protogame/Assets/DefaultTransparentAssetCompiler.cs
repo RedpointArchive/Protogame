@@ -25,7 +25,9 @@ namespace Protogame
                 var compiler = this.m_Kernel.TryGet(compilerType);
                 if (compiler == null)
                 {
-                    throw new AssetNotCompiledException(asset.Name);
+                    // The caller will throw AssetNotCompiledException if all of the candidates
+                    // for loading only have source information.
+                    return asset;
                 }
                 var proxyType = typeof(AssetCompilerProxy<>).MakeGenericType(asset.GetType());
                 var proxy = (IAssetCompilerProxyInterface)

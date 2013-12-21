@@ -12,7 +12,9 @@ namespace Protogame
         private LocalAssetManager Manager { get; set; }
 
         private IAsset m_Instance;
-        
+
+        private IAsset m_CachedProxy;
+
         public event EventHandler Dirtied;
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace Protogame
         {
             get
             {
-                return this.FormProxyIfPossible(this.m_Instance);
+                return this.GetProxy(this.m_Instance);
             }
         }
 
@@ -70,10 +72,22 @@ namespace Protogame
         {
             if (this.m_Instance is T)
             {
-                return this.FormProxyIfPossible(this.m_Instance as T);
+                return this.GetProxy(this.m_Instance as T);
             }
             throw new InvalidOperationException(
                 "Local asset can not be resolved");
+        }
+
+        private T GetProxy<T>(T obj) where T : class, IAsset
+        {
+            if (this.m_CachedProxy != null)
+            {
+                return this.m_CachedProxy as T;
+            }
+
+            var proxy = this.FormProxyIfPossible(obj);
+            this.m_CachedProxy = proxy;
+            return proxy;
         }
 
         private T FormProxyIfPossible<T>(T obj) where T : class, IAsset
