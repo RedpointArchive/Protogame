@@ -25,11 +25,28 @@ namespace Protogame
 
         public object AttemptLoad(string path, string name)
         {
-            var file = new FileInfo(
-                Path.Combine(
-                    path,
-                    TargetPlatformUtility.GetExecutingPlatform().ToString(),
-                    name.Replace('.', Path.DirectorySeparatorChar) + ".bin"));
+            var file1 =
+                new FileInfo(
+                    Path.Combine(
+                        path,
+                        TargetPlatformUtility.GetExecutingPlatform().ToString(),
+                        name.Replace('.', Path.DirectorySeparatorChar) + ".bin"));
+            var attempt1 = this.AttemptLoadOfFile(file1, name);
+            if (attempt1 != null)
+            {
+                return attempt1;
+            }
+
+            var file2 =
+                new FileInfo(
+                    Path.Combine(
+                        path,
+                        name.Replace('.', Path.DirectorySeparatorChar) + ".bin"));
+            return this.AttemptLoadOfFile(file2, name);
+        }
+
+        private object AttemptLoadOfFile(FileInfo file, string name)
+        {
             if (file.Exists)
             {
                 using (var stream = new FileStream(file.FullName, FileMode.Open))
