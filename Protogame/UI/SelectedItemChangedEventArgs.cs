@@ -2,11 +2,11 @@ using System;
 
 namespace Protogame
 {
-    public class SelectedItemChangedEventArgs : EventArgs
+    public class SelectedItemChangedEventArgs<T> : EventArgs
     {
-        public TreeItem Item { get; set; }
+        public T Item { get; set; }
 
-        public SelectedItemChangedEventArgs(TreeItem item)
+        public SelectedItemChangedEventArgs(T item)
         {
             this.Item = item;
         }

@@ -328,6 +328,31 @@ namespace Protogame
         {
             this.DrawRaised(context, layout);
         }
+
+        public void DrawListView(IRenderContext context, Rectangle layout, ListView listView)
+        {
+            this.DrawSunken(context, layout);
+        }
+
+        public void DrawListItem(IRenderContext context, Rectangle layout, ListItem listItem)
+        {
+            if (listItem.Parent is ListView)
+            {
+                var view = (listItem.Parent as ListView);
+                if (view.SelectedItem == listItem)
+                {
+                    this.DrawRaised(context, layout);
+                }
+            }
+            this.m_RenderUtilities.RenderText(
+                context,
+                new Vector2(
+                    layout.X + 5,
+                    layout.Center.Y),
+                listItem.Text,
+                this.m_AssetManager.Get<FontAsset>("font.Default"),
+                verticalAlignment: VerticalAlignment.Center);
+        }
         
         public Vector2 MeasureText(IRenderContext context, string text)
         {

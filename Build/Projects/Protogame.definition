@@ -247,6 +247,8 @@
     <Compile Include="UI\Label.cs" />
     <Compile Include="UI\Link.cs" />
     <Compile Include="UI\LinkState.cs" />
+    <Compile Include="UI\ListItem.cs" />
+    <Compile Include="UI\ListView.cs" />
     <Compile Include="UI\MainMenu.cs" />
     <Compile Include="UI\MenuItem.cs" />
     <Compile Include="UI\ProtogameUIIoCModule.cs" />

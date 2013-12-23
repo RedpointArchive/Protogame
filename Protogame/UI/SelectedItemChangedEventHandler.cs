@@ -1,7 +1,7 @@
 namespace Protogame
 {
-    public delegate void SelectedItemChangedEventHandler(
+    public delegate void SelectedItemChangedEventHandler<T>(
         object sender,
-        SelectedItemChangedEventArgs args);
+        SelectedItemChangedEventArgs<T> args);
 }
 

@@ -26,12 +26,12 @@ namespace Protogame
             {
                 this.p_SelectedItem = value;
                 if (this.SelectedItemChanged != null)
-                    this.SelectedItemChanged(this, new SelectedItemChangedEventArgs(value));
+                    this.SelectedItemChanged(this, new SelectedItemChangedEventArgs<TreeItem>(value));
                 this.Focus();
             }
         }
 
-        public event SelectedItemChangedEventHandler SelectedItemChanged;
+        public event SelectedItemChangedEventHandler<TreeItem> SelectedItemChanged;
 
         public void AddChild(TreeItem item)
         {
