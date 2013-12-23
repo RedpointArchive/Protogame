@@ -12,3 +12,4 @@ obj
 *.nupkg
 
 StyleCop.Cache
+*.csproj.user
