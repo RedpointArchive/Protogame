@@ -1,8 +1,11 @@
-﻿using System;
-using System.Linq;
-
-namespace Protogame
+﻿namespace Protogame
 {
+using System;
+using System.Linq;
+    
+    /// <summary>
+    /// A load strategy that supports loading classes as runtime assets.
+    /// </summary>
     public class AssemblyLoadStrategy : ILoadStrategy
     {
         public bool ScanSourcePath
@@ -12,7 +15,7 @@ namespace Protogame
                 return false;
             }
         }
-
+        
         public string[] AssetExtensions
         {
             get
@@ -37,4 +40,3 @@ namespace Protogame
         }
     }
 }
-
