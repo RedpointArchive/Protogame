@@ -5,13 +5,12 @@ namespace Protogame
 {
     public abstract class AIAsset : MarshalByRefObject, IAsset
     {
-        public string Name { get; private set; }
-
-        public AIAsset(string name, string value)
+        public string Name
         {
-            this.Name = name;
+            get;
+            set;
         }
-
+        
         public abstract void Update(IGameContext gameContext, IUpdateContext updateContext);
         public abstract void Render(IGameContext gameContext, IRenderContext renderContext);
 

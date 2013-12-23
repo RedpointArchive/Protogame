@@ -11,7 +11,9 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
-            return (IAsset)Activator.CreateInstance(data.type);
+            var value = (AIAsset)Activator.CreateInstance(data.type);
+            value.Name = name;
+            return value;
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)

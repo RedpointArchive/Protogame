@@ -10,3 +10,5 @@ obj
 *.Windows.sln
 *.nuspec
 *.nupkg
+
+StyleCop.Cache
