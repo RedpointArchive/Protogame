@@ -14,6 +14,7 @@ namespace Protogame
             this.Bind<IAssetLoader>().To<AudioAssetLoader>();
             this.Bind<IAssetLoader>().To<TilesetAssetLoader>();
             this.Bind<IAssetLoader>().To<EffectAssetLoader>();
+            this.Bind<IAssetLoader>().To<AIAssetLoader>();
             this.Bind<IAssetSaver>().To<FontAssetSaver>();
             this.Bind<IAssetSaver>().To<LanguageAssetSaver>();
             this.Bind<IAssetSaver>().To<TextureAssetSaver>();
@@ -33,6 +34,7 @@ namespace Protogame
             this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
             this.Bind<ILoadStrategy>().To<LocalCompiledLoadStrategy>();
             this.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<AssemblyLoadStrategy>();
 
 #if PLATFORM_WINDOWS
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();

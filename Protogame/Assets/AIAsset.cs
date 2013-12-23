@@ -1,18 +1,19 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Protogame
 {
-    public class LanguageAsset : MarshalByRefObject, IAsset
+    public abstract class AIAsset : MarshalByRefObject, IAsset
     {
         public string Name { get; private set; }
-        public string Value { get; set; }
 
-        public LanguageAsset(string name, string value)
+        public AIAsset(string name, string value)
         {
             this.Name = name;
-            this.Value = value;
         }
+
+        public abstract void Update(IGameContext gameContext, IUpdateContext updateContext);
+        public abstract void Render(IGameContext gameContext, IRenderContext renderContext);
 
         public bool SourceOnly
         {
@@ -32,9 +33,9 @@ namespace Protogame
 
         public T Resolve<T>() where T : class, IAsset
         {
-            if (typeof(T).IsAssignableFrom(typeof(LanguageAsset)))
+            if (typeof(T).IsAssignableFrom(typeof(AIAsset)))
                 return this as T;
-            throw new InvalidOperationException("Asset already resolved to LanguageAsset.");
+            throw new InvalidOperationException("Asset already resolved to AIAsset.");
         }
     }
 }
