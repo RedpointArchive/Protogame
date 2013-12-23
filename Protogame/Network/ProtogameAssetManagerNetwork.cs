@@ -62,7 +62,7 @@ namespace Protogame
             }
         }
 
-        public IPAddress IPAddress
+        public IPAddress LocalIPAddress
         {
             get
             {
