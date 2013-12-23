@@ -15,6 +15,12 @@
   </References>
   <Files>
     <Compile Include="Program.cs" />
+    <Content Include="libmojoshader_32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libmojoshader_64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </Files>
 </Project>
