@@ -22,6 +22,10 @@
     <Reference Include="protobuf-net-client" />
   </References>
   <Files>
+    <Compile Include="Assets\AIAsset.cs" />
+    <Compile Include="Assets\AIAssetLoader.cs" />
+    <Compile Include="Assets\AssemblyLoadStrategy.cs" />
+    <Compile Include="Assets\AssetAttribute.cs" />
     <Compile Include="Assets\AssetContentManager.cs" />
     <Compile Include="Assets\AssetEditor.cs" />
     <Compile Include="Assets\AssetNotCompiledException.cs" />
