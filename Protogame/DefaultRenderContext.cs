@@ -17,6 +17,11 @@ namespace Protogame
         private readonly Stack<Effect> m_Effects = new Stack<Effect>();
 
         /// <summary>
+        /// The current stack of render targets.
+        /// </summary>
+        private readonly Stack<RenderTarget2D> m_RenderTargets = new Stack<RenderTarget2D>();
+
+        /// <summary>
         /// The current bounding frustum.
         /// </summary>
         private BoundingFrustum m_BoundingFrustum;
@@ -316,6 +321,64 @@ namespace Protogame
         private void RecalculateBoundingFrustum()
         {
             this.m_BoundingFrustum = new BoundingFrustum(this.View * this.Projection);
+        }
+
+        /// <summary>
+        /// Push a render target onto the current rendering context, making it
+        /// the active target for rendering.  By using the PushRenderTarget / PopRenderTarget
+        /// methods, this allows you to safely chain render target switches, without risk
+        /// of losing the previous render target.  An example of where this can be used is
+        /// if you want to capture the next frame, you can simply start with a PushRenderTarget
+        /// and as long as all other render target switching uses these methods or respects the
+        /// previous render target, then everything will be captured as intended.
+        /// </summary>
+        /// <param name="renderTarget">The render target instance to make active.</param>
+        public void PushRenderTarget(RenderTarget2D renderTarget)
+        {
+            this.m_RenderTargets.Push(renderTarget);
+            this.GraphicsDevice.SetRenderTarget(renderTarget);
+        }
+
+        /// <summary>
+        /// Pops the current render target from the current rendering context.  If there are no more render targets
+        /// in the stack after this call, then the rendering will default back to rendering to the back buffer.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">
+        /// Thrown if the current render target does not match the top of the stack.  This indicates that there
+        /// is other code calling SetRenderTarget, and changing the render target with this method may corrupt
+        /// the rendering state.
+        /// </exception>
+        public void PopRenderTarget()
+        {
+            if (this.m_RenderTargets.Count == 0)
+            {
+                return;
+            }
+
+            var currentTargets = this.GraphicsDevice.GetRenderTargets();
+
+            if (currentTargets.Length > 0)
+            {
+                if (currentTargets[0].RenderTarget != this.m_RenderTargets.Peek())
+                {
+                    throw new InvalidOperationException(
+                        "Current render target does not match last render target " +
+                        "pushed onto the stack with PushRenderTarget.  Ensure there " +
+                        "is no code manually calling SetRenderTarget and not restoring " +
+                        "it at the end of it's execution.");
+                }
+            }
+
+            this.m_RenderTargets.Pop();
+
+            if (this.m_RenderTargets.Count == 0)
+            {
+                this.GraphicsDevice.SetRenderTarget(null);
+            }
+            else
+            {
+                this.GraphicsDevice.SetRenderTarget(this.m_RenderTargets.Peek());
+            }
         }
     }
 }

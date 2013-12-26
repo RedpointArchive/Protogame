@@ -126,5 +126,28 @@ namespace Protogame
         /// Pop an effect from the current rendering context.
         /// </summary>
         void PopEffect();
+
+        /// <summary>
+        /// Push a render target onto the current rendering context, making it
+        /// the active target for rendering.  By using the PushRenderTarget / PopRenderTarget
+        /// methods, this allows you to safely chain render target switches, without risk
+        /// of losing the previous render target.  An example of where this can be used is
+        /// if you want to capture the next frame, you can simply start with a PushRenderTarget
+        /// and as long as all other render target switching uses these methods or respects the
+        /// previous render target, then everything will be captured as intended.
+        /// </summary>
+        /// <param name="renderTarget">The render target instance to make active.</param>
+        void PushRenderTarget(RenderTarget2D renderTarget);
+
+        /// <summary>
+        /// Pops the current render target from the current rendering context.  If there are no more render targets
+        /// in the stack after this call, then the rendering will default back to rendering to the back buffer.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">
+        /// Thrown if the current render target does not match the top of the stack.  This indicates that there
+        /// is other code calling SetRenderTarget, and changing the render target with this method may corrupt
+        /// the rendering state.
+        /// </exception>
+        void PopRenderTarget();
     }
 }
