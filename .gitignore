@@ -13,3 +13,4 @@ obj
 
 StyleCop.Cache
 *.csproj.user
+*.suo
