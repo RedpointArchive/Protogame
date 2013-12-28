@@ -9,6 +9,8 @@ using Protogame;
 
 namespace ProtogameAssetManager
 {
+    using System.Net;
+
     internal static class Program
     {
         private static void RegisterEditorsFromAssembly(Assembly assembly, IKernel kernel)
@@ -136,12 +138,9 @@ namespace ProtogameAssetManager
             
             if (connectToRunningGame)
             {
-                var factory = new DefaultDxFactory();
-                var node = factory.CreateLocalNode(
-                    Caching.PushOnChange,
-                    Architecture.ServerClient); 
-                node.Network = new ProtogameAssetManagerNetwork(node, true);
-                node.Join(ID.NewHash("asset manager"));
+                var node = new LocalNode(Architecture.ServerClient, Caching.PushOnChange);
+                node.Bind(IPAddress.Loopback, 9837);
+                node.GetService<IClientConnector>().Connect(IPAddress.Loopback, 9838);
                 var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);
                 kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
             }

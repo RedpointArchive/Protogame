@@ -9,6 +9,8 @@ using Ninject;
 
 namespace Protogame
 {
+    using System.Net;
+
     public static class AssetManagerClient
     {
         /// <summary>
@@ -18,6 +20,9 @@ namespace Protogame
         /// </summary>
         public static Process RunAndConnect(IKernel kernel, bool startProcess)
         {
+            var node = new LocalNode();
+            node.Bind(IPAddress.Loopback, 9838);
+
             Process process = null;
             if (startProcess)
             {
@@ -44,16 +49,6 @@ namespace Protogame
                 };
                 process.Start();
             }
-
-            var factory = new DefaultDxFactory();
-            var node = factory.CreateLocalNode(
-                Caching.PushOnChange,
-                Architecture.ServerClient);
-            node.Network = new ProtogameAssetManagerNetwork(node, false);
-            var potentialProfiler = kernel.TryGet<IProfiler>() as INetworkProfilerEndpoint;
-            if (potentialProfiler != null)
-                node.ProfilerEndpoint = potentialProfiler;
-            node.Join(ID.NewHash("asset manager"));
 
             var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);
             kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);

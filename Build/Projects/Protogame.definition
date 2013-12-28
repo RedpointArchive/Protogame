@@ -200,7 +200,6 @@
     <Compile Include="Level\OgmoLevelReader.cs" />
     <Compile Include="Level\ProtogameLevelIoCModule.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
-    <Compile Include="Network\ProtogameAssetManagerNetwork.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
     <Compile Include="Noise\PerlinNoise.cs" />
     <Compile Include="Particles\ParticleDefinition.cs" />
