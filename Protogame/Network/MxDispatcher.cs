@@ -1,4 +1,6 @@
-﻿namespace Protogame
+﻿using System;
+
+namespace Protogame
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -22,6 +24,11 @@
         private readonly UdpClient m_UdpClient;
 
         /// <summary>
+        /// Whether this dispatcher has been closed.
+        /// </summary>
+        private bool m_Closed;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MxDispatcher"/> class.
         /// </summary>
         /// <param name="port">
@@ -31,6 +38,7 @@
         {
             this.m_UdpClient = new UdpClient(port) { Client = { Blocking = false } };
             this.m_MxClients = new Dictionary<IPEndPoint, MxClient>();
+            this.m_Closed = false;
         }
 
         /// <summary>
@@ -88,6 +96,23 @@
         public void Close()
         {
             this.m_UdpClient.Close();
+
+            foreach (var endpoint in this.Endpoints)
+            {
+                this.Disconnect(endpoint);
+            }
+
+            this.m_MxClients.Clear();
+
+            this.m_Closed = true;
+        }
+
+        private void AssertNotClosed()
+        {
+            if (this.m_Closed)
+            {
+                throw new InvalidOperationException("You can not use an MxDispatcher once it has been closed.");
+            }
         }
 
         /// <summary>
@@ -103,6 +128,8 @@
         /// </param>
         public void Connect(IPEndPoint endpoint)
         {
+            this.AssertNotClosed();
+
             this.m_MxClients[endpoint] = new MxClient(this, endpoint, this.m_UdpClient);
             this.OnClientConnected(this.m_MxClients[endpoint]);
             this.RegisterForEvents(this.m_MxClients[endpoint]);
@@ -122,6 +149,8 @@
         /// </param>
         public void Disconnect(IPEndPoint endpoint)
         {
+            this.AssertNotClosed();
+
             var client = this.m_MxClients[endpoint];
             this.UnregisterFromEvents(client);
             this.m_MxClients.Remove(endpoint);
@@ -139,6 +168,8 @@
         /// </param>
         public void Send(IPEndPoint endpoint, byte[] packet)
         {
+            this.AssertNotClosed();
+
             var client = this.m_MxClients[endpoint];
             client.EnqueueSend(packet);
         }
@@ -148,6 +179,8 @@
         /// </summary>
         public void Update()
         {
+            this.AssertNotClosed();
+
             // Receive as many messages from the connection as we possibly
             // can, and dispatch them to the correct MxClient.
             while (true)
