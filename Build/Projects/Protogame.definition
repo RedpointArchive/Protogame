@@ -200,6 +200,17 @@
     <Compile Include="Level\OgmoLevelReader.cs" />
     <Compile Include="Level\ProtogameLevelIoCModule.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
+    <Compile Include="Network\FlowControlChangedEventArgs.cs" />
+    <Compile Include="Network\FlowControlChangedEventHandler.cs" />
+    <Compile Include="Network\MxClient.cs" />
+    <Compile Include="Network\MxClientEventArgs.cs" />
+    <Compile Include="Network\MxClientEventHandler.cs" />
+    <Compile Include="Network\MxDispatcher.cs" />
+    <Compile Include="Network\MxMessage.cs" />
+    <Compile Include="Network\MxMessageEventArgs.cs" />
+    <Compile Include="Network\MxMessageEventHandler.cs" />
+    <Compile Include="Network\MxPayload.cs" />
+    <Compile Include="Network\MxUtility.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
     <Compile Include="Noise\PerlinNoise.cs" />
     <Compile Include="Particles\ParticleDefinition.cs" />

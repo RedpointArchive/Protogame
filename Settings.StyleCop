@@ -2,6 +2,10 @@
   <GlobalSettings>
     <StringProperty Name="MergeSettingsFiles">NoMerge</StringProperty>
     <CollectionProperty Name="RecognizedWords">
+      <Value>ack</Value>
+      <Value>acks</Value>
+      <Value>bitfield</Value>
+      <Value>Mx</Value>
       <Value>Ninject</Value>
       <Value>Protogame</Value>
       <Value>Protogame's</Value>
