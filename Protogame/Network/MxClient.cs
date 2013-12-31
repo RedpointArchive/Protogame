@@ -14,11 +14,6 @@
     public class MxClient
     {
         /// <summary>
-        /// The delta time since the last Update() call.
-        /// </summary>
-        private readonly double m_DeltaTime;
-
-        /// <summary>
         /// The number of packets that can be missed in an Update() call
         /// before this client is considered to be disconnected from the target endpoint.
         /// </summary>
@@ -59,6 +54,12 @@
         private readonly Queue<byte[]> m_ReceivedPackets;
 
         /// <summary>
+        /// The same as m_SendQueue, except that it stores the payload as the value.  This
+        /// is used to construct MessageLost events as required.
+        /// </summary>
+        private readonly Dictionary<uint, byte[][]> m_SendMessageQueue;
+
+        /// <summary>
         /// The send queue that has messages added to it when we send a message; it is a
         /// key-value pair of the sequence number of a message and the time it was sent.
         /// <para>
@@ -69,12 +70,6 @@
         private readonly Dictionary<uint, ulong> m_SendQueue;
 
         /// <summary>
-        /// The same as m_SendQueue, except that it stores the payload as the value.  This
-        /// is used to construct MessageLost events as required.
-        /// </summary>
-        private readonly Dictionary<uint, byte[][]> m_SendMessageQueue; 
-
-        /// <summary>
         /// The shared UDP client, provided by the dispatcher, that is used to send outgoing messages.
         /// </summary>
         private readonly UdpClient m_SharedUdpClient;
@@ -83,6 +78,11 @@
         /// The target endpoint that we are connected to.
         /// </summary>
         private readonly IPEndPoint m_TargetEndPoint;
+
+        /// <summary>
+        /// The delta time since the last Update() call.
+        /// </summary>
+        private double m_DeltaTime;
 
         /// <summary>
         /// The disconnect accumulator; when this reaches the disconnect limit, this client is considered
@@ -109,6 +109,11 @@
         /// The penalty time for flow control.
         /// </summary>
         private double m_FCPenaltyTime;
+
+        /// <summary>
+        /// The time that the Update() method was last called.
+        /// </summary>
+        private DateTime m_LastCall;
 
         /// <summary>
         /// The local sequence number for outgoing packets.
@@ -146,8 +151,7 @@
             this.m_SharedUdpClient = sharedUdpClient;
             this.m_ReceivedPackets = new Queue<byte[]>();
             this.m_PendingSendPackets = new Queue<byte[]>();
-
-            // TODO: Make this based on the last call time.
+            this.m_LastCall = DateTime.Now;
             this.m_DeltaTime = 1000.0 / 30.0;
 
             // Initialize connection information.
@@ -178,6 +182,11 @@
         public event FlowControlChangedEventHandler FlowControlChanged;
 
         /// <summary>
+        /// Raised when a message has been acknowledged by the remote endpoint.
+        /// </summary>
+        public event MxMessageEventHandler MessageAcknowledged;
+
+        /// <summary>
         /// Raised when a message was not acknowledged by the remote endpoint.
         /// </summary>
         public event MxMessageEventHandler MessageLost;
@@ -191,11 +200,6 @@
         /// Raised when a message has been sent by this client.
         /// </summary>
         public event MxMessageEventHandler MessageSent;
-
-        /// <summary>
-        /// Raised when a message has been acknowledged by the remote endpoint.
-        /// </summary>
-        public event MxMessageEventHandler MessageAcknowledged;
 
         /// <summary>
         /// Enqueues a byte array to be handled in the receiving logic when Update() is called.
@@ -224,6 +228,9 @@
         /// </summary>
         public void Update()
         {
+            this.m_DeltaTime = (DateTime.Now - this.m_LastCall).TotalMilliseconds;
+            this.m_LastCall = DateTime.Now;
+
             if (this.m_DisconnectAccumulator > this.m_DisconnectLimit)
             {
                 this.m_Dispatcher.Disconnect(this.m_TargetEndPoint);
@@ -255,7 +262,7 @@
         /// </param>
         protected virtual void OnMessageAcknowledged(MxMessageEventArgs e)
         {
-            MxMessageEventHandler handler = this.MessageAcknowledged;
+            var handler = this.MessageAcknowledged;
             if (handler != null)
             {
                 handler(this, e);
@@ -270,7 +277,7 @@
         /// </param>
         protected virtual void OnMessageLost(MxMessageEventArgs e)
         {
-            MxMessageEventHandler handler = this.MessageLost;
+            var handler = this.MessageLost;
             if (handler != null)
             {
                 handler(this, e);
@@ -285,7 +292,7 @@
         /// </param>
         protected virtual void OnMessageReceived(MxMessageEventArgs e)
         {
-            MxMessageEventHandler handler = this.MessageReceived;
+            var handler = this.MessageReceived;
             if (handler != null)
             {
                 handler(this, e);
@@ -300,7 +307,7 @@
         /// </param>
         protected virtual void OnMessageSent(MxMessageEventArgs e)
         {
-            MxMessageEventHandler handler = this.MessageSent;
+            var handler = this.MessageSent;
             if (handler != null)
             {
                 handler(this, e);
@@ -352,7 +359,9 @@
         /// Handles a lost message, removing it from the queues and firing
         /// events as appropriate.
         /// </summary>
-        /// <param name="idx">The sequence number of the message that was lost.</param>
+        /// <param name="idx">
+        /// The sequence number of the message that was lost.
+        /// </param>
         private void HandleLostMessage(uint idx)
         {
             var payloads = this.m_SendMessageQueue[idx];
@@ -361,11 +370,7 @@
 
             foreach (var payload in payloads)
             {
-                this.OnMessageLost(new MxMessageEventArgs
-                {
-                    Client = this,
-                    Payload = payload
-                });
+                this.OnMessageLost(new MxMessageEventArgs { Client = this, Payload = payload });
             }
         }
 
@@ -457,11 +462,8 @@
 
                                 foreach (var payload in payloads)
                                 {
-                                    this.OnMessageAcknowledged(new MxMessageEventArgs
-                                    {
-                                        Client = this,
-                                        Payload = payload
-                                    });
+                                    this.OnMessageAcknowledged(
+                                        new MxMessageEventArgs { Client = this, Payload = payload });
                                 }
                             }
                             else
@@ -484,11 +486,7 @@
 
                         foreach (var payload in message.Payloads)
                         {
-                            this.OnMessageReceived(new MxMessageEventArgs
-                            {
-                                Client = this,
-                                Payload = payload.Data
-                            });
+                            this.OnMessageReceived(new MxMessageEventArgs { Client = this, Payload = payload.Data });
                         }
                     }
                 }
@@ -512,8 +510,8 @@
                 {
                     var message = new MxMessage
                     {
-                        Payloads = packets.Select(x => new MxPayload { Data = x }).ToArray(),
-                        Sequence = this.m_LocalSequenceNumber,
+                        Payloads = packets.Select(x => new MxPayload { Data = x }).ToArray(), 
+                        Sequence = this.m_LocalSequenceNumber, 
                         Ack = this.m_RemoteSequenceNumber
                     };
                     message.SetAckBitfield(this.m_ReceiveQueue.ToArray());
@@ -538,11 +536,7 @@
                         // Raise the OnMessageSent event.
                         foreach (var packet in packets)
                         {
-                            this.OnMessageSent(new MxMessageEventArgs
-                            {
-                                Client = this,
-                                Payload = packet
-                            });
+                            this.OnMessageSent(new MxMessageEventArgs { Client = this, Payload = packet });
                         }
                     }
                     catch (SocketException)
