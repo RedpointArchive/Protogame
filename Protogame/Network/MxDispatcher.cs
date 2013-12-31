@@ -340,6 +340,14 @@
                     return null;
                 }
 
+                if (ex.SocketErrorCode == SocketError.ConnectionReset)
+                {
+                    // This probably implies we're about to disconnect (because the remote
+                    // computer is no longer accepting requests), but let the Mx client time
+                    // out since there may be other valid clients still.
+                    return null;
+                }
+
                 throw;
             }
         }
