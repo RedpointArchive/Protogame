@@ -80,6 +80,11 @@
         private readonly IPEndPoint m_TargetEndPoint;
 
         /// <summary>
+        /// The limit at which point the DisconnectWarning events will be raised.
+        /// </summary>
+        private readonly int m_DisconnectWarningLimit;
+
+        /// <summary>
         /// The delta time since the last Update() call.
         /// </summary>
         private double m_DeltaTime;
@@ -157,6 +162,7 @@
             // Initialize connection information.
             this.m_DisconnectAccumulator = 0;
             this.m_DisconnectLimit = 900;
+            this.m_DisconnectWarningLimit = 30;
             this.m_ReceiveQueue = new List<bool>();
             for (var i = 0; i < 32; i++)
             {
@@ -202,6 +208,11 @@
         public event MxMessageEventHandler MessageSent;
 
         /// <summary>
+        /// Raised when the client has been disconnected for longer than one second.
+        /// </summary>
+        public event MxDisconnectEventHandler DisconnectWarning;
+
+        /// <summary>
         /// Enqueues a byte array to be handled in the receiving logic when Update() is called.
         /// </summary>
         /// <param name="packet">
@@ -230,6 +241,17 @@
         {
             this.m_DeltaTime = (DateTime.Now - this.m_LastCall).TotalMilliseconds;
             this.m_LastCall = DateTime.Now;
+
+            if (this.m_DisconnectAccumulator > this.m_DisconnectWarningLimit)
+            {
+                this.OnDisconnectWarning(new MxDisconnectEventArgs
+                {
+                    Client = this,
+                    DisconnectAccumulator = this.m_DisconnectAccumulator,
+                    DisconnectTimeout = this.m_DisconnectLimit,
+                    IsDisconnected = this.m_DisconnectAccumulator > this.m_DisconnectLimit
+                });
+            }
 
             if (this.m_DisconnectAccumulator > this.m_DisconnectLimit)
             {
@@ -308,6 +330,21 @@
         protected virtual void OnMessageSent(MxMessageEventArgs e)
         {
             var handler = this.MessageSent;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Raise the DisconnectWarning event.
+        /// </summary>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        protected virtual void OnDisconnectWarning(MxDisconnectEventArgs e)
+        {
+            MxDisconnectEventHandler handler = this.DisconnectWarning;
             if (handler != null)
             {
                 handler(this, e);

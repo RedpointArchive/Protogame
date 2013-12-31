@@ -205,6 +205,8 @@
     <Compile Include="Network\MxClient.cs" />
     <Compile Include="Network\MxClientEventArgs.cs" />
     <Compile Include="Network\MxClientEventHandler.cs" />
+    <Compile Include="Network\MxDisconnectEventArgs.cs" />
+    <Compile Include="Network\MxDisconnectEventHandler.cs" />
     <Compile Include="Network\MxDispatcher.cs" />
     <Compile Include="Network\MxMessage.cs" />
     <Compile Include="Network\MxMessageEventArgs.cs" />

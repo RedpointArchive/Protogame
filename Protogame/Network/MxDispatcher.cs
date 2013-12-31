@@ -39,6 +39,11 @@
         public event MxClientEventHandler ClientConnected;
 
         /// <summary>
+        /// Raised when an Mx client could potentially disconnect.
+        /// </summary>
+        public event MxDisconnectEventHandler ClientDisconnectWarning;
+
+        /// <summary>
         /// Raised when an Mx client disconnects.
         /// </summary>
         public event MxClientEventHandler ClientDisconnected;
@@ -75,6 +80,14 @@
             {
                 return this.m_MxClients.Select(x => x.Key).ToArray();
             }
+        }
+
+        /// <summary>
+        /// Closes the dispatcher permanently, terminating all inbound and outbound connections.
+        /// </summary>
+        public void Close()
+        {
+            this.m_UdpClient.Close();
         }
 
         /// <summary>
@@ -184,6 +197,21 @@
         }
 
         /// <summary>
+        /// Raise the ClientDisconnectWarning event.
+        /// </summary>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        protected virtual void OnClientDisconnectWarning(MxDisconnectEventArgs e)
+        {
+            var handler = this.ClientDisconnectWarning;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        /// <summary>
         /// Raise the ClientDisconnected event.
         /// </summary>
         /// <param name="client">
@@ -256,6 +284,20 @@
             {
                 handler(this, e);
             }
+        }
+
+        /// <summary>
+        /// Handle receiving a DisconnectWarning event from a client.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender of the event.
+        /// </param>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        private void OnClientDisconnectWarning(object sender, MxDisconnectEventArgs e)
+        {
+            this.OnClientDisconnectWarning(e);
         }
 
         /// <summary>
@@ -369,6 +411,7 @@
             client.MessageReceived += this.OnClientMessageReceived;
             client.MessageLost += this.OnClientMessageLost;
             client.MessageAcknowledged += this.OnClientMessageAcknowledged;
+            client.DisconnectWarning += this.OnClientDisconnectWarning;
         }
 
         /// <summary>
@@ -383,6 +426,7 @@
             client.MessageReceived -= this.OnClientMessageReceived;
             client.MessageLost -= this.OnClientMessageLost;
             client.MessageAcknowledged -= this.OnClientMessageAcknowledged;
+            client.DisconnectWarning -= this.OnClientDisconnectWarning;
         }
     }
 }
