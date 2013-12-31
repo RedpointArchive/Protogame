@@ -329,6 +329,11 @@
         /// </returns>
         private byte[] ReceiveNonBlocking(UdpClient client, ref IPEndPoint receive)
         {
+            if (client.Available == 0)
+            {
+                return null;
+            }
+
             try
             {
                 return client.Receive(ref receive);
