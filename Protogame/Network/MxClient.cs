@@ -213,6 +213,20 @@
         public event MxDisconnectEventHandler DisconnectWarning;
 
         /// <summary>
+        /// Gets the endpoint that this client is responsible for.
+        /// </summary>
+        /// <value>
+        /// The endpoint that this client is responsible for.
+        /// </value>
+        public IPEndPoint Endpoint
+        {
+            get
+            {
+                return new IPEndPoint(this.m_TargetEndPoint.Address, this.m_TargetEndPoint.Port);
+            }
+        }
+
+        /// <summary>
         /// Enqueues a byte array to be handled in the receiving logic when Update() is called.
         /// </summary>
         /// <param name="packet">

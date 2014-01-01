@@ -202,6 +202,7 @@
     <Compile Include="Math\CircumcentreSolver.cs" />
     <Compile Include="Network\FlowControlChangedEventArgs.cs" />
     <Compile Include="Network\FlowControlChangedEventHandler.cs" />
+    <Compile Include="Network\IServerEntity.cs" />
     <Compile Include="Network\MxClient.cs" />
     <Compile Include="Network\MxClientEventArgs.cs" />
     <Compile Include="Network\MxClientEventHandler.cs" />
