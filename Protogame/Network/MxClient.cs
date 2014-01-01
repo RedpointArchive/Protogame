@@ -85,6 +85,11 @@
         private readonly int m_DisconnectWarningLimit;
 
         /// <summary>
+        /// Whether or not this Mx client is a reliable client.
+        /// </summary>
+        private readonly bool m_IsReliable;
+
+        /// <summary>
         /// The delta time since the last Update() call.
         /// </summary>
         private double m_DeltaTime;
@@ -149,7 +154,10 @@
         /// <param name="sharedUdpClient">
         /// The shared UDP client with which to send messages.
         /// </param>
-        public MxClient(MxDispatcher dispatcher, IPEndPoint target, UdpClient sharedUdpClient)
+        /// <param name="reliable">
+        /// Whether or not this is a reliable Mx client.
+        /// </param>
+        public MxClient(MxDispatcher dispatcher, IPEndPoint target, UdpClient sharedUdpClient, bool reliable)
         {
             this.m_Dispatcher = dispatcher;
             this.m_TargetEndPoint = target;
@@ -158,6 +166,7 @@
             this.m_PendingSendPackets = new Queue<byte[]>();
             this.m_LastCall = DateTime.Now;
             this.m_DeltaTime = 1000.0 / 30.0;
+            this.m_IsReliable = reliable;
 
             // Initialize connection information.
             this.m_DisconnectAccumulator = 0;
@@ -269,7 +278,8 @@
 
             if (this.m_DisconnectAccumulator > this.m_DisconnectLimit)
             {
-                this.m_Dispatcher.Disconnect(this.m_TargetEndPoint);
+                var dualEndPoint = this.m_Dispatcher.ResolveDualIPEndPoint(this.m_TargetEndPoint, this.m_IsReliable);
+                this.m_Dispatcher.Disconnect(dualEndPoint);
                 return;
             }
 
@@ -555,7 +565,19 @@
 
             while (this.m_SendAccumulator >= this.GetSendTime())
             {
-                var packets = this.m_PendingSendPackets.ToArray();
+                byte[][] packets;
+                if (this.m_IsReliable)
+                {
+                    // In reliable mode, we know the sender is MxReliability and that it's optimized it's
+                    // send calls for ~512 bytes.  Thus we just take one packet and use that.
+                    packets = this.m_PendingSendPackets.Count > 0 ? new[] { this.m_PendingSendPackets.Peek() } : new byte[0][];
+                }
+                else
+                {
+                    // In real time mode, we use all of the currently queued packets and hope that the resulting
+                    // size is not larger than 512 bytes (or is otherwise fragmented and dropped along the way).
+                    packets = this.m_PendingSendPackets.ToArray();
+                }
 
                 using (var memory = new MemoryStream())
                 {
@@ -572,6 +594,12 @@
                     memory.Seek(0, SeekOrigin.Begin);
                     var bytes = new byte[len];
                     memory.Read(bytes, 0, len);
+
+                    if (len > 512 && !this.m_IsReliable)
+                    {
+                        Console.WriteLine("WARNING: Message was >512 bytes (" + len + " bytes in size).  It will probably be lost during transmission.");
+                    }
+
                     try
                     {
                         this.m_SharedUdpClient.Send(bytes, bytes.Length, this.m_TargetEndPoint);
@@ -579,10 +607,23 @@
                         this.m_SendMessageQueue.Add(this.m_LocalSequenceNumber, packets);
                         this.m_LocalSequenceNumber++;
 
-                        // Only clear the pending send packets once we know that they've at least
-                        // left this machine successfully (otherwise there'd be no message lost
-                        // event if they got consumed by a SocketException).
-                        this.m_PendingSendPackets.Clear();
+                        if (this.m_IsReliable)
+                        {
+                            // Only dequeue the pending send packet once we know that it's at least
+                            // left this machine successfully (otherwise there'd be no message lost
+                            // event if they got consumed by a SocketException).
+                            if (this.m_PendingSendPackets.Count > 0)
+                            {
+                                this.m_PendingSendPackets.Dequeue();
+                            }
+                        }
+                        else
+                        {
+                            // Only clear the pending send packets once we know that they've at least
+                            // left this machine successfully (otherwise there'd be no message lost
+                            // event if they got consumed by a SocketException).
+                            this.m_PendingSendPackets.Clear();
+                        }
 
                         // Raise the OnMessageSent event.
                         foreach (var packet in packets)
