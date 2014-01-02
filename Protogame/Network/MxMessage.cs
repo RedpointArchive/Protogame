@@ -70,7 +70,7 @@
                 return false;
             }
 
-            var diff = MxUtility.GetSequenceNumberDifference(sequence, this.Ack);
+            var diff = (MxUtility.UIntBitsize - MxUtility.GetSequenceNumberDifference(this.Ack, sequence)) - 1;
 
             return ((this.AckBitfield & (0x1u << (int)diff)) >> (int)diff) == 0x1;
         }
@@ -107,7 +107,8 @@
         /// </returns>
         public bool HasAck(uint sequence)
         {
-            return MxUtility.GetSequenceNumberDifference(sequence, this.Ack) < MxUtility.UIntBitsize;
+            return MxUtility.GetSequenceNumberDifference(this.Ack, sequence) >= 0 &&
+                MxUtility.GetSequenceNumberDifference(this.Ack, sequence) < MxUtility.UIntBitsize;
         }
 
         /// <summary>

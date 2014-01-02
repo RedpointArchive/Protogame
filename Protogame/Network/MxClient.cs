@@ -1,4 +1,6 @@
-﻿namespace Protogame
+﻿using System.Runtime.Serialization;
+
+namespace Protogame
 {
     using System;
     using System.Collections.Generic;
@@ -232,6 +234,20 @@
             get
             {
                 return new IPEndPoint(this.m_TargetEndPoint.Address, this.m_TargetEndPoint.Port);
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this client is reliable.
+        /// </summary>
+        /// <value>
+        /// Whether this client is reliable.
+        /// </value>
+        public bool IsReliable
+        {
+            get
+            {
+                return this.m_IsReliable;
             }
         }
 
@@ -499,14 +515,14 @@
 
                         this.PushIntoQueue(this.m_ReceiveQueue, true);
 
-                        // Consider acks.
-                        for (var i = 0u; i < MxUtility.UIntBitsize; i++)
+                        // Check based on items in the queue.
+                        foreach (var kv in this.m_SendQueue.ToArray())
                         {
-                            var idx = message.Ack - i;
+                            var idx = kv.Key;
 
-                            if (!this.m_SendQueue.ContainsKey(idx))
+                            if (!message.HasAck(idx))
                             {
-                                // We don't need to care about this ack field.
+                                // We aren't acking this message yet.
                                 continue;
                             }
 
@@ -524,7 +540,11 @@
                                 foreach (var payload in payloads)
                                 {
                                     this.OnMessageAcknowledged(
-                                        new MxMessageEventArgs { Client = this, Payload = payload });
+                                        new MxMessageEventArgs
+                                        {
+                                            Client = this,
+                                            Payload = payload
+                                        });
                                 }
                             }
                             else
@@ -537,7 +557,7 @@
                         {
                             var idx = kv.Key;
 
-                            if (MxUtility.GetSequenceNumberDifference(message.Ack - MxUtility.UIntBitsize, idx) <= 0)
+                            if (MxUtility.GetSequenceNumberDifference(message.Ack - MxUtility.UIntBitsize, idx) > 0)
                             {
                                 this.HandleLostMessage(idx);
                             }
@@ -597,7 +617,7 @@
 
                     if (len > 512 && !this.m_IsReliable)
                     {
-                        Console.WriteLine("WARNING: Message was >512 bytes (" + len + " bytes in size).  It will probably be lost during transmission.");
+                        // TODO: Probably fire an event here to warn that the queued messages exceeds the safe packet size.
                     }
 
                     try

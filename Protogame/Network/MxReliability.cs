@@ -15,6 +15,15 @@
     public class MxReliability
     {
         /// <summary>
+        /// The safe fragment size.
+        /// </summary>
+        /// <remarks>
+        /// This should be converted into a variable which is used to determine the packet size, and should
+        /// be automatically reduced on packet loss.
+        /// </remarks>
+        public const int SafeFragmentSize = 512;
+
+        /// <summary>
         /// The associated <see cref="MxClient"/> that data is sent and received through.
         /// </summary>
         private readonly MxClient m_Client;
@@ -84,6 +93,16 @@
         /// Raised when a message has been received by this client.
         /// </summary>
         public event MxMessageEventHandler MessageReceived;
+
+        /// <summary>
+        /// Raised when a fragment has been received.
+        /// </summary>
+        public event MxReliabilityTransmitEventHandler FragmentReceived;
+
+        /// <summary>
+        /// Raised when a fragment has been acknowledged.
+        /// </summary>
+        public event MxReliabilityTransmitEventHandler FragmentSent;
 
         /// <summary>
         /// Represents a fragment's status.
@@ -173,6 +192,36 @@
         }
 
         /// <summary>
+        /// Raise the FragmentReceived event.
+        /// </summary>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        protected virtual void OnFragmentReceived(MxReliabilityTransmitEventArgs e)
+        {
+            var handler = this.FragmentReceived;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Raise the OnFragmentSent event.
+        /// </summary>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        protected virtual void OnFragmentSent(MxReliabilityTransmitEventArgs e)
+        {
+            var handler = this.FragmentSent;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        /// <summary>
         /// Called when one of the fragments has been acknowledged by the remote client.
         /// </summary>
         /// <param name="sender">
@@ -228,6 +277,11 @@
             switch (data[0])
             {
                 case 0:
+                    if (this.m_CurrentReceiveFragments != null)
+                    {
+                        throw new InvalidOperationException(
+                            "Can not start another receive " + this.m_CurrentReceiveFragments.Count(x => x.Status == FragmentStatus.Received));
+                    }
 
                     // This is the header fragment.  Bytes 1 through 4 are the binary
                     // representation of a 32-bit integer.
@@ -276,7 +330,6 @@
 
                     break;
                 case 1:
-
                     // This is a content fragment.  If the current receive fragments list is not null, then we have
                     // previously received the header fragment and can directly update the status in that list.
                     if (this.m_CurrentReceiveFragments != null)
@@ -308,7 +361,6 @@
 
                     break;
                 case 2:
-
                     // This is the footer fragment.  We just assign it straight to the footer fragment field, and
                     // the main Update() call will check whether or not we've received an entire message yet.
                     var footerData = new byte[data.Length - 1];
@@ -331,6 +383,15 @@
         {
             if (this.m_CurrentReceiveFragments != null)
             {
+                this.OnFragmentReceived(new MxReliabilityTransmitEventArgs
+                {
+                    Client = this.m_Client,
+                    CurrentFragments = this.m_CurrentReceiveFragments.Count(x => x.Status == FragmentStatus.Received),
+                    TotalFragments = this.m_CurrentReceiveFragments.Count,
+                    IsSending = false,
+                    TotalSize = this.m_CurrentReceiveFragments.Count * SafeFragmentSize // TODO: Is this accurate?
+                });
+
                 // See if all of the fragments are in a received status.
                 if (this.m_CurrentReceiveFragments.All(x => x.Status == FragmentStatus.Received))
                 {
@@ -366,11 +427,11 @@
 
                 var packet = this.m_QueuedMessages.Dequeue();
 
-                // Fragment the packet up into 507 byte chunks (with a boolean and 32-bit int header).
+                // Fragment the packet up into (SafeFragmentSize - 1 - 5) byte chunks (with a boolean and 32-bit int header).
                 var fragments = new List<Fragment>();
-                for (var i = 0; i < packet.Length; i += 507)
+                for (var i = 0; i < packet.Length; i += SafeFragmentSize - 1 - 5)
                 {
-                    var length = Math.Min(507, packet.Length - i);
+                    var length = Math.Min(SafeFragmentSize - 1 - 5, packet.Length - i);
                     var fragment = new byte[length + 5];
                     var header = BitConverter.GetBytes(fragments.Count);
                     fragment[0] = 1; // 1 == content
@@ -409,6 +470,15 @@
                     fragment.Status = FragmentStatus.WaitingOnAcknowledgement;
                 }
             }
+
+            this.OnFragmentReceived(new MxReliabilityTransmitEventArgs
+            {
+                Client = this.m_Client,
+                CurrentFragments = this.m_CurrentSendFragments.Count(x => x.Status == FragmentStatus.Acknowledged),
+                TotalFragments = this.m_CurrentSendFragments.Count,
+                IsSending = true,
+                TotalSize = this.m_CurrentSendMessage.Length
+            });
 
             // Now check to see if all fragments are in an acknowledged state.  If they are, this message
             // has been delivered successfully and we can ready ourselves for the next message.

@@ -8,6 +8,14 @@ namespace Protogame
         {
             return new NullProfilerHandle();
         }
+
+        public void AttachNetworkDispatcher(MxDispatcher dispatcher)
+        {
+        }
+
+        public void DetachNetworkDispatcher(MxDispatcher dispatcher)
+        {
+        }
     }
 }
 

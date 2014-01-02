@@ -27,7 +27,15 @@ namespace Protogame
             this.BeginEvent(name, parameters);
             return new DefaultProfilerHandle(this, name, parameters);
         }
-        
+
+        public void AttachNetworkDispatcher(MxDispatcher dispatcher)
+        {
+        }
+
+        public void DetachNetworkDispatcher(MxDispatcher dispatcher)
+        {
+        }
+
         internal void BeginEvent(string name, params string[] parameters)
         {
             if (parameters.Length > 0)

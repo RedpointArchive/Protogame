@@ -97,6 +97,16 @@
         public event MxMessageEventHandler MessageSent;
 
         /// <summary>
+        /// Raised when progress has been made receiving a reliable message.
+        /// </summary>
+        public event MxReliabilityTransmitEventHandler ReliableReceivedProgress;
+
+        /// <summary>
+        /// Raised when progress has been made sending a reliable message.
+        /// </summary>
+        public event MxReliabilityTransmitEventHandler ReliableSendProgress;
+
+        /// <summary>
         /// Gets an enumeration of the endpoints of all connected clients.
         /// </summary>
         /// <value>
@@ -262,13 +272,19 @@
 
             if (!reliable)
             {
-                var client = this.m_RealtimeMxClients[endpoint];
-                client.EnqueueSend(packet);
+                if (this.m_RealtimeMxClients.ContainsKey(endpoint))
+                {
+                    var client = this.m_RealtimeMxClients[endpoint];
+                    client.EnqueueSend(packet);
+                }
             }
             else
             {
-                var reliability = this.m_Reliabilities[endpoint];
-                reliability.Send(packet);
+                if (this.m_Reliabilities.ContainsKey(endpoint))
+                {
+                    var reliability = this.m_Reliabilities[endpoint];
+                    reliability.Send(packet);
+                }
             }
         }
 
@@ -389,6 +405,36 @@
         }
 
         /// <summary>
+        /// Raise the ReliableReceivedProgress event.
+        /// </summary>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        protected virtual void OnReliableReceivedProgress(MxReliabilityTransmitEventArgs e)
+        {
+            var handler = this.ReliableReceivedProgress;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Raise the ReliableSendProgress event.
+        /// </summary>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        protected virtual void OnReliableSendProgress(MxReliabilityTransmitEventArgs e)
+        {
+            var handler = this.ReliableSendProgress;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        /// <summary>
         /// Assert that the dispatcher has not been closed.
         /// </summary>
         /// <exception cref="InvalidOperationException">
@@ -472,14 +518,60 @@
             this.OnMessageSent(e);
         }
 
+        /// <summary>
+        /// Handle receiving a MessageReceived event from a reliability class.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender of the event.
+        /// </param>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
         private void OnReliabilityMessageReceived(object sender, MxMessageEventArgs e)
         {
             this.OnMessageReceived(e);
         }
 
+        /// <summary>
+        /// Handle receiving a MessageAcknowledged event from a reliability class.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender of the event.
+        /// </param>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
         private void OnReliabilityMessageAcknowledged(object sender, MxMessageEventArgs e)
         {
             this.OnMessageAcknowledged(e);
+        }
+
+        /// <summary>
+        /// Handle receiving a FragmentSent event from a reliability class.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender of the event.
+        /// </param>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        private void OnReliabilityFragmentSent(object sender, MxReliabilityTransmitEventArgs e)
+        {
+            this.OnReliableSendProgress(e);
+        }
+
+        /// <summary>
+        /// Handle receiving a FragmentReceived event from a reliability class.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender of the event.
+        /// </param>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        private void OnReliabilityFragmentReceived(object sender, MxReliabilityTransmitEventArgs e)
+        {
+            this.OnReliableReceivedProgress(e);
         }
 
         /// <summary>
@@ -497,7 +589,18 @@
         /// </returns>
         private byte[] ReceiveNonBlocking(UdpClient client, ref IPEndPoint receive)
         {
-            if (client.Available == 0)
+            try
+            {
+                if (client.Available == 0)
+                {
+                    return null;
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                return null;
+            }
+            catch (NullReferenceException)
             {
                 return null;
             }
@@ -550,6 +653,8 @@
         {
             reliability.MessageAcknowledged += this.OnReliabilityMessageAcknowledged;
             reliability.MessageReceived += this.OnReliabilityMessageReceived;
+            reliability.FragmentReceived += this.OnReliabilityFragmentReceived;
+            reliability.FragmentSent += this.OnReliabilityFragmentSent;
         }
 
         /// <summary>
@@ -577,6 +682,8 @@
         {
             reliability.MessageAcknowledged -= this.OnReliabilityMessageAcknowledged;
             reliability.MessageAcknowledged -= this.OnReliabilityMessageReceived;
+            reliability.FragmentReceived -= this.OnReliabilityFragmentReceived;
+            reliability.FragmentSent -= this.OnReliabilityFragmentSent;
         }
 
         /// <summary>
