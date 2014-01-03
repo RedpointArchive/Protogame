@@ -157,8 +157,6 @@
         public void Update()
         {
             this.UpdateSend();
-
-            this.UpdateReceive();
         }
 
         /// <summary>
@@ -374,6 +372,9 @@
                 default:
                     throw new InvalidOperationException("Unknown fragment type!");
             }
+
+            // Perform the receive update to fire events and finalize state if we have all the fragments.
+            this.UpdateReceive();
         }
 
         /// <summary>
