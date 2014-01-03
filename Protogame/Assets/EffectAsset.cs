@@ -25,7 +25,13 @@ namespace Protogame
 
             if (this.PlatformData != null)
             {
-                this.ReloadEffect();
+                try
+                {
+                    this.ReloadEffect();
+                }
+                catch (NoAssetContentManagerException)
+                {
+                }
             }
         }
 
@@ -57,7 +63,12 @@ namespace Protogame
                 // as that doesn't seem to get picked up by the MonoGame content manager.
                 
                 // FIXME: We shouldn't be casting IAssetContentManager like this!
-                var assetContentManager = (AssetContentManager)this.m_AssetContentManager;
+                var assetContentManager = this.m_AssetContentManager as AssetContentManager;
+                if (assetContentManager == null)
+                {
+                    throw new NoAssetContentManagerException();
+                }
+
                 var serviceProvider = assetContentManager.ServiceProvider;
                 var graphicsDeviceProvider = (IGraphicsDeviceService)serviceProvider.GetService(typeof(IGraphicsDeviceService));
                 if (graphicsDeviceProvider != null && graphicsDeviceProvider.GraphicsDevice != null)

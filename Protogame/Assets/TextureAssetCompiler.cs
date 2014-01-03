@@ -51,7 +51,13 @@ namespace Protogame
                 Data = this.CompileAndGetBytes(content)
             };
 
-            asset.ReloadTexture();
+            try
+            {
+                asset.ReloadTexture();
+            }
+            catch (NoAssetContentManagerException)
+            {
+            }
         }
     }
 }

@@ -34,7 +34,13 @@ namespace Protogame
 
             if (this.PlatformData != null)
             {
-                this.ReloadFont();
+                try
+                {
+                    this.ReloadFont();
+                }
+                catch (NoAssetContentManagerException)
+                {
+                }
             }
         }
 

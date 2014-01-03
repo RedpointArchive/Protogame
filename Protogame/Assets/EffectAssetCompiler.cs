@@ -34,8 +34,6 @@ namespace Protogame
 
             var tempOutputPath = Path.GetTempFileName();
 
-            var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
-            var dictionary = new OpaqueDataDictionary();
             var processor = new EffectProcessor();
             var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
             context.ActualOutputFilename = tempOutputPath;
@@ -50,7 +48,13 @@ namespace Protogame
             File.Delete(tempPath);
             File.Delete(tempOutputPath);
 
-            asset.ReloadEffect();
+            try
+            {
+                asset.ReloadEffect();
+            }
+            catch (NoAssetContentManagerException)
+            {
+            }
         }
     }
 }

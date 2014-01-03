@@ -48,7 +48,15 @@ namespace Protogame
                     Data = this.CompileAndGetBytes(content)
                 };
 
-                asset.ReloadFont();
+                try
+                {
+                    asset.ReloadFont();
+                }
+                catch (NotImplementedException)
+                {
+                    // We might be running under a server where we can't load
+                    // the actual texture (because we have no game).
+                }
             }
             catch (NullReferenceException)
             {

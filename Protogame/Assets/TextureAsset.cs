@@ -45,7 +45,13 @@ namespace Protogame
 
             if (this.PlatformData != null)
             {
-                this.ReloadTexture();
+                try
+                {
+                    this.ReloadTexture();
+                }
+                catch (NoAssetContentManagerException)
+                {
+                }
             }
         }
 
