@@ -172,15 +172,17 @@
 
             this.m_RealtimeMxClients[endpoint] = new MxClient(
                 this, 
-                endpoint.RealtimeEndPoint, 
+                endpoint.RealtimeEndPoint,
+                endpoint,
                 this.m_RealtimeUdpClient, 
                 false);
             this.OnClientConnected(this.m_RealtimeMxClients[endpoint]);
             this.RegisterForEvents(this.m_RealtimeMxClients[endpoint]);
 
             this.m_ReliableMxClients[endpoint] = new MxClient(
-                this, 
-                endpoint.ReliableEndPoint, 
+                this,
+                endpoint.ReliableEndPoint,
+                endpoint,
                 this.m_ReliableUdpClient, 
                 true);
             this.m_Reliabilities[endpoint] = new MxReliability(this.m_ReliableMxClients[endpoint]);
@@ -782,7 +784,7 @@
                 else
                 {
                     // Create a new client for this address.
-                    mxClients[dualEndPoint] = new MxClient(this, receive, udpClient, reliable);
+                    mxClients[dualEndPoint] = new MxClient(this, receive, dualEndPoint, udpClient, reliable);
                     if (!reliable)
                     {
                         this.RegisterForEvents(mxClients[dualEndPoint]);

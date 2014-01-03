@@ -82,6 +82,11 @@ namespace Protogame
         private readonly IPEndPoint m_TargetEndPoint;
 
         /// <summary>
+        /// The dual IP endpoint that we belong to.
+        /// </summary>
+        private readonly DualIPEndPoint m_DualEndPoint;
+
+        /// <summary>
         /// The limit at which point the DisconnectWarning events will be raised.
         /// </summary>
         private readonly int m_DisconnectWarningLimit;
@@ -153,16 +158,20 @@ namespace Protogame
         /// <param name="target">
         /// The target endpoint for the Mx client.
         /// </param>
+        /// <param name="dualEndpoint">
+        /// The dual IP endpoint for this Mx client.
+        /// </param>
         /// <param name="sharedUdpClient">
         /// The shared UDP client with which to send messages.
         /// </param>
         /// <param name="reliable">
         /// Whether or not this is a reliable Mx client.
         /// </param>
-        public MxClient(MxDispatcher dispatcher, IPEndPoint target, UdpClient sharedUdpClient, bool reliable)
+        public MxClient(MxDispatcher dispatcher, IPEndPoint target, DualIPEndPoint dualEndpoint, UdpClient sharedUdpClient, bool reliable)
         {
             this.m_Dispatcher = dispatcher;
             this.m_TargetEndPoint = target;
+            this.m_DualEndPoint = dualEndpoint;
             this.m_SharedUdpClient = sharedUdpClient;
             this.m_ReceivedPackets = new Queue<byte[]>();
             this.m_PendingSendPackets = new Queue<byte[]>();
@@ -234,6 +243,23 @@ namespace Protogame
             get
             {
                 return new IPEndPoint(this.m_TargetEndPoint.Address, this.m_TargetEndPoint.Port);
+            }
+        }
+
+        /// <summary>
+        /// Gets the dual endpoint that this client belongs to.
+        /// </summary>
+        /// <value>
+        /// The dual endpoint that this client belongs to.
+        /// </value>
+        public DualIPEndPoint DualEndpoint
+        {
+            get
+            {
+                return new DualIPEndPoint(
+                    this.m_DualEndPoint.RealtimeEndPoint.Address,
+                    this.m_DualEndPoint.RealtimeEndPoint.Port,
+                    this.m_DualEndPoint.ReliableEndPoint.Port);
             }
         }
 

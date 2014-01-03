@@ -277,8 +277,13 @@
                 case 0:
                     if (this.m_CurrentReceiveFragments != null)
                     {
-                        throw new InvalidOperationException(
-                            "Can not start another receive " + this.m_CurrentReceiveFragments.Count(x => x.Status == FragmentStatus.Received));
+                        var message = "Can not start receiving another message.";
+                        message += "  Currently there are "
+                                   + this.m_CurrentReceiveFragments.Count(x => x.Status == FragmentStatus.Received)
+                                   + " received.";
+                        message += "  Currently there are " + this.m_CurrentReceiveFragments.Count + " in total.";
+
+                        throw new InvalidOperationException(message);
                     }
 
                     // This is the header fragment.  Bytes 1 through 4 are the binary
@@ -369,6 +374,23 @@
 
                     this.m_FooterFragment = new Fragment(footerData, FragmentStatus.Received);
                     break;
+                case 3:
+                    // This is a special, single fragment.  It is not preceded by a header and does not follow with
+                    // a footer.  We can raise the message received event immediately as this does not rely on
+                    // reconstruction of fragments and does not impact current receiving state (so you could theoretically
+                    // even send them in the middle of a transmission of a fragmented message).
+                    var singleFragmentData = new byte[data.Length - 5];
+                    for (var i = 0; i < data.Length - 5; i++)
+                    {
+                        singleFragmentData[i] = data[i + 5];
+                    }
+
+                    this.OnMessageReceived(new MxMessageEventArgs
+                    {
+                        Client = this.m_Client,
+                        Payload = singleFragmentData
+                    });
+                    break;
                 default:
                     throw new InvalidOperationException("Unknown fragment type!");
             }
@@ -448,15 +470,30 @@
                     fragments.Add(new Fragment(fragment, FragmentStatus.WaitingOnSend));
                 }
 
-                // Create the real list with header and footer fragment.
-                // 0 == header, 2 == footer
-                var headerBytes = BitConverter.GetBytes(fragments.Count);
-                var headerFragment = new byte[] { 0, headerBytes[0], headerBytes[1], headerBytes[2], headerBytes[3] };
-                var footerFragment = new byte[] { 2 };
-                this.m_CurrentSendFragments = new List<Fragment>();
-                this.m_CurrentSendFragments.Add(new Fragment(headerFragment, FragmentStatus.WaitingOnSend));
-                this.m_CurrentSendFragments.AddRange(fragments);
-                this.m_CurrentSendFragments.Add(new Fragment(footerFragment, FragmentStatus.WaitingOnSend));
+                // If there is only one packet to send, make an optimization and send the packet
+                // with a prefix of "3" (instead of "1"), and then skip the header and footer.
+                if (fragments.Count == 1)
+                {
+                    // Change the first byte.
+                    fragments[0].Data[0] = 3;
+
+                    // Create the list with just one fragment to send.
+                    this.m_CurrentSendFragments = new List<Fragment>();
+                    this.m_CurrentSendFragments.Add(fragments[0]);
+                }
+                else
+                {
+                    // Create the real list with header and footer fragment.
+                    // 0 == header, 2 == footer
+                    var headerBytes = BitConverter.GetBytes(fragments.Count);
+                    var headerFragment = new byte[] { 0, headerBytes[0], headerBytes[1], headerBytes[2], headerBytes[3] };
+                    var footerFragment = new byte[] { 2 };
+                    this.m_CurrentSendFragments = new List<Fragment>();
+                    this.m_CurrentSendFragments.Add(new Fragment(headerFragment, FragmentStatus.WaitingOnSend));
+                    this.m_CurrentSendFragments.AddRange(fragments);
+                    this.m_CurrentSendFragments.Add(new Fragment(footerFragment, FragmentStatus.WaitingOnSend));
+                }
+
                 this.m_CurrentSendMessage = packet;
             }
 
