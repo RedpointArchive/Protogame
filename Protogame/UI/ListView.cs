@@ -87,9 +87,9 @@ namespace Protogame
             for (var i = 0; i < list.Count; i++)
             {
                 list[i].Layout = new Rectangle(
-                    layout.X,
-                    layout.Y + i * skin.HeightForTreeItem,
-                    layout.Width,
+                    layout.X + skin.ListHorizontalPadding,
+                    layout.Y + i * skin.HeightForTreeItem + skin.ListVerticalPadding,
+                    layout.Width - skin.ListHorizontalPadding * 2,
                     skin.HeightForTreeItem);
                 yield return list[i];
             }

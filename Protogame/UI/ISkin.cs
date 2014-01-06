@@ -32,6 +32,8 @@ namespace Protogame
         int MainMenuHorizontalPadding { get; }
         int AdditionalMenuItemWidth { get; }
         int MenuItemHeight { get; }
+        int ListVerticalPadding { get; }
+        int ListHorizontalPadding { get; }
     }
 }
 

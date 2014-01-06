@@ -381,6 +381,16 @@ namespace Protogame
         {
             get { return 24; }
         }
+        
+        public int ListVerticalPadding
+        {
+            get { return 0; }
+        }
+        
+        public int ListHorizontalPadding
+        {
+            get { return 0; }
+        }
     }
 }
 
