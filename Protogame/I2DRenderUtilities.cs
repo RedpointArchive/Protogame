@@ -46,6 +46,7 @@ namespace Protogame
         /// <param name="textureName">The texture name.</param>
         /// <param name="size">The size to render the texture as (defauls to the texture size).</param>
         /// <param name="color">The colorization to apply to the texture.</param>
+        /// <param name="rotation">The rotation to apply to the texture.</param>
         /// <param name="flipHorizontally">If set to <c>true</c> the texture is flipped horizontally.</param>
         /// <param name="flipVertically">If set to <c>true</c> the texture is flipped vertically.</param>
         void RenderTexture(
@@ -54,6 +55,7 @@ namespace Protogame
             TextureAsset texture,
             Vector2? size = null,
             Color? color = null,
+            float rotation = 0,
             bool flipHorizontally = false,
             bool flipVertically = false,
             Rectangle? sourceArea = null);

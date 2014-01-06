@@ -91,6 +91,7 @@ namespace Protogame
             TextureAsset texture,
             Vector2? size = null,
             Color? color = null,
+            float rotation = 0,
             bool flipHorizontally = false,
             bool flipVertically = false,
             Rectangle? sourceArea = null)
@@ -103,7 +104,7 @@ namespace Protogame
                 new Rectangle((int)position.X, (int)position.Y, (int)size.Value.X, (int)size.Value.Y),
                 sourceArea,
                 color.Value.ToPremultiplied(),
-                0,
+                rotation,
                 new Vector2(0, 0),
                 (SpriteEffects)((int)(flipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None) + 
                 (int)(flipVertically ? SpriteEffects.FlipVertically : SpriteEffects.None)),
