@@ -2,7 +2,7 @@
 
 namespace Protogame
 {
-    public class RawTextureLoadStrategy : ILoadStrategy
+    public class RawModelLoadStrategy : ILoadStrategy
     {
         public bool ScanSourcePath
         {
@@ -16,7 +16,7 @@ namespace Protogame
         {
             get
             {
-                return new[] { "png" };
+                return new[] { "fbx" };
             }
         }
 
@@ -25,7 +25,7 @@ namespace Protogame
             var file = new FileInfo(
                 Path.Combine(
                     path,
-                    name.Replace('.', Path.DirectorySeparatorChar) + ".png"));
+                    name.Replace('.', Path.DirectorySeparatorChar) + ".fbx"));
             if (file.Exists)
             {
                 using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
@@ -34,9 +34,9 @@ namespace Protogame
                     {
                         return new
                         {
-                            Loader = typeof(TextureAssetLoader).FullName,
-                            PlatformData = (PlatformData)null,
-                            RawData = binary.ReadBytes((int)file.Length),
+                            Loader = typeof(ModelAssetLoader).FullName,
+                            CompiledData = (byte[])null,
+                            SourceData = binary.ReadBytes((int)file.Length),
                             SourcedFromRaw = true
                         };
                     }

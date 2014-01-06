@@ -36,7 +36,8 @@ namespace Protogame
                         {
                             Loader = typeof(EffectAssetLoader).FullName,
                             PlatformData = (PlatformData)null,
-                            Code = reader.ReadToEnd()
+                            Code = reader.ReadToEnd(),
+                            SourcedFromRaw = true
                         };
                     }
                 }

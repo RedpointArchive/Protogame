@@ -2,7 +2,6 @@
 <Project Name="ProtogameAssetManager" Path="ProtogameAssetManager" Type="XNA">
   <Properties>
     <Property Name="PostProcessWithDx" Value="True" />
-    <Property Name="ForceArchitecture" Value="x86" />
   </Properties>
   <References>
     <Reference Include="System" />
@@ -29,9 +28,16 @@
     <Compile Include="FontAssetEditor.cs" />
     <Compile Include="LanguageAssetEditor.cs" />
     <Compile Include="LevelAssetEditor.cs" />
+    <Compile Include="ModelAssetEditor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TextureAssetEditor.cs" />
     <Compile Include="TilesetAssetEditor.cs" />
+    <Content Include="libmojoshader_src_32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libmojoshader_src_64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </Files>
 </Project>

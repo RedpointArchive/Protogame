@@ -200,6 +200,15 @@ namespace Protogame
                 if (canSave)
                 {
                     var result = saver.Handle(asset, AssetTarget.Runtime);
+                    if (result == null)
+                    {
+                        // We can handle this asset; but we explicitly do not want to save it.
+                        // This is used when we load a raw asset from a PNG, and we don't want to
+                        // save a .asset file back to disk (because then we'll have two matching
+                        // assets in the asset folder, both representing the exact same texture).
+                        return;
+                    }
+
                     this.m_RawAssets[asset.Name] = result;
                     this.m_Assets[asset.Name].Dirty();
                     return;

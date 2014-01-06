@@ -1,15 +1,9 @@
-﻿#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX
+﻿#if PLATFORM_WINDOWS
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
-using MonoGame.Framework.Content.Pipeline.Builder;
 
 namespace Protogame
 {

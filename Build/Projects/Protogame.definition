@@ -37,7 +37,9 @@
     <Compile Include="Assets\ByteReader.cs" />
     <Compile Include="Assets\CompiledAsset.cs" />
     <Compile Include="Assets\CompiledAssetSaver.cs" />
+    <Compile Include="Assets\ContentCompilation\DummyContentImporterContext.cs" />
     <Compile Include="Assets\ContentCompilation\DummyContentProcessorContext.cs" />
+    <Compile Include="Assets\ContentCompilation\MojoShaderDeploy.cs" />
     <Compile Include="Assets\ContentCompilation\MonoGameContentCompiler.cs" />
     <Compile Include="Assets\DefaultTransparentAssetCompiler.cs" />
     <Compile Include="Assets\EffectAsset.cs" />
@@ -80,6 +82,20 @@
     <Compile Include="Assets\Manager\AssetManagerClient.cs" />
     <Compile Include="Assets\Manager\LocalAssetManagerProvider.cs" />
     <Compile Include="Assets\Manager\NetworkedAssetManagerProvider.cs" />
+    <Compile Include="Assets\ModelAsset.cs" />
+    <Compile Include="Assets\ModelAssetCompiler.cs" />
+    <Compile Include="Assets\ModelAssetLoader.cs" />
+    <Compile Include="Assets\ModelAssetSaver.cs" />
+    <Compile Include="Assets\Models\Animation.cs" />
+    <Compile Include="Assets\Models\AnimationCollection.cs" />
+    <Compile Include="Assets\Models\FbxReader.cs" />
+    <Compile Include="Assets\Models\Frame.cs" />
+    <Compile Include="Assets\Models\IAnimation.cs" />
+    <Compile Include="Assets\Models\IAnimationCollection.cs" />
+    <Compile Include="Assets\Models\IFrame.cs" />
+    <Compile Include="Assets\Models\IModel.cs" />
+    <Compile Include="Assets\Models\Model.cs" />
+    <Compile Include="Assets\Models\ModelSerializer.cs" />
     <Compile Include="Assets\NetworkAsset.cs" />
     <Compile Include="Assets\NetworkAssetManager.cs" />
     <Compile Include="Assets\NetworkAssetProxy.cs" />
@@ -90,6 +106,7 @@
     <Compile Include="Assets\RawAssetLoader.cs" />
     <Compile Include="Assets\RawAssetSaver.cs" />
     <Compile Include="Assets\RawEffectLoadStrategy.cs" />
+    <Compile Include="Assets\RawModelLoadStrategy.cs" />
     <Compile Include="Assets\RawTextureLoadStrategy.cs" />
     <Compile Include="Assets\TargetPlatform.cs" />
     <Compile Include="Assets\TargetPlatformCast.cs" />
@@ -281,6 +298,12 @@
     <Compile Include="UI\VerticalContainer.cs" />
     <Compile Include="UI\Window.cs" />
     <Compile Include="VerticalAlignment.cs" />
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\assimp\Assimp32.dll">
+      <Link>Assimp32.dll</Link>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\assimp\Assimp64.dll">
+      <Link>Assimp64.dll</Link>
+    </Content>
     <EmbeddedResource Include="font.Default.asset" />
     <EmbeddedResource Include="font.Default-Android.bin" />
     <EmbeddedResource Include="font.Default-iOS.bin" />

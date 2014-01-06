@@ -149,8 +149,8 @@ namespace ProtogameAssetManager
             var existing = this.m_Layout.AssetTree.Children.Cast<TreeItem>();
 
             // Find items we need to add.
-            foreach (var @add in assets.Where(x => !existing.Where(y => y is AssetTreeItem)
-                .Cast<AssetTreeItem>().Select(y => y.Asset).Contains(x)))
+            foreach (var @add in assets.Where(x => !existing
+                .OfType<AssetTreeItem>().Select(y => y.Asset).Contains(x.Resolve<IAsset>())))
             {
                 var dirtyMark = "";
                 if (@add is NetworkAsset)
@@ -163,8 +163,8 @@ namespace ProtogameAssetManager
             }
 
             // Find items we need to remove.
-            foreach (var @remove in existing.Where(x => x is AssetTreeItem)
-                .Cast<AssetTreeItem>().Where(x => !assets.Contains(x.Asset)))
+            foreach (var @remove in existing
+                .OfType<AssetTreeItem>().Where(x => !assets.Select(y => y.Resolve<IAsset>()).Contains(x.Asset)))
             {
                 this.m_Layout.AssetTree.RemoveChild(@remove);
             }

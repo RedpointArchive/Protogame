@@ -11,6 +11,13 @@ namespace Protogame
         {
             var effectAsset = asset as EffectAsset;
 
+            if (effectAsset.SourcedFromRaw)
+            {
+                // We were sourced from a raw FX; we don't want to save
+                // an ".asset" file back to disk.
+                return null;
+            }
+
             if (target == AssetTarget.CompiledFile)
             {
                 return new CompiledAsset

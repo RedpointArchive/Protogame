@@ -27,7 +27,8 @@ namespace Protogame
                     this.m_AssetContentManager,
                     name,
                     null,
-                    data.PlatformData);
+                    data.PlatformData,
+                    data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
             }
 
             PlatformData platformData = null;
@@ -44,7 +45,8 @@ namespace Protogame
                 this.m_AssetContentManager,
                 name,
                 (string)data.Code,
-                platformData);
+                platformData,
+                data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
 
             return effect;
         }
@@ -65,7 +67,8 @@ namespace Protogame
                 this.m_AssetContentManager,
                 name,
                 "",
-                null);
+                null,
+                false);
         }
     }
 }

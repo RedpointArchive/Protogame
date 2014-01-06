@@ -1,4 +1,3 @@
-using Ninject;
 using Ninject.Modules;
 
 namespace Protogame
@@ -15,6 +14,7 @@ namespace Protogame
             this.Bind<IAssetLoader>().To<TilesetAssetLoader>();
             this.Bind<IAssetLoader>().To<EffectAssetLoader>();
             this.Bind<IAssetLoader>().To<AIAssetLoader>();
+            this.Bind<IAssetLoader>().To<ModelAssetLoader>();
             this.Bind<IAssetSaver>().To<FontAssetSaver>();
             this.Bind<IAssetSaver>().To<LanguageAssetSaver>();
             this.Bind<IAssetSaver>().To<TextureAssetSaver>();
@@ -22,6 +22,7 @@ namespace Protogame
             this.Bind<IAssetSaver>().To<AudioAssetSaver>();
             this.Bind<IAssetSaver>().To<TilesetAssetSaver>();
             this.Bind<IAssetSaver>().To<EffectAssetSaver>();
+            this.Bind<IAssetSaver>().To<ModelAssetSaver>();
             this.Bind<IRawAssetLoader>().To<RawAssetLoader>();
             this.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
@@ -29,6 +30,7 @@ namespace Protogame
 #if DEBUG
             this.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
 #endif
             this.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
             this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
@@ -40,6 +42,7 @@ namespace Protogame
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
+            this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
 #elif PLATFORM_LINUX
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();

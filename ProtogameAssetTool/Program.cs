@@ -11,10 +11,6 @@ using Protogame;
 
 namespace ProtogameAssetTool
 {
-    using System.Diagnostics;
-
-    using Ninject.Planning.Targets;
-
     public static class Program
     {
         public static void Main(string[] args)
@@ -42,6 +38,9 @@ namespace ProtogameAssetTool
                 return;
             }
 
+            // Deploy the correct MojoShader DLL.
+            MojoShaderDeploy.Deploy();
+
             // Create kernel.
             var kernel = new StandardKernel();
             kernel.Load<ProtogameAssetIoCModule>();
@@ -54,6 +53,7 @@ namespace ProtogameAssetTool
             kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
 
             // Load additional assemblies.
             foreach (var filename in assemblies)

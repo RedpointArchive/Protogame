@@ -16,12 +16,14 @@ namespace Protogame
             IAssetContentManager assetContentManager,
             string name,
             string code,
-            PlatformData platformData)
+            PlatformData platformData,
+            bool sourcedFromRaw)
         {
             this.Name = name;
             this.Code = code;
             this.PlatformData = platformData;
             this.m_AssetContentManager = assetContentManager;
+            this.SourcedFromRaw = sourcedFromRaw;
 
             if (this.PlatformData != null)
             {
@@ -49,6 +51,18 @@ namespace Protogame
             {
                 return this.Code == null;
             }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether or not this asset was sourced from a raw file (such as a PNG image).
+        /// </summary>
+        /// <value>
+        /// The sourced from raw.
+        /// </value>
+        public bool SourcedFromRaw
+        {
+            get;
+            private set;
         }
 
         public void ReloadEffect()

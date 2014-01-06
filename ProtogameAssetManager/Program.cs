@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Dx.Runtime;
@@ -21,8 +22,8 @@ namespace ProtogameAssetManager
                 {
                     if (type.IsAbstract || type.IsInterface)
                         continue;
-                    if (type.Assembly == typeof(FontAsset).Assembly)
-                        continue;
+                    //if (type.Assembly == typeof(FontAsset).Assembly)
+                    //    continue;
                     if (typeof(IAssetEditor).IsAssignableFrom(type))
                     {
                         Console.WriteLine("Binding IAssetEditor: " + type.Name);
@@ -68,6 +69,9 @@ namespace ProtogameAssetManager
                 Console.WriteLine("Try `ProtogameAssetManager.exe --help` for more information.");
                 return;
             }
+
+            // Deploy the correct MojoShader DLL.
+            MojoShaderDeploy.Deploy();
             
             var kernel = new StandardKernel();
             kernel.Load<Protogame2DIoCModule>();
@@ -77,6 +81,9 @@ namespace ProtogameAssetManager
 
             // Only allow the source load strategies.
             kernel.Unbind<ILoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
 
@@ -135,7 +142,7 @@ namespace ProtogameAssetManager
                 catch (BadImageFormatException) { }
                 catch (FileLoadException) { }
             }
-            
+
             if (connectToRunningGame)
             {
                 var node = new LocalNode(Architecture.ServerClient, Caching.PushOnChange);
