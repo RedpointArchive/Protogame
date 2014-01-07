@@ -27,15 +27,23 @@ using System.Linq;
         public object AttemptLoad(string path, string name)
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                foreach (var type in assembly.GetTypes())
-                    if (typeof(IAsset).IsAssignableFrom(type))
+                try
+                {
+                    foreach (var type in assembly.GetTypes())
                     {
-                        var attribute = type.GetCustomAttributes(false).Cast<Attribute>().OfType<AssetAttribute>().FirstOrDefault();
-                        if (attribute != null)
-                            if (attribute.Name == name)
-                                return new { Type = type, Name = name };
+                        if (typeof(IAsset).IsAssignableFrom(type))
+                        {
+                            var attribute = type.GetCustomAttributes(false).Cast<Attribute>().OfType<AssetAttribute>().FirstOrDefault();
+                            if (attribute != null)
+                                if (attribute.Name == name)
+                                    return new { Type = type, Name = name };
+                        }
                     }
-
+                }   
+                catch
+                {
+                    
+                }
             return null;
         }
     }

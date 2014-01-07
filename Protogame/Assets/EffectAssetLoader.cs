@@ -28,7 +28,7 @@ namespace Protogame
                     name,
                     null,
                     data.PlatformData,
-                    data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
+                    false);
             }
 
             PlatformData platformData = null;
