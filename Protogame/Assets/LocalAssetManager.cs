@@ -189,16 +189,6 @@ namespace Protogame
                 }
                 if (canSave)
                 {
-                    var result = saver.Handle(asset, bake ? AssetTarget.SourceFile : AssetTarget.Runtime);
-                    if (result == null)
-                    {
-                        // We can handle this asset; but we explicitly do not want to save it.
-                        // This is used when we load a raw asset from a PNG, and we don't want to
-                        // save a .asset file back to disk (because then we'll have two matching
-                        // assets in the asset folder, both representing the exact same texture).
-                        return;
-                    }
-
 #if DEBUG
                     this.m_Assets[asset.Name] = 
                         new LocalAsset(asset.Name, asset, this);
@@ -206,10 +196,24 @@ namespace Protogame
                     this.m_Assets[asset.Name] = asset;
 #endif
                     if (bake)
+                    {
+                        var result = saver.Handle(asset, AssetTarget.SourceFile);
+                        if (result == null)
+                        {
+                            // We can handle this asset; but we explicitly do not want to save it.
+                            // This is used when we load a raw asset from a PNG, and we don't want to
+                            // save a .asset file back to disk (because then we'll have two matching
+                            // assets in the asset folder, both representing the exact same texture).
+                            return;
+                        }
+
                         this.m_RawAssetSaver.SaveRawAsset(asset.Name, result);
+                    }
+
                     return;
                 }
             }
+
             throw new InvalidOperationException(
                 "Unable to save asset '" + asset + "'.  " +
                 "No saver for this asset could be found.");
