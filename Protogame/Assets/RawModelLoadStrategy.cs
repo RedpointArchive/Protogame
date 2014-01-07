@@ -35,8 +35,8 @@ namespace Protogame
                         return new
                         {
                             Loader = typeof(ModelAssetLoader).FullName,
-                            CompiledData = (byte[])null,
-                            SourceData = binary.ReadBytes((int)file.Length),
+                            PlatformData = (PlatformData)null,
+                            RawData = binary.ReadBytes((int)file.Length),
                             SourcedFromRaw = true
                         };
                     }

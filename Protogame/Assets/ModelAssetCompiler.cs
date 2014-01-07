@@ -6,17 +6,17 @@ namespace Protogame
     {
         public void Compile(ModelAsset asset, TargetPlatform platform)
         {
-            if (asset.SourceData == null)
+            if (asset.RawData == null)
             {
                 return;
             }
 
             var reader = new FbxReader();
-            var model = reader.Load(asset.SourceData);
+            var model = reader.Load(asset.RawData);
             var serializer = new ModelSerializer();
             var data = serializer.Serialize(model);
 
-            asset.CompiledData = data;
+            asset.PlatformData = new PlatformData { Data = data, Platform = platform };
 
             try
             {

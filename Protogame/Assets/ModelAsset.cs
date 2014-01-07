@@ -35,16 +35,16 @@ namespace Protogame
         /// </param>
         public ModelAsset(
             string name,
-            byte[] sourceData,
-            byte[] compiledData,
+            byte[] rawData,
+            PlatformData data, 
             bool sourcedFromRaw)
         {
             this.Name = name;
-            this.SourceData = sourceData;
-            this.CompiledData = compiledData;
+            this.RawData = rawData;
+            this.PlatformData = data;
             this.SourcedFromRaw = sourcedFromRaw;
 
-            if (this.CompiledData != null)
+            if (this.PlatformData != null)
             {
                 try
                 {
@@ -57,14 +57,6 @@ namespace Protogame
         }
 
         /// <summary>
-        /// Gets or sets the raw model compiled data.  This is the compiled binary data used to load the model at runtime.
-        /// </summary>
-        /// <value>
-        /// The raw model compiled data.
-        /// </value>
-        public byte[] CompiledData { get; set; }
-
-        /// <summary>
         /// Gets a value indicating whether the asset only contains compiled information.
         /// </summary>
         /// <value>
@@ -74,7 +66,7 @@ namespace Protogame
         {
             get
             {
-                return this.SourceData == null;
+                return this.RawData == null;
             }
         }
 
@@ -84,15 +76,36 @@ namespace Protogame
         /// <value>
         /// The name of the asset.
         /// </value>
-        public string Name { get; private set; }
+        public string Name
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
-        /// Gets or sets the raw model source data.  This is the source information used to compile the asset.
+        /// Gets or sets the platform-specific data associated with this asset.
+        /// </summary>
+        /// <seealso cref="PlatformData"/>
+        /// <value>
+        /// The platform-specific data for this asset.
+        /// </value>
+        public PlatformData PlatformData
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the raw model data.  This is the source information used to compile the asset.
         /// </summary>
         /// <value>
-        /// The raw model source data.
+        /// The raw texture data.
         /// </value>
-        public byte[] SourceData { get; set; }
+        public byte[] RawData
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Gets a value indicating whether the asset only contains source information.
@@ -104,7 +117,7 @@ namespace Protogame
         {
             get
             {
-                return this.CompiledData == null;
+                return this.PlatformData == null;
             }
         }
 
@@ -125,10 +138,10 @@ namespace Protogame
         /// </summary>
         public void ReloadModel()
         {
-            if (this.CompiledData != null)
+            if (this.PlatformData != null)
             {
                 var serializer = new ModelSerializer();
-                this.m_Model = serializer.Deserialize(this.CompiledData);
+                this.m_Model = serializer.Deserialize(this.PlatformData.Data);
             }
         }
 

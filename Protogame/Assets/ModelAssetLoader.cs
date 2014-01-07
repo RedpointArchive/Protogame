@@ -22,17 +22,27 @@ namespace Protogame
                 return new ModelAsset(
                     name,
                     null,
-                    data.CompiledData,
+                    data.PlatformData,
                     data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
             }
 
-            var texture = new ModelAsset(
+            PlatformData platformData = null;
+            if (data.PlatformData != null)
+            {
+                platformData = new PlatformData
+                {
+                    Platform = data.PlatformData.Platform,
+                    Data = data.PlatformData.Data
+                };
+            }
+
+            var model = new ModelAsset(
                 name,
-                ByteReader.ReadAsByteArray(data.SourceData),
-                ByteReader.ReadAsByteArray(data.CompiledData),
+                ByteReader.ReadAsByteArray(data.RawData),
+                platformData,
                 data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
 
-            return texture;
+            return model;
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)

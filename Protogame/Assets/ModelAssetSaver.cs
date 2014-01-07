@@ -13,18 +13,27 @@ namespace Protogame
         {
             var modelAsset = asset as ModelAsset;
 
-            if (modelAsset.SourcedFromRaw)
+            if (modelAsset.SourcedFromRaw && target != AssetTarget.CompiledFile)
             {
                 // We were sourced from a raw FBX; we don't want to save
                 // an ".asset" file back to disk.
                 return null;
             }
+
+            if (target == AssetTarget.CompiledFile)
+            {
+                return new CompiledAsset
+                {
+                    Loader = typeof(ModelAssetLoader).FullName,
+                    PlatformData = modelAsset.PlatformData
+                };
+            }
             
             return new
             {
                 Loader = typeof(ModelAssetLoader).FullName,
-                CompiledData = modelAsset.CompiledData == null || target == AssetTarget.SourceFile ? null : modelAsset.CompiledData.Select(x => (int)x).ToList(),
-                SourceData = modelAsset.SourceData == null || target == AssetTarget.CompiledFile ? null : modelAsset.SourceData.Select(x => (int)x).ToList()
+                PlatformData = target == AssetTarget.SourceFile ? null : modelAsset.PlatformData,
+                RawData = modelAsset.RawData == null ? null : modelAsset.RawData.Select(x => (int)x).ToList()
             };
         }
     }

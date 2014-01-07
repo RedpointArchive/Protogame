@@ -13,7 +13,7 @@ namespace Protogame
         {
             var textureAsset = asset as TextureAsset;
 
-            if (textureAsset.SourcedFromRaw)
+            if (textureAsset.SourcedFromRaw && target != AssetTarget.CompiledFile)
             {
                 // We were sourced from a raw PNG; we don't want to save
                 // an ".asset" file back to disk.

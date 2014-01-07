@@ -16,7 +16,7 @@ namespace ProtogameAssetManager
                 {
                     using (var reader = new BinaryReader(stream))
                     {
-                        this.m_Asset.SourceData = reader.ReadBytes((int)stream.Length);
+                        this.m_Asset.RawData = reader.ReadBytes((int)stream.Length);
                     }
                 }
                 assetManager.Recompile(this.m_Asset);

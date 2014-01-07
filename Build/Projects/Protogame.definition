@@ -301,9 +301,11 @@
     <Compile Include="VerticalAlignment.cs" />
     <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\assimp\Assimp32.dll">
       <Link>Assimp32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\assimp\Assimp64.dll">
       <Link>Assimp64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="font.Default.asset" />
     <EmbeddedResource Include="font.Default-Android.bin" />
