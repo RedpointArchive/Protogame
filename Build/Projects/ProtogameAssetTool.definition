@@ -10,9 +10,11 @@
     <Reference Include="MonoGame" />
     <Reference Include="Ninject" />
     <Reference Include="AssImp" />
+    <Reference Include="ProtogameAssetTool32" />
   </References>
   <Files>
     <Compile Include="Program.cs" />
+    <Compile Include="Stub32.cs" />
     <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\assimp\Assimp32.dll">
       <Link>Assimp32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
