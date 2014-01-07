@@ -9,6 +9,7 @@
     <Reference Include="Protogame" />
     <Reference Include="MonoGame" />
     <Reference Include="Ninject" />
+    <Reference Include="AssImp" />
   </References>
   <Files>
     <Compile Include="Program.cs" />

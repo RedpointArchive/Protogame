@@ -20,6 +20,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="protobuf-net-client" />
+    <Reference Include="AssImp" />
   </References>
   <Files>
     <Compile Include="Assets\AIAsset.cs" />

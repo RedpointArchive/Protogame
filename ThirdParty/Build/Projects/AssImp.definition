@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExternalProject Name="AssImp">
+ 
+  <Binary
+    Name="AssImp" 
+    Path="MonoGame/ThirdParty/Libs/assimp/AssimpNet.dll" />
+
+</ExternalProject>

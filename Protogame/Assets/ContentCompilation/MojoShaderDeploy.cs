@@ -20,6 +20,18 @@ namespace Protogame
             var current = Environment.CurrentDirectory;
             Environment.CurrentDirectory = location;
 
+#if PLATFORM_WINDOWS
+            if (File.Exists("libmojoshader_32.dll"))
+            {
+                File.Delete("libmojoshader_32.dll");
+            }
+#else
+            if (File.Exists("libmojoshader.dll"))
+            {
+                File.Delete("libmojoshader.dll");
+            }
+#endif
+
             if (Environment.Is64BitProcess)
             {
 #if PLATFORM_WINDOWS
