@@ -19,7 +19,23 @@ namespace Protogame
 
         public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction)
         {
-            throw new NotImplementedException();
+            // Normalize the animation name.
+            if (string.IsNullOrEmpty(animationName))
+            {
+                animationName = Animation.AnimationNullName;
+            }
+
+            // Get a reference to the animation.
+            var animation = this.AvailableAnimations[animationName];
+
+            // Multiply the total seconds by the ticks per second.
+            var totalTicks = (int)(secondFraction.TotalSeconds * animation.TicksPerSecond);
+
+            // Modulo the total ticks by the animation duration.
+            var currentTick = (int)(totalTicks % animation.DurationInTicks);
+
+            // Call the other draw function with the appropriate tick value.
+            this.Draw(renderContext, transform, animationName, currentTick);
         }
 
         public void Draw(IRenderContext renderContext, Matrix transform, string animationName, int frame)
