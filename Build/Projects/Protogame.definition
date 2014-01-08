@@ -2,6 +2,7 @@
 <Project Name="Protogame" Path="Protogame" Type="Library">
   <Properties>
     <Property Name="PostProcessWithDx" Value="True" />
+    <Property Name="DocumentationFile" Value="True" />
   </Properties>
   <References>
     <Reference Include="AStarPathFinder" />
