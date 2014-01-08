@@ -78,6 +78,8 @@ namespace Protogame
         {
             foreach (var asset in this.m_RawAssetLoader.ScanRawAssets())
                 this.GetUnresolved(asset);
+
+            this.m_HasScanned = true;
         }
 
         public IAsset GetUnresolved(string asset)
@@ -169,7 +171,6 @@ namespace Protogame
                 if (!this.m_HasScanned)
                 {
                     this.RescanAssets();
-                    this.m_HasScanned = true;
                 }
 #if DEBUG
                 return this.m_Assets.Values.Select(x => x.Instance).ToArray();
