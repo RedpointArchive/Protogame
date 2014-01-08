@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-
-namespace Protogame
+﻿namespace Protogame
 {
+    using Microsoft.Xna.Framework.Graphics;
+
     /// <summary>
     /// An interface representing a model's animation that can be played back at runtime.
     /// </summary>

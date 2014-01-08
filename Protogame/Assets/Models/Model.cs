@@ -1,22 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace Protogame
+﻿namespace Protogame
 {
+    using System;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
+
     /// <summary>
     /// This represents a runtime model, with full support for animation and bone manipulation.
     /// </summary>
     public class Model : IModel
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Model"/> class.
+        /// </summary>
+        /// <param name="availableAnimations">
+        /// The available animations.
+        /// </param>
         public Model(IAnimationCollection availableAnimations)
         {
             this.AvailableAnimations = availableAnimations;
         }
 
+        /// <summary>
+        /// Gets the available animations.
+        /// </summary>
+        /// <value>
+        /// The available animations.
+        /// </value>
         public IAnimationCollection AvailableAnimations { get; private set; }
 
+        /// <summary>
+        /// Draws the model using the specified animation, calculating the appropriate frame to play
+        /// based on how much time has elapsed.
+        /// </summary>
+        /// <param name="renderContext">
+        /// The render context.
+        /// </param>
+        /// <param name="transform">
+        /// The transform.
+        /// </param>
+        /// <param name="animationName">
+        /// The animation name.
+        /// </param>
+        /// <param name="secondFraction">
+        /// The seconds that have elapsed since the animation started playing.
+        /// </param>
         public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction)
         {
             // Normalize the animation name.
@@ -38,6 +65,21 @@ namespace Protogame
             this.Draw(renderContext, transform, animationName, currentTick);
         }
 
+        /// <summary>
+        /// Draws the model using the specified animation, at a specific frame.
+        /// </summary>
+        /// <param name="renderContext">
+        /// The render context.
+        /// </param>
+        /// <param name="transform">
+        /// The transform.
+        /// </param>
+        /// <param name="animationName">
+        /// The animation name.
+        /// </param>
+        /// <param name="frame">
+        /// The frame.
+        /// </param>
         public void Draw(IRenderContext renderContext, Matrix transform, string animationName, int frame)
         {
             // Normalize the animation name.
@@ -69,14 +111,14 @@ namespace Protogame
             {
                 pass.Apply();
                 renderContext.GraphicsDevice.DrawIndexedPrimitives(
-                    PrimitiveType.TriangleList,
-                    0,
-                    0,
-                    frameRef.VertexBuffer.VertexCount,
-                    0,
+                    PrimitiveType.TriangleList, 
+                    0, 
+                    0, 
+                    frameRef.VertexBuffer.VertexCount, 
+                    0, 
                     frameRef.IndexBuffer.IndexCount / 3);
             }
-            
+
             // Restore the world matrix.
             renderContext.World = oldWorld;
         }
@@ -89,7 +131,7 @@ namespace Protogame
         /// </param>
         public void LoadBuffers(GraphicsDevice graphicsDevice)
         {
-            foreach (var animation in AvailableAnimations)
+            foreach (var animation in this.AvailableAnimations)
             {
                 animation.LoadBuffers(graphicsDevice);
             }
