@@ -15,6 +15,7 @@ namespace Protogame
         public string Status { get; set; }
         public bool IsRemoting { get { return false; } }
 
+        private bool m_HasScanned;
         private IKernel m_Kernel;
         private IRawAssetLoader m_RawAssetLoader;
         private IRawAssetSaver m_RawAssetSaver;
@@ -165,7 +166,11 @@ namespace Protogame
         {
             lock (this.m_Assets)
             {
-                this.RescanAssets();
+                if (!this.m_HasScanned)
+                {
+                    this.RescanAssets();
+                    this.m_HasScanned = true;
+                }
 #if DEBUG
                 return this.m_Assets.Values.Select(x => x.Instance).ToArray();
 #else
