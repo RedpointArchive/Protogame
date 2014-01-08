@@ -72,7 +72,7 @@ namespace Protogame
                 {
                     asset.ReloadFont();
                 }
-                catch (NotImplementedException)
+                catch (NoAssetContentManagerException)
                 {
                     // We might be running under a server where we can't load
                     // the actual texture (because we have no game).
@@ -247,7 +247,7 @@ public static class Program
             {
                 asset.ReloadFont();
             }
-            catch (NotImplementedException)
+            catch (NoAssetContentManagerException)
             {
                 // We might be running under a server where we can't load
                 // the actual texture (because we have no game).
