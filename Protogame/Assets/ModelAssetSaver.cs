@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Protogame
@@ -33,7 +34,8 @@ namespace Protogame
             {
                 Loader = typeof(ModelAssetLoader).FullName,
                 PlatformData = target == AssetTarget.SourceFile ? null : modelAsset.PlatformData,
-                RawData = modelAsset.RawData == null ? null : modelAsset.RawData.Select(x => (int)x).ToList()
+                RawData = modelAsset.RawData == null ? null : modelAsset.RawData.Select(x => (int)x).ToList(),
+                RawAdditionalAnimations = (Dictionary<string, byte[]>)null
             };
         }
     }

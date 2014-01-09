@@ -2,7 +2,7 @@
 <ExternalProject Name="AssImp">
  
   <Binary
-    Name="AssImp" 
-    Path="MonoGame/ThirdParty/Libs/assimp/AssimpNet.dll" />
+    Name="AssimpNet" 
+    Path="Binaries/Windows/AssimpNet.dll" />
 
 </ExternalProject>

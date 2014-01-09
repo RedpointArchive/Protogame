@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
@@ -33,14 +34,19 @@ namespace Protogame
         /// <param name="sourcedFromRaw">
         /// Whether or not this asset was sourced from a purely raw asset file (such as a PNG).
         /// </param>
+        /// <param name="rawAdditionalAnimations">
+        /// The source raw data that contains additional animations, mapping byte arrays to animation names.
+        /// </param>
         public ModelAsset(
             string name,
             byte[] rawData,
+            Dictionary<string,byte[]> rawAdditionalAnimations,
             PlatformData data, 
             bool sourcedFromRaw)
         {
             this.Name = name;
             this.RawData = rawData;
+            this.RawAdditionalAnimations = rawAdditionalAnimations;
             this.PlatformData = data;
             this.SourcedFromRaw = sourcedFromRaw;
 
@@ -105,6 +111,19 @@ namespace Protogame
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Gets or sets the raw additional animation data.  This is populated when loading models from
+        /// raw FBX files, and there are multiple FBX files for the one model.
+        /// </summary>
+        /// <value>
+        /// The raw additional animation data.
+        /// </value>
+        public Dictionary<string, byte[]> RawAdditionalAnimations
+        {
+            get; 
+            set;             
         }
 
         /// <summary>

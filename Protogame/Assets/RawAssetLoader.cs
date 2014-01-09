@@ -65,6 +65,14 @@ namespace Protogame
                 directoryInfo.Create();
             foreach (var file in directoryInfo.GetFiles())
             {
+                // Skip any files with an @ symbol in the name; this usually indicates
+                // a "subfile" that the load strategy will pick up (for example when there's
+                // multiple source FBX files for an animated model).
+                if (file.Name.Contains("@"))
+                {
+                    continue;
+                }
+
                 foreach (var extension in this.GetExtensions())
                 {
                     if (file.Extension != extension)

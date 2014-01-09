@@ -12,7 +12,7 @@ namespace Protogame
             }
 
             var reader = new FbxReader();
-            var model = reader.Load(asset.RawData);
+            var model = reader.Load(asset.RawData, asset.RawAdditionalAnimations);
             var serializer = new ModelSerializer();
             var data = serializer.Serialize(model);
 

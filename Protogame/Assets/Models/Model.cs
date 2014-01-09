@@ -54,6 +54,10 @@
 
             // Get a reference to the animation.
             var animation = this.AvailableAnimations[animationName];
+            if (animation == null)
+            {
+                throw new InvalidOperationException("No such animation exists.");
+            }
 
             // Multiply the total seconds by the ticks per second.
             var totalTicks = (int)(secondFraction.TotalSeconds * animation.TicksPerSecond);
@@ -88,8 +92,13 @@
                 animationName = Animation.AnimationNullName;
             }
 
-            // Get a reference to the frame we will render.
             var animation = this.AvailableAnimations[animationName];
+            if (animation == null)
+            {
+                throw new InvalidOperationException("No such animation exists.");
+            }
+
+            // Get a reference to the frame we will render.
             var frames = animation.Frames;
             frame = frame % frames.Length;
             var frameRef = frames[frame];

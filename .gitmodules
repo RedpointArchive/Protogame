@@ -4,3 +4,6 @@
 [submodule "ThirdParty/Dx"]
 	path = ThirdParty/Dx
 	url = git://github.com/hach-que/Dx.git
+[submodule "ThirdParty/Binaries"]
+	path = ThirdParty/Binaries
+	url = https://code.redpointsoftware.com.au/diffusion/PTPB/

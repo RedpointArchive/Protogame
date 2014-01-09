@@ -22,6 +22,7 @@ namespace Protogame
                 return new ModelAsset(
                     name,
                     null,
+                    null,
                     data.PlatformData,
                     false);
             }
@@ -39,6 +40,7 @@ namespace Protogame
             var model = new ModelAsset(
                 name,
                 ByteReader.ReadAsByteArray(data.RawData),
+                data.RawAdditionalAnimations,
                 platformData,
                 data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
 
@@ -59,6 +61,7 @@ namespace Protogame
         {
             return new ModelAsset(
                 name,
+                null,
                 null,
                 null,
                 false);

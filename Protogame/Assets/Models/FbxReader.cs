@@ -20,10 +20,13 @@
         /// <param name="data">
         /// The byte array containing the FBX data.
         /// </param>
+        /// <param name="rawAdditionalAnimations">
+        /// A dictionary mapping of animation names to byte arrays for additional FBX files to load.
+        /// </param>
         /// <returns>
         /// The loaded <see cref="IModel"/>.
         /// </returns>
-        public IModel Load(byte[] data)
+        public IModel Load(byte[] data, Dictionary<string, byte[]> rawAdditionalAnimations)
         {
             var file = Path.GetTempFileName() + ".fbx";
             using (var stream = new FileStream(file, FileMode.Create))
@@ -32,9 +35,30 @@
                 stream.Close();
             }
 
-            var model = this.Load(file);
+            var additionalAnimationFiles = new Dictionary<string, string>();
+            if (rawAdditionalAnimations != null)
+            {
+                foreach (var kv in rawAdditionalAnimations)
+                {
+                    var tempFile = Path.GetTempFileName() + ".fbx";
+                    using (var stream = new FileStream(tempFile, FileMode.Create))
+                    {
+                        stream.Write(kv.Value, 0, kv.Value.Length);
+                        stream.Close();
+                    }
+
+                    additionalAnimationFiles.Add(kv.Key, tempFile);
+                }
+            }
+
+            var model = this.Load(file, additionalAnimationFiles);
 
             File.Delete(file);
+
+            foreach (var kv in additionalAnimationFiles)
+            {
+                File.Delete(kv.Value);
+            }
 
             return model;
         }
@@ -45,10 +69,13 @@
         /// <param name="filename">
         /// The filename of the FBX file to load.
         /// </param>
+        /// <param name="additionalAnimationFiles">
+        /// A dictionary mapping of animation names to filenames for additional FBX files to load.
+        /// </param>
         /// <returns>
         /// The loaded <see cref="IModel"/>.
         /// </returns>
-        public IModel Load(string filename)
+        public IModel Load(string filename, Dictionary<string, string> additionalAnimationFiles)
         {
             // Import the scene via AssImp.
             var importer = new AssimpImporter();
@@ -62,7 +89,26 @@
             var animations = new List<IAnimation> { this.CreateNullAnimation(scene) };
 
             // Import the basic animation.
-            animations.AddRange(scene.Animations.Select(assimpAnimation => this.ImportAnimation(scene, assimpAnimation)));
+            if (scene.AnimationCount > 0)
+            {
+                animations.AddRange(
+                    scene.Animations.Select(
+                        assimpAnimation => this.ImportAnimation(scene, assimpAnimation.Name, assimpAnimation)));
+            }
+
+            // For each additional animation file, import that and add the animation to the existing scene.
+            foreach (var kv in additionalAnimationFiles)
+            {
+                var additionalScene = importer.ImportFile(kv.Value, ProcessFlags);
+
+                if (additionalScene.AnimationCount != 1)
+                {
+                    // We can only import additional files that have a single animation.
+                    continue;
+                }
+
+                animations.Add(this.ImportAnimation(scene, kv.Key, additionalScene.Animations[0]));
+            }
 
             // Return the resulting model.
             return new Model(new AnimationCollection(animations));
@@ -168,9 +214,9 @@
         /// <returns>
         /// The interpolated position <see cref="Matrix"/>.
         /// </returns>
-        private Matrix CalculateInterpolatedPosition(VectorKey[] positionKeys, int tick)
+        private Matrix CalculateInterpolatedPosition(List<VectorKey> positionKeys, int tick)
         {
-            if (positionKeys.Length == 1)
+            if (positionKeys.Count == 1)
             {
                 return
                     Matrix.CreateTranslation(
@@ -205,9 +251,9 @@
         /// <returns>
         /// The interpolated rotation <see cref="Matrix"/>.
         /// </returns>
-        private Matrix CalculateInterpolatedRotation(QuaternionKey[] rotationKeys, int tick)
+        private Matrix CalculateInterpolatedRotation(List<QuaternionKey> rotationKeys, int tick)
         {
-            if (rotationKeys.Length == 1)
+            if (rotationKeys.Count == 1)
             {
                 return
                     Matrix.CreateFromQuaternion(
@@ -247,9 +293,9 @@
         /// <returns>
         /// The interpolated scale <see cref="Matrix"/>.
         /// </returns>
-        private Matrix CalculateInterpolatedScaling(VectorKey[] scalingKeys, int tick)
+        private Matrix CalculateInterpolatedScaling(List<VectorKey> scalingKeys, int tick)
         {
-            if (scalingKeys.Length == 1)
+            if (scalingKeys.Count == 1)
             {
                 return
                     Matrix.CreateScale(
@@ -320,7 +366,7 @@
 
             // Import vertexes.
             // TODO: What to do with multiple texture coords?
-            var uvs = mesh.GetTextureCoords(0);
+            var uvs = mesh.TextureCoordinateChannels[0];
             for (var i = 0; i < mesh.VertexCount; i++)
             {
                 var pos = mesh.Vertices[i];
@@ -334,8 +380,8 @@
                         new Vector2(uv.X, uv.Y)));
             }
 
-            // Import indicies.
-            indices.AddRange(mesh.GetIntIndices());
+            // Import indices.
+            indices.AddRange(mesh.GetIndices());
 
             // Create frame 0.
             var frame = new Frame(vertexes.ToArray(), indices.ToArray());
@@ -350,13 +396,16 @@
         /// <param name="scene">
         /// The scene to generate the animation from.
         /// </param>
+        /// <param name="name">
+        /// The name of the animation.
+        /// </param>
         /// <param name="assimpAnimation">
         /// The AssImp animation to apply to the scene.
         /// </param>
         /// <returns>
         /// The <see cref="IAnimation"/> representing the imported animation.
         /// </returns>
-        private IAnimation ImportAnimation(Scene scene, Assimp.Animation assimpAnimation)
+        private IAnimation ImportAnimation(Scene scene, string name, Assimp.Animation assimpAnimation)
         {
             var baseVertexes = new List<VertexPositionNormalTexture>();
             var baseIndices = new List<int>();
@@ -366,7 +415,7 @@
 
             // Import vertexes.
             // TODO: What to do with multiple texture coords?
-            var uvs = mesh.GetTextureCoords(0);
+            var uvs = mesh.TextureCoordinateChannels[0];
             for (var i = 0; i < mesh.VertexCount; i++)
             {
                 var pos = mesh.Vertices[i];
@@ -380,8 +429,8 @@
                         new Vector2(uv.X, uv.Y)));
             }
 
-            // Import indicies.
-            baseIndices.AddRange(mesh.GetIntIndices());
+            // Import indices.
+            baseIndices.AddRange(mesh.GetIndices());
 
             // For each of the frames in the animation, calculate what they look like and
             // add them.
@@ -392,7 +441,7 @@
             }
 
             return new Animation(
-                assimpAnimation.Name, 
+                name, 
                 frames.ToArray(), 
                 assimpAnimation.TicksPerSecond, 
                 assimpAnimation.DurationInTicks);
