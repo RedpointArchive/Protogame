@@ -99,7 +99,9 @@
             // For each additional animation file, import that and add the animation to the existing scene.
             foreach (var kv in additionalAnimationFiles)
             {
-                var additionalScene = importer.ImportFile(kv.Value, ProcessFlags);
+                var animationImporter = new AssimpImporter();
+                animationImporter.AttachLogStream(new LogStream((msg, userData) => { }));
+                var additionalScene = animationImporter.ImportFile(kv.Value, ProcessFlags);
 
                 if (additionalScene.AnimationCount != 1)
                 {
