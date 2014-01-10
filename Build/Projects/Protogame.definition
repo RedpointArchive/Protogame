@@ -308,24 +308,30 @@
     <Content Include="..\ThirdParty\Binaries\Windows\Assimp32.dll">
       <Link>Assimp32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
     </Content>
     <Content Include="..\ThirdParty\Binaries\Windows\Assimp64.dll">
       <Link>Assimp64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
     </Content>
     <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\NVTT\Windows\x86\nvtt.dll">
       <Link>nvtt.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
     </Content>
     <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\SharpFont\freetype6.dll">
       <Link>freetype6.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
     </Content>
     <Content Include="libmojoshader_src_32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
     </Content>
     <Content Include="libmojoshader_src_64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
     </Content>
     <EmbeddedResource Include="font.Default.asset" />
     <EmbeddedResource Include="font.Default-Android.bin" />
