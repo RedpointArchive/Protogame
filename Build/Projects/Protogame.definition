@@ -166,6 +166,11 @@
     <Compile Include="Events\DefaultEventEngine.cs" />
     <Compile Include="Events\Event.cs" />
     <Compile Include="Events\EventEngineHook.cs" />
+    <Compile Include="Events\GamePadButtonEvent.cs" />
+    <Compile Include="Events\GamePadButtonHeldEvent.cs" />
+    <Compile Include="Events\GamePadButtonPressEvent.cs" />
+    <Compile Include="Events\GamePadButtonReleaseEvent.cs" />
+    <Compile Include="Events\GamePadEvent.cs" />
     <Compile Include="Events\IEventAction.cs" />
     <Compile Include="Events\IEventBinder.cs" />
     <Compile Include="Events\IEventEngine.cs" />
