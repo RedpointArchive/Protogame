@@ -602,7 +602,6 @@ namespace Protogame
         private void LoadAssimpLibrary()
         {
             // Assimp.NET already has the correct values for Windows.
-            return null;
         }
 #endif
 
