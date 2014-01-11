@@ -32,16 +32,16 @@ namespace Protogame
 
             if (file.Exists)
             {
-                // If there are name@anim.fbx files, read those in as additional animations.
+                // If there are name-anim.fbx files, read those in as additional animations.
                 var directory = file.Directory;
                 var otherAnimations = new Dictionary<string, byte[]>();
                 if (directory != null)
                 {
                     var lastComponent = name.Split('.').Last();
-                    var otherAnimationFiles = directory.GetFiles(lastComponent + "@*.fbx");
+                    var otherAnimationFiles = directory.GetFiles(lastComponent + "-*.fbx");
                     otherAnimations =
                         otherAnimationFiles.ToDictionary(
-                            key => key.Name.Split('@').Last().Split('.').First(),
+                            key => key.Name.Split('-').Last().Split('.').First(),
                             value => this.ReadModelData(value.FullName));
                 }
 

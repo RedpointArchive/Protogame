@@ -46,6 +46,7 @@ namespace Protogame
 #elif PLATFORM_LINUX
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
+            this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
 #endif
         }
     }

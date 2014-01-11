@@ -24,6 +24,34 @@
     <Reference Include="AssImp" />
   </References>
   <Files>
+    <Content Include="..\ThirdParty\Binaries\Windows\Assimp32.dll">
+      <Link>Assimp32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="..\ThirdParty\Binaries\Windows\Assimp64.dll">
+      <Link>Assimp64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\NVTT\Windows\x86\nvtt.dll">
+      <Link>nvtt.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\SharpFont\freetype6.dll">
+      <Link>freetype6.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="libmojoshader_src_32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="libmojoshader_src_64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
     <Compile Include="Assets\AIAsset.cs" />
     <Compile Include="Assets\AIAssetLoader.cs" />
     <Compile Include="Assets\AssemblyLoadStrategy.cs" />
@@ -305,33 +333,15 @@
     <Compile Include="UI\VerticalContainer.cs" />
     <Compile Include="UI\Window.cs" />
     <Compile Include="VerticalAlignment.cs" />
-    <Content Include="..\ThirdParty\Binaries\Windows\Assimp32.dll">
-      <Link>Assimp32.dll</Link>
+    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_32.so.3.0.1">
+      <Link>libassimp_32.so.3.0.1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
+      <Platforms>Linux</Platforms>
     </Content>
-    <Content Include="..\ThirdParty\Binaries\Windows\Assimp64.dll">
-      <Link>Assimp64.dll</Link>
+    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_64.so.3.0.1">
+      <Link>libassimp_64.so.3.0.1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\NVTT\Windows\x86\nvtt.dll">
-      <Link>nvtt.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\SharpFont\freetype6.dll">
-      <Link>freetype6.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="libmojoshader_src_32.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="libmojoshader_src_64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
+      <Platforms>Linux</Platforms>
     </Content>
     <EmbeddedResource Include="font.Default.asset" />
     <EmbeddedResource Include="font.Default-Android.bin" />

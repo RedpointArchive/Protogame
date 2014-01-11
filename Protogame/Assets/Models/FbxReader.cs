@@ -1,4 +1,9 @@
-﻿namespace Protogame
+﻿using System;
+using System.Diagnostics;
+using System.Reflection;
+using Assimp.Unmanaged;
+
+namespace Protogame
 {
     using System.Collections.Generic;
     using System.IO;
@@ -77,9 +82,10 @@
         /// </returns>
         public IModel Load(string filename, Dictionary<string, string> additionalAnimationFiles)
         {
+            this.LoadAssimpLibrary();
+
             // Import the scene via AssImp.
-            var importer = new AssimpImporter();
-            importer.AttachLogStream(new LogStream((msg, userData) => { }));
+            var importer = new AssimpContext();
             const PostProcessSteps ProcessFlags =
                 PostProcessSteps.FlipUVs | PostProcessSteps.JoinIdenticalVertices | PostProcessSteps.Triangulate
                 | PostProcessSteps.SortByPrimitiveType | PostProcessSteps.FindInvalidData;
@@ -99,8 +105,7 @@
             // For each additional animation file, import that and add the animation to the existing scene.
             foreach (var kv in additionalAnimationFiles)
             {
-                var animationImporter = new AssimpImporter();
-                animationImporter.AttachLogStream(new LogStream((msg, userData) => { }));
+                var animationImporter = new AssimpContext();
                 var additionalScene = animationImporter.ImportFile(kv.Value, ProcessFlags);
 
                 if (additionalScene.AnimationCount != 1)
@@ -583,6 +588,23 @@
                 this.TraverseHierarchyAndApplyTransforms(vertexes, child, mesh);
             }
         }
+
+#if PLATFORM_LINUX
+        private void LoadAssimpLibrary()
+        {
+            var targetDir = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory.FullName;
+
+            AssimpLibrary.Instance.LoadLibrary(
+                Path.Combine(targetDir, "libassimp_32.so.3.0.1"),
+                Path.Combine(targetDir, "libassimp_64.so.3.0.1"));
+        }
+#elif PLATFORM_WINDOWS
+        private void LoadAssimpLibrary()
+        {
+            // Assimp.NET already has the correct values for Windows.
+            return null;
+        }
+#endif
 
         /// <summary>
         /// Represents a node in the node hierarchy at a specific point in time; that is

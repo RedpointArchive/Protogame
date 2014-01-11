@@ -1,4 +1,4 @@
-﻿#if PLATFORM_WINDOWS
+﻿#if PLATFORM_WINDOWS || PLATFORM_LINUX
 
 namespace Protogame
 {
