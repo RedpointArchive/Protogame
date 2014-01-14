@@ -19,14 +19,15 @@ namespace Protogame
         private IKernel m_Kernel;
         private IRawAssetLoader m_RawAssetLoader;
         private IRawAssetSaver m_RawAssetSaver;
-#if DEBUG
-        private Dictionary<string, LocalAsset> m_Assets = new Dictionary<string, LocalAsset>();
-#else
+
         private Dictionary<string, IAsset> m_Assets = new Dictionary<string, IAsset>();
-#endif
         private IAssetLoader[] m_AssetLoaders;
         private IAssetSaver[] m_AssetSavers;
         private ITransparentAssetCompiler m_TransparentAssetCompiler;
+
+        private bool m_GenerateRuntimeProxies;
+
+        private bool m_ProxiesLocked = false;
 
         public LocalAssetManager(
             IKernel kernel,
@@ -62,16 +63,45 @@ namespace Protogame
         /// </summary>
         public bool SkipCompilation { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the local asset manager should proxy all assets, allowing assets to be
+        /// reloaded on the fly.  Generally this is not very useful for the local asset manager, unless
+        /// you are building some sort of reloading mechanism into your game (such as to reload assets when
+        /// the user presses F5).
+        /// </summary>
+        /// <value>
+        /// Whether the local asset manager should proxy all assets.
+        /// </value>
+        public bool GenerateRuntimeProxies
+        {
+            get
+            {
+                return this.m_GenerateRuntimeProxies;
+            }
+            set
+            {
+                if (this.m_ProxiesLocked)
+                {
+                    throw new InvalidOperationException(
+                        "Assets have already been loaded in this asset manager; you can not " +
+                        "change GenerateRuntimeProxies after assets have been loaded.");
+                }
+
+                this.m_GenerateRuntimeProxies = value;
+            }
+        }
+
         public void Dirty(string asset)
         {
-#if DEBUG
-            lock (this.m_Assets)
+            if (this.GenerateRuntimeProxies)
             {
-                var assetObj = this.m_Assets[asset];
-                this.m_Assets.Remove(asset);
-                assetObj.Dirty();
+                lock (this.m_Assets)
+                {
+                    var assetObj = this.m_Assets[asset];
+                    this.m_Assets.Remove(asset);
+                    ((LocalAsset)assetObj).Dirty();
+                }
             }
-#endif
         }
         
         public void RescanAssets()
@@ -121,14 +151,17 @@ namespace Protogame
                                 break;
                             }
                         }
-#if DEBUG
-                        var local = new LocalAsset(asset, result, this);
-                        this.m_Assets.Add(asset, local);
-                        return local;
-#else
+
+                        this.m_ProxiesLocked = true;
+                        if (this.GenerateRuntimeProxies)
+                        {
+                            var local = new LocalAsset(asset, result, this);
+                            this.m_Assets.Add(asset, local);
+                            return local;
+                        }
+                        
                         this.m_Assets.Add(asset, result);
                         return result;
-#endif
                     }
                 }
             }
@@ -168,15 +201,19 @@ namespace Protogame
         {
             lock (this.m_Assets)
             {
+                this.m_ProxiesLocked = true;
+
                 if (!this.m_HasScanned)
                 {
                     this.RescanAssets();
                 }
-#if DEBUG
-                return this.m_Assets.Values.Select(x => x.Instance).ToArray();
-#else
+
+                if (this.GenerateRuntimeProxies)
+                {
+                    return this.m_Assets.Values.OfType<LocalAsset>().Select(x => x.Instance).ToArray();
+                }
+
                 return this.m_Assets.Values.ToArray();
-#endif
             }
         }
         
@@ -195,12 +232,16 @@ namespace Protogame
                 }
                 if (canSave)
                 {
-#if DEBUG
-                    this.m_Assets[asset.Name] = 
-                        new LocalAsset(asset.Name, asset, this);
-#else
-                    this.m_Assets[asset.Name] = asset;
-#endif
+                    this.m_ProxiesLocked = true;
+                    if (this.GenerateRuntimeProxies)
+                    {
+                        this.m_Assets[asset.Name] = new LocalAsset(asset.Name, asset, this);
+                    }
+                    else
+                    {
+                        this.m_Assets[asset.Name] = asset;
+                    }
+
                     if (bake)
                     {
                         var result = saver.Handle(asset, AssetTarget.SourceFile);
