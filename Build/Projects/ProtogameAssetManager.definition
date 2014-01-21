@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Name="ProtogameAssetManager" Path="ProtogameAssetManager" Type="XNA" Platforms="Linux,MacOS,Windows">
-  <Properties>
-    <Property Name="PostProcessWithDx" Value="True" />
-  </Properties>
   <References>
     <Reference Include="System" />
     <Reference Include="System.Xml" />

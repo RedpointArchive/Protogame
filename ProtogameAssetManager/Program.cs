@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using Dx.Runtime;
 using NDesk.Options;
 using Ninject;
 using Protogame;
@@ -143,6 +142,7 @@ namespace ProtogameAssetManager
                 catch (FileLoadException) { }
             }
 
+#if FALSE
             if (connectToRunningGame)
             {
                 var node = new LocalNode(Architecture.ServerClient, Caching.PushOnChange);
@@ -152,6 +152,7 @@ namespace ProtogameAssetManager
                 kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
             }
             else
+#endif
                 kernel.Bind<IAssetManagerProvider>().To<LocalAssetManagerProvider>().InSingletonScope();
 
             using (var game = new AssetManagerGame(kernel))

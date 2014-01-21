@@ -153,8 +153,10 @@ namespace ProtogameAssetManager
                 .OfType<AssetTreeItem>().Select(y => y.Asset).Contains(x.Resolve<IAsset>())))
             {
                 var dirtyMark = "";
+#if FALSE
                 if (@add is NetworkAsset)
                     dirtyMark = (@add as NetworkAsset).IsDirty ? "*" : "";
+#endif
                 this.m_Layout.AssetTree.AddChild(new AssetTreeItem
                 {
                     Text = @add.Name + dirtyMark,

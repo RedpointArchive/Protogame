@@ -2,6 +2,7 @@
 <ExternalProject Name="Protogame.ThirdParty">
 
   <Platform Type="Windows">
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Binary
       Name="Ninject.Extensions.Factory"
@@ -18,6 +19,7 @@
   </Platform>
 
   <Platform Type="Linux">
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Binary
       Name="Ninject.Extensions.Factory"
@@ -34,6 +36,7 @@
   </Platform>
 
   <Platform Type="MacOS">
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Binary
       Name="Ninject.Extensions.Factory"
