@@ -257,9 +257,8 @@ namespace Protogame
             get
             {
                 return new DualIPEndPoint(
-                    this.m_DualEndPoint.RealtimeEndPoint.Address,
-                    this.m_DualEndPoint.RealtimeEndPoint.Port,
-                    this.m_DualEndPoint.ReliableEndPoint.Port);
+                    this.m_DualEndPoint.RealtimeEndPoint,
+                    this.m_DualEndPoint.ReliableEndPoint);
             }
         }
 

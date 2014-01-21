@@ -23,7 +23,7 @@
             {
                 dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9001, 9002));
 
-                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(8, dispatcher1, dispatcher2);
             }
             finally
             {
@@ -100,7 +100,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
 
                 dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9013, 9014));
 
-                this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(
                     new DualIPEndPoint(IPAddress.Loopback, 9013, 9014), 
@@ -109,7 +109,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
 
                 Assert.Null(receivedText);
 
-                this.SimulateNetworkCycles(7, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(14, dispatcher1, dispatcher2);
 
                 Assert.Equal(Text, receivedText);
             }
@@ -163,7 +163,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 
                 dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9017, 9018));
 
-                this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(
                     new DualIPEndPoint(IPAddress.Loopback, 9017, 9018),
@@ -174,7 +174,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 
                 for (var i = 0; i < 256 * 1024 && receivedText == null; i++)
                 {
-                    this.SimulateNetworkCycles(1, dispatcher1, dispatcher2);
+                    this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
                 }
 
                 Assert.Equal(text, receivedText);
@@ -206,13 +206,13 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 
                 dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9021, 9022));
 
-                this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(new DualIPEndPoint(IPAddress.Loopback, 9021, 9022), Encoding.ASCII.GetBytes(Text));
 
                 Assert.Null(receivedText);
 
-                this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 Assert.Equal(Text, receivedText);
             }
@@ -252,13 +252,13 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 
                 dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9023, 9024));
 
-                this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(new DualIPEndPoint(IPAddress.Loopback, 9023, 9024), Encoding.ASCII.GetBytes(Text));
 
                 Assert.Null(receivedText);
 
-                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(8, dispatcher1, dispatcher2);
 
                 Assert.Equal(Text, receivedText);
                 Assert.True(acknowledged);
@@ -303,13 +303,13 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 
                 dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9027, 9028));
 
-                this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(new DualIPEndPoint(IPAddress.Loopback, 9027, 9028), bytes);
 
                 Assert.Null(receivedText);
 
-                this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
+                this.SimulateNetworkCycles(8, dispatcher1, dispatcher2);
 
                 Assert.Equal(Text, receivedText);
                 Assert.False(lost);
