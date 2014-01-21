@@ -1,6 +1,8 @@
 using Ninject;
 using Ninject.Modules;
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 using Ninject.Extensions.Interception.Infrastructure.Language;
+#endif
 using System;
 
 namespace Protogame
@@ -9,7 +11,7 @@ namespace Protogame
     {
         public override void Load()
         {
-#if DEBUG
+#if DEBUG && (PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX)
             // Presence of the interception library interferes with the Mono Debugger because
             // it can't seem to handle the intercepted call stack.  Therefore, under Mono, we
             // disable the profiler if the debugger is attached.

@@ -12,7 +12,7 @@ namespace Protogame
         public IWorld World { get; set; }
         public GameTime GameTime { get; set; }
         public Camera Camera { get; set; }
-        public GameWindow Window { get; set; }
+        public IGameWindow Window { get; set; }
         public int FPS { get; set; }
         public Game Game { get; internal set; }
         public IWorldManager WorldManager { get; internal set; }
@@ -22,7 +22,7 @@ namespace Protogame
             IKernel kernel,
             Game game,
             GraphicsDeviceManager graphics,
-            GameWindow window,
+            IGameWindow window,
             IWorld world,
             IWorldManager worldManager)
         {

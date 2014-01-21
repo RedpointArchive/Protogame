@@ -1,3 +1,5 @@
+#if FALSE
+
 using System;
 using System.Runtime.Remoting.Proxies;
 using System.Runtime.Remoting.Messaging;
@@ -70,3 +72,4 @@ namespace Protogame
     }
 }
 
+#endif

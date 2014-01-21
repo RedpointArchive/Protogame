@@ -34,7 +34,8 @@ namespace Protogame
                     stream.WriteByte((byte)0);
                     using (var memory = new MemoryStream())
                     {
-                        Serializer.Serialize(memory, compiledData);
+                        var serializer = new CompiledAssetSerializer();
+                        serializer.Serialize(memory, compiledData);
                         memory.Seek(0, SeekOrigin.Begin);
                         LzmaHelper.Compress(memory, stream);
                     }

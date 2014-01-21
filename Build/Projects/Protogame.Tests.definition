@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Name="Protogame.Tests" Path="Protogame.Tests" Type="Tests">
+<Project Name="Protogame.Tests" Path="Protogame.Tests" Type="Tests" Platforms="Linux,MacOS,Windows">
   <References>
     <Reference Include="Protogame" />
     <Reference Include="System" />

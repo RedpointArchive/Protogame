@@ -1,3 +1,4 @@
+#if FALSE
 using Dx.Runtime;
 using Ninject;
 using Protogame;
@@ -50,4 +51,6 @@ namespace Protogame
         }
     }
 }
+
+#endif
 

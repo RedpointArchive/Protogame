@@ -178,8 +178,14 @@ namespace Protogame
 
             // check and see if shift is down, caps lock is on, and/or num lock is on
             var shift = (keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift));
+
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             var capsLock = System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock);
             var numLock = System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.NumLock);
+#else
+			var capsLock = false;
+			var numLock = false;
+#endif
 
             // remove any keys that aren't down anymore from pressed keys
             foreach (Keys key in this.pressedKeys.Keys.Except(keys).ToArray())

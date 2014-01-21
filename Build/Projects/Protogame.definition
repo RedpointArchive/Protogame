@@ -1,13 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Name="Protogame" Path="Protogame" Type="Library">
   <Properties>
-    <Property Name="PostProcessWithDx" Value="True" />
     <Property Name="DocumentationFile" Value="True" />
   </Properties>
   <References>
-    <Reference Include="AStarPathFinder" />
-    <Reference Include="Dx.Runtime" />
-    <Reference Include="Dx.Process" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MonoGame" />
     <Reference Include="MonoGame.Framework.Content.Pipeline" />
@@ -15,13 +11,12 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="protobuf-net-client" />
+    <Reference Include="protobuf-net" />
     <Reference Include="AssImp" />
+    <Reference Include="Protogame.ThirdParty" />
+    <Reference Include="Newtonsoft.Json" />
   </References>
   <Files>
     <Content Include="..\ThirdParty\Binaries\Windows\Assimp32.dll">
@@ -67,6 +62,7 @@
     <Compile Include="Assets\ByteReader.cs" />
     <Compile Include="Assets\CompiledAsset.cs" />
     <Compile Include="Assets\CompiledAssetSaver.cs" />
+    <Compile Include="Assets\CompiledAssetSerializer.cs" />
     <Compile Include="Assets\ContentCompilation\DummyContentImporterContext.cs" />
     <Compile Include="Assets\ContentCompilation\DummyContentProcessorContext.cs" />
     <Compile Include="Assets\ContentCompilation\MojoShaderDeploy.cs" />
@@ -234,6 +230,7 @@
     <Compile Include="IEngineHook.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IGameContext.cs" />
+    <Compile Include="IGameWindow.cs" />
     <Compile Include="IHasPosition.cs" />
     <Compile Include="IHasSize.cs" />
     <Compile Include="IHasVelocity.cs" />
@@ -266,6 +263,7 @@
     <Compile Include="Network\MxMessage.cs" />
     <Compile Include="Network\MxMessageEventArgs.cs" />
     <Compile Include="Network\MxMessageEventHandler.cs" />
+    <Compile Include="Network\MxMessageSerializer.cs" />
     <Compile Include="Network\MxPayload.cs" />
     <Compile Include="Network\MxReliability.cs" />
     <Compile Include="Network\MxReliabilityTransmitEventArgs.cs" />
@@ -282,6 +280,8 @@
     <Compile Include="Performance\NullProfiler.cs" />
     <Compile Include="Performance\NullProfilerHandle.cs" />
     <Compile Include="Performance\ProtogamePerformanceIoCModule.cs" />
+    <Compile Include="Platform\AndroidGameWindow.cs" />
+    <Compile Include="Platform\DefaultGameWindow.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />
     <Compile Include="Platforming\IPlatforming.cs" />
     <Compile Include="Platforming\ProtogamePlatformingIoCModule.cs" />
@@ -358,6 +358,7 @@
     <EmbeddedResource Include="font.Default-WindowsStoreApp.bin" />
     <EmbeddedResource Include="font.Default-Xbox360.bin" />
     <None Include="packages.config" />
+    <None Include="Properties\AndroidManifest.xml" />
     <None Include="Structure\PositionOctreeUtil.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PositionOctreeUtil.cs</LastGenOutput>

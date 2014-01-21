@@ -1,7 +1,9 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 using System.Windows.Forms;
+#endif
 
 namespace Protogame
 {
@@ -32,6 +34,8 @@ namespace Protogame
                     {
                         this.State = ButtonUIState.Clicked;
                         this.Focus();
+
+						#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
                         using (var openFileDialog = new OpenFileDialog())
                         {
                             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -42,6 +46,7 @@ namespace Protogame
                             }
                             Application.DoEvents();
                         }
+						#endif
                     }
                 }
                 else
@@ -57,4 +62,3 @@ namespace Protogame
         }
     }
 }
-

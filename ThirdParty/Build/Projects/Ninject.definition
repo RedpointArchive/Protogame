@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ExternalProject Name="Ninject">
  
-  <Binary
-    Name="Ninject" 
-    Path="Ninject/Ninject.dll" />
-  <Binary
-    Name="Ninject.Extensions.Factory"
-    Path="Ninject/Ninject.Extensions.Factory.dll" />
-  <Binary
-    Name="Ninject.Extensions.Interception"
-    Path="Ninject/Ninject.Extensions.Interception.dll" />
-  <Binary
-    Name="Ninject.Extensions.Interception.DynamicProxy"
-    Path="Ninject/Ninject.Extensions.Interception.DynamicProxy.dll" />
-  <Binary
-    Name="Castle.Core"
-    Path="Ninject/Castle.Core.dll" />
+  <Platform Type="Android">
+    <Project
+      Name="Ninject"
+      Guid="E940833E-228E-4AFD-90F4-95D386C5342F"
+      Path="Ninject/src/Ninject/Ninject.Android.csproj" />
+  </Platform>
+  
+  <Platform Type="Linux">
+    <Project 
+      Name="Ninject"
+      Guid="ADF369E2-6B9E-4D56-9B82-D273AE41EC2D"
+      Path="Ninject/src/Ninject/Ninject.csproj" />
+  </Platform>
+  
+  <Platform Type="MacOS">
+    <Project 
+      Name="Ninject"
+      Guid="ADF369E2-6B9E-4D56-9B82-D273AE41EC2D"
+      Path="Ninject/src/Ninject/Ninject.csproj" />
+  </Platform>
+  
+  <Platform Type="Windows">
+    <Project 
+      Name="Ninject"
+      Guid="ADF369E2-6B9E-4D56-9B82-D273AE41EC2D"
+      Path="Ninject/src/Ninject/Ninject.csproj" />
+  </Platform>
+  
+  <Platform Type="WindowsPhone">
+    <Project 
+      Name="Ninject"
+      Guid="E940833E-228E-4AFD-90F4-95D386C5342F"
+      Path="Ninject/src/Ninject/Ninject.WP7.csproj" />
+  </Platform>
 
 </ExternalProject>

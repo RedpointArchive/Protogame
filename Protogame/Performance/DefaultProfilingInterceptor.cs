@@ -1,3 +1,5 @@
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+
 using Ninject.Extensions.Interception;
 
 namespace Protogame
@@ -24,3 +26,4 @@ namespace Protogame
     }
 }
 
+#endif

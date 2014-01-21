@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExternalProject Name="Newtonsoft.Json">
+
+  <Project
+    Name="Newtonsoft.Json"
+    Guid="959F7F85-C98B-4876-971A-9036224578E4"
+    Path="Newtonsoft.Json/Src/Newtonsoft.Json/Newtonsoft.Json.Portable40.csproj" />
+
+</ExternalProject>

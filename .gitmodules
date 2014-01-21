@@ -1,9 +1,17 @@
 [submodule "ThirdParty/MonoGame"]
 	path = ThirdParty/MonoGame
 	url = git://github.com/hach-que/MonoGame.git
-[submodule "ThirdParty/Dx"]
-	path = ThirdParty/Dx
-	url = git://github.com/hach-que/Dx.git
 [submodule "ThirdParty/Binaries"]
 	path = ThirdParty/Binaries
 	url = https://code.redpointsoftware.com.au/diffusion/PTPB/
+[submodule "ThirdParty/Ninject"]
+
+	path = ThirdParty/Ninject
+
+	url = https://github.com/hach-que/ninject.git
+[submodule "ThirdParty/protobuf-net"]
+	path = ThirdParty/protobuf-net
+	url = https://github.com/hach-que/protobuf-net.git
+[submodule "ThirdParty/Newtonsoft.Json"]
+	path = ThirdParty/Newtonsoft.Json
+	url = https://github.com/JamesNK/Newtonsoft.Json.git

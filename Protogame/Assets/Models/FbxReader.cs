@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using Assimp.Unmanaged;
@@ -602,6 +602,11 @@ namespace Protogame
         private void LoadAssimpLibrary()
         {
             // Assimp.NET already has the correct values for Windows.
+        }
+#else
+        private void LoadAssimpLibrary()
+        {
+            // Assimp.NET will not work on this platform anyway.
         }
 #endif
 

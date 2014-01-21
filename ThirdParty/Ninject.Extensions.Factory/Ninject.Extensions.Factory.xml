@@ -1,0 +1,1177 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>C:\BuildAgent\work\50432bef7f25563d\build\mono-4.0\release\Ninject.Extensions.Factory</name>
+    </assembly>
+    <members>
+        <member name="T:Ninject.Extensions.Factory.FactoryInterceptor">
+            <summary>
+            Interceptor called by the factory proxies
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FactoryInterceptor.#ctor(Ninject.Syntax.IResolutionRoot,Ninject.Extensions.Factory.IInstanceProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.Extensions.Factory.FactoryInterceptor" /> class.
+            </summary>
+            <param name="resolutionRoot">The resolution root used to create new instances for the factory.</param>
+            <param name="instanceProvider">The instance provider.</param>
+        </member>
+        <member name="F:Ninject.Extensions.Factory.FactoryInterceptor.instanceProvider">
+            <summary>
+            The instance provider.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FactoryInterceptor.Intercept(Castle.DynamicProxy.IInvocation)">
+            <summary>
+            Intercepts the specified invocation.
+            </summary>
+            <param name="invocation">The invocation.</param>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.IFactoryProxy">
+            <summary>
+            Marker for factory proxies
+            </summary>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.IInstanceProvider">
+            <summary>
+            Provides instances to the interceptor.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IInstanceProvider.GetInstance(Ninject.Extensions.Factory.Factory.IInstanceResolver,System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            Gets an instance for the specified method and arguments.
+            </summary>
+            <param name="instanceResolver">The instance resolver.</param>
+            <param name="methodInfo">The method info.</param>
+            <param name="arguments">The arguments.</param>
+            <returns>The newly created instance.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.Factory.IInstanceResolver">
+            <summary>
+            Resolves instances from the kernel.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.Factory.IInstanceResolver.Get(System.Type,System.String,System.Func{Ninject.Planning.Bindings.IBindingMetadata,System.Boolean},Ninject.Parameters.ConstructorArgument[],System.Boolean)">
+            <summary>
+            Gets an instance of the specified type.
+            </summary>
+            <param name="type">The type of the instance.</param>
+            <param name="name">The name of the binding to use. If null the name is not used.</param>
+            <param name="constraint">The constraint for the bindings. If null the constraint is not used.</param>
+            <param name="constructorArguments">The constructor arguments.</param>
+            <param name="fallback">if set to <c>true</c> the request fallsback to requesting instances without
+            name or constraint if no one can received otherwise.</param>
+            <returns>An instance of the specified type.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.Factory.IInstanceResolver.GetAllAsList(System.Type,System.String,System.Func{Ninject.Planning.Bindings.IBindingMetadata,System.Boolean},Ninject.Parameters.ConstructorArgument[],System.Boolean)">
+            <summary>
+            Gets all instances of the specified type as list.
+            </summary>
+            <param name="type">The type of the instance.</param>
+            <param name="name">The name of the binding to use. If null the name is not used.</param>
+            <param name="constraint">The constraint for the bindings. If null the constraint is not used.</param>
+            <param name="constructorArguments">The constructor arguments.</param>
+            <param name="fallback">if set to <c>true</c> the request fallsback to requesting instances without
+            name or constraint if no one can received otherwise.</param>
+            <returns>An instance of the specified type.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.Factory.IInstanceResolver.GetAllAsArray(System.Type,System.String,System.Func{Ninject.Planning.Bindings.IBindingMetadata,System.Boolean},Ninject.Parameters.ConstructorArgument[],System.Boolean)">
+            <summary>
+            Gets all instances of the specified type as array.
+            </summary>
+            <param name="type">The type of the instance.</param>
+            <param name="name">The name of the binding to use. If null the name is not used.</param>
+            <param name="constraint">The constraint for the bindings. If null the constraint is not used.</param>
+            <param name="constructorArguments">The constructor arguments.</param>
+            <param name="fallback">if set to <c>true</c> the request fallsback to requesting instances without
+            name or constraint if no one can received otherwise.</param>
+            <returns>An instance of the specified type.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.Factory.InstanceResolver">
+            <summary>
+            Resolves instances from the kernel.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.Factory.InstanceResolver.#ctor(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.Extensions.Factory.Factory.InstanceResolver" /> class.
+            </summary>
+            <param name="resolutionRoot">The resolution root that is used to get new instances.</param>
+        </member>
+        <member name="F:Ninject.Extensions.Factory.Factory.InstanceResolver.resolutionRoot">
+            <summary>
+            The resolution root that is used to get new instances.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.Factory.InstanceResolver.Get(System.Type,System.String,System.Func{Ninject.Planning.Bindings.IBindingMetadata,System.Boolean},Ninject.Parameters.ConstructorArgument[],System.Boolean)">
+            <summary>
+            Gets an instance of the specified type.
+            </summary>
+            <param name="type">The type of the instance.</param>
+            <param name="name">The name of the binding to use. If null the name is not used.</param>
+            <param name="constraint">The constraint for the bindings. If null the constraint is not used.</param>
+            <param name="constructorArguments">The constructor arguments.</param>
+            <param name="fallback">if set to <c>true</c> the request fallsback to requesting instances without
+            name or constraint if no one can received otherwise.</param>
+            <returns>An instance of the specified type.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.Factory.InstanceResolver.GetAllAsList(System.Type,System.String,System.Func{Ninject.Planning.Bindings.IBindingMetadata,System.Boolean},Ninject.Parameters.ConstructorArgument[],System.Boolean)">
+            <summary>
+            Gets all instances of the specified type as list.
+            </summary>
+            <param name="type">The type of the instance.</param>
+            <param name="name">The name of the binding to use. If null the name is not used.</param>
+            <param name="constraint">The constraint for the bindings. If null the constraint is not used.</param>
+            <param name="constructorArguments">The constructor arguments.</param>
+            <param name="fallback">if set to <c>true</c> the request fallsback to requesting instances without
+            name or constraint if no one can received otherwise.</param>
+            <returns>An instance of the specified type.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.Factory.InstanceResolver.GetAllAsArray(System.Type,System.String,System.Func{Ninject.Planning.Bindings.IBindingMetadata,System.Boolean},Ninject.Parameters.ConstructorArgument[],System.Boolean)">
+            <summary>
+            Gets all instances of the specified type as array.
+            </summary>
+            <param name="type">The type of the instance.</param>
+            <param name="name">The name of the binding to use. If null the name is not used.</param>
+            <param name="constraint">The constraint for the bindings. If null the constraint is not used.</param>
+            <param name="constructorArguments">The constructor arguments.</param>
+            <param name="fallback">if set to <c>true</c> the request fallsback to requesting instances without
+            name or constraint if no one can received otherwise.</param>
+            <returns>An instance of the specified type.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.Factory.InstanceResolver.GetAll(System.Type,System.String,System.Func{Ninject.Planning.Bindings.IBindingMetadata,System.Boolean},Ninject.Parameters.ConstructorArgument[],System.Boolean)">
+            <summary>
+            Gets all instances that match the specified parameters.
+            </summary>
+            <param name="type">The type of the instance.</param>
+            <param name="name">The name of the binding to use. If null the name is not used.</param>
+            <param name="constraint">The constraint for the bindings. If null the constraint is not used.</param>
+            <param name="constructorArguments">The constructor arguments.</param>
+            <param name="fallback">if set to <c>true</c> the request fallsback to requesting instances without
+            name or constraint if no one can received otherwise.</param>
+            <returns>All instances of the specified type.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.ProxyTargetParameter">
+            <summary>
+            Used to define that the target parameter of the factory interception is <c>null</c>.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.ProxyTargetParameter.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.Extensions.Factory.ProxyTargetParameter" /> class.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.ProxyTargetParameter.AppliesToTarget(Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Determines if the parameter applies to the given target.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="target">The target.</param>
+            <returns>
+            True if the parameter applies in the specified context to the specified target.
+            </returns>
+            <remarks>
+            Only one parameter may return <c>true</c>.
+            </remarks>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.StandardInstanceProvider">
+            <summary>
+            The standard implementation of the instance provider
+            </summary>
+        </member>
+        <member name="P:Ninject.Extensions.Factory.StandardInstanceProvider.Fallback">
+            <summary>
+            Gets or sets a value indicating whether this instance falls back to requesting instances without
+            name or constraint if none can be received otherwise.
+            </summary>
+            <value>
+                <c>true</c> if this instance shall fall back to requesting instances without
+            name or constraint if none can be received otherwise, otherwise false.</value>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.StandardInstanceProvider.GetInstance(Ninject.Extensions.Factory.Factory.IInstanceResolver,System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            Gets an instance for the specified method and arguments.
+            </summary>
+            <param name="instanceResolver">The instance resolver.</param>
+            <param name="methodInfo">The method info of the method that was called on the factory.</param>
+            <param name="arguments">The arguments that were passed to the factory.</param>
+            <returns>The newly created instance.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.StandardInstanceProvider.GetConstraint(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            Gets the constraint for the specified method and arguments.
+            </summary>
+            <param name="methodInfo">The method info of the method that was called on the factory.</param>
+            <param name="arguments">The arguments passed to the factory.</param>
+            <returns>The constraint that shall be used to receive an instance. Null if no constraint shall be used.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.StandardInstanceProvider.GetType(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            Gets the type that shall be created for the specified method and arguments.
+            </summary>
+            <param name="methodInfo">The method info of the method that was called on the factory.</param>
+            <param name="arguments">The arguments that were passed to the factory.</param>
+            <returns>The type that shall be created for the specified method and arguments.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.StandardInstanceProvider.GetName(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            Gets the name that shall be used to request an instance for the specified method and arguments.
+            Null if unnamed instances shall be requested.
+            </summary>
+            <param name="methodInfo">The method info of the method that was called on the factory.</param>
+            <param name="arguments">The arguments that were passed to the factory.</param>
+            <returns>The name that shall be used to request an instance for the specified method and arguments.
+            Null if unnamed instances shall be requested.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.StandardInstanceProvider.GetConstructorArguments(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            Gets the constructor arguments that shall be passed with the instance request.
+            </summary>
+            <param name="methodInfo">The method info of the method that was called on the factory.</param>
+            <param name="arguments">The arguments that were passed to the factory.</param>
+            <returns>The constructor arguments that shall be passed with the instance request.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.ArgumentPositionCalculator">
+            <summary>
+            Calculates the position of method arguments
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.ArgumentPositionCalculator.GetPositionOfFuncConstructorArgument(Ninject.Extensions.Factory.FuncConstructorArgument,Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Gets the position of the specified <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> relative to the
+            other <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> of the same type in the specified context.
+            </summary>
+            <param name="argument">The argument for which the position is calculated.</param>
+            <param name="context">The context of the argument.</param>
+            <param name="target">The target.</param>
+            <returns>
+            -1 if the parameter does not exist in the context or if another constructor argument applies for the target.
+            Otherwise the position of the specified <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> within the other <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" />
+            of the same type contained in context.Parameters.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.ArgumentPositionCalculator.GetTargetPosition(Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Gets the position of the parameter specified by the target relative to the other parameters of the same
+            type of the method containing the target. Parameters that apply to other ConstructorArguments are ignored.
+            </summary>
+            <param name="context">The current context.</param>
+            <param name="target">The target for which the position is calculated.</param>
+            <returns>
+            -1 if the target is not found of the parameter applies to another constructor argument.
+            Otherwise the position of the target relative to the other parameters of the method that have the same type and
+            do not apply to another <see cref="T:Ninject.Parameters.ConstructorArgument" />.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.ArgumentPositionCalculator.CheckOtherConstructorArgumentApplies(Ninject.Activation.IContext,Ninject.Planning.Targets.ParameterTarget)">
+            <summary>
+            Checks if an <see cref="T:Ninject.Parameters.IConstructorArgument" /> with another type than <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> applies to the target.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="target">The target.</param>
+            <returns>True if an <see cref="T:Ninject.Parameters.IConstructorArgument" /> with another type than <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> applies to the target.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.ConstructorInfoExtensions">
+            <summary>
+            Extensions for <see cref="T:System.Reflection.ConstructorInfo" /></summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.ConstructorInfoExtensions.GetParametersOfType(System.Reflection.ConstructorInfo,System.Type)">
+            <summary>
+            Gets the parameters with the specified type.
+            </summary>
+            <param name="constructorInfo">The constructor info.</param>
+            <param name="parameterType">The requested type.</param>
+            <returns>The parameters with the specified type.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.FuncConstructorArgument">
+            <summary>
+            The <see cref="T:Ninject.Parameters.IConstructorArgument" /> used to define constructor arguments for Func bindings.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FuncConstructorArgument.#ctor(System.Type,System.Object,Ninject.Extensions.Factory.IArgumentPositionCalculator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> class.
+            </summary>
+            <param name="argumentType">The type of the argument.</param>
+            <param name="value">The value.</param>
+            <param name="argumentPositionCalculator">The argument position calculator.</param>
+        </member>
+        <member name="F:Ninject.Extensions.Factory.FuncConstructorArgument.value">
+            <summary>
+            The value of the argument.
+            </summary>
+        </member>
+        <member name="F:Ninject.Extensions.Factory.FuncConstructorArgument.argumentPositionCalculator">
+            <summary>
+            The argument position calculator.
+            </summary>
+        </member>
+        <member name="P:Ninject.Extensions.Factory.FuncConstructorArgument.ArgumentType">
+            <summary>
+            Gets the type of the argument.
+            </summary>
+            <value>The type of the argument.</value>
+        </member>
+        <member name="P:Ninject.Extensions.Factory.FuncConstructorArgument.Name">
+            <summary>
+            Gets the name of the parameter.
+            </summary>
+            <value>The name of the parameter.</value>
+        </member>
+        <member name="P:Ninject.Extensions.Factory.FuncConstructorArgument.ShouldInherit">
+            <summary>
+            Gets a value indicating whether the parameter should be inherited into child requests.
+            </summary>
+            <value>Always <c>false</c>.</value>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FuncConstructorArgument.Equals(Ninject.Parameters.IParameter)">
+            <summary>
+            Returns if the given parameter is equal to this instance.
+            </summary>
+            <param name="other">The other.</param>
+            <returns>True if the given parameter is equal to this instance.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FuncConstructorArgument.GetValue(Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Gets the value for the parameter within the specified context.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="target">The target.</param>
+            <returns>The value for the parameter.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FuncConstructorArgument.AppliesToTarget(Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Determines if the parameter applies to the given target.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="target">The target.</param>
+            <returns>
+            True if the parameter applies in the specified context to the specified target.
+            </returns>
+            <remarks>
+            Only one parameter may return <c>true</c>.
+            </remarks>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.FuncConstructorArgumentFactory">
+            <summary>
+            Factory for creating <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> instances.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FuncConstructorArgumentFactory.CreateFuncConstructorArgument(System.Type,System.Object)">
+            <summary>
+            Creates instances of <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" />.
+            </summary>
+            <param name="typeArgument">The type of the argument.</param>
+            <param name="value">The value of the argument.</param>
+            <returns>The newly created <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" />.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.FuncProvider">
+            <summary>
+            Provider for Func's
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FuncProvider.#ctor(Ninject.Extensions.Factory.IFunctionFactory,System.Func{Ninject.Activation.IContext,Ninject.Syntax.IResolutionRoot})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.Extensions.Factory.FuncProvider" /> class.
+            </summary>
+            <param name="functionFactory">The function factory.</param>
+            <param name="resolutionRootRetriever">Func to get the resolution root from a context.</param>
+        </member>
+        <member name="F:Ninject.Extensions.Factory.FuncProvider.functionFactory">
+            <summary>
+            The factory to create func instances.
+            </summary>
+        </member>
+        <member name="F:Ninject.Extensions.Factory.FuncProvider.resolutionRootRetriever">
+            <summary>
+            The resolution root used to create new instances.
+            </summary>
+        </member>
+        <member name="P:Ninject.Extensions.Factory.FuncProvider.Type">
+            <summary>
+            Gets the type (or prototype) of instances the provider creates.
+            </summary>
+            <value>The type (or prototype) of instances the provider creates.</value>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FuncProvider.Create(Ninject.Activation.IContext)">
+            <summary>
+            Creates an instance within the specified context.
+            </summary>
+            <param name="context">The context.</param>
+            <returns>The created instance.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.FunctionFactory">
+            <summary>
+            Factory for Func
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ninject.Extensions.Factory.FunctionFactory" /> class.
+            </summary>
+        </member>
+        <member name="F:Ninject.Extensions.Factory.FunctionFactory.methodInfos">
+            <summary>
+            The method infos of the create methods.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.GetMethodInfo(System.Int32)">
+            <summary>
+            Gets the method info of the create method with the specified number of generic arguments.
+            </summary>
+            <param name="genericArgumentCount">The generic argument count.</param>
+            <returns>
+            The method info of the create method with the specified number of generic arguments.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``1(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>The new instance of <typeparamref name="TService" /> created using the resolution root.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``2(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``3(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``4(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``5(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``6(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``7(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``8(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``9(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``10(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``11(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``12(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``13(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``14(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TArg13">The type of the 13th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``15(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TArg13">The type of the 13th argument.</typeparam>
+            <typeparam name="TArg14">The type of the 14th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``16(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TArg13">The type of the 13th argument.</typeparam>
+            <typeparam name="TArg14">The type of the 14th argument.</typeparam>
+            <typeparam name="TArg15">The type of the 15th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Create``17(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TArg13">The type of the 13th argument.</typeparam>
+            <typeparam name="TArg14">The type of the 14th argument.</typeparam>
+            <typeparam name="TArg15">The type of the 15th argument.</typeparam>
+            <typeparam name="TArg16">The type of the 16th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.Get``1(Ninject.Syntax.IResolutionRoot,System.Func{System.Collections.Generic.IEnumerable{System.Object},``0},System.Type,Ninject.Parameters.IParameter[])">
+            <summary>
+            Gets an instance using the specified resolution root.
+            </summary>
+            <typeparam name="TService">The type of the service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <param name="convertFunction">The convert function</param>
+            <param name="type">The type to resolve.</param>
+            <param name="parameters">The parameters.</param>
+            <returns>The newly created instance.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FunctionFactory.GetConvertionFunction``1(System.Type@)">
+            <summary>
+            Gets the convertion function to convert IEnumerable{object} to the result type.
+            </summary>
+            <typeparam name="TService">The type of the service.</typeparam>
+            <param name="instanceType">Type of the instance.</param>
+            <returns>The convertion function.</returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.IArgumentPositionCalculator">
+            <summary>
+            Calculates the position of method arguments
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IArgumentPositionCalculator.GetPositionOfFuncConstructorArgument(Ninject.Extensions.Factory.FuncConstructorArgument,Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Gets the position of the specified <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> relative to the
+            other <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> of the same type in the specified context.
+            </summary>
+            <param name="argument">The argument for which the position is calculated.</param>
+            <param name="context">The context of the argument.</param>
+            <param name="target">The target.</param>
+            <returns>
+            -1 if the parameter does not exist in the context or if another constructor argument applies for the target.
+            Otherwise the position of the specified <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> within the other <see cref="T:Ninject.Extensions.Factory.FuncConstructorArgument" /> of the same type
+            contained in context.Parameters.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IArgumentPositionCalculator.GetTargetPosition(Ninject.Activation.IContext,Ninject.Planning.Targets.ITarget)">
+            <summary>
+            Gets the position of the parameter specified by the target relative to the other parameters of the same
+            type of the method containing the target. Parameters that apply to other ConstructorArguments are ignored.
+            </summary>
+            <param name="context">The current context.</param>
+            <param name="target">The target for which the position is calculated.</param>
+            <returns>
+            -1 if the target is not found of the parameter applies to another constructor argument.
+            Otherwise the position of the target relative to the other parameters of the method that have the same type and
+            do not apply to another <see cref="T:Ninject.Parameters.ConstructorArgument" />.
+            </returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.IFunctionFactory">
+            <summary>
+            Factory for Func
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.GetMethodInfo(System.Int32)">
+            <summary>
+            Gets the method info of the create method with the specified number of generic arguments.
+            </summary>
+            <param name="genericArgumentCount">The generic argument count.</param>
+            <returns>The method info of the create method with the specified number of generic arguments.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``1(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>The new instance of <typeparamref name="TService" /> created using the resolution root.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``2(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``3(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``4(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``5(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``6(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``7(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``8(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``9(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``10(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``11(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``12(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``13(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``14(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TArg13">The type of the 13th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``15(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TArg13">The type of the 13th argument.</typeparam>
+            <typeparam name="TArg14">The type of the 14th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``16(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TArg13">The type of the 13th argument.</typeparam>
+            <typeparam name="TArg14">The type of the 14th argument.</typeparam>
+            <typeparam name="TArg15">The type of the 15th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.IFunctionFactory.Create``17(Ninject.Syntax.IResolutionRoot)">
+            <summary>
+            Creates a new Func that creates a new <typeparamref name="TService" /> instance using the specified resolution root.
+            </summary>
+            <typeparam name="TArg1">The type of the 1st argument.</typeparam>
+            <typeparam name="TArg2">The type of the 2nd argument.</typeparam>
+            <typeparam name="TArg3">The type of the 3rd argument.</typeparam>
+            <typeparam name="TArg4">The type of the 4th argument.</typeparam>
+            <typeparam name="TArg5">The type of the 5th argument.</typeparam>
+            <typeparam name="TArg6">The type of the 6th argument.</typeparam>
+            <typeparam name="TArg7">The type of the 7th argument.</typeparam>
+            <typeparam name="TArg8">The type of the 8th argument.</typeparam>
+            <typeparam name="TArg9">The type of the 9th argument.</typeparam>
+            <typeparam name="TArg10">The type of the 10th argument.</typeparam>
+            <typeparam name="TArg11">The type of the 11th argument.</typeparam>
+            <typeparam name="TArg12">The type of the 12th argument.</typeparam>
+            <typeparam name="TArg13">The type of the 13th argument.</typeparam>
+            <typeparam name="TArg14">The type of the 14th argument.</typeparam>
+            <typeparam name="TArg15">The type of the 15th argument.</typeparam>
+            <typeparam name="TArg16">The type of the 16th argument.</typeparam>
+            <typeparam name="TService">The type of the created service.</typeparam>
+            <param name="resolutionRoot">The resolution root.</param>
+            <returns>
+            The new instance of <typeparamref name="TService" /> created using the resolution root.
+            </returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.BindToExtensions">
+            <summary>
+            Extension methods for <see cref="!:IBindingToSyntax{TInterface}" /></summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory``1(Ninject.Syntax.IBindingToSyntax{``0})">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <typeparam name="TInterface">The type of the interface.</typeparam>
+            <param name="syntax">The syntax.</param>
+            <returns>The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.</returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory(Ninject.Syntax.IBindingToSyntax{System.Object},System.Type)">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <param name="syntax">The syntax.</param>
+            <param name="factoryType">The type of the factory.</param>
+            <returns>
+            The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory``1(Ninject.Syntax.IBindingToSyntax{``0},System.Func{Ninject.Extensions.Factory.IInstanceProvider})">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <typeparam name="TInterface">The type of the interface.</typeparam>
+            <param name="syntax">The syntax.</param>
+            <param name="instanceProvider">The instance provider.</param>
+            <returns>
+            The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory(Ninject.Syntax.IBindingToSyntax{System.Object},System.Func{Ninject.Extensions.Factory.IInstanceProvider},System.Type)">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <param name="syntax">The syntax.</param>
+            <param name="instanceProvider">The instance provider.</param>
+            <param name="factoryType">Type of the factory.</param>
+            <returns>
+            The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.NamedLikeFactoryMethod``2(Ninject.Syntax.IBindingNamedSyntax{``0},System.Linq.Expressions.Expression{System.Action{``1}})">
+            <summary>
+            Defines a named binding with the name taken from the factory method used to create instances.
+            </summary>
+            <typeparam name="TInterface">The type of the interface.</typeparam>
+            <typeparam name="TFactory">¨The type of the factory.</typeparam>
+            <param name="syntax">The syntax.</param>
+            <param name="action">Expression defining the factory method used to get the binding name from.</param>
+            <returns>
+            The <see cref="!:IBindingWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.BindToExtensions.ToFactory``1(Ninject.Syntax.IBindingToSyntax{``0},System.Func{Ninject.Activation.IContext,Ninject.Extensions.Factory.IInstanceProvider},System.Type)">
+            <summary>
+            Defines that the interface shall be bound to an automatically created factory proxy.
+            </summary>
+            <typeparam name="TInterface">The type of the interface.</typeparam>
+            <param name="syntax">The syntax.</param>
+            <param name="instanceProvider">The instance provider.</param>
+            <param name="factoryType">Type of the factory.</param>
+            <returns>
+            The <see cref="!:IBindingWhenInNamedWithOrOnSyntax{TInterface}" /> to configure more things for the binding.
+            </returns>
+        </member>
+        <member name="T:Ninject.Extensions.Factory.FuncModule">
+            <summary>
+            Defines the bindings for this extension.
+            </summary>
+        </member>
+        <member name="M:Ninject.Extensions.Factory.FuncModule.Load">
+            <summary>
+            Loads the module into the kernel.
+            </summary>
+        </member>
+    </members>
+</doc>

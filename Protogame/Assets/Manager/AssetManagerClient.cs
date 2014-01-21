@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+#if FALSE
 using Dx.Runtime;
+#endif
 using NDesk.Options;
 using Ninject;
 
@@ -20,8 +22,10 @@ namespace Protogame
         /// </summary>
         public static Process RunAndConnect(IKernel kernel, bool startProcess)
         {
+			#if FALSE
             var node = new LocalNode();
             node.Bind(IPAddress.Loopback, 9838);
+			#endif
 
             Process process = null;
             if (startProcess)
@@ -48,14 +52,16 @@ namespace Protogame
                     Environment.Exit(1);
                 };
                 process.Start();
-            }
+			}
 
+			#if FALSE
             var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);
             kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
 
             // Wait until the networked asset manager is ready.
             while (!assetManagerProvider.IsReady && (process == null || !process.HasExited))
                 Thread.Sleep(100);
+            #endif
 
             return process;
         }
@@ -72,6 +78,11 @@ namespace Protogame
         /// <typeparam name="T">The implementation of the asset manager provider if not starting the asset manager tool.</typeparam>
         public static void AcceptArgumentsAndSetup<T>(IKernel kernel, string[] args, params ExtraOption[] extraOptions) where T : IAssetManagerProvider
         {
+			if (args == null)
+			{
+				args = new string[0];
+			}
+
             var name = new FileInfo(Assembly.GetCallingAssembly().Location).Name;
             var startAssetManager = false;
             var listen = false;

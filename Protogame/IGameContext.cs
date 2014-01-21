@@ -8,7 +8,7 @@ namespace Protogame
         Camera Camera { get; }
         Game Game { get; }
         GameTime GameTime { get; set; }
-        GameWindow Window { get; }
+        IGameWindow Window { get; }
         GraphicsDeviceManager Graphics { get; }
         int FPS { get; set; }
         int FrameCount { get; set; }

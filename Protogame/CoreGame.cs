@@ -1,24 +1,76 @@
-using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Ninject;
-using Ninject.Parameters;
-
 namespace Protogame
 {
+    using System.Linq;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
+    using Ninject;
+    using Ninject.Parameters;
+
+    /// <summary>
+    /// The core Protogame game implementation.  You should derive your Game instance from this class.
+    /// </summary>
+    /// <typeparam name="TInitialWorld">The initial world class to start the game with.</typeparam>
+    /// <typeparam name="TWorldManager">The world manager class for this game.</typeparam>
     public abstract class CoreGame<TInitialWorld, TWorldManager> : Game, ICoreGame where TInitialWorld : IWorld where TWorldManager : IWorldManager
     {
+        /// <summary>
+        /// The dependency injection kernel.
+        /// </summary>
         private IKernel m_Kernel;
+
+        /// <summary>
+        /// The total number of frames that have elapsed since the last second interval.
+        /// </summary>
         private int m_TotalFrames = 0;
+
+        /// <summary>
+        /// The total amount of time that has elapsed since the last second interval.
+        /// </summary>
         private float m_ElapsedTime = 0.0f;
+
+        /// <summary>
+        /// The graphics device manager instance.
+        /// </summary>
         private GraphicsDeviceManager m_GraphicsDeviceManager;
+
+        /// <summary>
+        /// The current profiler instance.
+        /// </summary>
         private IProfiler m_Profiler;
+
+        /// <summary>
+        /// An array of the engine hooks that are loaded.
+        /// </summary>
         private IEngineHook[] m_EngineHooks;
     
+        /// <summary>
+        /// Gets the current game context.  You should not generally access this property; outside
+        /// an explicit Update or Render loop, the state of the game context is not guaranteed.  Inside
+        /// the context of an Update or Render loop, the game context is already provided.
+        /// </summary>
+        /// <value>The current game context.</value>
         public IGameContext GameContext { get; private set; }
+
+        /// <summary>
+        /// Gets the current update context.  You should not generally access this property; outside
+        /// an explicit Update loop, the state of the update context is not guaranteed.  Inside
+        /// the context of an Update loop, the update context is already provided.
+        /// </summary>
+        /// <value>The current update context.</value>
         public IUpdateContext UpdateContext { get; private set; }
+
+        /// <summary>
+        /// Gets the current render context.  You should not generally access this property; outside
+        /// an explicit Render loop, the state of the render context is not guaranteed.  Inside
+        /// the context of an Render loop, the render context is already provided.
+        /// </summary>
+        /// <value>The current update context.</value>
         public IRenderContext RenderContext { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Protogame.CoreGame`2"/> class.
+        /// </summary>
+        /// <param name="kernel">The dependency injection kernel.</param>
         public CoreGame(IKernel kernel)
         {
             this.m_Kernel = kernel;
@@ -39,6 +91,16 @@ namespace Protogame
             this.Content = assetContentManager;
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
         }
+
+        /// <summary>
+        /// A platform independent representation of a game window.
+        /// </summary>
+        /// <value>The game window.</value>
+        public new IGameWindow Window
+        {
+            get;
+            private set;
+        }
         
         protected override void LoadContent()
         {
@@ -53,6 +115,9 @@ namespace Protogame
             var worldManager = this.m_Kernel.Get<IWorldManager>();
             this.m_Kernel.Unbind<IWorld>();
             this.m_Kernel.Unbind<IWorldManager>();
+
+            // Construct a platform-independent game window.
+            this.Window = this.ConstructGameWindow();
         
             // Create the game context.
             this.GameContext = this.m_Kernel.Get<IGameContext>(
@@ -60,7 +125,7 @@ namespace Protogame
                 new ConstructorArgument("graphics", this.m_GraphicsDeviceManager),
                 new ConstructorArgument("world", world),
                 new ConstructorArgument("worldManager", worldManager),
-                new ConstructorArgument("window", this.Window));
+                new ConstructorArgument("window", this.ConstructGameWindow()));
             
             // Create the update and render contexts.
             this.UpdateContext = this.m_Kernel.Get<IUpdateContext>();
@@ -133,5 +198,29 @@ namespace Protogame
                 base.Draw(gameTime);
             }
         }
+
+        /// <summary>
+        /// Constructs an implementation of <see cref="IGameWindow"/> based on the current game.  This method
+        /// abstracts the current platform.
+        /// </summary>
+        /// <returns>The game window instance.</returns>
+        private IGameWindow ConstructGameWindow()
+        {
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+            return new DefaultGameWindow(base.Window);
+#elif PLATFORM_ANDROID || PLATFORM_OUYA
+            return new AndroidGameWindow(base.Window);
+#endif
+        }
+
+#if PLATFORM_ANDROID || PLATFORM_OUYA
+        public Microsoft.Xna.Framework.AndroidGameWindow AndroidGameWindow
+        {
+            get
+            {
+                return base.Window;
+            }
+        }
+#endif
     }
 }

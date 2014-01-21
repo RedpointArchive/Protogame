@@ -512,7 +512,8 @@ namespace Protogame
 
                 using (var memory = new MemoryStream(packet))
                 {
-                    var message = Serializer.Deserialize<MxMessage>(memory);
+                    var serializer = new MxMessageSerializer();
+                    var message = (MxMessage)serializer.Deserialize(memory, null, typeof(MxMessage));
 
                     if (message.Payloads == null)
                     {
@@ -635,7 +636,8 @@ namespace Protogame
                     };
                     message.SetAckBitfield(this.m_ReceiveQueue.ToArray());
 
-                    Serializer.Serialize(memory, message);
+                    var serializer = new MxMessageSerializer();
+                    serializer.Serialize(memory, message);
                     var len = (int)memory.Position;
                     memory.Seek(0, SeekOrigin.Begin);
                     var bytes = new byte[len];

@@ -8,6 +8,8 @@ obj
 *.Linux.sln
 *.Windows.csproj
 *.Windows.sln
+*.Android.csproj
+*.Android.sln
 *.nuspec
 *.nupkg
 
