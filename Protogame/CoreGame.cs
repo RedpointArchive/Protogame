@@ -68,7 +68,7 @@ namespace Protogame
         public IRenderContext RenderContext { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Protogame.CoreGame`2"/> class.
+        /// Initializes a new instance of the <see cref="Protogame.CoreGame&lt;&gt;"/> class.
         /// </summary>
         /// <param name="kernel">The dependency injection kernel.</param>
         public CoreGame(IKernel kernel)
