@@ -19,21 +19,21 @@
     <Project
       Name="Newtonsoft.Json"
       Guid="A9AE40FF-1A21-414A-9FE7-3BE13644CC6D"
-      Path="Newtonsoft.Json/Src/Newtonsoft.Json/Newtonsoft.Json.Net40.csproj" />
+      Path="Newtonsoft.Json/Src/Newtonsoft.Json/Newtonsoft.Json.Full40.csproj" />
   </Platform>
 
   <Platform Type="MacOS">
     <Project
       Name="Newtonsoft.Json"
       Guid="A9AE40FF-1A21-414A-9FE7-3BE13644CC6D"
-      Path="Newtonsoft.Json/Src/Newtonsoft.Json/Newtonsoft.Json.Net40.csproj" />
+      Path="Newtonsoft.Json/Src/Newtonsoft.Json/Newtonsoft.Json.Full40.csproj" />
   </Platform>
 
   <Platform Type="Linux">
     <Project
       Name="Newtonsoft.Json"
       Guid="A9AE40FF-1A21-414A-9FE7-3BE13644CC6D"
-      Path="Newtonsoft.Json/Src/Newtonsoft.Json/Newtonsoft.Json.Net40.csproj" />
+      Path="Newtonsoft.Json/Src/Newtonsoft.Json/Newtonsoft.Json.Full40.csproj" />
   </Platform>
 
   <Platform Type="iOS">
