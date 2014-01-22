@@ -36,7 +36,7 @@
     </Project>
     <Project 
       Name="Lidgren.Network.Linux"
-      Guid="AE483C29-042E-4226-BA52-D247CE7676DA"
+      Guid="758CB33D-6EBD-41EA-BB0C-55B1C97A325F"
       Path="MonoGame/ThirdParty/Lidgren.Network/Lidgren.Network.Linux.csproj" />
   </Platform>
   
@@ -50,7 +50,7 @@
     </Project>
     <Project 
       Name="Lidgren.Network.MacOS"
-      Guid="AE483C29-042E-4226-BA52-D247CE7676DA"
+      Guid="5C3DC4FF-FE5A-4B94-B4A6-6F79E63F3130"
       Path="MonoGame/ThirdParty/Lidgren.Network/Lidgren.Network.MacOS.csproj" />
   </Platform>
   
