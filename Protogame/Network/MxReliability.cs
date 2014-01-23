@@ -293,7 +293,10 @@
                                    + " received.";
                         message += "  Currently there are " + this.m_CurrentReceiveFragments.Count + " in total.";
 
-                        throw new InvalidOperationException(message);
+                        Console.WriteLine(message);
+
+                        // FIXME: We shouldn't be ever able to hit this situation, but we currently can.
+                        // At the moment we just discard the old state and continue anyway :(
                     }
 
                     // This is the header fragment.  Bytes 1 through 4 are the binary
