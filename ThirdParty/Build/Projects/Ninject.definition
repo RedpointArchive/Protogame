@@ -12,14 +12,14 @@
     <Project 
       Name="Ninject"
       Guid="ADF369E2-6B9E-4D56-9B82-D273AE41EC2D"
-      Path="Ninject/src/Ninject/Ninject.Full40.csproj" />
+      Path="Ninject/src/Ninject/Ninject.Mono40.csproj" />
   </Platform>
   
   <Platform Type="MacOS">
     <Project 
       Name="Ninject"
       Guid="ADF369E2-6B9E-4D56-9B82-D273AE41EC2D"
-      Path="Ninject/src/Ninject/Ninject.Full40.csproj" />
+      Path="Ninject/src/Ninject/Ninject.Mono40.csproj" />
   </Platform>
   
   <Platform Type="Windows">
