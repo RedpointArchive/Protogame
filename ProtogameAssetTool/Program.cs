@@ -115,7 +115,7 @@
 
                 foreach (var asset in assetManager.GetAll())
                 {
-                    var compiledAsset = assetCompiler.HandlePlatform(asset, platform);
+                    var compiledAsset = assetCompiler.HandlePlatform(asset, platform, true);
 
                     foreach (var saver in savers)
                     {
