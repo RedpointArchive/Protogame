@@ -27,9 +27,8 @@ namespace Protogame
             var doc = XDocument.Load(stream);
             
             // Load the solids.
-            var solids = doc.Root
-                .Element(XName.Get("Solids")).Elements()
-                .Where(x => x.Name.LocalName == "rect");
+            var solidsRoot = doc.Root.Element(XName.Get("Solids"));
+            var solids = solidsRoot == null ? new XElement[0] : solidsRoot.Elements().Where(x => x.Name.LocalName == "rect");
             
             // Load the tiles.
             var tilesets = from e in doc.Root.Elements()

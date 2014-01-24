@@ -142,6 +142,7 @@
     <Compile Include="Assets\RawAssetLoader.cs" />
     <Compile Include="Assets\RawAssetSaver.cs" />
     <Compile Include="Assets\RawEffectLoadStrategy.cs" />
+    <Compile Include="Assets\RawLevelLoadStrategy.cs" />
     <Compile Include="Assets\RawModelLoadStrategy.cs" />
     <Compile Include="Assets\RawTextureLoadStrategy.cs" />
     <Compile Include="Assets\TargetPlatform.cs" />
