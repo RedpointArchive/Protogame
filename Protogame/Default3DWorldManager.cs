@@ -46,6 +46,11 @@ namespace Protogame
             this.m_Console.Render(game.GameContext, game.RenderContext);
             
             game.RenderContext.SpriteBatch.End();
+
+            game.GraphicsDevice.BlendState = BlendState.Opaque;
+            game.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            game.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+            game.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
         }
         
         public void Update<T>(T game) where T : Game, ICoreGame
