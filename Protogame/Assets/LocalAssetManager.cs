@@ -242,7 +242,7 @@ namespace Protogame
                         this.m_Assets[asset.Name] = asset;
                     }
 
-                    if (bake)
+                    if (bake && !asset.CompiledOnly)
                     {
                         var result = saver.Handle(asset, AssetTarget.SourceFile);
                         if (result == null)
