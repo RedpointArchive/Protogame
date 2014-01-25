@@ -233,6 +233,8 @@ namespace Protogame
             var currentIndex = tick - 1;
             ////var nextIndex = currentIndex + 1 >= positionKeys.Length ? 0 : currentIndex + 1;
 
+            if (currentIndex >= positionKeys.Count)
+                currentIndex = positionKeys.Count - 1;
             // TODO: Actual interpolation.
             return
                 Matrix.CreateTranslation(
@@ -274,6 +276,9 @@ namespace Protogame
             var currentIndex = tick - 1;
             ////var nextIndex = currentIndex + 1 >= rotationKeys.Length ? 0 : currentIndex + 1;
 
+            if (currentIndex >= rotationKeys.Count)
+                currentIndex = rotationKeys.Count - 1;
+
             // TODO: Actual interpolation.
             return
                 Matrix.CreateFromQuaternion(
@@ -311,6 +316,9 @@ namespace Protogame
 
             var currentIndex = tick - 1;
             ////var nextIndex = currentIndex + 1 >= scalingKeys.Length ? 0 : currentIndex + 1;
+
+            if (currentIndex >= scalingKeys.Count)
+                currentIndex = scalingKeys.Count - 1;
 
             // TODO: Actual interpolation.
             return
@@ -594,9 +602,18 @@ namespace Protogame
         {
             var targetDir = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory.FullName;
 
-            AssimpLibrary.Instance.LoadLibrary(
-                Path.Combine(targetDir, "libassimp_32.so.3.0.1"),
-                Path.Combine(targetDir, "libassimp_64.so.3.0.1"));
+            try
+            {
+                AssimpLibrary.Instance.LoadLibrary(
+                    Path.Combine(targetDir, "libassimp_32.so.3.0.1"),
+                    Path.Combine(targetDir, "libassimp_64.so.3.0.1"));
+            }
+            catch (AssimpException ex)
+            {
+                if (ex.Message == "Assimp library already loaded.")
+                    return;
+                throw;
+            }
         }
 #elif PLATFORM_WINDOWS
         private void LoadAssimpLibrary()

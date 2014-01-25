@@ -44,7 +44,19 @@ namespace Protogame
                                            TY = Convert.ToInt32(x.Attribute(XName.Get("ty")).Value)
                                        }
                            };
-            
+
+            // Load the entities.
+            var entitydefs = from w in doc.Root.Elements()
+                                 where w.Name.LocalName == "Entities"
+                             from e in w.Descendants()
+                           select new {
+                Type = e.Name.LocalName,
+                ID = Convert.ToInt32(e.Attribute(XName.Get("id")).Value),
+                X = Convert.ToInt32(e.Attribute(XName.Get("x")).Value),
+                Y = Convert.ToInt32(e.Attribute(XName.Get("y")).Value),
+                Attributes = e.Attributes().ToDictionary(key => key.Name.LocalName, value => value.Value)
+            };
+
             // Query the kernel to get the classes that
             // implement the required tiles and entities.
             foreach (var solid in solids)
@@ -69,6 +81,17 @@ namespace Protogame
                         new ConstructorArgument("ty", tile.TY));
                     yield return entity;
                 }
+            }
+            foreach (var entitydef in entitydefs)
+            {
+                var entity = this.m_Kernel.Get<IEntity>(
+                    entitydef.Type,
+                    new ConstructorArgument("name", entitydef.Type),
+                    new ConstructorArgument("id", entitydef.ID),
+                    new ConstructorArgument("x", entitydef.X),
+                    new ConstructorArgument("y", entitydef.Y),
+                    new ConstructorArgument("attributes", entitydef.Attributes));
+                yield return entity;
             }
         }
     }
