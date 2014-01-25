@@ -281,19 +281,22 @@ public static class Program
                 JsonConvert.DeserializeObject<FontCompilationArguments>(
                     Encoding.ASCII.GetString(Convert.FromBase64String(arg)));
 
-            try
+            foreach (var fontDesc in this.GetDescriptionsForAsset(arguments.FontAsset))
             {
-                var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
-                var dictionary = new OpaqueDataDictionary();
-                var processor = manager.CreateProcessor("FontDescriptionProcessor", dictionary);
-                var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(arguments.TargetPlatform));
-                var content = processor.Process(this.GetDescriptionForAsset(arguments.FontAsset), context);
+                try
+                {
+                    var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
+                    var dictionary = new OpaqueDataDictionary();
+                    var processor = manager.CreateProcessor("FontDescriptionProcessor", dictionary);
+                    var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(arguments.TargetPlatform));
+                    var content = processor.Process(fontDesc, context);
 
-                return Convert.ToBase64String(this.CompileAndGetBytes(content));
-            }
-            catch (NullReferenceException)
-            {
-                // The user might not have the font installed...
+                    return Convert.ToBase64String(this.CompileAndGetBytes(content));
+                }
+                catch (NullReferenceException)
+                {
+                    // The user might not have the font installed...
+                }
             }
 
             return string.Empty;
