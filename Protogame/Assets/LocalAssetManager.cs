@@ -139,7 +139,7 @@ namespace Protogame
                         {
                             result = this.m_TransparentAssetCompiler.Handle(result);
 
-                            if (result.SourceOnly && !this.AllowSourceOnly)
+                            if (result.SourceOnly && (!this.AllowSourceOnly || asset == "font.Default"))
                             {
                                 // We can't have source only assets past this point.  The compilation
                                 // failed, but we definitely do have a source representation, so let's
