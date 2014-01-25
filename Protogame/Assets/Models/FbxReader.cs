@@ -88,7 +88,7 @@ namespace Protogame
             var importer = new AssimpContext();
             const PostProcessSteps ProcessFlags =
                 PostProcessSteps.FlipUVs | PostProcessSteps.JoinIdenticalVertices | PostProcessSteps.Triangulate
-                | PostProcessSteps.SortByPrimitiveType | PostProcessSteps.FindInvalidData;
+                | PostProcessSteps.SortByPrimitiveType | PostProcessSteps.FindInvalidData | PostProcessSteps.FlipWindingOrder;
             var scene = importer.ImportFile(filename, ProcessFlags);
 
             // Create the list of animations, including the null animation.
@@ -235,6 +235,7 @@ namespace Protogame
 
             if (currentIndex >= positionKeys.Count)
                 currentIndex = positionKeys.Count - 1;
+
             // TODO: Actual interpolation.
             return
                 Matrix.CreateTranslation(
