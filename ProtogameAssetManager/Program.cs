@@ -85,6 +85,7 @@ namespace ProtogameAssetManager
             kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
 
             var runningFile = new FileInfo(Assembly.GetExecutingAssembly().Location);
             var workingDirectoryInfo = new DirectoryInfo(Environment.CurrentDirectory);
