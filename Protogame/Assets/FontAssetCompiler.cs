@@ -43,13 +43,20 @@ namespace Protogame
             var chars = new List<CharacterRegion>();
             chars.Add(new CharacterRegion(' ', '~'));
             var fontName = string.IsNullOrEmpty(asset.FontName) ? "Arial" : asset.FontName;
-            return new FontDescription(
+            var fontDesc = new FontDescription(
                 fontName,
                 asset.FontSize,
                 asset.Spacing,
                 FontDescriptionStyle.Regular,
                 asset.UseKerning,
                 chars);
+#if PLATFORM_LINUX
+            fontDesc.Identity = new ContentIdentity
+            {
+                SourceFilename = "/usr/share/fonts/truetype/dummy.spritefont"
+            };
+#endif
+            return fontDesc;
         }
 
         private void CompileFont(FontAsset asset, TargetPlatform platform)
@@ -77,6 +84,10 @@ namespace Protogame
                     // We might be running under a server where we can't load
                     // the actual texture (because we have no game).
                 }
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // The user might not have the font installed...
             }
             catch (NullReferenceException)
             {
