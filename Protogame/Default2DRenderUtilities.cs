@@ -22,7 +22,12 @@ namespace Protogame
             if (font == null) throw new ArgumentNullException("font");
             if (textColor == null) textColor = Color.White;
             if (shadowColor == null) shadowColor = Color.Black;
-            
+
+            if (font.Font == null)
+            {
+                throw new AssetNotCompiledException(font.Name);
+            }
+
             // Determine position to draw.
             var size = font.Font.MeasureString(text);
             float xx = 0, yy = 0;
