@@ -42,9 +42,9 @@ namespace Protogame
         {
             var chars = new List<CharacterRegion>();
             chars.Add(new CharacterRegion(' ', '~'));
-            var fontName = string.IsNullOrEmpty(asset.FontName) ? "Arial" : asset.FontName;
+            var fontNames = string.IsNullOrEmpty(asset.FontName) ? "Arial" : asset.FontName;
 
-            foreach (var fontNames in fontName.Split(','))
+            foreach (var fontName in fontNames.Split(','))
             {
                 var fontDesc = new FontDescription(
                     fontName,
