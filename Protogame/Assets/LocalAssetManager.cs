@@ -171,6 +171,11 @@ namespace Protogame
                 throw new AssetNotCompiledException(asset);
             }
 
+            if (candidates.Length == 0)
+            {
+                throw new AssetNotFoundException(asset);
+            }
+
             // NOTE: We don't use asset defaults with the local asset manager, if it
             // doesn't exist, the load fails.
             throw new InvalidOperationException(
