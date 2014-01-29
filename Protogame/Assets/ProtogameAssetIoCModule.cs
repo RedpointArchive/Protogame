@@ -31,6 +31,7 @@ namespace Protogame
             this.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
 #endif
             this.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
             this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();

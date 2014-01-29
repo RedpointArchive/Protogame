@@ -142,6 +142,7 @@
     <Compile Include="Assets\RawAssetLoader.cs" />
     <Compile Include="Assets\RawAssetSaver.cs" />
     <Compile Include="Assets\RawEffectLoadStrategy.cs" />
+    <Compile Include="Assets\RawLevelLoadStrategy.cs" />
     <Compile Include="Assets\RawModelLoadStrategy.cs" />
     <Compile Include="Assets\RawTextureLoadStrategy.cs" />
     <Compile Include="Assets\TargetPlatform.cs" />
@@ -313,6 +314,7 @@
     <Compile Include="UI\ButtonUIState.cs" />
     <Compile Include="UI\Canvas.cs" />
     <Compile Include="UI\CanvasEntity.cs" />
+    <Compile Include="UI\EmptyContainer.cs" />
     <Compile Include="UI\FileSelect.cs" />
     <Compile Include="UI\FixedContainer.cs" />
     <Compile Include="UI\FlowContainer.cs" />

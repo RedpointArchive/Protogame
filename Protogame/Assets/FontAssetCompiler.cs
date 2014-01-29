@@ -38,49 +38,70 @@ namespace Protogame
 #endif
         }
 
-        private FontDescription GetDescriptionForAsset(FontAsset asset)
+        private IEnumerable<FontDescription> GetDescriptionsForAsset(FontAsset asset)
         {
             var chars = new List<CharacterRegion>();
             chars.Add(new CharacterRegion(' ', '~'));
-            var fontName = string.IsNullOrEmpty(asset.FontName) ? "Arial" : asset.FontName;
-            return new FontDescription(
-                fontName,
-                asset.FontSize,
-                asset.Spacing,
-                FontDescriptionStyle.Regular,
-                asset.UseKerning,
-                chars);
+            var fontNames = string.IsNullOrEmpty(asset.FontName) ? "Arial" : asset.FontName;
+
+            foreach (var fontName in fontNames.Split(','))
+            {
+                var fontDesc = new FontDescription(
+                    fontName,
+                    asset.FontSize,
+                    asset.Spacing,
+                    FontDescriptionStyle.Regular,
+                    asset.UseKerning,
+                    chars);
+#if PLATFORM_LINUX
+                fontDesc.Identity = new ContentIdentity
+                {
+                    SourceFilename = "/usr/share/fonts/truetype/dummy.spritefont"
+                };
+#endif
+                yield return fontDesc;
+            }
         }
 
         private void CompileFont(FontAsset asset, TargetPlatform platform)
         {
-            try
+            foreach (var fontDesc in this.GetDescriptionsForAsset(asset))
             {
-                var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
-                var dictionary = new OpaqueDataDictionary();
-                var processor = manager.CreateProcessor("FontDescriptionProcessor", dictionary);
-                var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
-                var content = processor.Process(this.GetDescriptionForAsset(asset), context);
-
-                asset.PlatformData = new PlatformData
-                {
-                    Platform = platform,
-                    Data = this.CompileAndGetBytes(content)
-                };
-
                 try
                 {
-                    asset.ReloadFont();
+                    var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
+                    var dictionary = new OpaqueDataDictionary();
+                    var processor = manager.CreateProcessor("FontDescriptionProcessor", dictionary);
+                    var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
+                    var content = processor.Process(fontDesc, context);
+
+                    asset.PlatformData = new PlatformData
+                    {
+                        Platform = platform,
+                        Data = this.CompileAndGetBytes(content)
+                    };
+
+                    try
+                    {
+                        asset.ReloadFont();
+                    }
+                    catch (NoAssetContentManagerException)
+                    {
+                        // We might be running under a server where we can't load
+                        // the actual texture (because we have no game).
+                    }
+
+                    // Font compilation was successful.
+                    return;
                 }
-                catch (NoAssetContentManagerException)
+                catch (ArgumentOutOfRangeException)
                 {
-                    // We might be running under a server where we can't load
-                    // the actual texture (because we have no game).
+                    // The user might not have the font installed...
                 }
-            }
-            catch (NullReferenceException)
-            {
-                // The user might not have the font installed...
+                catch (NullReferenceException)
+                {
+                    // The user might not have the font installed...
+                }
             }
         }
 
@@ -260,19 +281,22 @@ public static class Program
                 JsonConvert.DeserializeObject<FontCompilationArguments>(
                     Encoding.ASCII.GetString(Convert.FromBase64String(arg)));
 
-            try
+            foreach (var fontDesc in this.GetDescriptionsForAsset(arguments.FontAsset))
             {
-                var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
-                var dictionary = new OpaqueDataDictionary();
-                var processor = manager.CreateProcessor("FontDescriptionProcessor", dictionary);
-                var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(arguments.TargetPlatform));
-                var content = processor.Process(this.GetDescriptionForAsset(arguments.FontAsset), context);
+                try
+                {
+                    var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
+                    var dictionary = new OpaqueDataDictionary();
+                    var processor = manager.CreateProcessor("FontDescriptionProcessor", dictionary);
+                    var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(arguments.TargetPlatform));
+                    var content = processor.Process(fontDesc, context);
 
-                return Convert.ToBase64String(this.CompileAndGetBytes(content));
-            }
-            catch (NullReferenceException)
-            {
-                // The user might not have the font installed...
+                    return Convert.ToBase64String(this.CompileAndGetBytes(content));
+                }
+                catch (NullReferenceException)
+                {
+                    // The user might not have the font installed...
+                }
             }
 
             return string.Empty;

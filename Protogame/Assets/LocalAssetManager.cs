@@ -139,7 +139,7 @@ namespace Protogame
                         {
                             result = this.m_TransparentAssetCompiler.Handle(result);
 
-                            if (result.SourceOnly && !this.AllowSourceOnly)
+                            if (result.SourceOnly && (!this.AllowSourceOnly || asset == "font.Default"))
                             {
                                 // We can't have source only assets past this point.  The compilation
                                 // failed, but we definitely do have a source representation, so let's
@@ -169,6 +169,11 @@ namespace Protogame
             if (failedDueToCompilation)
             {
                 throw new AssetNotCompiledException(asset);
+            }
+
+            if (candidates.Length == 0)
+            {
+                throw new AssetNotFoundException(asset);
             }
 
             // NOTE: We don't use asset defaults with the local asset manager, if it
@@ -242,7 +247,7 @@ namespace Protogame
                         this.m_Assets[asset.Name] = asset;
                     }
 
-                    if (bake)
+                    if (bake && !asset.CompiledOnly)
                     {
                         var result = saver.Handle(asset, AssetTarget.SourceFile);
                         if (result == null)

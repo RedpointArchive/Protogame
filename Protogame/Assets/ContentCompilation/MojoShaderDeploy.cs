@@ -16,6 +16,10 @@ namespace Protogame
         /// </summary>
         public static void Deploy()
         {
+#if !PLATFORM_WINDOWS
+            return;
+#endif
+
             var location = new FileInfo(Assembly.GetEntryAssembly().Location).Directory.FullName;
             var current = Environment.CurrentDirectory;
             Environment.CurrentDirectory = location;

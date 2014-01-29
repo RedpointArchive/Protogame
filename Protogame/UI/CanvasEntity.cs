@@ -58,6 +58,11 @@ namespace Protogame
 
         public override void Render(IGameContext gameContext, IRenderContext renderContext)
         {
+            if (renderContext.Is3DContext)
+            {
+                return;
+            }
+
             base.Render(gameContext, renderContext);
 
             if (this.Canvas != null)

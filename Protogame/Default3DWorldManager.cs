@@ -46,13 +46,18 @@ namespace Protogame
             this.m_Console.Render(game.GameContext, game.RenderContext);
             
             game.RenderContext.SpriteBatch.End();
+
+            game.GraphicsDevice.BlendState = BlendState.Opaque;
+            game.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            game.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+            game.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
         }
         
         public void Update<T>(T game) where T : Game, ICoreGame
         {
             game.UpdateContext.Update(game.GameContext);
             
-            foreach (var entity in game.GameContext.World.Entities)
+            foreach (var entity in game.GameContext.World.Entities.ToList())
                 entity.Update(game.GameContext, game.UpdateContext);
             
             game.GameContext.World.Update(game.GameContext, game.UpdateContext);
