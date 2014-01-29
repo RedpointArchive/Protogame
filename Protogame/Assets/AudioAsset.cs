@@ -9,16 +9,18 @@ namespace Protogame
         public string Name { get; private set; }
         public SoundEffect Audio { get; private set; }
         public PlatformData PlatformData { get; set; }
-        public string SourcePath { get; set; }
+        public byte[] RawData { get; set; }
 
         public AudioAsset(
             string name,
-            string sourcePath,
-            PlatformData data)
+            byte[] rawData,
+            PlatformData data,
+            bool sourcedFromRaw)
         {
             this.Name = name;
-            this.SourcePath = sourcePath;
+            this.RawData = rawData;
             this.PlatformData = data;
+            this.SourcedFromRaw = sourcedFromRaw;
 
             if (this.PlatformData != null)
             {
@@ -38,10 +40,16 @@ namespace Protogame
         {
             get
             {
-                return this.SourcePath == null;
+                return this.RawData == null;
             }
         }
-        
+
+        public bool SourcedFromRaw
+        {
+            get;
+            private set;
+        }
+
         public void ReloadAudio()
         {
             if (this.PlatformData != null)

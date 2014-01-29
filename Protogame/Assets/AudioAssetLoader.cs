@@ -21,6 +21,15 @@ namespace Protogame
 
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
+            if (data is CompiledAsset)
+            {
+                return new AudioAsset(
+                    name,
+                    null,
+                    data.PlatformData,
+                    false);
+            }
+
             PlatformData platformData = null;
             if (data.PlatformData != null)
             {
@@ -31,12 +40,13 @@ namespace Protogame
                 };
             }
 
-            var texture = new AudioAsset(
+            var audio = new AudioAsset(
                 name,
-                (string)data.SourcePath,
-                platformData);
+                ByteReader.ReadAsByteArray(data.RawData),
+                platformData,
+                data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
 
-            return texture;
+            return audio;
         }
 
         public IAsset GetDefault(IAssetManager assetManager, string name)
@@ -53,8 +63,9 @@ namespace Protogame
         {
             return new AudioAsset(
                 name,
-                "",
-                null);
+                null,
+                null,
+                false);
         }
     }
 }

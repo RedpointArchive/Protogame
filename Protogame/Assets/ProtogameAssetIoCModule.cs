@@ -32,6 +32,7 @@ namespace Protogame
             this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
 #endif
             this.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
             this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
@@ -44,10 +45,12 @@ namespace Protogame
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
             this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
+            this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
 #elif PLATFORM_LINUX
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
+            this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
 #endif
         }
     }
