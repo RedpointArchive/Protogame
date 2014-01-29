@@ -1,12 +1,7 @@
-// ====================================================================== //
-// This source code is licensed in accordance with the licensing outlined //
-// on the main Tychaia website (www.tychaia.com).  Changes to the         //
-// license on the website apply retroactively.                            //
-// ====================================================================== //
-using Microsoft.Xna.Framework.Input;
-
 namespace Protogame
 {
+    using Microsoft.Xna.Framework.Input;
+
     public class ConsoleEventListener : IEventListener<IGameContext>
     {
         private readonly IConsole m_Console;

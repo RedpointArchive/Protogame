@@ -1,12 +1,7 @@
-//
-// This source code is licensed in accordance with the licensing outlined
-// on the main Tychaia website (www.tychaia.com).  Changes to the
-// license on the website apply retroactively.
-//
-using System;
-
 namespace Protogame
 {
+    using System;
+
     /* Perlin noise class.  ( by Tom Nuydens (tom@delphi3d.net) )
      * Converted to C# by Mattias Fagerlund, Mattias.Fagerlund@cortego.se
 
