@@ -43,6 +43,16 @@
         private bool m_Closed;
 
         /// <summary>
+        /// The total number of unreliable bytes sent during the last frame.
+        /// </summary>
+        private int m_BytesLastSent;
+
+        /// <summary>
+        /// The total number of unreliable bytes received during the last frame.
+        /// </summary>
+        private int m_BytesLastReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MxDispatcher"/> class.
         /// </summary>
         /// <param name="realtimePort">
@@ -188,6 +198,20 @@
             this.m_Reliabilities[endpoint] = new MxReliability(this.m_ReliableMxClients[endpoint]);
             this.OnClientConnected(this.m_ReliableMxClients[endpoint]);
             this.RegisterForEvents(this.m_Reliabilities[endpoint]);
+        }
+
+        public int GetBytesLastSentAndReset()
+        {
+            var value = this.m_BytesLastSent;
+            this.m_BytesLastSent = 0;
+            return value;
+        }
+
+        public int GetBytesLastReceivedAndReset()
+        {
+            var value = this.m_BytesLastReceived;
+            this.m_BytesLastReceived = 0;
+            return value;
         }
 
         /// <summary>
@@ -384,6 +408,8 @@
         /// </param>
         protected virtual void OnMessageReceived(MxMessageEventArgs e)
         {
+            this.m_BytesLastReceived += e.Payload.Length;
+
             var handler = this.MessageReceived;
             if (handler != null)
             {
@@ -399,6 +425,8 @@
         /// </param>
         protected virtual void OnMessageSent(MxMessageEventArgs e)
         {
+            this.m_BytesLastSent += e.Payload.Length;
+
             var handler = this.MessageSent;
             if (handler != null)
             {
