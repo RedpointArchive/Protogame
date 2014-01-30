@@ -9,10 +9,16 @@ namespace ProtogameAssetManager
 
         public override void BuildLayout(SingleContainer editorContainer, IAssetManager assetManager)
         {
-            this.m_FileSelect = new FileSelect { Path = this.m_Asset.SourcePath };
+            this.m_FileSelect = new FileSelect();
             this.m_FileSelect.Changed += (sender, e) =>
             {
-                this.m_Asset.SourcePath = this.m_FileSelect.Path;
+                using (var stream = new FileStream(this.m_FileSelect.Path, FileMode.Open))
+                {
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        this.m_Asset.RawData = reader.ReadBytes((int)stream.Length);
+                    }
+                }
                 assetManager.Recompile(this.m_Asset);
                 assetManager.Save(this.m_Asset);
             };

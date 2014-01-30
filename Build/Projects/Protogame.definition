@@ -67,6 +67,7 @@
     <Compile Include="Assets\AssetNotFoundException.cs" />
     <Compile Include="Assets\AssetTarget.cs" />
     <Compile Include="Assets\AudioAsset.cs" />
+    <Compile Include="Assets\AudioAssetCompiler.cs" />
     <Compile Include="Assets\AudioAssetLoader.cs" />
     <Compile Include="Assets\AudioAssetSaver.cs" />
     <Compile Include="Assets\ByteReader.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Assets\ProtogameAssetIoCModule.cs" />
     <Compile Include="Assets\RawAssetLoader.cs" />
     <Compile Include="Assets\RawAssetSaver.cs" />
+    <Compile Include="Assets\RawAudioLoadStrategy.cs" />
     <Compile Include="Assets\RawEffectLoadStrategy.cs" />
     <Compile Include="Assets\RawLevelLoadStrategy.cs" />
     <Compile Include="Assets\RawModelLoadStrategy.cs" />
