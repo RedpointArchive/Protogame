@@ -280,6 +280,11 @@
     <Compile Include="Network\MxReliabilityTransmitEventArgs.cs" />
     <Compile Include="Network\MxReliabilityTransmitEventHandler.cs" />
     <Compile Include="Network\MxUtility.cs" />
+    <Compile Include="Network\TimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\DoubleTimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\Int16TimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\Int32TimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\SingleTimeMachine.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
     <Compile Include="Noise\PerlinNoise.cs" />
     <Compile Include="Particles\ParticleDefinition.cs" />
