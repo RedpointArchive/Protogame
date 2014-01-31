@@ -13,12 +13,12 @@ namespace Protogame
             return a - b;
         }
 
-        protected override float DivideType(int a, float b)
+        protected override float DivideType(float a, int b)
         {
             return a / b;
         }
 
-        protected override float MultiplyType(float a, float b)
+        protected override float MultiplyType(float a, int b)
         {
             return a * b;
         }

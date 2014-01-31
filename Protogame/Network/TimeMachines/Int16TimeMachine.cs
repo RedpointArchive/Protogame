@@ -13,12 +13,12 @@ namespace Protogame
             return (Int16)(a - b);
         }
 
-        protected override Int16 DivideType(int a, Int16 b)
+        protected override Int16 DivideType(Int16 a, int b)
         {
             return (Int16)(a / b);
         }
 
-        protected override Int16 MultiplyType(Int16 a, Int16 b)
+        protected override Int16 MultiplyType(Int16 a, int b)
         {
             return (Int16)(a * b);
         }

@@ -263,6 +263,7 @@
     <Compile Include="Level\OgmoLevelReader.cs" />
     <Compile Include="Level\ProtogameLevelIoCModule.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
+    <Compile Include="Network\CorrectionStack.cs" />
     <Compile Include="Network\DualIPEndPoint.cs" />
     <Compile Include="Network\FlowControlChangedEventArgs.cs" />
     <Compile Include="Network\FlowControlChangedEventHandler.cs" />

@@ -99,15 +99,26 @@ namespace Protogame
                     return previousValue;
                 }
 
-                var rate = this.DivideType(tickDifference, valueDifference);
+                var rate = this.DivideType(valueDifference, tickDifference);
 
-                var additionValue = this.MultiplyType(rate, valueDifference);
+                var additionDifference = tick - previousTick;
+                var additionValue = this.MultiplyType(rate, additionDifference);
 
                 return this.AddType(previousValue, additionValue);
             }
-            else
+            else if (previousTick != -1 && nextTick == -1)
+            {
+                // Return the previous value and don't attempt to predict the future.
+                return this.m_KnownValues[previousTick];
+            }
+            else if (nextTick == -1 && previousTick != -1)
             {
                 // TODO: Extrapolation
+                return this.m_KnownValues[previousTick];
+            }
+            else
+            {
+                // TODO: something better
                 return this.DefaultType();
             }
         }
@@ -127,15 +138,15 @@ namespace Protogame
         /// <returns>The resulting value.</returns>
         /// <param name="a">The value to divide.</param>
         /// <param name="b">The value to divide by.</param>
-        protected abstract T DivideType(int a, T b);
+        protected abstract T DivideType(T b, int a);
 
         /// <summary>
-        /// Multiply an instance of <see cref="T"/> by another instance of <see cref="T"/>.
+        /// Multiply an instance of <see cref="T"/> by a numeric value.
         /// </summary>
         /// <returns>The resulting value.</returns>
         /// <param name="a">The first value for multiplication.</param>
         /// <param name="b">The second value for multiplication.</param>
-        protected abstract T MultiplyType(T a, T b);
+        protected abstract T MultiplyType(T a, int b);
 
         /// <summary>
         /// Add an instance of <see cref="T"/> to another instance of <see cref="T"/>.

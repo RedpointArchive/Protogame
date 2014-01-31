@@ -59,6 +59,26 @@
         /// </value>
         public IPEndPoint ReliableEndPoint { get; set; }
 
+        public override string ToString()
+        {
+            if (this.RealtimeEndPoint != null && this.ReliableEndPoint != null)
+            {
+                return this.RealtimeEndPoint.Address + ":U" + this.RealtimeEndPoint.Port + ":R" + this.ReliableEndPoint.Port;
+            }
+            else if (this.RealtimeEndPoint == null)
+            {
+                return this.ReliableEndPoint.Address + ":R" + this.ReliableEndPoint.Port;
+            }
+            else if (this.ReliableEndPoint == null)
+            {
+                return this.RealtimeEndPoint.Address + ":U" + this.RealtimeEndPoint.Port;
+            }
+            else
+            {
+                return "(unknown)";
+            }
+        }
+
         public bool Equals(DualIPEndPoint other)
         {
             if (ReferenceEquals(null, other))

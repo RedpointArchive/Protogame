@@ -132,6 +132,22 @@
         }
 
         /// <summary>
+        /// Gets an enumeration of the latencies for all connected endpoints.
+        /// </summary>
+        /// <value>
+        /// An enumeration of the latencies for all connected endpoints.
+        /// </value>
+        public IEnumerable<KeyValuePair<DualIPEndPoint, float>> Latencies
+        {
+            get
+            {
+                return this.m_RealtimeMxClients
+                        .Select(x => new KeyValuePair<DualIPEndPoint, float>(x.Key, x.Value.Latency))
+                        .ToArray();
+            }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this dispatcher has been closed.
         /// </summary>
         /// <value>

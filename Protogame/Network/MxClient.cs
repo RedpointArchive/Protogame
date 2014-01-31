@@ -277,6 +277,16 @@ namespace Protogame
         }
 
         /// <summary>
+        /// The amount of network latency (lag) in milliseconds.
+        /// </summary>
+        /// <value>The network latency.</value>
+        public float Latency
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Enqueues a byte array to be handled in the receiving logic when Update() is called.
         /// </summary>
         /// <param name="packet">
@@ -562,6 +572,8 @@ namespace Protogame
                                 var payloads = this.m_SendMessageQueue[idx];
                                 this.m_SendQueue.Remove(idx);
                                 this.m_SendMessageQueue.Remove(idx);
+
+                                this.Latency = (float)rtt * 1000f;
 
                                 foreach (var payload in payloads)
                                 {
