@@ -11,8 +11,9 @@ namespace Protogame
             set;
         }
         
-        public abstract void Update(IGameContext gameContext, IUpdateContext updateContext);
-        public abstract void Render(IGameContext gameContext, IRenderContext renderContext);
+        public abstract void Update(IEntity entity, IGameContext gameContext, IUpdateContext updateContext);
+        public abstract void Render(IEntity entity, IGameContext gameContext, IRenderContext renderContext);
+        public abstract void Update(IServerEntity entity);
 
         public bool SourceOnly
         {
