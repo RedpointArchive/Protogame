@@ -33,7 +33,7 @@ namespace Protogame
 
         public LocalAssetManager(
             IKernel kernel,
-            IProfiler profiler,
+            IProfiler[] profilers,
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
             IAssetLoader[] loaders,
@@ -41,7 +41,7 @@ namespace Protogame
             ITransparentAssetCompiler transparentAssetCompiler)
         {
             this.m_Kernel = kernel;
-            this.m_Profiler = profiler;
+            this.m_Profiler = profilers.Length > 0 ? profilers[0] : new NullProfiler();
             this.m_RawAssetLoader = rawLoader;
             this.m_RawAssetSaver = rawSaver;
             this.m_AssetLoaders = loaders;
