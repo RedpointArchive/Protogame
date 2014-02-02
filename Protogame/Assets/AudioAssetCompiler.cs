@@ -1,9 +1,19 @@
-using System;
-
 namespace Protogame
 {
+    /// <summary>
+    /// The audio asset compiler.
+    /// </summary>
     public class AudioAssetCompiler : IAssetCompiler<AudioAsset>
     {
+        /// <summary>
+        /// The compile.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
         public void Compile(AudioAsset asset, TargetPlatform platform)
         {
             if (asset.RawData == null)
@@ -20,11 +30,7 @@ namespace Protogame
              * Must be 8 or 16 bit
              * Sample rate must be between 8,000 Hz and 48,000 Hz
              */
-            asset.PlatformData = new PlatformData
-            {
-                Platform = platform,
-                Data = asset.RawData
-            };
+            asset.PlatformData = new PlatformData { Platform = platform, Data = asset.RawData };
 
             try
             {

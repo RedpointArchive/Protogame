@@ -1,71 +1,21 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Threading;
-#if FALSE
+﻿#if FALSE
 using Dx.Runtime;
 #endif
-using NDesk.Options;
-using Ninject;
 
 namespace Protogame
 {
-    using System.Net;
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
+    using NDesk.Options;
+    using Ninject;
 
+    /// <summary>
+    /// The asset manager client.
+    /// </summary>
     public static class AssetManagerClient
     {
-        /// <summary>
-        /// Runs the asset manager side-by-side with another XNA program
-        /// (for example the main game) and then rebinds the IoC providers
-        /// for asset management so that assets can be changed in real-time.
-        /// </summary>
-        public static Process RunAndConnect(IKernel kernel, bool startProcess)
-        {
-			#if FALSE
-            var node = new LocalNode();
-            node.Bind(IPAddress.Loopback, 9838);
-			#endif
-
-            Process process = null;
-            if (startProcess)
-            {
-                var assemblyPath = Assembly.GetExecutingAssembly().Location;
-                var directory = new FileInfo(assemblyPath).Directory;
-                var filename = Path.Combine(directory.FullName, "ProtogameAssetManager.exe");
-                if (!File.Exists(filename))
-                {
-                    throw new FileNotFoundException(
-                        "You must have ProtogameAssetManager.exe in " +
-                        "the same directory as your game.");
-                }
-
-                process = new Process();
-                process.StartInfo = new ProcessStartInfo
-                {
-                    FileName = filename,
-                    Arguments = "--connect"
-                };
-                process.EnableRaisingEvents = true;
-                process.Exited += (sender, e) =>
-                {
-                    Environment.Exit(1);
-                };
-                process.Start();
-			}
-
-			#if FALSE
-            var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);
-            kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
-
-            // Wait until the networked asset manager is ready.
-            while (!assetManagerProvider.IsReady && (process == null || !process.HasExited))
-                Thread.Sleep(100);
-            #endif
-
-            return process;
-        }
-
         /// <summary>
         /// This is a utility function that accepts the current command line
         /// arguments and parses them to determine whether or not the asset
@@ -73,26 +23,45 @@ namespace Protogame
         /// parse additional arguments, you will need to perform the asset
         /// manager tool checks yourself.
         /// </summary>
-        /// <param name="kernel">The kernel to bind the asset manager provider into.</param>
-        /// <param name="args">The command line arguments provided to the program.</param>
-        /// <typeparam name="T">The implementation of the asset manager provider if not starting the asset manager tool.</typeparam>
-        public static void AcceptArgumentsAndSetup<T>(IKernel kernel, string[] args, params ExtraOption[] extraOptions) where T : IAssetManagerProvider
+        /// <param name="kernel">
+        /// The kernel to bind the asset manager provider into.
+        /// </param>
+        /// <param name="args">
+        /// The command line arguments provided to the program.
+        /// </param>
+        /// <param name="extraOptions">
+        /// The extra Options.
+        /// </param>
+        /// <typeparam name="T">
+        /// The implementation of the asset manager provider if not starting the asset manager tool.
+        /// </typeparam>
+        public static void AcceptArgumentsAndSetup<T>(IKernel kernel, string[] args, params ExtraOption[] extraOptions)
+            where T : IAssetManagerProvider
         {
-			if (args == null)
-			{
-				args = new string[0];
-			}
+            if (args == null)
+            {
+                args = new string[0];
+            }
 
             var name = new FileInfo(Assembly.GetCallingAssembly().Location).Name;
             var startAssetManager = false;
             var listen = false;
             var options = new OptionSet
             {
-                { "asset-manager", "Start the asset manager with the game.", v => startAssetManager = true },
-                { "asset-manager-listen", "Start the game and wait for the asset manager to connect.", v => { startAssetManager = true; listen = true; } }
+                { "asset-manager", "Start the asset manager with the game.", v => startAssetManager = true }, 
+                {
+                    "asset-manager-listen", "Start the game and wait for the asset manager to connect.", v =>
+                    {
+                        startAssetManager = true;
+                        listen = true;
+                    }
+                }
             };
             foreach (var e in extraOptions)
+            {
                 options.Add(e.Prototype, e.Description, e.Action);
+            }
+
             try
             {
                 options.Parse(args);
@@ -109,7 +78,7 @@ namespace Protogame
             Process assetManagerProcess = null;
             if (startAssetManager)
             {
-                assetManagerProcess = AssetManagerClient.RunAndConnect(kernel, !listen);
+                assetManagerProcess = RunAndConnect(kernel, !listen);
             }
             else
             {
@@ -118,7 +87,7 @@ namespace Protogame
 
             if (assetManagerProcess != null)
             {
-                AppDomain.CurrentDomain.ProcessExit += (sender, e) => 
+                AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
                 {
                     // Make sure we close down the asset manager process if it's there.
                     if (assetManagerProcess != null)
@@ -136,12 +105,78 @@ namespace Protogame
                 };
             }
         }
+
+        /// <summary>
+        /// Runs the asset manager side-by-side with another XNA program
+        /// (for example the main game) and then rebinds the IoC providers
+        /// for asset management so that assets can be changed in real-time.
+        /// </summary>
+        /// <param name="kernel">
+        /// The kernel.
+        /// </param>
+        /// <param name="startProcess">
+        /// The start Process.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Process"/>.
+        /// </returns>
+        public static Process RunAndConnect(IKernel kernel, bool startProcess)
+        {
+#if FALSE
+            var node = new LocalNode();
+            node.Bind(IPAddress.Loopback, 9838);
+			#endif
+
+            Process process = null;
+            if (startProcess)
+            {
+                var assemblyPath = Assembly.GetExecutingAssembly().Location;
+                var directory = new FileInfo(assemblyPath).Directory;
+                var filename = Path.Combine(directory.FullName, "ProtogameAssetManager.exe");
+                if (!File.Exists(filename))
+                {
+                    throw new FileNotFoundException(
+                        "You must have ProtogameAssetManager.exe in " + "the same directory as your game.");
+                }
+
+                process = new Process();
+                process.StartInfo = new ProcessStartInfo { FileName = filename, Arguments = "--connect" };
+                process.EnableRaisingEvents = true;
+                process.Exited += (sender, e) => { Environment.Exit(1); };
+                process.Start();
+            }
+
+#if FALSE
+            var assetManagerProvider = new NetworkedAssetManagerProvider(node, kernel);
+            kernel.Bind<IAssetManagerProvider>().ToMethod(x => assetManagerProvider);
+
+            // Wait until the networked asset manager is ready.
+            while (!assetManagerProvider.IsReady && (process == null || !process.HasExited))
+                Thread.Sleep(100);
+            #endif
+
+            return process;
+        }
     }
 
+    /// <summary>
+    /// The extra option.
+    /// </summary>
     public struct ExtraOption
     {
-        public string Prototype;
-        public string Description;
+        /// <summary>
+        /// The action.
+        /// </summary>
         public Action<string> Action;
+
+        /// <summary>
+        /// The description.
+        /// </summary>
+        public string Description;
+
+        /// <summary>
+        /// The prototype.
+        /// </summary>
+        public string Prototype;
     }
 }

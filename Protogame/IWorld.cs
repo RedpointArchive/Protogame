@@ -29,18 +29,6 @@ namespace Protogame
         List<IEntity> Entities { get; }
 
         /// <summary>
-        /// This is called by <see cref="IWorldManager"/> when rendering has started, but no entities have yet
-        /// been rendering in the current context.
-        /// </summary>
-        /// <param name="gameContext">
-        /// The game context.
-        /// </param>
-        /// <param name="renderContext">
-        /// The render context.
-        /// </param>
-        void RenderBelow(IGameContext gameContext, IRenderContext renderContext);
-
-        /// <summary>
         /// This is called by <see cref="IWorldManager"/> when rendering is about to finish.  Rendering
         /// has not yet been completely finalized, but all entities have been rendered in the current context.
         /// </summary>
@@ -51,6 +39,18 @@ namespace Protogame
         /// The render context.
         /// </param>
         void RenderAbove(IGameContext gameContext, IRenderContext renderContext);
+
+        /// <summary>
+        /// This is called by <see cref="IWorldManager"/> when rendering has started, but no entities have yet
+        /// been rendering in the current context.
+        /// </summary>
+        /// <param name="gameContext">
+        /// The game context.
+        /// </param>
+        /// <param name="renderContext">
+        /// The render context.
+        /// </param>
+        void RenderBelow(IGameContext gameContext, IRenderContext renderContext);
 
         /// <summary>
         /// This is called by <see cref="IWorldManager"/> after all of the entities have been updated.

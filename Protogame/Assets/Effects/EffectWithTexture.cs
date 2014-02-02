@@ -1,28 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace Protogame
+﻿namespace Protogame
 {
+    using Microsoft.Xna.Framework.Graphics;
+
+    /// <summary>
+    /// The effect with texture.
+    /// </summary>
     public class EffectWithTexture : Effect, IEffectTexture
     {
+        /// <summary>
+        /// The m_ texture param.
+        /// </summary>
         private EffectParameter m_TextureParam;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EffectWithTexture"/> class.
+        /// </summary>
+        /// <param name="device">
+        /// The device.
+        /// </param>
+        /// <param name="bytecode">
+        /// The bytecode.
+        /// </param>
         public EffectWithTexture(GraphicsDevice device, byte[] bytecode)
             : base(device, bytecode)
         {
-            CacheEffectParameters();
+            this.CacheEffectParameters();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EffectWithTexture"/> class.
+        /// </summary>
+        /// <param name="cloneSource">
+        /// The clone source.
+        /// </param>
         protected EffectWithTexture(EffectWithTexture cloneSource)
             : base(cloneSource)
         {
-            CacheEffectParameters();
+            this.CacheEffectParameters();
         }
 
+        /// <summary>
+        /// Gets or sets the texture.
+        /// </summary>
+        /// <value>
+        /// The texture.
+        /// </value>
         public Texture2D Texture
         {
             get
@@ -36,11 +58,20 @@ namespace Protogame
             }
         }
 
+        /// <summary>
+        /// The clone.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Effect"/>.
+        /// </returns>
         public override Effect Clone()
         {
             return new EffectWithTexture(this);
         }
 
+        /// <summary>
+        /// The cache effect parameters.
+        /// </summary>
         private void CacheEffectParameters()
         {
             this.m_TextureParam = this.Parameters["Texture"];

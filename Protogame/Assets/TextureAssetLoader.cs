@@ -1,76 +1,121 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json.Linq;
-
 namespace Protogame
 {
+    /// <summary>
+    /// The texture asset loader.
+    /// </summary>
     public class TextureAssetLoader : IAssetLoader
     {
-        private IAssetContentManager m_AssetContentManager;
-        
-        public TextureAssetLoader(
-            IAssetContentManager assetContentManager)
+        /// <summary>
+        /// The m_ asset content manager.
+        /// </summary>
+        private readonly IAssetContentManager m_AssetContentManager;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextureAssetLoader"/> class.
+        /// </summary>
+        /// <param name="assetContentManager">
+        /// The asset content manager.
+        /// </param>
+        public TextureAssetLoader(IAssetContentManager assetContentManager)
         {
             this.m_AssetContentManager = assetContentManager;
         }
-    
+
+        /// <summary>
+        /// The can handle.
+        /// </summary>
+        /// <param name="data">
+        /// The data.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         public bool CanHandle(dynamic data)
         {
             return data.Loader == typeof(TextureAssetLoader).FullName;
         }
 
+        /// <summary>
+        /// The can new.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        public bool CanNew()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// The get default.
+        /// </summary>
+        /// <param name="assetManager">
+        /// The asset manager.
+        /// </param>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IAsset"/>.
+        /// </returns>
+        public IAsset GetDefault(IAssetManager assetManager, string name)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// The get new.
+        /// </summary>
+        /// <param name="assetManager">
+        /// The asset manager.
+        /// </param>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IAsset"/>.
+        /// </returns>
+        public IAsset GetNew(IAssetManager assetManager, string name)
+        {
+            return new TextureAsset(this.m_AssetContentManager, name, null, null, false);
+        }
+
+        /// <summary>
+        /// The handle.
+        /// </summary>
+        /// <param name="assetManager">
+        /// The asset manager.
+        /// </param>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="data">
+        /// The data.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IAsset"/>.
+        /// </returns>
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
             if (data is CompiledAsset)
             {
-                return new TextureAsset(
-                    this.m_AssetContentManager,
-                    name,
-                    null,
-                    data.PlatformData,
-                    false);
+                return new TextureAsset(this.m_AssetContentManager, name, null, data.PlatformData, false);
             }
 
             PlatformData platformData = null;
             if (data.PlatformData != null)
             {
-                platformData = new PlatformData
-                {
-                    Platform = data.PlatformData.Platform,
-                    Data = data.PlatformData.Data
-                };
+                platformData = new PlatformData { Platform = data.PlatformData.Platform, Data = data.PlatformData.Data };
             }
 
             var texture = new TextureAsset(
-                this.m_AssetContentManager,
-                name,
-                ByteReader.ReadAsByteArray(data.RawData),
-                platformData,
+                this.m_AssetContentManager, 
+                name, 
+                ByteReader.ReadAsByteArray(data.RawData), 
+                platformData, 
                 data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
 
             return texture;
         }
-
-        public IAsset GetDefault(IAssetManager assetManager, string name)
-        {
-            return null;
-        }
-        
-        public bool CanNew()
-        {
-            return true;
-        }
-        
-        public IAsset GetNew(IAssetManager assetManager, string name)
-        {
-            return new TextureAsset(
-                this.m_AssetContentManager,
-                name,
-                null,
-                null,
-                false);
-        }
     }
 }
-

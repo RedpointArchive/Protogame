@@ -2,7 +2,6 @@ namespace Protogame
 {
     using System;
     using System.Collections.Generic;
-
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
 
@@ -27,28 +26,18 @@ namespace Protogame
         private BoundingFrustum m_BoundingFrustum;
 
         /// <summary>
-        /// Gets the associated graphics device.
+        /// Gets the bounding frustum for the current view and projection matrixes.
         /// </summary>
         /// <value>
-        /// The graphics device.
+        /// The bounding frustum for the current view and projection matrixes.
         /// </value>
-        public GraphicsDevice GraphicsDevice { get; private set; }
-
-        /// <summary>
-        /// Gets a sprite batch associated with the current device, upon which 2D rendering is performed.
-        /// </summary>
-        /// <value>
-        /// The sprite batch.
-        /// </value>
-        public SpriteBatch SpriteBatch { get; private set; }
-
-        /// <summary>
-        /// Gets a texture representing a single white pixel.
-        /// </summary>
-        /// <value>
-        /// The single white pixel.
-        /// </value>
-        public Texture2D SingleWhitePixel { get; private set; }
+        public BoundingFrustum BoundingFrustum
+        {
+            get
+            {
+                return this.m_BoundingFrustum;
+            }
+        }
 
         /// <summary>
         /// Gets the current active effect for rendering.
@@ -65,18 +54,61 @@ namespace Protogame
         }
 
         /// <summary>
-        /// Gets the bounding frustum for the current view and projection matrixes.
+        /// Gets the associated graphics device.
         /// </summary>
         /// <value>
-        /// The bounding frustum for the current view and projection matrixes.
+        /// The graphics device.
         /// </value>
-        public BoundingFrustum BoundingFrustum
+        public GraphicsDevice GraphicsDevice { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the world manager is currently
+        /// rendering a 3D context.  For games using a 2D world manager, this will
+        /// always be false.  For 3D games, world managers will do an initial 3D pass
+        /// followed by a 2D pass that is rendered on top (for UI, etc.) In a 3D
+        /// context, only I3DRenderUtilities can be used; in a 2D context, only
+        /// I2DRenderUtilities can be used.
+        /// </summary>
+        /// <value>
+        /// Whether the rendering context is currently a 3D context.
+        /// </value>
+        public bool Is3DContext { get; set; }
+
+        /// <summary>
+        /// Gets or sets the projection matrix for 3D rendering.
+        /// </summary>
+        /// <value>
+        /// The projection matrix for 3D rendering.
+        /// </value>
+        public Matrix Projection
         {
             get
             {
-                return this.m_BoundingFrustum;
+                return this.GetEffectMatrix(x => x.Projection);
+            }
+
+            set
+            {
+                this.SetEffectMatrix(x => x.Projection = value);
+                this.RecalculateBoundingFrustum();
             }
         }
+
+        /// <summary>
+        /// Gets a texture representing a single white pixel.
+        /// </summary>
+        /// <value>
+        /// The single white pixel.
+        /// </value>
+        public Texture2D SingleWhitePixel { get; private set; }
+
+        /// <summary>
+        /// Gets a sprite batch associated with the current device, upon which 2D rendering is performed.
+        /// </summary>
+        /// <value>
+        /// The sprite batch.
+        /// </value>
+        public SpriteBatch SpriteBatch { get; private set; }
 
         /// <summary>
         /// Gets or sets the view matrix for 3D rendering.
@@ -118,65 +150,6 @@ namespace Protogame
         }
 
         /// <summary>
-        /// Gets or sets the projection matrix for 3D rendering.
-        /// </summary>
-        /// <value>
-        /// The projection matrix for 3D rendering.
-        /// </value>
-        public Matrix Projection
-        {
-            get
-            {
-                return this.GetEffectMatrix(x => x.Projection);
-            }
-
-            set
-            {
-                this.SetEffectMatrix(x => x.Projection = value);
-                this.RecalculateBoundingFrustum();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the world manager is currently
-        /// rendering a 3D context.  For games using a 2D world manager, this will
-        /// always be false.  For 3D games, world managers will do an initial 3D pass
-        /// followed by a 2D pass that is rendered on top (for UI, etc.) In a 3D
-        /// context, only I3DRenderUtilities can be used; in a 2D context, only
-        /// I2DRenderUtilities can be used.
-        /// </summary>
-        /// <value>
-        /// Whether the rendering context is currently a 3D context.
-        /// </value>
-        public bool Is3DContext { get; set; }
-
-        /// <summary>
-        /// The render.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        public void Render(IGameContext context)
-        {
-            this.GraphicsDevice = context.Graphics.GraphicsDevice;
-            if (this.m_Effects.Count == 0)
-            {
-                this.m_Effects.Push(new BasicEffect(context.Graphics.GraphicsDevice));
-            }
-
-            if (this.SpriteBatch == null)
-            {
-                this.SpriteBatch = new SpriteBatch(context.Graphics.GraphicsDevice);
-            }
-
-            if (this.SingleWhitePixel == null)
-            {
-                this.SingleWhitePixel = new Texture2D(context.Graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-                this.SingleWhitePixel.SetData(new[] { Color.White });
-            }
-        }
-
-        /// <summary>
         /// The enable textures.
         /// </summary>
         public void EnableTextures()
@@ -205,54 +178,6 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The set active texture.
-        /// </summary>
-        /// <param name="texture">
-        /// The texture.
-        /// </param>
-        public void SetActiveTexture(Texture2D texture)
-        {
-            var basicEffect = this.m_Effects.Peek() as BasicEffect;
-            var textureEffect = this.m_Effects.Peek() as IEffectTexture;
-
-            if (basicEffect != null)
-            {
-                basicEffect.Texture = texture;
-            }
-
-            if (textureEffect != null)
-            {
-                textureEffect.Texture = texture;
-            }
-        }
-
-        /// <summary>
-        /// Push an effect onto the current rendering context, making it the active effect used for rendering.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The effect type.
-        /// </typeparam>
-        /// <param name="effect">
-        /// The effect instance.
-        /// </param>
-        public void PushEffect<T>(T effect) where T : Effect
-        {
-            // Automatically copy the matrices from the current effect to the new
-            // effect if applicable.  This reduces confusion when pushing a new effect
-            // onto the stack and not having things render correctly.
-            if (this.m_Effects.Peek() is IEffectMatrices && effect is IEffectMatrices)
-            {
-                var existingMatrices = (IEffectMatrices)this.m_Effects.Peek();
-                var newMatrices = (IEffectMatrices)effect;
-                newMatrices.Projection = existingMatrices.Projection;
-                newMatrices.View = existingMatrices.View;
-                newMatrices.World = existingMatrices.World;
-            }
-             
-            this.m_Effects.Push(effect);
-        }
-
-        /// <summary>
         /// Pop an effect from the current rendering context.
         /// </summary>
         public void PopEffect()
@@ -274,69 +199,6 @@ namespace Protogame
                     newMatrices.World = outgoingMatrices.World;
                 }
             }
-        }
-
-        /// <summary>
-        /// Applies a get property operation against the current effect, returning
-        /// the identity matrix if the current effect does not implement <see cref="IEffectMatrices" />.
-        /// </summary>
-        /// <param name="prop">
-        /// The lambda representing the property getter operation to perform.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Matrix"/> if the effect implements <see cref="IEffectMatrices" />, or <see cref="Matrix.Identity" />.
-        /// </returns>
-        private Matrix GetEffectMatrix(Func<IEffectMatrices, Matrix> prop)
-        {
-            var effectMatrices = this.m_Effects.Peek() as IEffectMatrices;
-
-            if (effectMatrices != null)
-            {
-                return prop(effectMatrices);
-            }
-
-            return Matrix.Identity;
-        }
-
-        /// <summary>
-        /// Applies a set property operation against the current effect, performing a
-        /// no-op if the current effect does not implement <see cref="IEffectMatrices" />.
-        /// </summary>
-        /// <param name="assign">
-        /// The lambda representing the property setter operation to perform.
-        /// </param>
-        private void SetEffectMatrix(Action<IEffectMatrices> assign)
-        {
-            var effectMatrices = this.m_Effects.Peek() as IEffectMatrices;
-
-            if (effectMatrices != null)
-            {
-                assign(effectMatrices);
-            }
-        }
-
-        /// <summary>
-        /// The recalculate bounding frustum.
-        /// </summary>
-        private void RecalculateBoundingFrustum()
-        {
-            this.m_BoundingFrustum = new BoundingFrustum(this.View * this.Projection);
-        }
-
-        /// <summary>
-        /// Push a render target onto the current rendering context, making it
-        /// the active target for rendering.  By using the PushRenderTarget / PopRenderTarget
-        /// methods, this allows you to safely chain render target switches, without risk
-        /// of losing the previous render target.  An example of where this can be used is
-        /// if you want to capture the next frame, you can simply start with a PushRenderTarget
-        /// and as long as all other render target switching uses these methods or respects the
-        /// previous render target, then everything will be captured as intended.
-        /// </summary>
-        /// <param name="renderTarget">The render target instance to make active.</param>
-        public void PushRenderTarget(RenderTarget2D renderTarget)
-        {
-            this.m_RenderTargets.Push(renderTarget);
-            this.GraphicsDevice.SetRenderTarget(renderTarget);
         }
 
         /// <summary>
@@ -362,10 +224,10 @@ namespace Protogame
                 if (currentTargets[0].RenderTarget != this.m_RenderTargets.Peek())
                 {
                     throw new InvalidOperationException(
-                        "Current render target does not match last render target " +
-                        "pushed onto the stack with PushRenderTarget.  Ensure there " +
-                        "is no code manually calling SetRenderTarget and not restoring " +
-                        "it at the end of it's execution.");
+                        "Current render target does not match last render target "
+                        + "pushed onto the stack with PushRenderTarget.  Ensure there "
+                        + "is no code manually calling SetRenderTarget and not restoring "
+                        + "it at the end of it's execution.");
                 }
             }
 
@@ -378,6 +240,145 @@ namespace Protogame
             else
             {
                 this.GraphicsDevice.SetRenderTarget(this.m_RenderTargets.Peek());
+            }
+        }
+
+        /// <summary>
+        /// Push an effect onto the current rendering context, making it the active effect used for rendering.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The effect type.
+        /// </typeparam>
+        /// <param name="effect">
+        /// The effect instance.
+        /// </param>
+        public void PushEffect<T>(T effect) where T : Effect
+        {
+            // Automatically copy the matrices from the current effect to the new
+            // effect if applicable.  This reduces confusion when pushing a new effect
+            // onto the stack and not having things render correctly.
+            if (this.m_Effects.Peek() is IEffectMatrices && effect is IEffectMatrices)
+            {
+                var existingMatrices = (IEffectMatrices)this.m_Effects.Peek();
+                var newMatrices = (IEffectMatrices)effect;
+                newMatrices.Projection = existingMatrices.Projection;
+                newMatrices.View = existingMatrices.View;
+                newMatrices.World = existingMatrices.World;
+            }
+
+            this.m_Effects.Push(effect);
+        }
+
+        /// <summary>
+        /// Push a render target onto the current rendering context, making it
+        /// the active target for rendering.  By using the PushRenderTarget / PopRenderTarget
+        /// methods, this allows you to safely chain render target switches, without risk
+        /// of losing the previous render target.  An example of where this can be used is
+        /// if you want to capture the next frame, you can simply start with a PushRenderTarget
+        /// and as long as all other render target switching uses these methods or respects the
+        /// previous render target, then everything will be captured as intended.
+        /// </summary>
+        /// <param name="renderTarget">
+        /// The render target instance to make active.
+        /// </param>
+        public void PushRenderTarget(RenderTarget2D renderTarget)
+        {
+            this.m_RenderTargets.Push(renderTarget);
+            this.GraphicsDevice.SetRenderTarget(renderTarget);
+        }
+
+        /// <summary>
+        /// The render.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        public void Render(IGameContext context)
+        {
+            this.GraphicsDevice = context.Graphics.GraphicsDevice;
+            if (this.m_Effects.Count == 0)
+            {
+                this.m_Effects.Push(new BasicEffect(context.Graphics.GraphicsDevice));
+            }
+
+            if (this.SpriteBatch == null)
+            {
+                this.SpriteBatch = new SpriteBatch(context.Graphics.GraphicsDevice);
+            }
+
+            if (this.SingleWhitePixel == null)
+            {
+                this.SingleWhitePixel = new Texture2D(context.Graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+                this.SingleWhitePixel.SetData(new[] { Color.White });
+            }
+        }
+
+        /// <summary>
+        /// The set active texture.
+        /// </summary>
+        /// <param name="texture">
+        /// The texture.
+        /// </param>
+        public void SetActiveTexture(Texture2D texture)
+        {
+            var basicEffect = this.m_Effects.Peek() as BasicEffect;
+            var textureEffect = this.m_Effects.Peek() as IEffectTexture;
+
+            if (basicEffect != null)
+            {
+                basicEffect.Texture = texture;
+            }
+
+            if (textureEffect != null)
+            {
+                textureEffect.Texture = texture;
+            }
+        }
+
+        /// <summary>
+        /// Applies a get property operation against the current effect, returning
+        /// the identity matrix if the current effect does not implement <see cref="IEffectMatrices"/>.
+        /// </summary>
+        /// <param name="prop">
+        /// The lambda representing the property getter operation to perform.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Matrix"/> if the effect implements <see cref="IEffectMatrices"/>, or <see cref="Matrix.Identity"/>.
+        /// </returns>
+        private Matrix GetEffectMatrix(Func<IEffectMatrices, Matrix> prop)
+        {
+            var effectMatrices = this.m_Effects.Peek() as IEffectMatrices;
+
+            if (effectMatrices != null)
+            {
+                return prop(effectMatrices);
+            }
+
+            return Matrix.Identity;
+        }
+
+        /// <summary>
+        /// The recalculate bounding frustum.
+        /// </summary>
+        private void RecalculateBoundingFrustum()
+        {
+            this.m_BoundingFrustum = new BoundingFrustum(this.View * this.Projection);
+        }
+
+        /// <summary>
+        /// Applies a set property operation against the current effect, performing a
+        /// no-op if the current effect does not implement <see cref="IEffectMatrices"/>.
+        /// </summary>
+        /// <param name="assign">
+        /// The lambda representing the property setter operation to perform.
+        /// </param>
+        private void SetEffectMatrix(Action<IEffectMatrices> assign)
+        {
+            var effectMatrices = this.m_Effects.Peek() as IEffectMatrices;
+
+            if (effectMatrices != null)
+            {
+                assign(effectMatrices);
             }
         }
     }

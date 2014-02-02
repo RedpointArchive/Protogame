@@ -1,3 +1,4 @@
+
 #if FALSE
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using Ninject;
 
 namespace Protogame
 {
-    /// <summary>
+    // <summary>
     /// An implementation of an asset manager where the assets can be
     /// modified and changed over the network (usually by the asset
     /// manager program).
@@ -232,4 +233,3 @@ namespace Protogame
 }
 
 #endif
-

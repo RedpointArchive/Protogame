@@ -1,9 +1,15 @@
-using Ninject.Modules;
-
 namespace Protogame
 {
+    using Ninject.Modules;
+
+    /// <summary>
+    /// The protogame level io c module.
+    /// </summary>
     public class ProtogameLevelIoCModule : NinjectModule
     {
+        /// <summary>
+        /// The load.
+        /// </summary>
         public override void Load()
         {
             this.Bind<ITileset>().To<DefaultTileset>();

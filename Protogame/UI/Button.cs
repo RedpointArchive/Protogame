@@ -1,24 +1,113 @@
-using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-
 namespace Protogame
 {
+    using System;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Input;
+
+    /// <summary>
+    /// The button.
+    /// </summary>
     public class Button : IContainer
     {
-        public IContainer[] Children { get { return new IContainer[0]; } }
-        public IContainer Parent { get; set; }
-        public int Order { get; set; }
-        public ButtonUIState State { get; private set; }
-        public string Text { get; set; }
-        public bool Focused { get; set; }
-        public event EventHandler Click;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Button"/> class.
+        /// </summary>
         public Button()
         {
             this.State = ButtonUIState.None;
         }
 
+        /// <summary>
+        /// The click.
+        /// </summary>
+        public event EventHandler Click;
+
+        /// <summary>
+        /// Gets the children.
+        /// </summary>
+        /// <value>
+        /// The children.
+        /// </value>
+        public IContainer[] Children
+        {
+            get
+            {
+                return new IContainer[0];
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether focused.
+        /// </summary>
+        /// <value>
+        /// The focused.
+        /// </value>
+        public bool Focused { get; set; }
+
+        /// <summary>
+        /// Gets or sets the order.
+        /// </summary>
+        /// <value>
+        /// The order.
+        /// </value>
+        public int Order { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent.
+        /// </summary>
+        /// <value>
+        /// The parent.
+        /// </value>
+        public IContainer Parent { get; set; }
+
+        /// <summary>
+        /// Gets the state.
+        /// </summary>
+        /// <value>
+        /// The state.
+        /// </value>
+        public ButtonUIState State { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the text.
+        /// </summary>
+        /// <value>
+        /// The text.
+        /// </value>
+        public string Text { get; set; }
+
+        /// <summary>
+        /// The draw.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <param name="skin">
+        /// The skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout.
+        /// </param>
+        public void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        {
+            skin.DrawButton(context, layout, this);
+        }
+
+        /// <summary>
+        /// The update.
+        /// </summary>
+        /// <param name="skin">
+        /// The skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout.
+        /// </param>
+        /// <param name="gameTime">
+        /// The game time.
+        /// </param>
+        /// <param name="stealFocus">
+        /// The steal focus.
+        /// </param>
         public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
             var mouse = Mouse.GetState();
@@ -28,21 +117,22 @@ namespace Protogame
                 if (leftPressed)
                 {
                     if (this.Click != null && this.State != ButtonUIState.Clicked)
+                    {
                         this.Click(this, new EventArgs());
+                    }
+
                     this.State = ButtonUIState.Clicked;
                     this.Focus();
                 }
                 else
+                {
                     this.State = ButtonUIState.Hover;
+                }
             }
             else
+            {
                 this.State = ButtonUIState.None;
-        }
-
-        public void Draw(IRenderContext context, ISkin skin, Rectangle layout)
-        {
-            skin.DrawButton(context, layout, this);
+            }
         }
     }
 }
-

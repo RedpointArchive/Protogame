@@ -1,3 +1,4 @@
+
 #if PLATFORM_ANDROID || PLATFORM_OUYA
 
 namespace Protogame
@@ -6,7 +7,7 @@ namespace Protogame
     using Microsoft.Xna.Framework;
     using AndroidMonoGameWindow = Microsoft.Xna.Framework.AndroidGameWindow;
 
-    /// <summary>
+    // <summary>
     /// An implementation of <see cref="IGameWindow"/> that provides support for the Android platform.
     /// </summary>
     public class AndroidGameWindow : IGameWindow
@@ -46,7 +47,7 @@ namespace Protogame
         {
             get
             {
-                return "";
+                return string.Empty;
             }
 
             set

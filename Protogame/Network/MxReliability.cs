@@ -357,12 +357,13 @@
 
                     break;
                 case 1:
+
                     // This is a content fragment.  If the current receive fragments list is not null, then we have
                     // previously received the header fragment and can directly update the status in that list.
                     if (this.m_CurrentReceiveFragments != null)
                     {
                         var fragmentSequence = BitConverter.ToInt32(data, 1);
-                        
+
                         var fragmentData = new byte[data.Length - DataOffset];
                         for (var i = 0; i < data.Length - DataOffset; i++)
                         {
@@ -388,6 +389,7 @@
 
                     break;
                 case 3:
+
                     // This is a special, single fragment.  It is not preceded by a header.  We can raise the message
                     // received event immediately as this does not rely on
                     // reconstruction of fragments and does not impact current receiving state (so you could theoretically

@@ -1,9 +1,22 @@
-﻿#if PLATFORM_WINDOWS || PLATFORM_LINUX
+﻿
+#if PLATFORM_WINDOWS || PLATFORM_LINUX
 
 namespace Protogame
 {
+    /// <summary>
+    /// The model asset compiler.
+    /// </summary>
     public class ModelAssetCompiler : IAssetCompiler<ModelAsset>
     {
+        /// <summary>
+        /// The compile.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
         public void Compile(ModelAsset asset, TargetPlatform platform)
         {
             if (asset.RawData == null)

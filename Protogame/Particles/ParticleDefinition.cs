@@ -1,4 +1,3 @@
-using Microsoft.Xna.Framework;
 
 #if LEGACY
 
@@ -24,7 +23,7 @@ namespace Protogame
 
     public enum ParticleMode
     {
-        Background,
+        Background, 
         Foreground
     }
 }

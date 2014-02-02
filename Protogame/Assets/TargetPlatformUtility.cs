@@ -1,7 +1,16 @@
 ﻿namespace Protogame
 {
+    /// <summary>
+    /// The target platform utility.
+    /// </summary>
     public static class TargetPlatformUtility
     {
+        /// <summary>
+        /// The get executing platform.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="TargetPlatform"/>.
+        /// </returns>
         public static TargetPlatform GetExecutingPlatform()
         {
 #if PLATFORM_ANDROID

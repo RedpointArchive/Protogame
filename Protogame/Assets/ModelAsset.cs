@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace Protogame
+﻿namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
 
     /// <summary>
     /// Represents a model asset.
@@ -25,22 +24,22 @@ namespace Protogame
         /// <param name="name">
         /// The name of the model asset.
         /// </param>
-        /// <param name="sourceData">
-        /// The source raw data used for compilation, or null if there is no source information.
-        /// </param>
-        /// <param name="compiledData">
-        /// The compiled raw data used at runtime, or null if there is no compiled information.
-        /// </param>
-        /// <param name="sourcedFromRaw">
-        /// Whether or not this asset was sourced from a purely raw asset file (such as a PNG).
+        /// <param name="rawData">
+        /// The raw Data.
         /// </param>
         /// <param name="rawAdditionalAnimations">
         /// The source raw data that contains additional animations, mapping byte arrays to animation names.
         /// </param>
+        /// <param name="data">
+        /// The data.
+        /// </param>
+        /// <param name="sourcedFromRaw">
+        /// Whether or not this asset was sourced from a purely raw asset file (such as a PNG).
+        /// </param>
         public ModelAsset(
-            string name,
-            byte[] rawData,
-            Dictionary<string,byte[]> rawAdditionalAnimations,
+            string name, 
+            byte[] rawData, 
+            Dictionary<string, byte[]> rawAdditionalAnimations, 
             PlatformData data, 
             bool sourcedFromRaw)
         {
@@ -59,6 +58,20 @@ namespace Protogame
                 catch (NoAssetContentManagerException)
                 {
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets the available animations.
+        /// </summary>
+        /// <value>
+        /// The available animations.
+        /// </value>
+        public IAnimationCollection AvailableAnimations
+        {
+            get
+            {
+                return this.m_Model.AvailableAnimations;
             }
         }
 
@@ -82,11 +95,7 @@ namespace Protogame
         /// <value>
         /// The name of the asset.
         /// </value>
-        public string Name
-        {
-            get;
-            private set;
-        }
+        public string Name { get; private set; }
 
         /// <summary>
         /// Gets or sets the platform-specific data associated with this asset.
@@ -95,23 +104,7 @@ namespace Protogame
         /// <value>
         /// The platform-specific data for this asset.
         /// </value>
-        public PlatformData PlatformData
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the raw model data.  This is the source information used to compile the asset.
-        /// </summary>
-        /// <value>
-        /// The raw texture data.
-        /// </value>
-        public byte[] RawData
-        {
-            get;
-            set;
-        }
+        public PlatformData PlatformData { get; set; }
 
         /// <summary>
         /// Gets or sets the raw additional animation data.  This is populated when loading models from
@@ -120,11 +113,15 @@ namespace Protogame
         /// <value>
         /// The raw additional animation data.
         /// </value>
-        public Dictionary<string, byte[]> RawAdditionalAnimations
-        {
-            get; 
-            set;             
-        }
+        public Dictionary<string, byte[]> RawAdditionalAnimations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the raw model data.  This is the source information used to compile the asset.
+        /// </summary>
+        /// <value>
+        /// The raw texture data.
+        /// </value>
+        public byte[] RawData { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the asset only contains source information.
@@ -146,10 +143,57 @@ namespace Protogame
         /// <value>
         /// The sourced from raw.
         /// </value>
-        public bool SourcedFromRaw
+        public bool SourcedFromRaw { get; private set; }
+
+        /// <summary>
+        /// The draw.
+        /// </summary>
+        /// <param name="renderContext">
+        /// The render context.
+        /// </param>
+        /// <param name="transform">
+        /// The transform.
+        /// </param>
+        /// <param name="animationName">
+        /// The animation name.
+        /// </param>
+        /// <param name="secondFraction">
+        /// The second fraction.
+        /// </param>
+        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction)
         {
-            get;
-            private set;
+            this.m_Model.Draw(renderContext, transform, animationName, secondFraction);
+        }
+
+        /// <summary>
+        /// The draw.
+        /// </summary>
+        /// <param name="renderContext">
+        /// The render context.
+        /// </param>
+        /// <param name="transform">
+        /// The transform.
+        /// </param>
+        /// <param name="animationName">
+        /// The animation name.
+        /// </param>
+        /// <param name="frame">
+        /// The frame.
+        /// </param>
+        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, int frame)
+        {
+            this.m_Model.Draw(renderContext, transform, animationName, frame);
+        }
+
+        /// <summary>
+        /// Loads vertex and index buffers for all of animations in this model.
+        /// </summary>
+        /// <param name="graphicsDevice">
+        /// The graphics device.
+        /// </param>
+        public void LoadBuffers(GraphicsDevice graphicsDevice)
+        {
+            this.m_Model.LoadBuffers(graphicsDevice);
         }
 
         /// <summary>
@@ -184,35 +228,6 @@ namespace Protogame
             }
 
             throw new InvalidOperationException("Asset already resolved to ModelAsset.");
-        }
-
-        public IAnimationCollection AvailableAnimations
-        {
-            get
-            {
-                return this.m_Model.AvailableAnimations;
-            }
-        }
-
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction)
-        {
-            this.m_Model.Draw(renderContext, transform, animationName, secondFraction);
-        }
-
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, int frame)
-        {
-            this.m_Model.Draw(renderContext, transform, animationName, frame);
-        }
-
-        /// <summary>
-        /// Loads vertex and index buffers for all of animations in this model.
-        /// </summary>
-        /// <param name="graphicsDevice">
-        /// The graphics device.
-        /// </param>
-        public void LoadBuffers(GraphicsDevice graphicsDevice)
-        {
-            this.m_Model.LoadBuffers(graphicsDevice);
         }
     }
 }

@@ -10,7 +10,9 @@ namespace Protogame
     /// An asset proxy for local debugging.  This allows you to reload assets transparently
     /// on the fly without explicit checks in your game logic.
     /// </summary>
-    /// <typeparam name="T">The type of asset that this is a proxy for.</typeparam>
+    /// <typeparam name="T">
+    /// The type of asset that this is a proxy for.
+    /// </typeparam>
     public class LocalAssetProxy<T> : RealProxy
         where T : class, IAsset
     {
@@ -34,6 +36,9 @@ namespace Protogame
         /// </summary>
         private T m_Instance;
 
+        /// <summary>
+        /// The m_ local asset.
+        /// </summary>
         private LocalAsset m_LocalAsset;
 
         /// <summary>
@@ -61,20 +66,6 @@ namespace Protogame
             this.m_Dirty = false;
 
             this.m_LocalAsset.Dirtied += this.MarkDirty;
-        }
-
-        /// <summary>
-        /// The mark dirty.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        private void MarkDirty(object sender, EventArgs e)
-        {
-            this.m_Dirty = true;
         }
 
         /// <summary>
@@ -129,6 +120,20 @@ namespace Protogame
 
                 return new ReturnMessage(e, msg as IMethodCallMessage);
             }
+        }
+
+        /// <summary>
+        /// The mark dirty.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void MarkDirty(object sender, EventArgs e)
+        {
+            this.m_Dirty = true;
         }
     }
 }

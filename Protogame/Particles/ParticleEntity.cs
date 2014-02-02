@@ -1,4 +1,3 @@
-using System;
 
 #if LEGACY
 
@@ -37,7 +36,7 @@ namespace Protogame
             if (this.Tick >= this.Lifetime)
             {
                 // FIXME
-                //world.Entities.Remove(this);
+                // world.Entities.Remove(this);
                 return;
             }
 

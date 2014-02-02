@@ -1,25 +1,37 @@
-﻿using System.Text;
-using Newtonsoft.Json;
-
+﻿
 #if PLATFORM_WINDOWS || PLATFORM_LINUX
+
 namespace Protogame
 {
+    #if PLATFORM_WINDOWS
+    using System;
+    using System.CodeDom.Compiler;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.Reflection;
-    using System;
-    using System.Collections.Generic;
+    using System.Text;
+    using Microsoft.CSharp;
     using Microsoft.Xna.Framework.Content.Pipeline;
     using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
     using MonoGame.Framework.Content.Pipeline.Builder;
+    using Newtonsoft.Json;
 
-#if PLATFORM_WINDOWS
-    using System.CodeDom.Compiler;
-    using Microsoft.CSharp;
 #endif
 
+    /// <summary>
+    /// The font asset compiler.
+    /// </summary>
     public class FontAssetCompiler : MonoGameContentCompiler, IAssetCompiler<FontAsset>
     {
+        /// <summary>
+        /// The compile.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
         public void Compile(FontAsset asset, TargetPlatform platform)
         {
 #if PLATFORM_WINDOWS
@@ -33,11 +45,21 @@ namespace Protogame
             {
                 this.CompileFont(asset, platform);
             }
+
 #else
             this.CompileFont(asset, platform);
 #endif
         }
 
+        /// <summary>
+        /// The get descriptions for asset.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IEnumerable"/>.
+        /// </returns>
         private IEnumerable<FontDescription> GetDescriptionsForAsset(FontAsset asset)
         {
             var chars = new List<CharacterRegion>();
@@ -47,11 +69,11 @@ namespace Protogame
             foreach (var fontName in fontNames.Split(','))
             {
                 var fontDesc = new FontDescription(
-                    fontName,
-                    asset.FontSize,
-                    asset.Spacing,
-                    FontDescriptionStyle.Regular,
-                    asset.UseKerning,
+                    fontName, 
+                    asset.FontSize, 
+                    asset.Spacing, 
+                    FontDescriptionStyle.Regular, 
+                    asset.UseKerning, 
                     chars);
 #if PLATFORM_LINUX
                 fontDesc.Identity = new ContentIdentity
@@ -63,13 +85,25 @@ namespace Protogame
             }
         }
 
+        /// <summary>
+        /// The compile font.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
         private void CompileFont(FontAsset asset, TargetPlatform platform)
         {
             foreach (var fontDesc in this.GetDescriptionsForAsset(asset))
             {
                 try
                 {
-                    var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
+                    var manager = new PipelineManager(
+                        Environment.CurrentDirectory, 
+                        Environment.CurrentDirectory, 
+                        Environment.CurrentDirectory);
                     var dictionary = new OpaqueDataDictionary();
                     var processor = manager.CreateProcessor("FontDescriptionProcessor", dictionary);
                     var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
@@ -77,7 +111,7 @@ namespace Protogame
 
                     asset.PlatformData = new PlatformData
                     {
-                        Platform = platform,
+                        Platform = platform, 
                         Data = this.CompileAndGetBytes(content)
                     };
 
@@ -107,8 +141,19 @@ namespace Protogame
 
 #if PLATFORM_WINDOWS
 
-        private static string m_CompiledTool = null;
+        /// <summary>
+        /// The m_ compiled tool.
+        /// </summary>
+        private static string m_CompiledTool;
 
+        /// <summary>
+        /// The build compilation tool.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
         private static string BuildCompilationTool()
         {
             if (m_CompiledTool != null)
@@ -122,23 +167,16 @@ namespace Protogame
             {
                 directory = Path.Combine(Path.GetTempPath(), "fontcompile_" + random.Next());
             }
+
             Directory.CreateDirectory(directory);
 
             // Copy dependencies first.
             var currentDirectory = new FileInfo(typeof(FontAssetCompiler).Assembly.Location).Directory.FullName;
             var dependencies = new[]
             {
-                "Protogame.dll",
-                "freetype6.dll",
-                "Newtonsoft.Json.dll",
-                "MonoGame.Framework.Content.Pipeline.dll",
-                "MonoGame.Framework.dll",
-                "protobuf-net.dll",
-                "SharpDX.D3DCompiler.dll",
-                "SharpDX.dll",
-                "Nvidia.TextureTools.dll",
-                "nvtt.dll",
-                "SharpFont.dll",
+                "Protogame.dll", "freetype6.dll", "Newtonsoft.Json.dll", "MonoGame.Framework.Content.Pipeline.dll", 
+                "MonoGame.Framework.dll", "protobuf-net.dll", "SharpDX.D3DCompiler.dll", "SharpDX.dll", 
+                "Nvidia.TextureTools.dll", "nvtt.dll", "SharpFont.dll"
             };
 
             foreach (var dependency in dependencies)
@@ -179,7 +217,8 @@ public static class Program
                     {
                         File.Delete(Path.Combine(directory, dependency));
                     }
-                    // ReSharper disable once EmptyGeneralCatchClause
+                        
+                        // ReSharper disable once EmptyGeneralCatchClause
                     catch
                     {
                     }
@@ -190,7 +229,8 @@ public static class Program
                     File.Delete(m_CompiledTool);
                     Directory.Delete(directory);
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
+                    
+                    // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
                 }
@@ -199,6 +239,15 @@ public static class Program
             return m_CompiledTool;
         }
 
+        /// <summary>
+        /// The compile font under 32 bit process.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
         /// <remarks>
         /// When running under Windows and a 64-bit process, we have to execute the compilation
         /// under a 32-bit process.
@@ -221,24 +270,26 @@ public static class Program
             // attached (which we don't need and can't send over the command line because of the size).
             var arguments = new FontCompilationArguments
             {
-                FontAsset = new FontAsset(
-                    null,
-                    asset.Name,
-                    asset.FontName,
-                    asset.FontSize,
-                    asset.UseKerning,
-                    asset.Spacing,
-                    null),
+                FontAsset =
+                    new FontAsset(
+                        null, 
+                        asset.Name, 
+                        asset.FontName, 
+                        asset.FontSize, 
+                        asset.UseKerning, 
+                        asset.Spacing, 
+                        null), 
                 TargetPlatform = platform
             };
-            var encodedArguments = Convert.ToBase64String(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(arguments)));
+            var encodedArguments =
+                Convert.ToBase64String(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(arguments)));
 
             var process = new Process();
             process.StartInfo = new ProcessStartInfo
             {
-                Arguments = encodedArguments,
-                FileName = buildTool,
-                RedirectStandardOutput = true,
+                Arguments = encodedArguments, 
+                FileName = buildTool, 
+                RedirectStandardOutput = true, 
                 UseShellExecute = false
             };
             process.Start();
@@ -258,11 +309,7 @@ public static class Program
 
             var data = Convert.FromBase64String(output);
 
-            asset.PlatformData = new PlatformData
-            {
-                Platform = platform,
-                Data = data
-            };
+            asset.PlatformData = new PlatformData { Platform = platform, Data = data };
 
             try
             {
@@ -275,6 +322,15 @@ public static class Program
             }
         }
 
+        /// <summary>
+        /// The compile font from 32 bit argument.
+        /// </summary>
+        /// <param name="arg">
+        /// The arg.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
         public string CompileFontFrom32BitArgument(string arg)
         {
             var arguments =
@@ -285,10 +341,15 @@ public static class Program
             {
                 try
                 {
-                    var manager = new PipelineManager(Environment.CurrentDirectory, Environment.CurrentDirectory, Environment.CurrentDirectory);
+                    var manager = new PipelineManager(
+                        Environment.CurrentDirectory, 
+                        Environment.CurrentDirectory, 
+                        Environment.CurrentDirectory);
                     var dictionary = new OpaqueDataDictionary();
                     var processor = manager.CreateProcessor("FontDescriptionProcessor", dictionary);
-                    var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(arguments.TargetPlatform));
+                    var context =
+                        new DummyContentProcessorContext(
+                            TargetPlatformCast.ToMonoGamePlatform(arguments.TargetPlatform));
                     var content = processor.Process(fontDesc, context);
 
                     return Convert.ToBase64String(this.CompileAndGetBytes(content));
@@ -302,15 +363,29 @@ public static class Program
             return string.Empty;
         }
 
+        /// <summary>
+        /// The font compilation arguments.
+        /// </summary>
         private class FontCompilationArguments
         {
+            /// <summary>
+            /// Gets or sets the font asset.
+            /// </summary>
+            /// <value>
+            /// The font asset.
+            /// </value>
             public FontAsset FontAsset { get; set; }
 
+            /// <summary>
+            /// Gets or sets the target platform.
+            /// </summary>
+            /// <value>
+            /// The target platform.
+            /// </value>
             public TargetPlatform TargetPlatform { get; set; }
         }
 
 #endif
-
     }
 }
 

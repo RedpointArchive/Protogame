@@ -107,8 +107,8 @@
         /// </returns>
         public bool HasAck(uint sequence)
         {
-            return MxUtility.GetSequenceNumberDifference(this.Ack, sequence) >= 0 &&
-                MxUtility.GetSequenceNumberDifference(this.Ack, sequence) < MxUtility.UIntBitsize;
+            return MxUtility.GetSequenceNumberDifference(this.Ack, sequence) >= 0
+                   && MxUtility.GetSequenceNumberDifference(this.Ack, sequence) < MxUtility.UIntBitsize;
         }
 
         /// <summary>

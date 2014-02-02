@@ -1,14 +1,38 @@
-using System.Linq;
-
 namespace Protogame
 {
+    using System.Linq;
+
+    /// <summary>
+    /// The texture asset saver.
+    /// </summary>
     public class TextureAssetSaver : IAssetSaver
     {
+        /// <summary>
+        /// The can handle.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         public bool CanHandle(IAsset asset)
         {
             return asset is TextureAsset;
         }
 
+        /// <summary>
+        /// The handle.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="target">
+        /// The target.
+        /// </param>
+        /// <returns>
+        /// The <see cref="dynamic"/>.
+        /// </returns>
         public dynamic Handle(IAsset asset, AssetTarget target)
         {
             var textureAsset = asset as TextureAsset;
@@ -24,18 +48,18 @@ namespace Protogame
             {
                 return new CompiledAsset
                 {
-                    Loader = typeof(TextureAssetLoader).FullName,
+                    Loader = typeof(TextureAssetLoader).FullName, 
                     PlatformData = textureAsset.PlatformData
                 };
             }
-            
-            return new
-            {
-                Loader = typeof(TextureAssetLoader).FullName,
-                PlatformData = target == AssetTarget.SourceFile ? null : textureAsset.PlatformData,
-                RawData = textureAsset.RawData == null ? null : textureAsset.RawData.Select(x => (int)x).ToList()
-            };
+
+            return
+                new
+                {
+                    Loader = typeof(TextureAssetLoader).FullName, 
+                    PlatformData = target == AssetTarget.SourceFile ? null : textureAsset.PlatformData, 
+                    RawData = textureAsset.RawData == null ? null : textureAsset.RawData.Select(x => (int)x).ToList()
+                };
         }
     }
 }
-

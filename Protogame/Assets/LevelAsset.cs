@@ -1,31 +1,37 @@
-using System;
-
 namespace Protogame
 {
+    using System;
+
+    /// <summary>
+    /// The level asset.
+    /// </summary>
     public class LevelAsset : MarshalByRefObject, IAsset
     {
-        public string Name { get; private set; }
-        public string Value { get; set; }
-        public string SourcePath { get; set; }
-
-        public LevelAsset(
-            string name,
-            string value,
-            string sourcePath)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LevelAsset"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <param name="sourcePath">
+        /// The source path.
+        /// </param>
+        public LevelAsset(string name, string value, string sourcePath)
         {
             this.Name = name;
             this.Value = value;
             this.SourcePath = sourcePath;
         }
 
-        public bool SourceOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
+        /// <summary>
+        /// Gets a value indicating whether compiled only.
+        /// </summary>
+        /// <value>
+        /// The compiled only.
+        /// </value>
         public bool CompiledOnly
         {
             get
@@ -34,12 +40,62 @@ namespace Protogame
             }
         }
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether source only.
+        /// </summary>
+        /// <value>
+        /// The source only.
+        /// </value>
+        public bool SourceOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the source path.
+        /// </summary>
+        /// <value>
+        /// The source path.
+        /// </value>
+        public string SourcePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        /// <value>
+        /// The value.
+        /// </value>
+        public string Value { get; set; }
+
+        /// <summary>
+        /// The resolve.
+        /// </summary>
+        /// <typeparam name="T">
+        /// </typeparam>
+        /// <returns>
+        /// The <see cref="T"/>.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
         public T Resolve<T>() where T : class, IAsset
         {
             if (typeof(T).IsAssignableFrom(typeof(LevelAsset)))
+            {
                 return this as T;
+            }
+
             throw new InvalidOperationException("Asset already resolved to LevelAsset.");
         }
     }
 }
-

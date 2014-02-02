@@ -1,8 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Reflection;
-using Assimp.Unmanaged;
-
 namespace Protogame
 {
     using System.Collections.Generic;
@@ -88,7 +83,8 @@ namespace Protogame
             var importer = new AssimpContext();
             const PostProcessSteps ProcessFlags =
                 PostProcessSteps.FlipUVs | PostProcessSteps.JoinIdenticalVertices | PostProcessSteps.Triangulate
-                | PostProcessSteps.SortByPrimitiveType | PostProcessSteps.FindInvalidData | PostProcessSteps.FlipWindingOrder;
+                | PostProcessSteps.SortByPrimitiveType | PostProcessSteps.FindInvalidData
+                | PostProcessSteps.FlipWindingOrder;
             var scene = importer.ImportFile(filename, ProcessFlags);
 
             // Create the list of animations, including the null animation.
@@ -231,10 +227,12 @@ namespace Protogame
             }
 
             var currentIndex = tick - 1;
-            ////var nextIndex = currentIndex + 1 >= positionKeys.Length ? 0 : currentIndex + 1;
 
+            ////var nextIndex = currentIndex + 1 >= positionKeys.Length ? 0 : currentIndex + 1;
             if (currentIndex >= positionKeys.Count)
+            {
                 currentIndex = positionKeys.Count - 1;
+            }
 
             // TODO: Actual interpolation.
             return
@@ -275,10 +273,12 @@ namespace Protogame
             }
 
             var currentIndex = tick - 1;
-            ////var nextIndex = currentIndex + 1 >= rotationKeys.Length ? 0 : currentIndex + 1;
 
+            ////var nextIndex = currentIndex + 1 >= rotationKeys.Length ? 0 : currentIndex + 1;
             if (currentIndex >= rotationKeys.Count)
+            {
                 currentIndex = rotationKeys.Count - 1;
+            }
 
             // TODO: Actual interpolation.
             return
@@ -316,10 +316,12 @@ namespace Protogame
             }
 
             var currentIndex = tick - 1;
-            ////var nextIndex = currentIndex + 1 >= scalingKeys.Length ? 0 : currentIndex + 1;
 
+            ////var nextIndex = currentIndex + 1 >= scalingKeys.Length ? 0 : currentIndex + 1;
             if (currentIndex >= scalingKeys.Count)
+            {
                 currentIndex = scalingKeys.Count - 1;
+            }
 
             // TODO: Actual interpolation.
             return
@@ -580,10 +582,10 @@ namespace Protogame
 
                 foreach (var vertexWeight in bone.VertexWeights)
                 {
-                    var vertex = vertexes[(int)vertexWeight.VertexID];
+                    var vertex = vertexes[vertexWeight.VertexID];
 
                     // TODO: What about normals!?!?!?
-                    vertexes[(int)vertexWeight.VertexID] =
+                    vertexes[vertexWeight.VertexID] =
                         new VertexPositionNormalTexture(
                             Vector3.Transform(vertex.Position, finalMatrix), 
                             vertex.Normal, 
@@ -606,7 +608,7 @@ namespace Protogame
             try
             {
                 AssimpLibrary.Instance.LoadLibrary(
-                    Path.Combine(targetDir, "libassimp_32.so.3.0.1"),
+                    Path.Combine(targetDir, "libassimp_32.so.3.0.1"), 
                     Path.Combine(targetDir, "libassimp_64.so.3.0.1"));
             }
             catch (AssimpException ex)
@@ -617,10 +619,15 @@ namespace Protogame
             }
         }
 #elif PLATFORM_WINDOWS
+
+        /// <summary>
+        /// The load assimp library.
+        /// </summary>
         private void LoadAssimpLibrary()
         {
             // Assimp.NET already has the correct values for Windows.
         }
+
 #else
         private void LoadAssimpLibrary()
         {

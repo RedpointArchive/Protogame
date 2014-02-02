@@ -1,31 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace Protogame
+﻿namespace Protogame
 {
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
+
+    /// <summary>
+    /// The effect with matrices.
+    /// </summary>
     public class EffectWithMatrices : Effect, IEffectMatrices
     {
-        private Matrix m_World = Matrix.Identity;
-        private Matrix m_View = Matrix.Identity;
+        /// <summary>
+        /// The m_ projection.
+        /// </summary>
         private Matrix m_Projection = Matrix.Identity;
 
+        /// <summary>
+        /// The m_ view.
+        /// </summary>
+        private Matrix m_View = Matrix.Identity;
+
+        /// <summary>
+        /// The m_ world.
+        /// </summary>
+        private Matrix m_World = Matrix.Identity;
+
+        /// <summary>
+        /// The m_ world view proj param.
+        /// </summary>
         private EffectParameter m_WorldViewProjParam;
+
+        /// <summary>
+        /// The m_ world view proj param dirty.
+        /// </summary>
         private bool m_WorldViewProjParamDirty = true;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EffectWithMatrices"/> class.
+        /// </summary>
+        /// <param name="device">
+        /// The device.
+        /// </param>
+        /// <param name="bytecode">
+        /// The bytecode.
+        /// </param>
         public EffectWithMatrices(GraphicsDevice device, byte[] bytecode)
             : base(device, bytecode)
         {
-            CacheEffectParameters();
+            this.CacheEffectParameters();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EffectWithMatrices"/> class.
+        /// </summary>
+        /// <param name="cloneSource">
+        /// The clone source.
+        /// </param>
         protected EffectWithMatrices(EffectWithMatrices cloneSource)
             : base(cloneSource)
         {
-            CacheEffectParameters();
+            this.CacheEffectParameters();
 
             this.m_World = cloneSource.m_World;
             this.m_View = cloneSource.m_View;
@@ -33,18 +65,21 @@ namespace Protogame
         }
 
         /// <summary>
-        /// Gets or sets the world matrix.
+        /// Gets or sets the projection matrix.
         /// </summary>
-        public Matrix World
+        /// <value>
+        /// The projection.
+        /// </value>
+        public Matrix Projection
         {
             get
             {
-                return this.m_World;
+                return this.m_Projection;
             }
 
             set
             {
-                this.m_World = value;
+                this.m_Projection = value;
                 this.m_WorldViewProjParamDirty = true;
             }
         }
@@ -52,6 +87,9 @@ namespace Protogame
         /// <summary>
         /// Gets or sets the view matrix.
         /// </summary>
+        /// <value>
+        /// The view.
+        /// </value>
         public Matrix View
         {
             get
@@ -67,27 +105,42 @@ namespace Protogame
         }
 
         /// <summary>
-        /// Gets or sets the projection matrix.
+        /// Gets or sets the world matrix.
         /// </summary>
-        public Matrix Projection
+        /// <value>
+        /// The world.
+        /// </value>
+        public Matrix World
         {
             get
             {
-                return this.m_Projection;
+                return this.m_World;
             }
 
             set
             {
-                this.m_Projection = value;
+                this.m_World = value;
                 this.m_WorldViewProjParamDirty = true;
             }
         }
 
+        /// <summary>
+        /// The clone.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Effect"/>.
+        /// </returns>
         public override Effect Clone()
         {
             return new EffectWithMatrices(this);
         }
 
+        /// <summary>
+        /// The on apply.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         protected override bool OnApply()
         {
             if (this.m_WorldViewProjParamDirty)
@@ -106,6 +159,9 @@ namespace Protogame
             return false;
         }
 
+        /// <summary>
+        /// The cache effect parameters.
+        /// </summary>
         private void CacheEffectParameters()
         {
             this.m_WorldViewProjParam = this.Parameters["WorldViewProj"];

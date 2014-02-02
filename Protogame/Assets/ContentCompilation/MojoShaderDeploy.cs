@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-
-namespace Protogame
+﻿namespace Protogame
 {
+    using System;
+    using System.IO;
+    using System.Reflection;
+
     /// <summary>
     /// MojoShader under Windows is hard-coded to reference the 32-bit version, but model
     /// compilation via AssImp requires that it's loaded DLL match the processor architecture.
@@ -29,6 +29,7 @@ namespace Protogame
             {
                 File.Delete("libmojoshader_32.dll");
             }
+
 #else
             if (File.Exists("libmojoshader.dll"))
             {

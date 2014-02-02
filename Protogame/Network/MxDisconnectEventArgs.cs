@@ -8,6 +8,14 @@
     public class MxDisconnectEventArgs : EventArgs
     {
         /// <summary>
+        /// Gets or sets the client.
+        /// </summary>
+        /// <value>
+        /// The client.
+        /// </value>
+        public MxClient Client { get; set; }
+
+        /// <summary>
         /// Gets or sets the disconnect accumulator.
         /// </summary>
         /// <value>
@@ -30,13 +38,5 @@
         /// Whether or not the client has disconnected.
         /// </value>
         public bool IsDisconnected { get; set; }
-
-        /// <summary>
-        /// Gets or sets the client.
-        /// </summary>
-        /// <value>
-        /// The client.
-        /// </value>
-        public MxClient Client { get; set; }
     }
 }

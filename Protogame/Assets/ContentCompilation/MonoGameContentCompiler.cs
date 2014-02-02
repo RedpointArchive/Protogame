@@ -8,8 +8,27 @@ using MonoGamePlatform = Microsoft.Xna.Framework.Content.Pipeline.TargetPlatform
 
 namespace Protogame
 {
+    /// <summary>
+    /// An abstract class that provides common functions for asset compilers that
+    /// compile via the MonoGame content pipeline.
+    /// </summary>
+    /// <remarks>
+    /// The base abstract class for asset compilers that pass their content through
+    /// the MonoGame content pipeline.  This provides a general purpose mechanism
+    /// to call upon the MonoGame content pipeline to compile the input object
+    /// and return the resulting XNB file.
+    /// </remarks>
     public abstract class MonoGameContentCompiler
     {
+        /// <summary>
+        /// Compile the specified input object and return the XNB file as a byte array.
+        /// </summary>
+        /// <param name="content">
+        /// The content to compile.
+        /// </param>
+        /// <returns>
+        /// The compiled XNB file as a byte array.
+        /// </returns>
         protected byte[] CompileAndGetBytes(object content)
         {
             var temp = Path.GetTempFileName();
@@ -19,14 +38,15 @@ namespace Protogame
                 using (var stream = new FileStream(temp, FileMode.Open, FileAccess.Write))
                 {
                     compiler.Compile(
-                        stream,
-                        content,
-                        MonoGamePlatform.Windows,
-                        GraphicsProfile.Reach,
-                        false,
-                        Environment.CurrentDirectory,
+                        stream, 
+                        content, 
+                        MonoGamePlatform.Windows, 
+                        GraphicsProfile.Reach, 
+                        false, 
+                        Environment.CurrentDirectory, 
                         Environment.CurrentDirectory);
                 }
+
                 byte[] result;
                 using (var stream = new FileStream(temp, FileMode.Open, FileAccess.Read))
                 {
@@ -36,6 +56,7 @@ namespace Protogame
                         result = reader.ReadBytes((int)stream.Length);
                     }
                 }
+
                 File.Delete(temp);
                 return result;
             }

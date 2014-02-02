@@ -1,12 +1,36 @@
 namespace Protogame
 {
+    /// <summary>
+    /// The font asset saver.
+    /// </summary>
     public class FontAssetSaver : IAssetSaver
     {
+        /// <summary>
+        /// The can handle.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         public bool CanHandle(IAsset asset)
         {
             return asset is FontAsset;
         }
 
+        /// <summary>
+        /// The handle.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="target">
+        /// The target.
+        /// </param>
+        /// <returns>
+        /// The <see cref="dynamic"/>.
+        /// </returns>
         public dynamic Handle(IAsset asset, AssetTarget target)
         {
             var fontAsset = asset as FontAsset;
@@ -15,21 +39,21 @@ namespace Protogame
             {
                 return new CompiledAsset
                 {
-                    Loader = typeof(FontAssetLoader).FullName,
+                    Loader = typeof(FontAssetLoader).FullName, 
                     PlatformData = fontAsset.PlatformData
                 };
             }
 
-            return new
-            {
-                Loader = typeof(FontAssetLoader).FullName,
-                FontSize = fontAsset.FontSize,
-                FontName = fontAsset.FontName,
-                UseKerning = fontAsset.UseKerning,
-                Spacing = fontAsset.Spacing,
-                PlatformData = target == AssetTarget.SourceFile ? null : fontAsset.PlatformData
-            };
+            return
+                new
+                {
+                    Loader = typeof(FontAssetLoader).FullName, 
+                    fontAsset.FontSize, 
+                    fontAsset.FontName, 
+                    fontAsset.UseKerning, 
+                    fontAsset.Spacing, 
+                    PlatformData = target == AssetTarget.SourceFile ? null : fontAsset.PlatformData
+                };
         }
     }
 }
-

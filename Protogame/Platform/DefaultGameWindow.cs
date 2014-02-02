@@ -2,7 +2,6 @@
 
 namespace Protogame
 {
-    using System;
     using Microsoft.Xna.Framework;
 
     /// <summary>
@@ -13,12 +12,14 @@ namespace Protogame
         /// <summary>
         /// Stores a reference to the underlying XNA game window.
         /// </summary>
-        private GameWindow m_GameWindow;
+        private readonly GameWindow m_GameWindow;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Protogame.Platform.DefaultGameWindow"/> class.
+        /// Initializes a new instance of the <see cref="Protogame.DefaultGameWindow"/> class.
         /// </summary>
-        /// <param name="gameWindow">The underlying XNA game window to wrap.</param>
+        /// <param name="gameWindow">
+        /// The underlying XNA game window to wrap.
+        /// </param>
         public DefaultGameWindow(GameWindow gameWindow)
         {
             this.m_GameWindow = gameWindow;
@@ -27,7 +28,9 @@ namespace Protogame
         /// <summary>
         /// Gets the client bounds of the window.
         /// </summary>
-        /// <value>The client bounds of the window.</value>
+        /// <value>
+        /// The client bounds of the window.
+        /// </value>
         public Rectangle ClientBounds
         {
             get
@@ -40,7 +43,9 @@ namespace Protogame
         /// Gets or sets the title of the window. Ignored on platforms where
         /// the title is non-existent (such as mobile platforms).
         /// </summary>
-        /// <value>The title shown on the window.</value>
+        /// <value>
+        /// The title shown on the window.
+        /// </value>
         public string Title
         {
             get

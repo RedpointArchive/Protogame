@@ -5,43 +5,22 @@ using MonoGamePlatform = Microsoft.Xna.Framework.Content.Pipeline.TargetPlatform
 
 namespace Protogame
 {
+    /// <summary>
+    /// The target platform cast.
+    /// </summary>
     public class TargetPlatformCast
     {
-        public static MonoGamePlatform ToMonoGamePlatform(TargetPlatform platform)
-        {
-            switch (platform)
-            {
-                case TargetPlatform.Windows:
-                    return MonoGamePlatform.Windows;
-                case TargetPlatform.Xbox360:
-                    return MonoGamePlatform.Xbox360;
-                case TargetPlatform.WindowsPhone:
-                    return MonoGamePlatform.WindowsPhone;
-                case TargetPlatform.iOS:
-                    return MonoGamePlatform.iOS;
-                case TargetPlatform.Android:
-                    return MonoGamePlatform.Android;
-                case TargetPlatform.Linux:
-                    return MonoGamePlatform.Linux;
-                case TargetPlatform.MacOSX:
-                    return MonoGamePlatform.MacOSX;
-                case TargetPlatform.WindowsStoreApp:
-                    return MonoGamePlatform.WindowsStoreApp;
-                case TargetPlatform.NativeClient:
-                    return MonoGamePlatform.NativeClient;
-                case TargetPlatform.Ouya:
-                    return MonoGamePlatform.Ouya;
-                case TargetPlatform.PlayStationMobile:
-                    return MonoGamePlatform.PlayStationMobile;
-                case TargetPlatform.WindowsPhone8:
-                    return MonoGamePlatform.WindowsPhone8;
-                case TargetPlatform.RaspberryPi:
-                    return MonoGamePlatform.RaspberryPi;
-                default:
-                    throw new NotSupportedException();
-            }
-        }
-
+        /// <summary>
+        /// The from mono game platform.
+        /// </summary>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
+        /// <returns>
+        /// The <see cref="TargetPlatform"/>.
+        /// </returns>
+        /// <exception cref="NotSupportedException">
+        /// </exception>
         public static TargetPlatform FromMonoGamePlatform(MonoGamePlatform platform)
         {
             switch (platform)
@@ -72,6 +51,52 @@ namespace Protogame
                     return TargetPlatform.WindowsPhone8;
                 case MonoGamePlatform.RaspberryPi:
                     return TargetPlatform.RaspberryPi;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// The to mono game platform.
+        /// </summary>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
+        /// <returns>
+        /// The <see cref="TargetPlatform"/>.
+        /// </returns>
+        /// <exception cref="NotSupportedException">
+        /// </exception>
+        public static MonoGamePlatform ToMonoGamePlatform(TargetPlatform platform)
+        {
+            switch (platform)
+            {
+                case TargetPlatform.Windows:
+                    return MonoGamePlatform.Windows;
+                case TargetPlatform.Xbox360:
+                    return MonoGamePlatform.Xbox360;
+                case TargetPlatform.WindowsPhone:
+                    return MonoGamePlatform.WindowsPhone;
+                case TargetPlatform.iOS:
+                    return MonoGamePlatform.iOS;
+                case TargetPlatform.Android:
+                    return MonoGamePlatform.Android;
+                case TargetPlatform.Linux:
+                    return MonoGamePlatform.Linux;
+                case TargetPlatform.MacOSX:
+                    return MonoGamePlatform.MacOSX;
+                case TargetPlatform.WindowsStoreApp:
+                    return MonoGamePlatform.WindowsStoreApp;
+                case TargetPlatform.NativeClient:
+                    return MonoGamePlatform.NativeClient;
+                case TargetPlatform.Ouya:
+                    return MonoGamePlatform.Ouya;
+                case TargetPlatform.PlayStationMobile:
+                    return MonoGamePlatform.PlayStationMobile;
+                case TargetPlatform.WindowsPhone8:
+                    return MonoGamePlatform.WindowsPhone8;
+                case TargetPlatform.RaspberryPi:
+                    return MonoGamePlatform.RaspberryPi;
                 default:
                     throw new NotSupportedException();
             }

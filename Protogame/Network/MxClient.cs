@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Protogame
+﻿namespace Protogame
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +6,6 @@ namespace Protogame
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
-    using ProtoBuf;
 
     /// <summary>
     /// A client on the Mx protocol.
@@ -22,9 +19,24 @@ namespace Protogame
         private readonly int m_DisconnectLimit;
 
         /// <summary>
+        /// The limit at which point the DisconnectWarning events will be raised.
+        /// </summary>
+        private readonly int m_DisconnectWarningLimit;
+
+        /// <summary>
         /// The dispatcher associated with this client.
         /// </summary>
         private readonly MxDispatcher m_Dispatcher;
+
+        /// <summary>
+        /// The dual IP endpoint that we belong to.
+        /// </summary>
+        private readonly DualIPEndPoint m_DualEndPoint;
+
+        /// <summary>
+        /// Whether or not this Mx client is a reliable client.
+        /// </summary>
+        private readonly bool m_IsReliable;
 
         /// <summary>
         /// The packets that are currently waiting to be sent by this client.
@@ -80,21 +92,6 @@ namespace Protogame
         /// The target endpoint that we are connected to.
         /// </summary>
         private readonly IPEndPoint m_TargetEndPoint;
-
-        /// <summary>
-        /// The dual IP endpoint that we belong to.
-        /// </summary>
-        private readonly DualIPEndPoint m_DualEndPoint;
-
-        /// <summary>
-        /// The limit at which point the DisconnectWarning events will be raised.
-        /// </summary>
-        private readonly int m_DisconnectWarningLimit;
-
-        /// <summary>
-        /// Whether or not this Mx client is a reliable client.
-        /// </summary>
-        private readonly bool m_IsReliable;
 
         /// <summary>
         /// The delta time since the last Update() call.
@@ -167,7 +164,12 @@ namespace Protogame
         /// <param name="reliable">
         /// Whether or not this is a reliable Mx client.
         /// </param>
-        public MxClient(MxDispatcher dispatcher, IPEndPoint target, DualIPEndPoint dualEndpoint, UdpClient sharedUdpClient, bool reliable)
+        public MxClient(
+            MxDispatcher dispatcher, 
+            IPEndPoint target, 
+            DualIPEndPoint dualEndpoint, 
+            UdpClient sharedUdpClient, 
+            bool reliable)
         {
             this.m_Dispatcher = dispatcher;
             this.m_TargetEndPoint = target;
@@ -203,6 +205,11 @@ namespace Protogame
         }
 
         /// <summary>
+        /// Raised when the client has been disconnected for longer than one second.
+        /// </summary>
+        public event MxDisconnectEventHandler DisconnectWarning;
+
+        /// <summary>
         /// Raised when the flow control settings have changed.
         /// </summary>
         public event FlowControlChangedEventHandler FlowControlChanged;
@@ -228,9 +235,18 @@ namespace Protogame
         public event MxMessageEventHandler MessageSent;
 
         /// <summary>
-        /// Raised when the client has been disconnected for longer than one second.
+        /// Gets the dual endpoint that this client belongs to.
         /// </summary>
-        public event MxDisconnectEventHandler DisconnectWarning;
+        /// <value>
+        /// The dual endpoint that this client belongs to.
+        /// </value>
+        public DualIPEndPoint DualEndpoint
+        {
+            get
+            {
+                return new DualIPEndPoint(this.m_DualEndPoint.RealtimeEndPoint, this.m_DualEndPoint.ReliableEndPoint);
+            }
+        }
 
         /// <summary>
         /// Gets the endpoint that this client is responsible for.
@@ -243,22 +259,6 @@ namespace Protogame
             get
             {
                 return new IPEndPoint(this.m_TargetEndPoint.Address, this.m_TargetEndPoint.Port);
-            }
-        }
-
-        /// <summary>
-        /// Gets the dual endpoint that this client belongs to.
-        /// </summary>
-        /// <value>
-        /// The dual endpoint that this client belongs to.
-        /// </value>
-        public DualIPEndPoint DualEndpoint
-        {
-            get
-            {
-                return new DualIPEndPoint(
-                    this.m_DualEndPoint.RealtimeEndPoint,
-                    this.m_DualEndPoint.ReliableEndPoint);
             }
         }
 
@@ -279,12 +279,10 @@ namespace Protogame
         /// <summary>
         /// The amount of network latency (lag) in milliseconds.
         /// </summary>
-        /// <value>The network latency.</value>
-        public float Latency
-        {
-            get;
-            private set;
-        }
+        /// <value>
+        /// The network latency.
+        /// </value>
+        public float Latency { get; private set; }
 
         /// <summary>
         /// Enqueues a byte array to be handled in the receiving logic when Update() is called.
@@ -318,13 +316,14 @@ namespace Protogame
 
             if (this.m_DisconnectAccumulator > this.m_DisconnectWarningLimit)
             {
-                this.OnDisconnectWarning(new MxDisconnectEventArgs
-                {
-                    Client = this,
-                    DisconnectAccumulator = this.m_DisconnectAccumulator,
-                    DisconnectTimeout = this.m_DisconnectLimit,
-                    IsDisconnected = this.m_DisconnectAccumulator > this.m_DisconnectLimit
-                });
+                this.OnDisconnectWarning(
+                    new MxDisconnectEventArgs
+                    {
+                        Client = this, 
+                        DisconnectAccumulator = this.m_DisconnectAccumulator, 
+                        DisconnectTimeout = this.m_DisconnectLimit, 
+                        IsDisconnected = this.m_DisconnectAccumulator > this.m_DisconnectLimit
+                    });
             }
 
             if (this.m_DisconnectAccumulator > this.m_DisconnectLimit)
@@ -349,6 +348,21 @@ namespace Protogame
             this.PerformSend();
 
             this.PerformReceive();
+        }
+
+        /// <summary>
+        /// Raise the DisconnectWarning event.
+        /// </summary>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        protected virtual void OnDisconnectWarning(MxDisconnectEventArgs e)
+        {
+            MxDisconnectEventHandler handler = this.DisconnectWarning;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         /// <summary>
@@ -405,21 +419,6 @@ namespace Protogame
         protected virtual void OnMessageSent(MxMessageEventArgs e)
         {
             var handler = this.MessageSent;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Raise the DisconnectWarning event.
-        /// </summary>
-        /// <param name="e">
-        /// The event arguments.
-        /// </param>
-        protected virtual void OnDisconnectWarning(MxDisconnectEventArgs e)
-        {
-            MxDisconnectEventHandler handler = this.DisconnectWarning;
             if (handler != null)
             {
                 handler(this, e);
@@ -573,16 +572,12 @@ namespace Protogame
                                 this.m_SendQueue.Remove(idx);
                                 this.m_SendMessageQueue.Remove(idx);
 
-                                this.Latency = (float)rtt * 1000f;
+                                this.Latency = rtt * 1000f;
 
                                 foreach (var payload in payloads)
                                 {
                                     this.OnMessageAcknowledged(
-                                        new MxMessageEventArgs
-                                        {
-                                            Client = this,
-                                            Payload = payload
-                                        });
+                                        new MxMessageEventArgs { Client = this, Payload = payload });
                                 }
                             }
                             else
@@ -628,7 +623,9 @@ namespace Protogame
                 {
                     // In reliable mode, we know the sender is MxReliability and that it's optimized it's
                     // send calls for ~512 bytes.  Thus we just take one packet and use that.
-                    packets = this.m_PendingSendPackets.Count > 0 ? new[] { this.m_PendingSendPackets.Peek() } : new byte[0][];
+                    packets = this.m_PendingSendPackets.Count > 0
+                                  ? new[] { this.m_PendingSendPackets.Peek() }
+                                  : new byte[0][];
                 }
                 else
                 {

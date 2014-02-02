@@ -12,7 +12,7 @@ namespace Protogame
     /// </para>
     /// <para>
     /// There is a default world manager implementation bound when loading either the
-    /// <see cref="Protogame2DIoCModule"/> or the <see cref="Protogame3DIoCModule" />.
+    /// <see cref="Protogame2DIoCModule"/> or the <see cref="Protogame3DIoCModule"/>.
     /// You can rebind this interface to perform advanced rendering or update logic.
     /// </para>
     /// </summary>
@@ -27,7 +27,9 @@ namespace Protogame
         /// <param name="game">
         /// The current game instance.
         /// </param>
-        /// <typeparam name="T">The type of the game instance that is running.</typeparam>
+        /// <typeparam name="T">
+        /// The type of the game instance that is running.
+        /// </typeparam>
         void Render<T>(T game) where T : Game, ICoreGame;
 
         /// <summary>
@@ -39,7 +41,9 @@ namespace Protogame
         /// <param name="game">
         /// The current game instance.
         /// </param>
-        /// <typeparam name="T">The type of the game instance that is running.</typeparam>
+        /// <typeparam name="T">
+        /// The type of the game instance that is running.
+        /// </typeparam>
         void Update<T>(T game) where T : Game, ICoreGame;
     }
 }

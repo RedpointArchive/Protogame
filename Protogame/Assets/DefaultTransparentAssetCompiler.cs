@@ -1,22 +1,77 @@
-﻿using System;
-using Ninject;
-
-namespace Protogame
+﻿namespace Protogame
 {
+    using Ninject;
+
+    /// <summary>
+    /// The default transparent asset compiler.
+    /// </summary>
     public class DefaultTransparentAssetCompiler : ITransparentAssetCompiler
     {
-        private IKernel m_Kernel;
+        /// <summary>
+        /// The m_ kernel.
+        /// </summary>
+        private readonly IKernel m_Kernel;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultTransparentAssetCompiler"/> class.
+        /// </summary>
+        /// <param name="kernel">
+        /// The kernel.
+        /// </param>
         public DefaultTransparentAssetCompiler(IKernel kernel)
         {
             this.m_Kernel = kernel;
         }
 
+        /// <summary>
+        /// The AssetCompilerProxyInterface interface.
+        /// </summary>
+        private interface IAssetCompilerProxyInterface
+        {
+            /// <summary>
+            /// The compile.
+            /// </summary>
+            /// <param name="asset">
+            /// The asset.
+            /// </param>
+            /// <param name="platform">
+            /// The platform.
+            /// </param>
+            void Compile(IAsset asset, TargetPlatform platform);
+        }
+
+        /// <summary>
+        /// The handle.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="force">
+        /// The force.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IAsset"/>.
+        /// </returns>
         public IAsset Handle(IAsset asset, bool force = false)
         {
             return this.HandlePlatform(asset, TargetPlatformUtility.GetExecutingPlatform(), force);
         }
 
+        /// <summary>
+        /// The handle platform.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
+        /// <param name="force">
+        /// The force.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IAsset"/>.
+        /// </returns>
         public IAsset HandlePlatform(IAsset asset, TargetPlatform platform, bool force = false)
         {
             if (asset.SourceOnly || force)
@@ -29,29 +84,50 @@ namespace Protogame
                     // for loading only have source information.
                     return asset;
                 }
+
                 var proxyType = typeof(AssetCompilerProxy<>).MakeGenericType(asset.GetType());
-                var proxy = (IAssetCompilerProxyInterface)
-                    proxyType.GetConstructor(new Type[] { compilerType }).Invoke(new object[] { compiler });
+                var proxy =
+                    (IAssetCompilerProxyInterface)
+                    proxyType.GetConstructor(new[] { compilerType }).Invoke(new[] { compiler });
                 proxy.Compile(asset, platform);
             }
 
             return asset;
         }
 
-        private interface IAssetCompilerProxyInterface
+        /// <summary>
+        /// The asset compiler proxy.
+        /// </summary>
+        /// <typeparam name="T">
+        /// </typeparam>
+        private class AssetCompilerProxy<T> : IAssetCompilerProxyInterface
+            where T : IAsset
         {
-            void Compile(IAsset asset, TargetPlatform platform);
-        }
+            /// <summary>
+            /// The m_ asset compiler.
+            /// </summary>
+            private readonly IAssetCompiler<T> m_AssetCompiler;
 
-        private class AssetCompilerProxy<T> : IAssetCompilerProxyInterface where T : IAsset
-        {
-            private IAssetCompiler<T> m_AssetCompiler;
-
+            /// <summary>
+            /// Initializes a new instance of the <see cref="AssetCompilerProxy{T}"/> class.
+            /// </summary>
+            /// <param name="compiler">
+            /// The compiler.
+            /// </param>
             public AssetCompilerProxy(IAssetCompiler<T> compiler)
             {
                 this.m_AssetCompiler = compiler;
             }
 
+            /// <summary>
+            /// The compile.
+            /// </summary>
+            /// <param name="asset">
+            /// The asset.
+            /// </param>
+            /// <param name="platform">
+            /// The platform.
+            /// </param>
             public void Compile(IAsset asset, TargetPlatform platform)
             {
                 this.m_AssetCompiler.Compile((T)asset, platform);

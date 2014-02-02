@@ -7,8 +7,20 @@ using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 
 namespace Protogame
 {
+    /// <summary>
+    /// The effect asset compiler.
+    /// </summary>
     public class EffectAssetCompiler : IAssetCompiler<EffectAsset>
     {
+        /// <summary>
+        /// The compile.
+        /// </summary>
+        /// <param name="asset">
+        /// The asset.
+        /// </param>
+        /// <param name="platform">
+        /// The platform.
+        /// </param>
         public void Compile(EffectAsset asset, TargetPlatform platform)
         {
             if (string.IsNullOrEmpty(asset.Code))
@@ -24,6 +36,7 @@ namespace Protogame
             {
                 writer.Write(output.EffectCode);
             }
+
             output.Identity = new ContentIdentity(tempPath);
 
             var tempOutputPath = Path.GetTempFileName();
@@ -33,11 +46,7 @@ namespace Protogame
             context.ActualOutputFilename = tempOutputPath;
             var content = processor.Process(output, context);
 
-            asset.PlatformData = new PlatformData
-            {
-                Platform = platform,
-                Data = content.GetEffectCode()
-            };
+            asset.PlatformData = new PlatformData { Platform = platform, Data = content.GetEffectCode() };
 
             File.Delete(tempPath);
             File.Delete(tempOutputPath);

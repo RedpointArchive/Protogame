@@ -1,9 +1,16 @@
-using System;
-
 namespace Protogame
 {
-    class DefaultUpdateContext : IUpdateContext
+    /// <summary>
+    /// The default update context.
+    /// </summary>
+    internal class DefaultUpdateContext : IUpdateContext
     {
+        /// <summary>
+        /// The update.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
         public void Update(IGameContext context)
         {
             // No logic required for our default update context.  Normally
@@ -12,4 +19,3 @@ namespace Protogame
         }
     }
 }
-

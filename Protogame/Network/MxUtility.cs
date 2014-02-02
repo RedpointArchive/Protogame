@@ -1,7 +1,13 @@
 ﻿namespace Protogame
 {
+    /// <summary>
+    /// The mx utility.
+    /// </summary>
     public static class MxUtility
     {
+        /// <summary>
+        /// The u int bitsize.
+        /// </summary>
         public const int UIntBitsize = 32;
 
         /// <summary>
@@ -9,9 +15,13 @@
         /// If the "new" sequence ID represents a later message, then the result is positive;
         /// if the "new" sequence ID represents an older message, then the result is negative.
         /// </summary>
-        /// <param name="new"></param>
-        /// <param name="current"></param>
-        /// <returns></returns>
+        /// <param name="new">
+        /// </param>
+        /// <param name="current">
+        /// </param>
+        /// <returns>
+        /// The <see cref="long"/>.
+        /// </returns>
         public static long GetSequenceNumberDifference(uint @new, uint current)
         {
             var max = uint.MaxValue;

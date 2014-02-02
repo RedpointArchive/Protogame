@@ -37,10 +37,7 @@
         /// <value>
         /// The ticks per second.
         /// </value>
-        double TicksPerSecond
-        {
-            get;
-        }
+        double TicksPerSecond { get; }
 
         /// <summary>
         /// Loads vertex and index buffers for all of frames in this animation.

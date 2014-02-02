@@ -23,14 +23,14 @@
         private readonly UdpClient m_RealtimeUdpClient;
 
         /// <summary>
+        /// A list of reliability objects that provide reliability for Mx clients.
+        /// </summary>
+        private readonly Dictionary<DualIPEndPoint, MxReliability> m_Reliabilities;
+
+        /// <summary>
         /// A list of currently connected reliable Mx clients.
         /// </summary>
         private readonly Dictionary<DualIPEndPoint, MxClient> m_ReliableMxClients;
-
-        /// <summary>
-        /// A list of reliability objects that provide reliability for Mx clients.
-        /// </summary>
-        private readonly Dictionary<DualIPEndPoint, MxReliability> m_Reliabilities; 
 
         /// <summary>
         /// The UDP client that reliable messages will be received on.
@@ -38,9 +38,9 @@
         private readonly UdpClient m_ReliableUdpClient;
 
         /// <summary>
-        /// Whether this dispatcher has been closed.
+        /// The total number of unreliable bytes received during the last frame.
         /// </summary>
-        private bool m_Closed;
+        private int m_BytesLastReceived;
 
         /// <summary>
         /// The total number of unreliable bytes sent during the last frame.
@@ -48,9 +48,9 @@
         private int m_BytesLastSent;
 
         /// <summary>
-        /// The total number of unreliable bytes received during the last frame.
+        /// Whether this dispatcher has been closed.
         /// </summary>
-        private int m_BytesLastReceived;
+        private bool m_Closed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MxDispatcher"/> class.
@@ -117,6 +117,20 @@
         public event MxReliabilityTransmitEventHandler ReliableSendProgress;
 
         /// <summary>
+        /// Gets a value indicating whether this dispatcher has been closed.
+        /// </summary>
+        /// <value>
+        /// Whether or not this dispatcher has been closed.
+        /// </value>
+        public bool Closed
+        {
+            get
+            {
+                return this.m_Closed;
+            }
+        }
+
+        /// <summary>
         /// Gets an enumeration of the endpoints of all connected clients.
         /// </summary>
         /// <value>
@@ -126,8 +140,10 @@
         {
             get
             {
-                return this.m_RealtimeMxClients.Select(x => x.Key).Union(
-                    this.m_ReliableMxClients.Select(x => x.Key)).ToArray();
+                return
+                    this.m_RealtimeMxClients.Select(x => x.Key)
+                        .Union(this.m_ReliableMxClients.Select(x => x.Key))
+                        .ToArray();
             }
         }
 
@@ -141,23 +157,9 @@
         {
             get
             {
-                return this.m_RealtimeMxClients
-                        .Select(x => new KeyValuePair<DualIPEndPoint, float>(x.Key, x.Value.Latency))
-                        .ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this dispatcher has been closed.
-        /// </summary>
-        /// <value>
-        /// Whether or not this dispatcher has been closed.
-        /// </value>
-        public bool Closed
-        {
-            get
-            {
-                return this.m_Closed;
+                return
+                    this.m_RealtimeMxClients.Select(
+                        x => new KeyValuePair<DualIPEndPoint, float>(x.Key, x.Value.Latency)).ToArray();
             }
         }
 
@@ -198,36 +200,22 @@
 
             this.m_RealtimeMxClients[endpoint] = new MxClient(
                 this, 
-                endpoint.RealtimeEndPoint,
-                endpoint,
+                endpoint.RealtimeEndPoint, 
+                endpoint, 
                 this.m_RealtimeUdpClient, 
                 false);
             this.OnClientConnected(this.m_RealtimeMxClients[endpoint]);
             this.RegisterForEvents(this.m_RealtimeMxClients[endpoint]);
 
             this.m_ReliableMxClients[endpoint] = new MxClient(
-                this,
-                endpoint.ReliableEndPoint,
-                endpoint,
+                this, 
+                endpoint.ReliableEndPoint, 
+                endpoint, 
                 this.m_ReliableUdpClient, 
                 true);
             this.m_Reliabilities[endpoint] = new MxReliability(this.m_ReliableMxClients[endpoint]);
             this.OnClientConnected(this.m_ReliableMxClients[endpoint]);
             this.RegisterForEvents(this.m_Reliabilities[endpoint]);
-        }
-
-        public int GetBytesLastSentAndReset()
-        {
-            var value = this.m_BytesLastSent;
-            this.m_BytesLastSent = 0;
-            return value;
-        }
-
-        public int GetBytesLastReceivedAndReset()
-        {
-            var value = this.m_BytesLastReceived;
-            this.m_BytesLastReceived = 0;
-            return value;
         }
 
         /// <summary>
@@ -270,6 +258,32 @@
         }
 
         /// <summary>
+        /// The get bytes last received and reset.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public int GetBytesLastReceivedAndReset()
+        {
+            var value = this.m_BytesLastReceived;
+            this.m_BytesLastReceived = 0;
+            return value;
+        }
+
+        /// <summary>
+        /// The get bytes last sent and reset.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public int GetBytesLastSentAndReset()
+        {
+            var value = this.m_BytesLastSent;
+            this.m_BytesLastSent = 0;
+            return value;
+        }
+
+        /// <summary>
         /// Resolves an IP endpoint and reliability information to a dual IP endpoint.
         /// </summary>
         /// <param name="endpoint">
@@ -289,7 +303,9 @@
                 mxClients.Select(x => x.Key)
                     .FirstOrDefault(
                         x =>
-                        object.Equals(x.RealtimeEndPoint != null ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address, endpoint.Address)
+                        Equals(
+                            x.RealtimeEndPoint != null ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address, 
+                            endpoint.Address)
                         && (!reliable
                                 ? (x.RealtimeEndPoint.Port == endpoint.Port)
                                 : (x.ReliableEndPoint.Port == endpoint.Port)));
@@ -565,7 +581,7 @@
         }
 
         /// <summary>
-        /// Handle receiving a MessageReceived event from a reliability class.
+        /// Handle receiving a FragmentReceived event from a reliability class.
         /// </summary>
         /// <param name="sender">
         /// The sender of the event.
@@ -573,23 +589,9 @@
         /// <param name="e">
         /// The event arguments.
         /// </param>
-        private void OnReliabilityMessageReceived(object sender, MxMessageEventArgs e)
+        private void OnReliabilityFragmentReceived(object sender, MxReliabilityTransmitEventArgs e)
         {
-            this.OnMessageReceived(e);
-        }
-
-        /// <summary>
-        /// Handle receiving a MessageAcknowledged event from a reliability class.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender of the event.
-        /// </param>
-        /// <param name="e">
-        /// The event arguments.
-        /// </param>
-        private void OnReliabilityMessageAcknowledged(object sender, MxMessageEventArgs e)
-        {
-            this.OnMessageAcknowledged(e);
+            this.OnReliableReceivedProgress(e);
         }
 
         /// <summary>
@@ -607,7 +609,7 @@
         }
 
         /// <summary>
-        /// Handle receiving a FragmentReceived event from a reliability class.
+        /// Handle receiving a MessageAcknowledged event from a reliability class.
         /// </summary>
         /// <param name="sender">
         /// The sender of the event.
@@ -615,9 +617,23 @@
         /// <param name="e">
         /// The event arguments.
         /// </param>
-        private void OnReliabilityFragmentReceived(object sender, MxReliabilityTransmitEventArgs e)
+        private void OnReliabilityMessageAcknowledged(object sender, MxMessageEventArgs e)
         {
-            this.OnReliableReceivedProgress(e);
+            this.OnMessageAcknowledged(e);
+        }
+
+        /// <summary>
+        /// Handle receiving a MessageReceived event from a reliability class.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender of the event.
+        /// </param>
+        /// <param name="e">
+        /// The event arguments.
+        /// </param>
+        private void OnReliabilityMessageReceived(object sender, MxMessageEventArgs e)
+        {
+            this.OnMessageReceived(e);
         }
 
         /// <summary>
@@ -774,8 +790,8 @@
                         opposingMxClients.Select(x => x.Key)
                             .Where(
                                 x =>
-                                object.Equals(
-                                    reliable ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address,
+                                Equals(
+                                    reliable ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address, 
                                     receive.Address))
                             .ToList();
 
@@ -787,7 +803,7 @@
                     {
                         // We have an existing endpoint on the same address for the opposite connection type,
                         // and it is missing an endpoint for this connection type.
-                        
+
                         // Before we change the dual IP endpoint, we have to temporarily remove it out of the
                         // opposing client list.  This is because by changing the dual endpoint's properties,
                         // we are also changing it's hash code, so it will not resolve in future lookups in

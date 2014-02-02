@@ -1,22 +1,47 @@
-using System;
-using System.IO;
-using System.Text;
-
 namespace Protogame
 {
+    using System.IO;
+    using System.Text;
+
+    /// <summary>
+    /// The default level manager.
+    /// </summary>
     public class DefaultLevelManager : ILevelManager
     {
-        private ILevelReader m_Reader;
-        private IAssetManager m_AssetManager;
-    
-        public DefaultLevelManager(
-            ILevelReader reader,
-            IAssetManagerProvider assetManagerProvider)
+        /// <summary>
+        /// The m_ asset manager.
+        /// </summary>
+        private readonly IAssetManager m_AssetManager;
+
+        /// <summary>
+        /// The m_ reader.
+        /// </summary>
+        private readonly ILevelReader m_Reader;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultLevelManager"/> class.
+        /// </summary>
+        /// <param name="reader">
+        /// The reader.
+        /// </param>
+        /// <param name="assetManagerProvider">
+        /// The asset manager provider.
+        /// </param>
+        public DefaultLevelManager(ILevelReader reader, IAssetManagerProvider assetManagerProvider)
         {
             this.m_Reader = reader;
             this.m_AssetManager = assetManagerProvider.GetAssetManager();
         }
 
+        /// <summary>
+        /// The load.
+        /// </summary>
+        /// <param name="world">
+        /// The world.
+        /// </param>
+        /// <param name="name">
+        /// The name.
+        /// </param>
         public void Load(IWorld world, string name)
         {
             var levelAsset = this.m_AssetManager.Get<LevelAsset>(name);
@@ -29,4 +54,3 @@ namespace Protogame
         }
     }
 }
-

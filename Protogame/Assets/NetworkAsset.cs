@@ -1,3 +1,4 @@
+
 #if FALSE
 
 using System;
@@ -21,7 +22,7 @@ namespace Protogame
         [Local]
         private ITransparentAssetCompiler m_TransparentAssetCompiler;
 
-        /// <summary>
+        // <summary>
         /// Raised when the network asset is dirtied.
         /// </summary>
         [field: NonSerialized]
@@ -44,10 +45,10 @@ namespace Protogame
         public bool IsDirty { get; private set; }
 
         internal NetworkAsset(
-            IAssetLoader[] loaders,
-            ITransparentAssetCompiler transparentAssetCompiler,
-            object[] candidates,
-            string name,
+            IAssetLoader[] loaders, 
+            ITransparentAssetCompiler transparentAssetCompiler, 
+            object[] candidates, 
+            string name, 
             NetworkAssetManager manager)
         {
             this.m_AssetLoaders = loaders;
@@ -161,9 +162,9 @@ namespace Protogame
                 return obj;
             }
             return new NetworkAssetProxy<T>(
-                this.Manager,
-                this,
-                this.Name,
+                this.Manager, 
+                this, 
+                this.Name, 
                 obj).GetTransparentProxy() as T;
         }
 

@@ -1,9 +1,18 @@
 namespace Protogame
 {
+    /// <summary>
+    /// The link state.
+    /// </summary>
     public enum LinkState
     {
-        None,
+        /// <summary>
+        /// The none.
+        /// </summary>
+        None, 
+
+        /// <summary>
+        /// The clicked.
+        /// </summary>
         Clicked
     }
 }
-
