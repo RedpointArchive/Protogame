@@ -8,6 +8,7 @@ namespace Protogame
     /// for data that is being synchronised over a latent stream (such as a network connection).
     /// </summary>
     /// <typeparam name="T">
+    /// The type of data that will be tracked by the time machine.
     /// </typeparam>
     public abstract class TimeMachine<T>
         where T : struct
@@ -24,12 +25,11 @@ namespace Protogame
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TimeMachine{T}"/> class. 
-        /// Initializes a new instance of the <see cref="Protogame.Network.TimeMachine&lt;&gt;"/> class.
         /// </summary>
         /// <param name="history">
         /// The amount of history to keep in ticks.
         /// </param>
-        public TimeMachine(int history)
+        protected TimeMachine(int history)
         {
             this.m_KnownValues = new SortedList<int, T>();
             this.m_History = history;
@@ -43,7 +43,7 @@ namespace Protogame
         /// The tick at which to retrieve the value.
         /// </param>
         /// <returns>
-        /// The <see cref="T"/>.
+        /// The <typeparamref name="T"/>.
         /// </returns>
         public T Get(int tick)
         {
@@ -152,7 +152,7 @@ namespace Protogame
         protected abstract T AddType(T a, T b);
 
         /// <summary>
-        /// Return the default value of <see cref="T"/> when neither interpolation or extrapolation can be performed.
+        /// Return the default value of <typeparamref cref="T"/> when neither interpolation or extrapolation can be performed.
         /// </summary>
         /// <returns>
         /// The default value.
@@ -160,7 +160,7 @@ namespace Protogame
         protected abstract T DefaultType();
 
         /// <summary>
-        /// Divides an instance of <see cref="T"/> by a numeric value.  Effectively this is
+        /// Divides an instance of <typeparamref cref="T"/> by a numeric value.  Effectively this is
         /// used to calculate the rate at which something is being changed.
         /// </summary>
         /// <returns>
@@ -175,7 +175,7 @@ namespace Protogame
         protected abstract T DivideType(T b, int a);
 
         /// <summary>
-        /// Multiply an instance of <see cref="T"/> by a numeric value.
+        /// Multiply an instance of <typeparamref cref="T"/> by a numeric value.
         /// </summary>
         /// <returns>
         /// The resulting value.
@@ -189,7 +189,7 @@ namespace Protogame
         protected abstract T MultiplyType(T a, int b);
 
         /// <summary>
-        /// Subtract an instance of <see cref="T"/> from another instance of <see cref="T"/>.
+        /// Subtract an instance of <typeparamref cref="T"/> from another instance of <see cref="T"/>.
         /// </summary>
         /// <returns>
         /// The resulting value.

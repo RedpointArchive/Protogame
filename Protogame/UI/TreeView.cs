@@ -193,7 +193,7 @@ namespace Protogame
         /// The layout.
         /// </param>
         /// <returns>
-        /// The <see cref="IEnumerable"/>.
+        /// The <see cref="IEnumerable{TreeEntry}"/>.
         /// </returns>
         public IEnumerable<TreeEntry> GetChildrenWithLayouts(ISkin skin, Rectangle layout)
         {
@@ -220,7 +220,7 @@ namespace Protogame
         /// The exclude.
         /// </param>
         /// <returns>
-        /// The <see cref="List"/>.
+        /// The <see cref="List{TreeEntry}"/>.
         /// </returns>
         public List<TreeEntry> NormalizeTree(TreeEntry tree, bool exclude)
         {
