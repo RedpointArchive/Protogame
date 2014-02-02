@@ -289,7 +289,7 @@
                 mxClients.Select(x => x.Key)
                     .FirstOrDefault(
                         x =>
-                        object.Equals(x.RealtimeEndPoint.Address, endpoint.Address)
+                        object.Equals(x.RealtimeEndPoint != null ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address, endpoint.Address)
                         && (!reliable
                                 ? (x.RealtimeEndPoint.Port == endpoint.Port)
                                 : (x.ReliableEndPoint.Port == endpoint.Port)));

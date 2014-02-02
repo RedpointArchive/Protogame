@@ -20,6 +20,8 @@ namespace Protogame
         private IRawAssetLoader m_RawAssetLoader;
         private IRawAssetSaver m_RawAssetSaver;
 
+        private readonly IProfiler m_Profiler;
+
         private Dictionary<string, IAsset> m_Assets = new Dictionary<string, IAsset>();
         private IAssetLoader[] m_AssetLoaders;
         private IAssetSaver[] m_AssetSavers;
@@ -31,6 +33,7 @@ namespace Protogame
 
         public LocalAssetManager(
             IKernel kernel,
+            IProfiler profiler,
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
             IAssetLoader[] loaders,
@@ -38,6 +41,7 @@ namespace Protogame
             ITransparentAssetCompiler transparentAssetCompiler)
         {
             this.m_Kernel = kernel;
+            this.m_Profiler = profiler;
             this.m_RawAssetLoader = rawLoader;
             this.m_RawAssetSaver = rawSaver;
             this.m_AssetLoaders = loaders;
@@ -99,7 +103,10 @@ namespace Protogame
                 {
                     var assetObj = this.m_Assets[asset];
                     this.m_Assets.Remove(asset);
-                    ((LocalAsset)assetObj).Dirty();
+                    if (assetObj != null)
+                    {
+                        ((LocalAsset)assetObj).Dirty();
+                    }
                 }
             }
         }
@@ -115,7 +122,15 @@ namespace Protogame
         public IAsset GetUnresolved(string asset)
         {
             if (this.m_Assets.ContainsKey(asset))
+            {
+                if (this.m_Assets[asset] == null)
+                {
+                    throw new AssetNotFoundException(asset);
+                }
+
                 return this.m_Assets[asset];
+            }
+
             var candidates = this.m_RawAssetLoader.LoadRawAsset(asset);
             var loaders = this.m_AssetLoaders.ToArray();
             var failedDueToCompilation = false;
@@ -173,6 +188,8 @@ namespace Protogame
 
             if (candidates.Length == 0)
             {
+                this.m_Assets[asset] = null;
+
                 throw new AssetNotFoundException(asset);
             }
 
@@ -185,40 +202,49 @@ namespace Protogame
 
         public T Get<T>(string asset) where T : class, IAsset
         {
-            return this.GetUnresolved(asset).Resolve<T>();
+            using (this.m_Profiler.Measure("asset-manager-get: " + asset))
+            {
+                return this.GetUnresolved(asset).Resolve<T>();
+            }
         }
         
         public T TryGet<T>(string asset) where T : class, IAsset
         {
-            if (string.IsNullOrWhiteSpace(asset))
-                return null;
-            try
+            using (this.m_Profiler.Measure("asset-manager-try-get: " + asset))
             {
-                return this.GetUnresolved(asset).Resolve<T>();
-            }
-            catch (AssetNotFoundException)
-            {
-                return null;
+                if (string.IsNullOrWhiteSpace(asset))
+                    return null;
+                try
+                {
+                    return this.GetUnresolved(asset).Resolve<T>();
+                }
+                catch (AssetNotFoundException)
+                {
+                    return null;
+                }
             }
         }
 
         public IAsset[] GetAll()
         {
-            lock (this.m_Assets)
+            using (this.m_Profiler.Measure("asset-manager-get-all"))
             {
-                this.m_ProxiesLocked = true;
-
-                if (!this.m_HasScanned)
+                lock (this.m_Assets)
                 {
-                    this.RescanAssets();
-                }
+                    this.m_ProxiesLocked = true;
 
-                if (this.GenerateRuntimeProxies)
-                {
-                    return this.m_Assets.Values.OfType<LocalAsset>().Select(x => x.Instance).ToArray();
-                }
+                    if (!this.m_HasScanned)
+                    {
+                        this.RescanAssets();
+                    }
 
-                return this.m_Assets.Values.ToArray();
+                    if (this.GenerateRuntimeProxies)
+                    {
+                        return this.m_Assets.Values.OfType<LocalAsset>().Select(x => x.Instance).ToArray();
+                    }
+
+                    return this.m_Assets.Values.ToArray();
+                }
             }
         }
         

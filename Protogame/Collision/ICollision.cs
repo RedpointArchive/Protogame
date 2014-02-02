@@ -1,9 +1,12 @@
+using Microsoft.Xna.Framework;
+
 namespace Protogame
 {
     public interface ICollision
     {
-        bool CollidesWithSolid(IEntity self, IWorld world, int x, int y);
-        T CollidesWith<T>(IBoundingBox self, IWorld world, int x, int y) where T : Entity;
+        Vector3? CollidesWithTriangle(Ray ray, Vector3[] trianglePoints, out float distance, bool testCulling = true);
+
+        Vector3? CollidesWithTriangle(Ray ray, Vector3 vert0, Vector3 vert1, Vector3 vert2, out float distance, bool testCulling = true);
     }
 }
 

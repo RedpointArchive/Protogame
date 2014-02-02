@@ -13,6 +13,7 @@ namespace Protogame
 
         public GameAssetManagerProvider(
             IKernel kernel,
+            IProfiler profiler,
             IRawAssetLoader rawLoader,
             IRawAssetSaver rawSaver,
             IAssetLoader[] loaders,
@@ -21,6 +22,7 @@ namespace Protogame
         {
             this.m_AssetManager = new LocalAssetManager(
                 kernel,
+                profiler,
                 rawLoader,
                 rawSaver,
                 loaders,
