@@ -1,12 +1,29 @@
 ﻿namespace Protogame
 {
     using System;
+    using Ninject;
 
     /// <summary>
-    /// The ai asset loader.
+    /// The asset loader for <see cref="AIAsset"/>.
     /// </summary>
     public class AIAssetLoader : IAssetLoader
     {
+        /// <summary>
+        /// Used to dependency inject AI assets as they are loaded.
+        /// </summary>
+        private readonly IKernel m_Kernel;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AIAssetLoader"/> class.
+        /// </summary>
+        /// <param name="kernel">
+        /// The dependency injection kernel.
+        /// </param>
+        public AIAssetLoader(IKernel kernel)
+        {
+            this.m_Kernel = kernel;
+        }
+
         /// <summary>
         /// The can handle.
         /// </summary>
@@ -87,7 +104,7 @@
         /// </returns>
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
-            var value = (AIAsset)Activator.CreateInstance(data.type);
+            var value = (AIAsset)this.m_Kernel.Get((Type)data.Type);
             value.Name = name;
             return value;
         }
