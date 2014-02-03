@@ -1,3 +1,6 @@
+using System.Reflection;
+using Assimp.Unmanaged;
+
 namespace Protogame
 {
     using System.Collections.Generic;

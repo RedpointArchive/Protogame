@@ -3,7 +3,6 @@
 
 namespace Protogame
 {
-    #if PLATFORM_WINDOWS
     using System;
     using System.CodeDom.Compiler;
     using System.Collections.Generic;
@@ -15,8 +14,6 @@ namespace Protogame
     using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
     using MonoGame.Framework.Content.Pipeline.Builder;
     using Newtonsoft.Json;
-
-#endif
 
     /// <summary>
     /// The font asset compiler.
