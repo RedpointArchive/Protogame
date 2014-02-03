@@ -47,16 +47,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
     </Content>
-    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_32.so.3.0.1">
-      <Link>libassimp_32.so.3.0.1</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Linux</Platforms>
-    </Content>
-    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_64.so.3.0.1">
-      <Link>libassimp_64.so.3.0.1</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Linux</Platforms>
-    </Content>
     <Compile Include="Assets\AIAsset.cs" />
     <Compile Include="Assets\AIAssetLoader.cs" />
     <Compile Include="Assets\AssemblyLoadStrategy.cs" />
