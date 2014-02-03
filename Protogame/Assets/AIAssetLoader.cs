@@ -35,7 +35,7 @@
         /// </returns>
         public bool CanHandle(dynamic data)
         {
-            return typeof(AIAsset).IsAssignableFrom(data.type);
+            return typeof(AIAsset).IsAssignableFrom(data.Type);
         }
 
         /// <summary>

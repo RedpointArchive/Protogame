@@ -638,8 +638,8 @@
                 {
                     var message = new MxMessage
                     {
-                        Payloads = packets.Select(x => new MxPayload { Data = x }).ToArray(), 
-                        Sequence = this.m_LocalSequenceNumber, 
+                        Payloads = packets.Select(x => new MxPayload { Data = x }).ToArray(),
+                        Sequence = this.m_LocalSequenceNumber,
                         Ack = this.m_RemoteSequenceNumber
                     };
                     message.SetAckBitfield(this.m_ReceiveQueue.ToArray());
@@ -658,36 +658,43 @@
 
                     try
                     {
-                        this.m_SharedUdpClient.Send(bytes, bytes.Length, this.m_TargetEndPoint);
-                        this.m_SendQueue.Add(this.m_LocalSequenceNumber, this.GetUnixTimestamp());
-                        this.m_SendMessageQueue.Add(this.m_LocalSequenceNumber, packets);
-                        this.m_LocalSequenceNumber++;
-
-                        if (this.m_IsReliable)
+                        try
                         {
-                            // Only dequeue the pending send packet once we know that it's at least
-                            // left this machine successfully (otherwise there'd be no message lost
-                            // event if they got consumed by a SocketException).
-                            if (this.m_PendingSendPackets.Count > 0)
+                            this.m_SharedUdpClient.Send(bytes, bytes.Length, this.m_TargetEndPoint);
+                            this.m_SendQueue.Add(this.m_LocalSequenceNumber, this.GetUnixTimestamp());
+                            this.m_SendMessageQueue.Add(this.m_LocalSequenceNumber, packets);
+                            this.m_LocalSequenceNumber++;
+
+                            if (this.m_IsReliable)
                             {
-                                this.m_PendingSendPackets.Dequeue();
+                                // Only dequeue the pending send packet once we know that it's at least
+                                // left this machine successfully (otherwise there'd be no message lost
+                                // event if they got consumed by a SocketException).
+                                if (this.m_PendingSendPackets.Count > 0)
+                                {
+                                    this.m_PendingSendPackets.Dequeue();
+                                }
+                            }
+                            else
+                            {
+                                // Only clear the pending send packets once we know that they've at least
+                                // left this machine successfully (otherwise there'd be no message lost
+                                // event if they got consumed by a SocketException).
+                                this.m_PendingSendPackets.Clear();
+                            }
+
+                            // Raise the OnMessageSent event.
+                            foreach (var packet in packets)
+                            {
+                                this.OnMessageSent(new MxMessageEventArgs { Client = this, Payload = packet });
                             }
                         }
-                        else
+                        catch (SocketException)
                         {
-                            // Only clear the pending send packets once we know that they've at least
-                            // left this machine successfully (otherwise there'd be no message lost
-                            // event if they got consumed by a SocketException).
-                            this.m_PendingSendPackets.Clear();
-                        }
-
-                        // Raise the OnMessageSent event.
-                        foreach (var packet in packets)
-                        {
-                            this.OnMessageSent(new MxMessageEventArgs { Client = this, Payload = packet });
+                            // We don't care.
                         }
                     }
-                    catch (SocketException)
+                    catch (ObjectDisposedException)
                     {
                         // We don't care.
                     }
