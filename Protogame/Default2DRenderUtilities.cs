@@ -317,5 +317,21 @@ namespace Protogame
                  + (int)(flipVertically ? SpriteEffects.FlipVertically : SpriteEffects.None)), 
                 0);
         }
+
+        /// <summary>
+        /// Suspends usage of the sprite batch so that direct rendering can occur during a 2D context.
+        /// </summary>
+        public void SuspendSpriteBatch(IRenderContext renderContext)
+        {
+            renderContext.SpriteBatch.End();
+        }
+
+        /// <summary>
+        /// Resumes usage of the sprite batch again.
+        /// </summary>
+        public void ResumeSpriteBatch(IRenderContext renderContext)
+        {
+            renderContext.SpriteBatch.Begin();
+        }
     }
 }

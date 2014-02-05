@@ -142,5 +142,15 @@ namespace Protogame
             bool flipHorizontally = false, 
             bool flipVertically = false, 
             Rectangle? sourceArea = null);
+
+        /// <summary>
+        /// Suspends usage of the sprite batch so that direct rendering can occur during a 2D context.
+        /// </summary>
+        void SuspendSpriteBatch(IRenderContext renderContex);
+
+        /// <summary>
+        /// Resumes usage of the sprite batch again.
+        /// </summary>
+        void ResumeSpriteBatch(IRenderContext renderContex);
     }
 }

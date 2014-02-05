@@ -321,6 +321,8 @@ namespace Protogame
         /// </param>
         public void SetActiveTexture(Texture2D texture)
         {
+            this.GraphicsDevice.Textures[0] = texture;
+
             var basicEffect = this.m_Effects.Peek() as BasicEffect;
             var textureEffect = this.m_Effects.Peek() as IEffectTexture;
 
