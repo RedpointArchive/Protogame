@@ -52,8 +52,10 @@
         /// </returns>
         /// <exception cref="InvalidDataException">
         /// </exception>
-        public object AttemptLoad(string path, string name)
+        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
+            lastModified = new DateTime(1970, 1, 1, 0, 0, 0);
+
             var embedded = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                             where !assembly.IsDynamic
                             from resource in assembly.GetManifestResourceNames()

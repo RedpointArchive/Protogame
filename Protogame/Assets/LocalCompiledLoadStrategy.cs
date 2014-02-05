@@ -49,7 +49,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name)
+        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file1 =
                 new FileInfo(
@@ -60,11 +60,18 @@
             var attempt1 = this.AttemptLoadOfFile(file1, name);
             if (attempt1 != null)
             {
+                lastModified = file1.LastWriteTime;
                 return attempt1;
             }
 
             var file2 = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".bin"));
-            return this.AttemptLoadOfFile(file2, name);
+            var attempt2 = this.AttemptLoadOfFile(file2, name);
+            if (attempt2 != null)
+            {
+                lastModified = file2.LastWriteTime;
+            }
+
+            return attempt2;
         }
 
         /// <summary>

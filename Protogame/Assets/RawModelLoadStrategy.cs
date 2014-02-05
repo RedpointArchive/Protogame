@@ -1,5 +1,6 @@
 ﻿namespace Protogame
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -49,12 +50,14 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name)
+        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".fbx"));
 
             if (file.Exists)
             {
+                lastModified = file.LastWriteTime;
+
                 // If there are name-anim.fbx files, read those in as additional animations.
                 var directory = file.Directory;
                 var otherAnimations = new Dictionary<string, byte[]>();

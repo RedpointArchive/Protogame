@@ -48,8 +48,10 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name)
+        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
+            lastModified = new DateTime(1970, 1, 1, 0, 0, 0);
+
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 try

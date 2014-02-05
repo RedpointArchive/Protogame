@@ -1,5 +1,7 @@
 ﻿namespace Protogame
 {
+    using System;
+
     /// <summary>
     /// The LoadStrategy interface.
     /// </summary>
@@ -30,9 +32,12 @@
         /// <param name="name">
         /// The name.
         /// </param>
+        /// <param name="lastModified">
+        /// The date that the asset was last modified.
+        /// </param>
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        object AttemptLoad(string path, string name);
+        object AttemptLoad(string path, string name, ref DateTime? lastModified);
     }
 }

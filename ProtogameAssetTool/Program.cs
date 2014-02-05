@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using System.Security.Cryptography;
     using Microsoft.Xna.Framework;
     using NDesk.Options;
     using Ninject;
@@ -52,6 +53,13 @@
             kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
+
+            // The assembly load strategy is required for references.
+            // Assets loaded with the assembly load strategy won't have
+            // any savers defined, so they won't ever get processed.
+            kernel.Bind<ILoadStrategy>().To<AssemblyLoadStrategy>();
 
             // Load additional assemblies.
             foreach (var filename in assemblies)
@@ -59,7 +67,7 @@
                 var file = new FileInfo(filename);
                 try
                 {
-                    var assembly = Assembly.LoadFile(file.FullName);
+                    var assembly = Assembly.LoadFrom(file.FullName);
                     foreach (var type in assembly.GetTypes())
                     {
                         try
@@ -91,54 +99,14 @@
                 }
             }
 
-            // Set up the compiled asset saver.
-            var compiledAssetSaver = new CompiledAssetSaver();
+            // Set up remaining bindings.
+            kernel.Bind<IAssetCleanup>().To<DefaultAssetCleanup>();
+            kernel.Bind<IAssetOutOfDateCalculator>().To<DefaultAssetOutOfDateCalculator>();
+            kernel.Bind<IAssetCompilationEngine>().To<DefaultAssetCompilationEngine>();
 
-            // Retrieve the asset manager.
-            var assetManager = kernel.Get<LocalAssetManager>();
-            assetManager.AllowSourceOnly = true;
-            assetManager.SkipCompilation = true;
-
-            // Retrieve the transparent asset compiler.
-            var assetCompiler = kernel.Get<ITransparentAssetCompiler>();
-
-            // Retrieve all of the asset savers.
-            var savers = kernel.GetAll<IAssetSaver>();
-
-            // For each of the platforms, perform the compilation of assets.
-            foreach (var platformName in platforms)
-            {
-                Console.WriteLine("Starting compilation for " + platformName);
-                var platform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), platformName);
-                var outputPath = Path.Combine(output, platformName);
-                assetManager.RescanAssets();
-
-                foreach (var asset in assetManager.GetAll())
-                {
-                    var compiledAsset = assetCompiler.HandlePlatform(asset, platform, true);
-
-                    foreach (var saver in savers)
-                    {
-                        var canSave = false;
-                        try
-                        {
-                            canSave = saver.CanHandle(asset);
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        if (canSave)
-                        {
-                            var result = saver.Handle(asset, AssetTarget.CompiledFile);
-                            compiledAssetSaver.SaveCompiledAsset(outputPath, asset.Name, result, result is CompiledAsset);
-                            Console.WriteLine("Compiled " + asset.Name + " for " + platform);
-                            break;
-                        }
-                    }
-
-                    assetManager.Dirty(asset.Name);
-                }
-            }
+            // Get the asset compilation engine.
+            var compilationEngine = kernel.Get<IAssetCompilationEngine>();
+            compilationEngine.Execute(platforms, output);
         }
     }
 }

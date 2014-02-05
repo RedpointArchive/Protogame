@@ -51,6 +51,12 @@ namespace Protogame
                 using (var reader = new StreamReader(Path.Combine(this.m_Path, ".source")))
                 {
                     this.m_SourcePath = reader.ReadLine();
+
+                    // Don't scan twice if the source path is the same as the normal path.
+                    if (this.m_SourcePath == this.m_Path)
+                    {
+                        this.m_SourcePath = null;
+                    }
                 }
             }
 
@@ -58,38 +64,48 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The load raw asset.
+        /// Loads all potential raw asset candidates for the given asset name.  It is up to the
+        /// caller to determine which representation will be used.
         /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object[]"/>.
-        /// </returns>
-        public object[] LoadRawAsset(string name)
+        /// <param name="name">The name of the asset.</param>
+        /// <returns>The raw asset candidates.</returns>
+        public IEnumerable<object> LoadRawAssetCandidates(string name)
         {
-            var candidates = new List<object>();
+            return this.LoadRawAssetCandidatesWithModificationDates(name).Select(x => x.Key);
+        }
+
+        /// <summary>
+        /// Loads all potential raw asset candidates for the given asset name, including the last
+        /// modification dates of the candidates.  It is up to the caller to determine which
+        /// representation will be used.
+        /// </summary>
+        /// <param name="name">The name of the asset.</param>
+        /// <returns>The raw asset candidates.</returns>
+        public IEnumerable<KeyValuePair<object, DateTime?>> LoadRawAssetCandidatesWithModificationDates(string name)
+        {
             foreach (var strategy in this.m_Strategies)
             {
                 object result;
 
                 if (strategy.ScanSourcePath && this.m_SourcePath != null)
                 {
-                    result = strategy.AttemptLoad(this.m_SourcePath, name);
+                    DateTime? lastModified = null;
+                    result = strategy.AttemptLoad(this.m_SourcePath, name, ref lastModified);
                     if (result != null)
                     {
-                        candidates.Add(result);
+                        yield return new KeyValuePair<object, DateTime?>(result, lastModified);
                     }
                 }
 
-                result = strategy.AttemptLoad(this.m_Path, name);
-                if (result != null)
                 {
-                    candidates.Add(result);
+                    DateTime? lastModified = null;
+                    result = strategy.AttemptLoad(this.m_Path, name, ref lastModified);
+                    if (result != null)
+                    {
+                        yield return new KeyValuePair<object, DateTime?>(result, lastModified);
+                    }
                 }
             }
-
-            return candidates.ToArray();
         }
 
         /// <summary>
@@ -151,10 +167,10 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The scan raw assets.
+        /// Return all available asset names.
         /// </summary>
         /// <returns>
-        /// The <see cref="IEnumerable"/>.
+        /// The <see cref="IEnumerable{String}"/> of asset names.
         /// </returns>
         public IEnumerable<string> ScanRawAssets()
         {

@@ -105,7 +105,7 @@ namespace Protogame
                         this.m_RawAssetLoader = this.m_Kernel.Get<IRawAssetLoader>();
                     try
                     {
-                        candidates = this.m_RawAssetLoader.LoadRawAsset(asset);
+                        candidates = this.m_RawAssetLoader.LoadRawAssetCandidates(asset);
                     }
                     catch (AssetNotFoundException)
                     {

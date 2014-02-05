@@ -288,12 +288,15 @@ namespace Protogame
                 return this.m_Assets[asset];
             }
 
-            var candidates = this.m_RawAssetLoader.LoadRawAsset(asset);
+            var candidates = this.m_RawAssetLoader.LoadRawAssetCandidates(asset);
             var loaders = this.m_AssetLoaders.ToArray();
             var failedDueToCompilation = false;
+            var hasMoreThanZeroCandidates = false;
 
             foreach (var candidate in candidates)
             {
+                hasMoreThanZeroCandidates = true;
+
                 foreach (var loader in loaders)
                 {
                     var canLoad = false;
@@ -344,7 +347,7 @@ namespace Protogame
                 throw new AssetNotCompiledException(asset);
             }
 
-            if (candidates.Length == 0)
+            if (!hasMoreThanZeroCandidates)
             {
                 this.m_Assets[asset] = null;
 

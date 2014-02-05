@@ -1,5 +1,6 @@
 ﻿namespace Protogame
 {
+    using System;
     using System.IO;
 
     /// <summary>
@@ -47,11 +48,12 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name)
+        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".png"));
             if (file.Exists)
             {
+                lastModified = file.LastWriteTime;
                 using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
                 {
                     using (var binary = new BinaryReader(fileStream))
