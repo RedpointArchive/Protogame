@@ -13,6 +13,8 @@ namespace Protogame
 
         private readonly ITickRegulator m_TickRegulator;
 
+        private bool m_HasSetup;
+
         public CoreServer(IKernel kernel)
         {
             this.m_Kernel = kernel;
@@ -60,7 +62,10 @@ namespace Protogame
 
         public void Run()
         {
-            this.Setup();
+            if (!this.m_HasSetup)
+            {
+                this.Setup();
+            }
 
             this.LoadContent();
 
@@ -72,8 +77,16 @@ namespace Protogame
             }
         }
 
-        private void Setup()
+        public void Setup()
         {
+            if (this.m_HasSetup)
+            {
+                throw new InvalidOperationException(
+                    "The server has already been setup.");
+            }
+
+            this.m_HasSetup = true;
+
             // The interception library can't properly intercept class types, which
             // means we can't simply do this.m_Kernel.Get<TInitialServerWorld>() because
             // none of the calls will be intercepted.  Instead, we need to bind the
