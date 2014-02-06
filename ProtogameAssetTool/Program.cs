@@ -2,9 +2,15 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
+    using System.Net;
+    using System.Net.Sockets;
     using System.Reflection;
     using System.Security.Cryptography;
+    using System.Text;
+    using System.Threading;
+    using Assimp.Configs;
     using Microsoft.Xna.Framework;
     using NDesk.Options;
     using Ninject;
@@ -17,13 +23,16 @@
             var assemblies = new List<string>();
             var platforms = new List<string>();
             var output = string.Empty;
+            var operation = string.Empty;
 
             var options = new OptionSet
             {
                 { "a|assembly=", "Load an assembly.", v => assemblies.Add(v) },
                 { "p|platform=", "Specify one or more platforms to target.", v => platforms.Add(v) },
-                { "o|output=", "Specify the output folder for the compiled assets.", v => output = v }
+                { "o|output=", "Specify the output folder for the compiled assets.", v => output = v },
+                { "m|operation=", "Specify the mode of operation (either 'bulk' or 'remote', default is 'bulk').", v => operation = v }
             };
+
             try
             {
                 options.Parse(args);
@@ -40,6 +49,19 @@
             // Deploy the correct MojoShader DLL.
             MojoShaderDeploy.Deploy();
 
+            switch (operation)
+            {
+                case "remote":
+                    RemoteCompileService();
+                    break;
+                default:
+                    BulkCompile(assemblies, platforms, output);
+                    break;
+            }
+        }
+
+        private static void BulkCompile(List<string> assemblies, List<string> platforms, string output)
+        {
             // Create kernel.
             var kernel = new StandardKernel();
             kernel.Load<ProtogameAssetIoCModule>();
@@ -107,6 +129,118 @@
             // Get the asset compilation engine.
             var compilationEngine = kernel.Get<IAssetCompilationEngine>();
             compilationEngine.Execute(platforms, output);
+        }
+
+        private static void RemoteCompileService()
+        {
+            var udpClient = new UdpClient(4321);
+            var thread = new Thread(() =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        IPEndPoint endpoint = null;
+                        var bytes = udpClient.Receive(ref endpoint);
+                        var message = Encoding.ASCII.GetString(bytes);
+
+                        if (message == "request compiler")
+                        {
+                            var result = Encoding.ASCII.GetBytes("provide compiler");
+                            udpClient.Send(result, result.Length, new IPEndPoint(endpoint.Address, 4321));
+                            Console.WriteLine("Providing compiler services for " + endpoint.Address);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+            });
+            thread.IsBackground = true;
+            thread.Start();
+
+            var server = new HttpListener();
+            server.Prefixes.Add("http://+:8080/");
+            try
+            {
+                server.Start();
+            }
+            catch (HttpListenerException ex)
+            {
+                var args = "http add urlacl http://+:8080/ user=Everyone listen=yes";
+
+                var psi = new ProcessStartInfo("netsh", args);
+                psi.Verb = "runas";
+                psi.CreateNoWindow = true;
+                psi.WindowStyle = ProcessWindowStyle.Hidden;
+                psi.UseShellExecute = true;
+
+                Process.Start(psi).WaitForExit();
+
+                args = "advfirewall firewall add rule name=\"Port 8080 for Protogame Remote Compiler\" dir=in action=allow protocol=TCP localport=8080";
+
+                psi = new ProcessStartInfo("netsh", args);
+                psi.Verb = "runas";
+                psi.CreateNoWindow = true;
+                psi.WindowStyle = ProcessWindowStyle.Hidden;
+                psi.UseShellExecute = true;
+
+                Process.Start(psi).WaitForExit();
+
+                server = new HttpListener();
+                server.Prefixes.Add("http://+:8080/");
+                server.Start();
+            }
+
+            Console.WriteLine("Remote compiler for Protogame started on port 4321 (UDP) and port 8080 (TCP)");
+
+            while (true)
+            {
+                var context = server.GetContext();
+                var request = context.Request;
+                var response = context.Response;
+
+                Console.WriteLine("Request: " + request.RawUrl);
+
+                string input = null;
+                using (var reader = new StreamReader(request.InputStream))
+                {
+                    input = reader.ReadToEnd();
+                }
+
+                switch (request.Url.AbsolutePath)
+                {
+                    case "/compileeffect":
+                    {
+                        var platform = (TargetPlatform) Convert.ToInt32(request.QueryString["platform"]);
+
+                        var effect = new EffectAsset(
+                            null,
+                            "effect",
+                            input,
+                            null,
+                            true);
+
+                        var compiler = new EffectAssetCompiler();
+                        compiler.Compile(effect, platform);
+
+                        response.ContentLength64 = effect.PlatformData.Data.Length;
+                        response.OutputStream.Write(effect.PlatformData.Data, 0, effect.PlatformData.Data.Length);
+                        response.Close();
+                        break;
+                    }
+                    default:
+                    {
+                        response.StatusCode = 404;
+                        var result = Encoding.ASCII.GetBytes("not found");
+                        response.ContentLength64 = result.Length;
+                        response.OutputStream.Write(result, 0, result.Length);
+                        response.Close();
+                        break;
+                    }
+                }
+            }
         }
     }
 }

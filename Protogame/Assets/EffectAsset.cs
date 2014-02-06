@@ -135,7 +135,7 @@ namespace Protogame
         {
             if (this.m_AssetContentManager == null)
             {
-                throw new InvalidOperationException("Asset content manager is not present.");
+                throw new NoAssetContentManagerException();
             }
 
             if (this.m_AssetContentManager != null && this.PlatformData != null)
