@@ -97,6 +97,6 @@
         /// <param name="entity">
         /// The entity.
         /// </param>
-        public abstract void Update(IServerEntity entity);
+        public abstract void Update(IServerEntity entity, IServerContext serverContext, IUpdateContext updateContext);
     }
 }

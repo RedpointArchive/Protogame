@@ -239,7 +239,6 @@
     <Compile Include="Network\DualIPEndPoint.cs" />
     <Compile Include="Network\FlowControlChangedEventArgs.cs" />
     <Compile Include="Network\FlowControlChangedEventHandler.cs" />
-    <Compile Include="Network\IServerEntity.cs" />
     <Compile Include="Network\MxClient.cs" />
     <Compile Include="Network\MxClientEventArgs.cs" />
     <Compile Include="Network\MxClientEventHandler.cs" />
@@ -278,6 +277,20 @@
     <Compile Include="Platforming\ProtogamePlatformingIoCModule.cs" />
     <Compile Include="Protogame2DIoCModule.cs" />
     <Compile Include="Protogame3DIoCModule.cs" />
+    <Compile Include="Server\CoreServer.cs" />
+    <Compile Include="Server\DefaultServerContext.cs" />
+    <Compile Include="Server\DefaultServerWorldManager.cs" />
+    <Compile Include="Server\DefaultTickRegulator.cs" />
+    <Compile Include="Server\DefaultUniqueIdentifierAllocator.cs" />
+    <Compile Include="Server\ICoreServer.cs" />
+    <Compile Include="Server\IServerContext.cs" />
+    <Compile Include="Server\IServerEntity.cs" />
+    <Compile Include="Server\IServerWorld.cs" />
+    <Compile Include="Server\IServerWorldManager.cs" />
+    <Compile Include="Server\ITickRegulator.cs" />
+    <Compile Include="Server\IUniqueIdentifierAllocator.cs" />
+    <Compile Include="Server\ProtogameServerIoCModule.cs" />
+    <Compile Include="Server\Server.cs" />
     <Compile Include="Structure\PositionOctree.cs">
       <DependentUpon>PositionOctreeNode.cs</DependentUpon>
     </Compile>
