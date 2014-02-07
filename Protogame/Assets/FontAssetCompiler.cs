@@ -301,6 +301,7 @@ public static class Program
             if (output.Trim() == string.Empty)
             {
                 // User might not have the font installed.
+                Console.WriteLine("WARNING: Font asset could not be compiled, ensure that '" + asset.FontName + "' is installed on this system.");
                 return;
             }
 

@@ -79,6 +79,12 @@
                 var outputPath = Path.Combine(output, platformName);
                 assetManager.RescanAssets();
 
+                // Create the output directory if it doesn't exist.
+                if (!Directory.Exists(outputPath))
+                {
+                    Directory.CreateDirectory(outputPath);
+                }
+
                 // Clean up any compiled assets that no longer have source files.
                 this.m_AssetCleanup.Cleanup(outputPath);
 
@@ -102,14 +108,23 @@
 
                         if (canSave)
                         {
-                            var result = saver.Handle(asset, AssetTarget.CompiledFile);
-                            compiledAssetSaver.SaveCompiledAsset(
-                                outputPath, 
-                                asset.Name, 
-                                result, 
-                                result is CompiledAsset);
-                            Console.WriteLine("Compiled " + asset.Name + " for " + platform);
-                            break;
+                            try
+                            {
+                                var result = saver.Handle(asset, AssetTarget.CompiledFile);
+                                compiledAssetSaver.SaveCompiledAsset(
+                                    outputPath,
+                                    asset.Name,
+                                    result,
+                                    result is CompiledAsset);
+                                Console.WriteLine("Compiled " + asset.Name + " for " + platform);
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("ERROR: Unable to compile " + asset.Name + " for " + platform);
+                                Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
+                                break;
+                            }
                         }
                     }
 
