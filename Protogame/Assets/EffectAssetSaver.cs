@@ -1,5 +1,7 @@
 namespace Protogame
 {
+    using System;
+
     /// <summary>
     /// The effect asset saver.
     /// </summary>
@@ -44,6 +46,14 @@ namespace Protogame
 
             if (target == AssetTarget.CompiledFile)
             {
+                if (effectAsset.PlatformData == null)
+                {
+                    throw new InvalidOperationException(
+                        "Attempted save of effect asset as a compiled file, but the effect wasn't compiled.  This usually " +
+                        "indicates that you are compiling on Linux, but no remote effect compiler on a Windows machine " +
+                        "could be located to perform the compilation.");
+                }
+
                 return new CompiledAsset
                 {
                     Loader = typeof(EffectAssetLoader).FullName, 
