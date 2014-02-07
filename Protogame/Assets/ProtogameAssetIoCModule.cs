@@ -55,6 +55,7 @@ namespace Protogame
 #elif PLATFORM_LINUX
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
+            this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>();
             this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
             this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
 #endif

@@ -54,6 +54,7 @@
     <Compile Include="Assets\EffectAsset.cs" />
     <Compile Include="Assets\EffectAssetCompiler.cs" />
     <Compile Include="Assets\EffectAssetLoader.cs" />
+    <Compile Include="Assets\EffectAssetRemoteCompiler.cs" />
     <Compile Include="Assets\EffectAssetSaver.cs" />
     <Compile Include="Assets\Effects\EffectWithMatrices.cs" />
     <Compile Include="Assets\Effects\EffectWithMatricesAndTexture.cs" />
