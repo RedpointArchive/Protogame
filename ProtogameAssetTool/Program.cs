@@ -131,6 +131,7 @@
             compilationEngine.Execute(platforms, output);
         }
 
+#if PLATFORM_WINDOWS
         private static void RemoteCompileService()
         {
             var udpClient = new UdpClient(4321);
@@ -242,5 +243,12 @@
                 }
             }
         }
+#else
+        private static void RemoteCompileService()
+        {
+            Console.WriteLine("Protogame Remote Compiler can only be run under Windows");
+            return;
+        }
+#endif
     }
 }
