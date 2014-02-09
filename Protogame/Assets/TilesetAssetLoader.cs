@@ -81,7 +81,12 @@ namespace Protogame
         /// </returns>
         public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
         {
-            return new TilesetAsset(assetManager, name, data.TextureName, data.CellWidth, data.CellHeight);
+            return new TilesetAsset(
+                assetManager,
+                name,
+                (string)data.TextureName,
+                (int)data.CellWidth,
+                (int)data.CellHeight);
         }
     }
 }

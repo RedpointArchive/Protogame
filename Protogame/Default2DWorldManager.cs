@@ -46,7 +46,7 @@ namespace Protogame
 
                 game.GameContext.World.RenderBelow(game.GameContext, game.RenderContext);
 
-                foreach (var entity in game.GameContext.World.Entities.OrderBy(x => x.Z))
+                foreach (var entity in game.GameContext.World.Entities.OrderBy(x => x.Z).ToList())
                 {
                     entity.Render(game.GameContext, game.RenderContext);
                 }
@@ -71,7 +71,7 @@ namespace Protogame
         {
             game.UpdateContext.Update(game.GameContext);
 
-            foreach (var entity in game.GameContext.World.Entities)
+            foreach (var entity in game.GameContext.World.Entities.ToList())
             {
                 entity.Update(game.GameContext, game.UpdateContext);
             }
