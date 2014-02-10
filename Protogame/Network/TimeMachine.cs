@@ -1,7 +1,9 @@
 namespace Protogame
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows.Forms.VisualStyles;
 
     /// <summary>
     /// This class facilitates lag compensation, value prediction, interpolation and extrapolation
@@ -36,6 +38,103 @@ namespace Protogame
         }
 
         /// <summary>
+        /// Finds the nearest previous and next ticks to the specified tick using a binary
+        /// search algorithm.
+        /// </summary>
+        /// <param name="keys">The list of integer keys to search through.</param>
+        /// <param name="current">The current, or target value to find.</param>
+        /// <param name="previous">The previous value to this value.</param>
+        /// <param name="next">The next value to this value.</param>
+        public void FindSurroundingTickValues(IList<int> keys, int current, out int previous, out int next)
+        {
+            int lowest = 0;
+            int mid;
+            int highest = keys.Count - 1;
+
+            if (keys.Count == 0)
+            {
+                previous = -1;
+                next = -1;
+                return;
+            }
+
+            while (true)
+            {
+                if (lowest >= 0 && keys[lowest] == current)
+                {
+                    previous = lowest;
+                    next = lowest;
+                    return;
+                }
+
+                if (highest < keys.Count && keys[highest] == current)
+                {
+                    previous = highest;
+                    next = highest;
+                    return;
+                }
+
+                if (lowest == keys.Count - 1 && keys[lowest] <= current)
+                {
+                    previous = lowest;
+                    next = -1;
+                    return;
+                }
+
+                if (highest == 0 && keys[highest] > current)
+                {
+                    previous = -1;
+                    next = highest;
+                    return;
+                }
+
+                if (lowest + 1 < keys.Count && keys[lowest + 1] == current)
+                {
+                    previous = lowest + 1;
+                    next = lowest + 1;
+                    return;
+                }
+
+                if (highest - 1 >= 0 && keys[highest - 1] == current)
+                {
+                    previous = highest - 1;
+                    next = highest - 1;
+                    return;
+                }
+
+                if (lowest < keys.Count - 1 && keys[lowest] <= current && current <= keys[lowest + 1])
+                {
+                    previous = lowest;
+                    next = lowest + 1;
+                    return;
+                }
+                
+                if (highest >= 1 && keys[highest - 1] >= current && current >= keys[highest])
+                {
+                    previous = highest - 1;
+                    next = highest;
+                    return;
+                }
+
+                if (lowest == highest && keys[lowest] != current)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                mid = (int)Math.Ceiling(((highest - (double)lowest) / 2f) + lowest);
+
+                if (mid > 0 && keys[mid] <= current)
+                {
+                    lowest = mid;
+                }
+                else if (mid < keys.Count && keys[mid] >= current)
+                {
+                    highest = Math.Max(lowest, mid - 1);
+                }
+            }
+        }
+
+        /// <summary>
         /// Retrieves the value at the specified tick, or interpolates / extrapolates a value from
         /// the known values in the time machine.
         /// </summary>
@@ -47,8 +146,23 @@ namespace Protogame
         /// </returns>
         public T Get(int tick)
         {
-            var previousTick = this.m_KnownValues.Keys.Where(k => k <= tick).DefaultIfEmpty(-1).Max();
-            var nextTick = this.m_KnownValues.Keys.Where(k => k >= tick).DefaultIfEmpty(-1).Min();
+            int previousTick, nextTick;
+
+            this.FindSurroundingTickValues(
+                this.m_KnownValues.Keys,
+                tick,
+                out previousTick,
+                out nextTick);
+
+            if (previousTick != -1)
+            {
+                previousTick = this.m_KnownValues.Keys[previousTick];
+            }
+
+            if (nextTick != -1)
+            {
+                nextTick = this.m_KnownValues.Keys[nextTick];
+            }
 
             if (previousTick != -1 && nextTick != -1)
             {

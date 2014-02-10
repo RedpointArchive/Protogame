@@ -13,6 +13,7 @@
     <Compile Include="MxTests.cs" />
     <Compile Include="PlatformingModuleTests.cs" />
     <Compile Include="PositionOctreeTests.cs" />
+    <Compile Include="TimeMachineTests.cs" />
     <None Include="packages.config" />
   </Files>
 </Project>
