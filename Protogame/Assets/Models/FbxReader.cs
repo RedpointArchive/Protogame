@@ -167,11 +167,11 @@ namespace Protogame
             int tick)
         {
             nodeAtTime.Name = assimpNode.Name;
-            nodeAtTime.Transform = this.MatrixFromAssImpMatrix(assimpNode.Transform);
+            var transform = this.MatrixFromAssImpMatrix(assimpNode.Transform);
 
             Vector3 translation, scale;
             Quaternion rotation;
-            nodeAtTime.Transform.Decompose(out scale, out rotation, out translation);
+            transform.Decompose(out scale, out rotation, out translation);
 
             var channel = assimpAnimation.NodeAnimationChannels.FirstOrDefault(x => x.NodeName == nodeAtTime.Name);
 
@@ -187,10 +187,20 @@ namespace Protogame
                 }
 
                 nodeAtTime.Transform = Matrix.Identity;
+                nodeAtTime.UseTransform = false;
 
-                nodeAtTime.Transform *= this.CalculateInterpolatedPosition(channel.PositionKeys, tick);
-                nodeAtTime.Transform *= this.CalculateInterpolatedRotation(channel.RotationKeys, tick);
-                nodeAtTime.Transform *= this.CalculateInterpolatedScaling(channel.ScalingKeys, tick);
+                nodeAtTime.Transform *= Matrix.CreateTranslation(this.CalculateInterpolatedPosition(channel.PositionKeys, tick));
+                nodeAtTime.Transform *= Matrix.CreateFromQuaternion(this.CalculateInterpolatedRotation(channel.RotationKeys, tick));
+                nodeAtTime.Transform *= Matrix.CreateScale(this.CalculateInterpolatedScaling(channel.ScalingKeys, tick));
+
+                nodeAtTime.Position = this.CalculateInterpolatedPosition(channel.PositionKeys, tick);
+                nodeAtTime.Rotation = this.CalculateInterpolatedRotation(channel.RotationKeys, tick);
+                nodeAtTime.Scaling = this.CalculateInterpolatedScaling(channel.ScalingKeys, tick);
+            }
+            else
+            {
+                nodeAtTime.Transform = transform;
+                nodeAtTime.UseTransform = true;
             }
 
             if (assimpNode.ChildCount > 0)
@@ -220,13 +230,12 @@ namespace Protogame
         /// <returns>
         /// The interpolated position <see cref="Matrix"/>.
         /// </returns>
-        private Matrix CalculateInterpolatedPosition(List<VectorKey> positionKeys, int tick)
+        private Vector3 CalculateInterpolatedPosition(List<VectorKey> positionKeys, int tick)
         {
             if (positionKeys.Count == 1)
             {
                 return
-                    Matrix.CreateTranslation(
-                        new Vector3(positionKeys[0].Value.X, positionKeys[0].Value.Y, positionKeys[0].Value.Z));
+                    new Vector3(positionKeys[0].Value.X, positionKeys[0].Value.Y, positionKeys[0].Value.Z);
             }
 
             var currentIndex = tick - 1;
@@ -239,11 +248,10 @@ namespace Protogame
 
             // TODO: Actual interpolation.
             return
-                Matrix.CreateTranslation(
-                    new Vector3(
-                        positionKeys[currentIndex].Value.X, 
-                        positionKeys[currentIndex].Value.Y, 
-                        positionKeys[currentIndex].Value.Z));
+                new Vector3(
+                    positionKeys[currentIndex].Value.X, 
+                    positionKeys[currentIndex].Value.Y, 
+                    positionKeys[currentIndex].Value.Z);
         }
 
         /// <summary>
@@ -262,17 +270,16 @@ namespace Protogame
         /// <returns>
         /// The interpolated rotation <see cref="Matrix"/>.
         /// </returns>
-        private Matrix CalculateInterpolatedRotation(List<QuaternionKey> rotationKeys, int tick)
+        private Quaternion CalculateInterpolatedRotation(List<QuaternionKey> rotationKeys, int tick)
         {
             if (rotationKeys.Count == 1)
             {
                 return
-                    Matrix.CreateFromQuaternion(
-                        new Quaternion(
-                            rotationKeys[0].Value.X, 
-                            rotationKeys[0].Value.Y, 
-                            rotationKeys[0].Value.Z, 
-                            rotationKeys[0].Value.W));
+                    new Quaternion(
+                        rotationKeys[0].Value.X, 
+                        rotationKeys[0].Value.Y, 
+                        rotationKeys[0].Value.Z, 
+                        rotationKeys[0].Value.W);
             }
 
             var currentIndex = tick - 1;
@@ -285,12 +292,11 @@ namespace Protogame
 
             // TODO: Actual interpolation.
             return
-                Matrix.CreateFromQuaternion(
-                    new Quaternion(
-                        rotationKeys[currentIndex].Value.X, 
-                        rotationKeys[currentIndex].Value.Y, 
-                        rotationKeys[currentIndex].Value.Z, 
-                        rotationKeys[currentIndex].Value.W));
+                new Quaternion(
+                    rotationKeys[currentIndex].Value.X, 
+                    rotationKeys[currentIndex].Value.Y, 
+                    rotationKeys[currentIndex].Value.Z, 
+                    rotationKeys[currentIndex].Value.W);
         }
 
         /// <summary>
@@ -309,13 +315,12 @@ namespace Protogame
         /// <returns>
         /// The interpolated scale <see cref="Matrix"/>.
         /// </returns>
-        private Matrix CalculateInterpolatedScaling(List<VectorKey> scalingKeys, int tick)
+        private Vector3 CalculateInterpolatedScaling(List<VectorKey> scalingKeys, int tick)
         {
             if (scalingKeys.Count == 1)
             {
                 return
-                    Matrix.CreateScale(
-                        new Vector3(scalingKeys[0].Value.X, scalingKeys[0].Value.Y, scalingKeys[0].Value.Z));
+                    new Vector3(scalingKeys[0].Value.X, scalingKeys[0].Value.Y, scalingKeys[0].Value.Z);
             }
 
             var currentIndex = tick - 1;
@@ -328,11 +333,10 @@ namespace Protogame
 
             // TODO: Actual interpolation.
             return
-                Matrix.CreateScale(
-                    new Vector3(
-                        scalingKeys[currentIndex].Value.X, 
-                        scalingKeys[currentIndex].Value.Y, 
-                        scalingKeys[currentIndex].Value.Z));
+                new Vector3(
+                    scalingKeys[currentIndex].Value.X, 
+                    scalingKeys[currentIndex].Value.Y, 
+                    scalingKeys[currentIndex].Value.Z);
         }
 
         /// <summary>
@@ -503,17 +507,47 @@ namespace Protogame
 
             var mesh = scene.Meshes[0];
 
+            var channels = assimpAnimation.NodeAnimationChannels.Select(x => x.NodeName).ToArray();
+
+            // Perform a sanity check on the scene we are animating.  All node animation
+            // channels should also have a bone present that matches what they are animating,
+            // or the FBX files aren't lined up.
+            foreach (var nodeChannel in assimpAnimation.NodeAnimationChannels)
+            {
+                var matching = this.GetNodesAsLinear(scene.RootNode).FirstOrDefault(x => x.Name == nodeChannel.NodeName);
+                if (matching == null)
+                {
+                    System.Console.WriteLine("WARNING: There is an animation applying to " + nodeChannel.NodeName + " but it is not present in the scene.");
+                }
+            }
+
             // Calculate the hierarchy as it would appear at a given point in time.  All transformations
             // in the tree are applicable to that particular node, but do not incorporate the transformations
             // of it's parent.
             var hierarchyAtTime = new NodeAtTime();
             this.CalculateHierarchyAtTime(hierarchyAtTime, scene.RootNode, mesh, assimpAnimation, tick);
 
-            // Now traverse the nodes in the hierarchy and apply all of their translations to the applicable
+            // Now traverse the nodes in the hierarchy and calculate all of their translations to the applicable
             // vertexes and bones.
-            this.TraverseHierarchyAndApplyTransforms(vertexes, hierarchyAtTime, mesh);
+            var transformsPerVertex = new List<Matrix>[vertexes.Count];
+            this.TraverseHierarchyAndCalculateTransforms(transformsPerVertex, vertexes, hierarchyAtTime, mesh);
+
+            // Apply the transforms to the vertexes.
+            this.ApplyTransforms(transformsPerVertex, vertexes);
 
             return new Frame(vertexes.ToArray(), indices.ToArray());
+        }
+
+        private IEnumerable<Node> GetNodesAsLinear(Node node)
+        {
+            yield return node;
+            foreach (var child in node.Children)
+            {
+                foreach (var linear in this.GetNodesAsLinear(child))
+                {
+                    yield return linear;
+                }
+            }
         }
 
         /// <summary>
@@ -548,11 +582,11 @@ namespace Protogame
 
         /// <summary>
         /// Traverse the converted <see cref="NodeAtTime"/> hierarchy (with transforms updated by
-        /// <see cref="CalculateHierarchyAtTime"/>) and apply the cumulative transformations to
+        /// <see cref="CalculateHierarchyAtTime"/>) and calculate the cumulative transformations to
         /// the specified vertexes.
         /// </summary>
         /// <param name="vertexes">
-        /// The vertexes that the transformations should be applied to.
+        /// The vertexes that the transformations should be calculated for.
         /// </param>
         /// <param name="node">
         /// The root node to traverse.  This function is called recursively and as such, this
@@ -561,45 +595,78 @@ namespace Protogame
         /// <param name="mesh">
         /// The mesh containing the bones being applied.
         /// </param>
-        private void TraverseHierarchyAndApplyTransforms(
+        private void TraverseHierarchyAndCalculateTransforms(
+            List<Matrix>[] transformsPerVertex,
             List<VertexPositionNormalTexture> vertexes, 
             NodeAtTime node, 
             Mesh mesh)
         {
             // Find the bone associated with this node.  Each transformation is split up
             // in the FBX format, but the bone maps to the deepest node.  Thus when we
-            // match exactly, we'll apply all of the parent transformations for the bone
+            // match exactly, we'll calculate all of the parent transformations for the bone
             // that are relevant.
             var bone = mesh.Bones.FirstOrDefault(x => x.Name == node.Name);
 
             if (bone != null)
             {
-                var finalMatrix = this.MatrixFromAssImpMatrix(bone.OffsetMatrix);
-
-                var applicationNode = node;
-                while (applicationNode != null)
-                {
-                    finalMatrix *= applicationNode.Transform;
-                    applicationNode = applicationNode.Parent;
-                }
-
                 foreach (var vertexWeight in bone.VertexWeights)
                 {
-                    var vertex = vertexes[vertexWeight.VertexID];
+                    var finalMatrix = this.MatrixFromAssImpMatrix(bone.OffsetMatrix);
 
-                    // TODO: What about normals!?!?!?
-                    vertexes[vertexWeight.VertexID] =
-                        new VertexPositionNormalTexture(
-                            Vector3.Transform(vertex.Position, finalMatrix), 
-                            vertex.Normal, 
-                            vertex.TextureCoordinate);
+                    var applicationNode = node;
+                    while (applicationNode != null)
+                    {
+                        var transform = applicationNode.GetTransform();
+
+                        finalMatrix *= transform;
+
+                        applicationNode = applicationNode.Parent;
+                    }
+
+                    finalMatrix = finalMatrix * vertexWeight.Weight;
+
+                    if (transformsPerVertex[vertexWeight.VertexID] == null)
+                    {
+                        transformsPerVertex[vertexWeight.VertexID] = new List<Matrix>();
+                    }
+
+                    transformsPerVertex[vertexWeight.VertexID].Add(finalMatrix);
                 }
             }
 
             // Descend into the hierarchy further.
             foreach (var child in node.Children)
             {
-                this.TraverseHierarchyAndApplyTransforms(vertexes, child, mesh);
+                this.TraverseHierarchyAndCalculateTransforms(transformsPerVertex, vertexes, child, mesh);
+            }
+        }
+
+        private void ApplyTransforms(
+            List<Matrix>[] transformsPerVertex,
+            List<VertexPositionNormalTexture> vertexes)
+        {
+            for (var i = 0; i < vertexes.Count; i++)
+            {
+                var vertex = vertexes[i];
+
+                if (transformsPerVertex[i] == null)
+                {
+                    // Nothing to apply here.
+                    continue;
+                }
+
+                var finalMatrix = transformsPerVertex[i][0];
+                for (var a = 1; a < transformsPerVertex[i].Count; a++)
+                {
+                    finalMatrix += transformsPerVertex[i][a];
+                }
+
+                // TODO: What about normals!?!?!?
+                vertexes[i] =
+                    new VertexPositionNormalTexture(
+                        Vector3.Transform(vertex.Position, finalMatrix), 
+                        vertex.Normal, 
+                        vertex.TextureCoordinate);
             }
         }
 
@@ -676,13 +743,31 @@ namespace Protogame
             /// </value>
             public NodeAtTime Parent { get; set; }
 
-            /// <summary>
-            /// Gets or sets the transform matrix of the node.
-            /// </summary>
-            /// <value>
-            /// The transform matrix of the node.
-            /// </value>
             public Matrix Transform { get; set; }
+
+            public Vector3 Position { get; set; }
+
+            public Quaternion Rotation { get; set; }
+
+            public Vector3 Scaling { get; set; }
+
+            public bool UseTransform { get; set; }
+
+            public Matrix GetTransform()
+            {
+                if (!this.UseTransform)
+                {
+                    return
+                        Matrix.Identity *
+                        Matrix.CreateTranslation(this.Position) * 
+                        Matrix.CreateFromQuaternion(this.Rotation) *
+                        Matrix.CreateScale(this.Scaling);
+                }
+                else
+                {
+                    return this.Transform;
+                }
+            }
         }
     }
 }
