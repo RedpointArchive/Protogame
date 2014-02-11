@@ -15,7 +15,7 @@ namespace Protogame
         /// <value>
         /// The entities.
         /// </value>
-        List<IServerEntity> Entities { get; }
+        IList<IServerEntity> Entities { get; }
 
         /// <summary>
         /// This is called by <see cref="IServerWorldManager"/> after all of the entities have been updated.

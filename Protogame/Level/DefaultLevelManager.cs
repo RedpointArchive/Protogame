@@ -48,8 +48,10 @@ namespace Protogame
             var levelBytes = Encoding.ASCII.GetBytes(levelAsset.Value);
             using (var stream = new MemoryStream(levelBytes))
             {
-                var entities = this.m_Reader.Read(stream);
-                world.Entities.AddRange(entities);
+                foreach (var entity in this.m_Reader.Read(stream))
+                {
+                    world.Entities.Add(entity);
+                }
             }
         }
     }

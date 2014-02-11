@@ -9,7 +9,7 @@ namespace ProtogameAssetManager
     internal class AssetManagerWorld : IWorld
     {
         public IAssetManager AssetManager { get; set; }
-        public List<IEntity> Entities { get; set; }
+        public IList<IEntity> Entities { get; set; }
         private DateTime m_Start;
         private AssetManagerLayout m_Layout;
         private static Dictionary<Type, IAssetEditor> m_Editors;

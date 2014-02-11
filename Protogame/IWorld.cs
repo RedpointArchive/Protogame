@@ -26,7 +26,7 @@ namespace Protogame
         /// <value>
         /// The entities.
         /// </value>
-        List<IEntity> Entities { get; }
+        IList<IEntity> Entities { get; }
 
         /// <summary>
         /// This is called by <see cref="IWorldManager"/> when rendering is about to finish.  Rendering
