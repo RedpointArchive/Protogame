@@ -1,6 +1,4 @@
-
 #if PLATFORM_ANDROID || PLATFORM_OUYA
-
 namespace Protogame
 {
     using System;
@@ -56,5 +54,4 @@ namespace Protogame
         }
     }
 }
-
 #endif

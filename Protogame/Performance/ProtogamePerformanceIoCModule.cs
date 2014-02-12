@@ -1,12 +1,11 @@
-using Ninject.Extensions.Interception.Infrastructure.Language;
-#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-#endif
-
 namespace Protogame
 {
     using System;
     using System.Diagnostics;
     using Ninject;
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+	using Ninject.Extensions.Interception.Infrastructure.Language;
+#endif
     using Ninject.Modules;
 
     /// <summary>

@@ -3,7 +3,6 @@ namespace Protogame
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Windows.Forms.VisualStyles;
 
     /// <summary>
     /// This class facilitates lag compensation, value prediction, interpolation and extrapolation

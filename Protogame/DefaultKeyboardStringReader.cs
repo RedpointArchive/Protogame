@@ -25,7 +25,6 @@ namespace Protogame
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using System.Windows.Forms;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Input;
     using Keys = Microsoft.Xna.Framework.Input.Keys;

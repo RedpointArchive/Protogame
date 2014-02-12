@@ -8,6 +8,13 @@
       Path="Ninject/src/Ninject/Ninject.Android.csproj" />
   </Platform>
   
+  <Platform Type="Ouya">
+    <Project
+      Name="Ninject"
+      Guid="E940833E-228E-4AFD-90F4-95D386C5342F"
+      Path="Ninject/src/Ninject/Ninject.Android.csproj" />
+  </Platform>
+  
   <Platform Type="Linux">
     <Project 
       Name="Ninject"

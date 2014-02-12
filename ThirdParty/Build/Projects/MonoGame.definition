@@ -59,9 +59,11 @@
       Name="MonoGame.Framework.Ouya"
       Guid="8BEA875D-66D2-4A5F-B137-83D262A3851D"
       Path="MonoGame/MonoGame.Framework/MonoGame.Framework.Ouya.csproj">
-      <ConfigurationMapping Old="Debug" New="Debug|x86" />
-      <ConfigurationMapping Old="Release" New="Release|x86" />
     </Project>
+    <Project
+      Name="Lidgren.Network.Android"
+      Guid="565129E0-4EE5-4F6F-B403-C3484C9740BE"
+      Path="MonoGame/ThirdParty/Lidgren.Network/Lidgren.Network.Android.csproj" />
   </Platform>
   
   <Platform Type="PSMobile">

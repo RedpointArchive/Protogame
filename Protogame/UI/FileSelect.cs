@@ -1,11 +1,9 @@
-using System.Windows.Forms;
-#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-
-#endif
-
 namespace Protogame
 {
-    using System;
+	using System;
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+	using System.Windows.Forms;
+#endif
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Input;
 
