@@ -53,7 +53,7 @@ namespace Protogame
                     this.m_SourcePath = reader.ReadLine();
 
                     // Don't scan twice if the source path is the same as the normal path.
-                    if (this.m_SourcePath == this.m_Path)
+                    if (string.Equals(this.m_SourcePath, this.m_Path, StringComparison.OrdinalIgnoreCase))
                     {
                         this.m_SourcePath = null;
                     }
