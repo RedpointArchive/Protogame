@@ -31,6 +31,8 @@
     </Content>
     <Compile Include="Assets\AIAsset.cs" />
     <Compile Include="Assets\AIAssetLoader.cs" />
+    <Compile Include="Assets\AndroidCompiledLoadStrategy.cs" />
+    <Compile Include="Assets\AndroidSourceLoadStrategy.cs" />
     <Compile Include="Assets\AssemblyLoadStrategy.cs" />
     <Compile Include="Assets\AssetAttribute.cs" />
     <Compile Include="Assets\AssetContentManager.cs" />

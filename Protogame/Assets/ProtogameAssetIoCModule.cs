@@ -33,6 +33,7 @@ namespace Protogame
             this.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
 
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 #if DEBUG
             this.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
@@ -45,19 +46,23 @@ namespace Protogame
             this.Bind<ILoadStrategy>().To<LocalCompiledLoadStrategy>();
             this.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
             this.Bind<ILoadStrategy>().To<AssemblyLoadStrategy>();
+#elif PLATFORM_ANDROID || PLATFORM_OUYA
+            this.Bind<ILoadStrategy>().To<AndroidSourceLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<AndroidCompiledLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
+#endif
 
+#if PLATFORM_WINDOWS || PLATFORM_LINUX
+            this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
+            this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
+            this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
+            this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
 #if PLATFORM_WINDOWS
-            this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
-            this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
-            this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
-            this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
 #elif PLATFORM_LINUX
-            this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
-            this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>();
-            this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
-            this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
+#endif
 #endif
         }
     }
