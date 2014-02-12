@@ -184,8 +184,8 @@ namespace Protogame
             var shift = keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift);
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-            var capsLock = Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock);
-            var numLock = Control.IsKeyLocked(System.Windows.Forms.Keys.NumLock);
+            var capsLock = System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock);
+            var numLock = System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.NumLock);
 #else
 			var capsLock = false;
 			var numLock = false;
