@@ -3,7 +3,8 @@ namespace Protogame
     using System;
     using System.Collections.Generic;
     using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Input;
+	using Microsoft.Xna.Framework.Input;
+	using Microsoft.Xna.Framework.Input.Touch;
 
     /// <summary>
     /// A game engine hook that raised appropriate input events as they occur.
@@ -71,6 +72,9 @@ namespace Protogame
             this.UpdateKeyboard(gameContext);
             this.UpdateMouse(gameContext);
             this.UpdateGamepad(gameContext);
+#if PLATFORM_ANDROID || PLATFORM_OUYA
+            this.UpdateTouch(gameContext);
+#endif
         }
 
         /// <summary>
@@ -234,5 +238,33 @@ namespace Protogame
 
             this.m_LastMouseState = mouseState;
         }
+
+#if PLATFORM_ANDROID || PLATFORM_OUYA
+
+		/// <summary>
+		/// Updates and fires input events for a touch device.
+		/// </summary>
+		/// <param name="gameContext">
+		/// The game context.
+		/// </param>
+		private void UpdateTouch(IGameContext gameContext)
+		{
+			var touchState = TouchPanel.GetState();
+
+            foreach (var touch in touchState)
+            {
+                this.m_EventEngine.Fire(
+                    gameContext, 
+                    new TouchPressEvent
+                    {
+                        X = touch.Position.X, 
+                        Y = touch.Position.Y, 
+                        Pressure = touch.Pressure,
+                        TouchLocationState = touch.State
+                    });
+            }
+		}
+
+#endif
     }
 }

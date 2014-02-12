@@ -198,6 +198,8 @@
     <Compile Include="Events\MousePressEvent.cs" />
     <Compile Include="Events\ProtogameEventsIoCModule.cs" />
     <Compile Include="Events\StaticEventBinder.cs" />
+    <Compile Include="Events\TouchEvent.cs" />
+    <Compile Include="Events\TouchPressEvent.cs" />
     <Compile Include="Extensions\BoundingBoxExtensions.cs" />
     <Compile Include="Extensions\KeyboardStateExtensions.cs" />
     <Compile Include="Extensions\MouseStateExtensions.cs" />
