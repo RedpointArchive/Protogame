@@ -4,6 +4,9 @@ namespace Protogame
     using System.Threading;
     using Ninject;
 
+    /// <summary>
+    /// The default implementation for tick regulation on a game server.
+    /// </summary>
     public class DefaultTickRegulator : ITickRegulator
     {
         private readonly int m_TicksPerSecond;
@@ -41,15 +44,19 @@ namespace Protogame
             if (amount > 0)
             {
                 Thread.Sleep((int)amount);
+                this.m_StartTime = DateTime.Now;
             }
             else
             {
                 Console.WriteLine(
                     "WARNING: Tick took " + (int)(DateTime.Now - this.m_StartTime.Value).TotalMilliseconds
                     + "ms, which is longer than " + (1000f / this.m_TicksPerSecond) + "ms.");
-            }
 
-            this.m_StartTime = DateTime.Now;
+                // Adjust the next start time so that we wait less.  This allows us to "catch up" on ticks, ensuring
+                // that the same number of ticks occur for a given time period, regardless of how long an update
+                // takes (assuming that some of those updates are short and allow it to catch up).
+                this.m_StartTime = DateTime.Now.AddMilliseconds(amount);
+            }
         }
     }
 }
