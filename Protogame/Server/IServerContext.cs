@@ -23,7 +23,7 @@ namespace Protogame
         /// set in the <see cref="StartTime"/> property.
         /// </remarks>
         /// <value>The time tick.</value>
-        int TimeTick { get; }
+        int TimeTick { get; set; }
 
         /// <summary>
         /// Gets or sets the time that the server started.

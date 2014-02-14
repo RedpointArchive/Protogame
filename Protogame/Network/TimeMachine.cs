@@ -22,7 +22,17 @@ namespace Protogame
         /// <summary>
         /// Storage of the known values provided by the <see cref="Set"/> method.
         /// </summary>
-        private readonly SortedList<int, T> m_KnownValues;
+        private readonly Dictionary<int, T> m_KnownValues;
+
+        /// <summary>
+        /// Storage of the known keys provided by the <see cref="Set"/> method.
+        /// </summary>
+        private readonly List<int> m_KnownKeys; 
+
+        /// <summary>
+        /// The latest tick that was last set with <see cref="Set"/>.
+        /// </summary>
+        private int m_LatestTick;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TimeMachine{T}"/> class. 
@@ -32,7 +42,9 @@ namespace Protogame
         /// </param>
         protected TimeMachine(int history)
         {
-            this.m_KnownValues = new SortedList<int, T>();
+            this.m_KnownValues = new Dictionary<int, T>();
+            this.m_KnownKeys = new List<int>();
+            this.m_LatestTick = 0;
             this.m_History = history;
         }
 
@@ -148,19 +160,19 @@ namespace Protogame
             int previousTick, nextTick;
 
             this.FindSurroundingTickValues(
-                this.m_KnownValues.Keys,
+                this.m_KnownKeys,
                 tick,
                 out previousTick,
                 out nextTick);
 
             if (previousTick != -1)
             {
-                previousTick = this.m_KnownValues.Keys[previousTick];
+                previousTick = this.m_KnownKeys[previousTick];
             }
 
             if (nextTick != -1)
             {
-                nextTick = this.m_KnownValues.Keys[nextTick];
+                nextTick = this.m_KnownKeys[nextTick];
             }
 
             if (previousTick != -1 && nextTick != -1)
@@ -222,22 +234,24 @@ namespace Protogame
         /// </param>
         public void Purge(int tick)
         {
-            var keys = this.m_KnownValues.Keys.Where(k => k <= tick - this.m_History).OrderBy(k => k).ToArray();
+            if (this.m_KnownKeys.Count <= 2)
+            {
+                // Never allow less than 2 values in the list as this prevents extrapolation.
+                return;
+            }
+
+            var keys = this.m_KnownKeys.Where(k => k <= tick - this.m_History).OrderBy(k => k).ToArray();
 
             foreach (var k in keys)
             {
-                if (this.m_KnownValues.Count <= 2)
-                {
-                    // Never allow less than 2 values in the list as this prevents extrapolation.
-                    return;
-                }
-
+                this.m_KnownKeys.Remove(k);
                 this.m_KnownValues.Remove(k);
             }
         }
 
         /// <summary>
-        /// Sets the specified tick and value into the time machine.
+        /// Sets the specified tick and value into the time machine.  Once you have set a value at
+        /// a specified time, you can only set values with a higher tick.
         /// </summary>
         /// <param name="tick">
         /// The tick at which this value exists.
@@ -247,7 +261,18 @@ namespace Protogame
         /// </param>
         public void Set(int tick, T value)
         {
+            if (tick < this.m_LatestTick)
+            {
+                throw new InvalidOperationException("You can only set values later than the last set value.");
+            }
+
             this.m_KnownValues[tick] = value;
+
+            if (tick > this.m_LatestTick)
+            {
+                this.m_KnownKeys.Add(tick);
+                this.m_LatestTick = tick;
+            }
         }
 
         /// <summary>

@@ -29,10 +29,8 @@ namespace Protogame
 
         public int TimeTick
         {
-            get
-            {
-                return (int)(DateTime.Now - this.StartTime).TotalMilliseconds;
-            }
+            get;
+            set;
         }
 
         public DateTime StartTime { get; set; }

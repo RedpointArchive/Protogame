@@ -69,6 +69,8 @@
             this.m_ReliableMxClients = new Dictionary<DualIPEndPoint, MxClient>();
             this.m_Reliabilities = new Dictionary<DualIPEndPoint, MxReliability>();
             this.m_Closed = false;
+
+            this.CalculateEndpoints();
         }
 
         /// <summary>
@@ -138,13 +140,8 @@
         /// </value>
         public IEnumerable<DualIPEndPoint> Endpoints
         {
-            get
-            {
-                return
-                    this.m_RealtimeMxClients.Select(x => x.Key)
-                        .Union(this.m_ReliableMxClients.Select(x => x.Key))
-                        .ToArray();
-            }
+            get; 
+            private set;
         }
 
         /// <summary>
@@ -179,6 +176,7 @@
             this.m_RealtimeMxClients.Clear();
             this.m_ReliableMxClients.Clear();
             this.m_Reliabilities.Clear();
+            this.CalculateEndpoints();
 
             this.m_Closed = true;
         }
@@ -216,6 +214,8 @@
             this.m_Reliabilities[endpoint] = new MxReliability(this.m_ReliableMxClients[endpoint]);
             this.OnClientConnected(this.m_ReliableMxClients[endpoint]);
             this.RegisterForEvents(this.m_Reliabilities[endpoint]);
+
+            this.CalculateEndpoints();
         }
 
         /// <summary>
@@ -255,6 +255,8 @@
                 this.UnregisterFromEvents(reliability);
                 this.m_Reliabilities.Remove(endpoint);
             }
+
+            this.CalculateEndpoints();
         }
 
         /// <summary>
@@ -508,6 +510,17 @@
             {
                 throw new InvalidOperationException("You can not use an MxDispatcher once it has been closed.");
             }
+        }
+
+        /// <summary>
+        /// Calculates the current endpoints after the realtime or reliable
+        /// client lists changed.
+        /// </summary>
+        private void CalculateEndpoints()
+        {
+            this.Endpoints = this.m_RealtimeMxClients.Select(x => x.Key)
+                .Union(this.m_ReliableMxClients.Select(x => x.Key))
+                .ToList();
         }
 
         /// <summary>
@@ -826,6 +839,9 @@
 
                         // And assign the endpoint so we use it.
                         dualEndPoint = firstAvailable;
+
+                        // Our endpoints have changed; calculate again.
+                        this.CalculateEndpoints();
                     }
                     else
                     {
@@ -857,6 +873,9 @@
 
                     mxClients[dualEndPoint].EnqueueReceive(packet);
                     this.OnClientConnected(mxClients[dualEndPoint]);
+
+                    // Our endpoints have changed; calculate again.
+                    this.CalculateEndpoints();
                 }
             }
 

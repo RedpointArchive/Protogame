@@ -54,6 +54,8 @@ namespace Protogame
         {
             using (this.m_Profiler.Measure("tick"))
             {
+                this.ServerContext.TimeTick = (int)(DateTime.Now - this.ServerContext.StartTime).TotalMilliseconds;
+
                 this.ServerContext.WorldManager.Update(this);
 
                 this.ServerContext.Tick++;
