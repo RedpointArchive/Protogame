@@ -245,7 +245,7 @@
             if (this.m_ReliableMxClients.ContainsKey(endpoint))
             {
                 var reliableClient = this.m_ReliableMxClients[endpoint];
-                this.m_RealtimeMxClients.Remove(endpoint);
+                this.m_ReliableMxClients.Remove(endpoint);
                 this.OnClientDisconnected(reliableClient);
             }
 
@@ -925,7 +925,7 @@
                 else
                 {
                     // Create a new client for this address.
-                    mxClients[dualEndPoint] = new MxClient(this, receive, dualEndPoint, udpClient, reliable);
+                    mxClients.Add(dualEndPoint, new MxClient(this, receive, dualEndPoint, udpClient, reliable));
                     if (!reliable)
                     {
                         this.RegisterForEvents(mxClients[dualEndPoint]);
