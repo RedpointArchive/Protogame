@@ -286,6 +286,26 @@
         }
 
         /// <summary>
+        /// Returns the realtime Mx client for the given endpoint.
+        /// </summary>
+        /// <param name="endpoint">The dual IP endpoint.</param>
+        /// <returns>The realtime Mx client.</returns>
+        public MxClient GetRealtimeClient(DualIPEndPoint endpoint)
+        {
+            return this.m_RealtimeMxClients[endpoint];
+        }
+
+        /// <summary>
+        /// Returns the reliable Mx client for the given endpoint.
+        /// </summary>
+        /// <param name="endpoint">The dual IP endpoint.</param>
+        /// <returns>The reliable Mx client.</returns>
+        public MxClient GetReliableClient(DualIPEndPoint endpoint)
+        {
+            return this.m_ReliableMxClients[endpoint];
+        }
+
+        /// <summary>
         /// Resolves an IP endpoint and reliability information to a dual IP endpoint.
         /// </summary>
         /// <param name="endpoint">
