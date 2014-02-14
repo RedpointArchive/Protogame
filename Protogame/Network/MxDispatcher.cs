@@ -541,6 +541,39 @@
             this.Endpoints = this.m_RealtimeMxClients.Select(x => x.Key)
                 .Union(this.m_ReliableMxClients.Select(x => x.Key))
                 .ToList();
+
+            Func<List<int>, bool> getIsUnique = values =>
+            {
+                var set = new HashSet<int>();
+
+                return values.All(set.Add);
+            };
+
+            // Verify that each endpoint is unique and there are no conflict ports and addresses.  This should
+            // never occur, but this code is here to ensure that we pick up any bugs in this area.
+            foreach (
+                var identicalAddresses in
+                    this.Endpoints.GroupBy(
+                        x => x.RealtimeEndPoint != null ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address)
+                        .Where(x => x.Count() >= 2))
+            {
+                var realtimePorts =
+                    identicalAddresses.Where(x => x.RealtimeEndPoint != null).Select(x => x.RealtimeEndPoint.Port).ToList();
+                var reliablePorts =
+                    identicalAddresses.Where(x => x.ReliableEndPoint != null).Select(x => x.ReliableEndPoint.Port).ToList();
+
+                if (!getIsUnique(realtimePorts))
+                {
+                    throw new InvalidOperationException(
+                        "More than one realtime endpoint shares the same address and port.");
+                }
+
+                if (!getIsUnique(reliablePorts))
+                {
+                    throw new InvalidOperationException(
+                        "More than one reliable endpoint shares the same address and port.");
+                }
+            }
         }
 
         /// <summary>
