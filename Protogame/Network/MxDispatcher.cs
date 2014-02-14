@@ -844,6 +844,14 @@
                         var tempClient = opposingMxClients[firstAvailable];
                         opposingMxClients.Remove(firstAvailable);
 
+                        // If the opposing client is a reliable client, we also need to remove the reliability.
+                        MxReliability tempReliability = null;
+                        if (!reliable)
+                        {
+                            tempReliability = this.m_Reliabilities[firstAvailable];
+                            this.m_Reliabilities.Remove(firstAvailable);
+                        }
+
                         // Backfill the current endpoint into that dual endpoint.
                         if (reliable)
                         {
@@ -856,6 +864,10 @@
 
                         // Now add the key back into the opposing dictionary.
                         opposingMxClients.Add(firstAvailable, tempClient);
+                        if (!reliable)
+                        {
+                            this.m_Reliabilities.Add(firstAvailable, tempReliability);
+                        }
 
                         // And assign the endpoint so we use it.
                         dualEndPoint = firstAvailable;
