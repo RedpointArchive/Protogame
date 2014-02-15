@@ -572,7 +572,7 @@
                                 this.m_SendQueue.Remove(idx);
                                 this.m_SendMessageQueue.Remove(idx);
 
-                                this.Latency = rtt * 1000f;
+                                this.Latency = rtt;
 
                                 foreach (var payload in payloads)
                                 {

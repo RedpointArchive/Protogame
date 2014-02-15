@@ -263,7 +263,7 @@ namespace Protogame
         {
             if (tick < this.m_LatestTick)
             {
-                throw new InvalidOperationException("You can only set values later than the last set value.");
+                return;
             }
 
             this.m_KnownValues[tick] = value;
