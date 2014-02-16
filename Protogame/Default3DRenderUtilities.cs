@@ -353,5 +353,261 @@ namespace Protogame
 
             context.GraphicsDevice.BlendState = BlendState.Opaque;
         }
+
+        /// <summary>
+        /// Renders a 3D cube from 0, 0, 0 to 1, 1, 1, applying the specified transformation.
+        /// </summary>
+        /// <param name="context">
+        /// The rendering context.
+        /// </param>
+        /// <param name="transform">
+        /// The transformation to apply.
+        /// </param>
+        /// <param name="color">
+        /// The color of the cube.
+        /// </param>
+        public void RenderCube(IRenderContext context, Matrix transform, Color color)
+        {
+            if (!context.Is3DContext)
+            {
+                throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
+            }
+
+            var vertexes = new[]
+            {
+                new VertexPositionColor(new Vector3(0, 0, 0), color),
+                new VertexPositionColor(new Vector3(0, 0, 1), color),
+                new VertexPositionColor(new Vector3(0, 1, 0), color),
+                new VertexPositionColor(new Vector3(0, 1, 1), color),
+
+                new VertexPositionColor(new Vector3(1, 0, 0), color),
+                new VertexPositionColor(new Vector3(1, 0, 1), color),
+                new VertexPositionColor(new Vector3(1, 1, 0), color),
+                new VertexPositionColor(new Vector3(1, 1, 1), color),
+
+                new VertexPositionColor(new Vector3(0, 0, 0), color),
+                new VertexPositionColor(new Vector3(0, 0, 1), color),
+                new VertexPositionColor(new Vector3(0, 1, 0), color),
+                new VertexPositionColor(new Vector3(0, 1, 1), color),
+
+                new VertexPositionColor(new Vector3(1, 0, 0), color),
+                new VertexPositionColor(new Vector3(1, 0, 1), color),
+                new VertexPositionColor(new Vector3(1, 1, 0), color),
+                new VertexPositionColor(new Vector3(1, 1, 1), color),
+
+                new VertexPositionColor(new Vector3(0, 0, 0), color),
+                new VertexPositionColor(new Vector3(0, 0, 1), color),
+                new VertexPositionColor(new Vector3(0, 1, 0), color),
+                new VertexPositionColor(new Vector3(0, 1, 1), color),
+
+                new VertexPositionColor(new Vector3(1, 0, 0), color),
+                new VertexPositionColor(new Vector3(1, 0, 1), color),
+                new VertexPositionColor(new Vector3(1, 1, 0), color),
+                new VertexPositionColor(new Vector3(1, 1, 1), color),
+            };
+
+            var indicies = new short[]
+            {
+                0, 2, 1,
+                3, 1, 2,
+
+                4, 5, 6, 
+                7, 6, 5,
+
+                0 + 8, 1 + 8, 4 + 8,
+                5 + 8, 4 + 8, 1 + 8,
+
+                2 + 8, 6 + 8, 3 + 8,
+                7 + 8, 3 + 8, 6 + 8,
+
+                0 + 16, 4 + 16, 2 + 16,
+                6 + 16, 2 + 16, 4 + 16,
+
+                1 + 16, 3 + 16, 5 + 16,
+                7 + 16, 5 + 16, 3 + 16
+            };
+
+            context.EnableVertexColors();
+
+            var world = context.World;
+
+            context.World = transform;
+
+            foreach (var pass in context.Effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                context.GraphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.TriangleList,
+                    vertexes,
+                    0,
+                    vertexes.Length,
+                    indicies,
+                    0,
+                    indicies.Length / 3);
+            }
+
+            context.World = world;
+        }
+
+        /// <summary>
+        /// Renders a 3D cube from 0, 0, 0 to 1, 1, 1, applying the specified transformation, with the
+        /// given texture and using the specified UV coordinates for each face of the cube.
+        /// </summary>
+        /// <param name="context">
+        /// The rendering context.
+        /// </param>
+        /// <param name="transform">
+        /// The transformation to apply.
+        /// </param>
+        /// <param name="texture">
+        /// The texture to render on the cube.
+        /// </param>
+        /// <param name="topLeftUV">
+        /// The top-left UV coordinate.
+        /// </param>
+        /// <param name="bottomRightUV">
+        /// The bottom-right UV coordinate.
+        /// </param>
+        public void RenderCube(IRenderContext context, Matrix transform, TextureAsset texture, Vector2 topLeftUV, Vector2 bottomRightUV)
+        {
+            if (!context.Is3DContext)
+            {
+                throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
+            }
+
+            var vertexes = new[]
+            {
+                new VertexPositionNormalTexture(new Vector3(0, 0, 0), new Vector3(-1, 0, 0), new Vector2(topLeftUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 0, 1), new Vector3(-1, 0, 0), new Vector2(topLeftUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 1, 0), new Vector3(-1, 0, 0), new Vector2(bottomRightUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 1, 1), new Vector3(-1, 0, 0), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+
+                new VertexPositionNormalTexture(new Vector3(1, 0, 0), new Vector3(1, 0, 0), new Vector2(topLeftUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 0, 1), new Vector3(1, 0, 0), new Vector2(topLeftUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 1, 0), new Vector3(1, 0, 0), new Vector2(bottomRightUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 1, 1), new Vector3(1, 0, 0), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+
+                new VertexPositionNormalTexture(new Vector3(0, 0, 0), new Vector3(0, -1, 0), new Vector2(topLeftUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 0, 1), new Vector3(0, -1, 0), new Vector2(topLeftUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector2(topLeftUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 1, 1), new Vector3(0, 1, 0), new Vector2(topLeftUV.X, bottomRightUV.Y)),
+
+                new VertexPositionNormalTexture(new Vector3(1, 0, 0), new Vector3(0, -1, 0), new Vector2(bottomRightUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 0, 1), new Vector3(0, -1, 0), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 1, 0), new Vector3(0, 1, 0), new Vector2(bottomRightUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 1, 1), new Vector3(0, 1, 0), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+
+                new VertexPositionNormalTexture(new Vector3(0, 0, 0), new Vector3(0, 0, -1), new Vector2(topLeftUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 0, 1), new Vector3(0, 0, 1), new Vector2(topLeftUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 1, 0), new Vector3(0, 0, -1), new Vector2(topLeftUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 1, 1), new Vector3(0, 0, 1), new Vector2(topLeftUV.X, bottomRightUV.Y)),
+
+                new VertexPositionNormalTexture(new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector2(bottomRightUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 0, 1), new Vector3(0, 0, 1), new Vector2(bottomRightUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 1, 0), new Vector3(0, 0, -1), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 1, 1), new Vector3(0, 0, 1), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+            };
+
+            var indicies = new short[]
+            {
+                0, 2, 1,
+                3, 1, 2,
+
+                4, 5, 6, 
+                7, 6, 5,
+
+                0 + 8, 1 + 8, 4 + 8,
+                5 + 8, 4 + 8, 1 + 8,
+
+                2 + 8, 6 + 8, 3 + 8,
+                7 + 8, 3 + 8, 6 + 8,
+
+                0 + 16, 4 + 16, 2 + 16,
+                6 + 16, 2 + 16, 4 + 16,
+
+                1 + 16, 3 + 16, 5 + 16,
+                7 + 16, 5 + 16, 3 + 16
+            };
+
+            context.EnableTextures();
+            context.SetActiveTexture(texture.Texture);
+
+            var world = context.World;
+
+            context.World = transform;
+
+            foreach (var pass in context.Effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                context.GraphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.TriangleList,
+                    vertexes,
+                    0,
+                    vertexes.Length,
+                    indicies,
+                    0,
+                    indicies.Length / 3);
+            }
+
+            context.World = world;
+        }
+
+        /// <summary>
+        /// Renders a 2D plane from 0, 0, 0 to 1, 0, 1, applying the specified transformation.
+        /// </summary>
+        /// <param name="context">
+        /// The rendering context.
+        /// </param>
+        /// <param name="transform">
+        /// The transformation to apply.
+        /// </param>
+        /// <param name="color">
+        /// The color of the plane.
+        /// </param>
+        public void RenderPlane(IRenderContext context, Matrix transform, Color color)
+        {
+            if (!context.Is3DContext)
+            {
+                throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
+            }
+
+            var vertexes = new[]
+            {
+                new VertexPositionColor(new Vector3(0, 0, 0), color),
+                new VertexPositionColor(new Vector3(0, 0, 1), color),
+                new VertexPositionColor(new Vector3(1, 0, 0), color),
+                new VertexPositionColor(new Vector3(1, 0, 1), color),
+            };
+
+            var indicies = new short[]
+            {
+                0, 2, 1,
+                3, 1, 2,
+            };
+
+            context.EnableVertexColors();
+
+            var world = context.World;
+
+            context.World = transform;
+
+            foreach (var pass in context.Effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                context.GraphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.TriangleList,
+                    vertexes,
+                    0,
+                    vertexes.Length,
+                    indicies,
+                    0,
+                    indicies.Length / 3);
+            }
+
+            context.World = world;
+        }
     }
 }
