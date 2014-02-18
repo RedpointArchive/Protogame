@@ -37,6 +37,17 @@ namespace Protogame
         {
             game.RenderContext.Render(game.GameContext);
 
+#if PLATFORM_WINDOWS
+            if (game.RenderContext.GraphicsDevice != null)
+            {
+                game.RenderContext.GraphicsDevice.Viewport = new Viewport(
+                    0,
+                    0,
+                    game.Window.ClientBounds.Width,
+                    game.Window.ClientBounds.Height);
+            }
+#endif
+
             game.RenderContext.Is3DContext = true;
 
             game.GameContext.World.RenderBelow(game.GameContext, game.RenderContext);

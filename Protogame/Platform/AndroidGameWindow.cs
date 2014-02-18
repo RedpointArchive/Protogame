@@ -52,6 +52,25 @@ namespace Protogame
             {
             }
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user is allowed to resize the window.  Ignored
+        /// on platforms where the window is of a fixed size.
+        /// </summary>
+        /// <value>
+        /// Whether or not the user is allowed to resize the window.
+        /// </value>
+        public bool AllowUserResizing
+        {
+            get
+            {
+                return false;
+            }
+
+            set
+            {
+            }
+        }
     }
 }
 #endif

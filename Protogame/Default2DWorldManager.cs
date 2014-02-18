@@ -2,6 +2,7 @@ namespace Protogame
 {
     using System.Linq;
     using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
 
     /// <summary>
     /// The default 2 d world manager.
@@ -35,6 +36,17 @@ namespace Protogame
         public void Render<T>(T game) where T : Game, ICoreGame
         {
             game.RenderContext.Render(game.GameContext);
+
+#if PLATFORM_WINDOWS
+            if (game.RenderContext.GraphicsDevice != null)
+            {
+                game.RenderContext.GraphicsDevice.Viewport = new Viewport(
+                    0,
+                    0,
+                    game.Window.ClientBounds.Width,
+                    game.Window.ClientBounds.Height);
+            }
+#endif
 
             game.RenderContext.Is3DContext = false;
 

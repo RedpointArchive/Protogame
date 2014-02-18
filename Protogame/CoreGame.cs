@@ -136,6 +136,28 @@ namespace Protogame
             // Construct a platform-independent game window.
             this.Window = this.ConstructGameWindow();
 
+#if PLATFORM_WINDOWS
+            // Register for the window resize event so we can scale
+            // the window correctly.
+            var shouldHandleResize = true;
+            base.Window.ClientSizeChanged += (sender, e) =>
+            {
+                if (!shouldHandleResize)
+                {
+                    return;
+                }
+
+                shouldHandleResize = false;
+                var width = base.Window.ClientBounds.Width;
+                var height = base.Window.ClientBounds.Height;
+                this.GameContext.Graphics.PreferredBackBufferWidth = width;
+                this.GameContext.Graphics.PreferredBackBufferHeight = height;
+                this.GameContext.Camera = new Camera(width, height);
+                this.GameContext.Graphics.ApplyChanges();
+                shouldHandleResize = true;
+            };
+#endif
+
             // Create the game context.
             this.GameContext = this.m_Kernel.Get<IGameContext>(
                 new ConstructorArgument("game", this), 

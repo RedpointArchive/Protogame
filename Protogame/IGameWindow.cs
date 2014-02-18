@@ -23,5 +23,14 @@ namespace Protogame
         /// The title shown on the window.
         /// </value>
         string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user is allowed to resize the window.  Ignored
+        /// on platforms where the window is of a fixed size.
+        /// </summary>
+        /// <value>
+        /// Whether or not the user is allowed to resize the window.
+        /// </value>
+        bool AllowUserResizing { get; set; }
     }
 }
