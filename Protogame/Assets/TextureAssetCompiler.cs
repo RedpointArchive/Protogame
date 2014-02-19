@@ -38,6 +38,14 @@ namespace Protogame
             var bitmap = new Bitmap(new MemoryStream(asset.RawData));
             var width = bitmap.Width;
             var height = bitmap.Height;
+
+            if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed)
+            {
+                throw new InvalidDataException(
+                    "8-bit indexed PNGs do not convert correctly (at least under Mono) to 32-bit ARGB.  Save " +
+                    "your PNG files in a non-indexed format, such as 24-bit or 32-bit ARGB.");
+            }
+
             if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
             {
                 var newBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
