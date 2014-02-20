@@ -4,6 +4,7 @@ namespace Protogame
     using System.Collections.Generic;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
+    using Microsoft.Xna.Framework.Input;
 
     /// <summary>
     /// The default render context implementation.
@@ -311,6 +312,34 @@ namespace Protogame
                 this.SingleWhitePixel = new Texture2D(context.Graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
                 this.SingleWhitePixel.SetData(new[] { Color.White });
             }
+
+            // Update the MouseRay property of the game context.
+            var mouseState = Mouse.GetState();
+            var mouse = new Vector2(mouseState.X, mouseState.Y);
+            var nearSource = new Vector3(mouse, 0f);
+            var farSource = new Vector3(mouse, 1f);
+
+            var nearPoint = this.GraphicsDevice.Viewport.Unproject(
+                nearSource, 
+                this.Projection, 
+                this.View, 
+                this.World);
+
+            var farPoint = this.GraphicsDevice.Viewport.Unproject(
+                farSource, 
+                this.Projection, 
+                this.View, 
+                this.World);
+
+            var direction = farPoint - nearPoint;
+            direction.Normalize();
+
+            if (float.IsNaN(direction.X) || float.IsNaN(direction.Y) || float.IsNaN(direction.Z))
+            {
+                direction = Vector3.Zero;
+            }
+
+            context.MouseRay = new Ray(nearPoint, direction);
         }
 
         /// <summary>

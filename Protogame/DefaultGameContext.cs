@@ -124,6 +124,14 @@ namespace Protogame
         public IWorldManager WorldManager { get; internal set; }
 
         /// <summary>
+        /// Gets or sets the ray representing the mouse cursor in 3D space.  This is
+        /// updated automatically by DefaultRenderContext based on the World, View and Projection
+        /// properties of the current render context.
+        /// </summary>
+        /// <value>The ray representing the mouse cursor in 3D space.</value>
+        public Ray MouseRay { get; set; }
+
+        /// <summary>
         /// The create world.
         /// </summary>
         /// <typeparam name="T">
