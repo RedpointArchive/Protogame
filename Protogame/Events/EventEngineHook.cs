@@ -3,8 +3,10 @@ namespace Protogame
     using System;
     using System.Collections.Generic;
     using Microsoft.Xna.Framework;
-	using Microsoft.Xna.Framework.Input;
+    using Microsoft.Xna.Framework.Input;
+#if PLATFORM_ANDROID || PLATFORM_OUYA
 	using Microsoft.Xna.Framework.Input.Touch;
+#endif
 
     /// <summary>
     /// A game engine hook that raised appropriate input events as they occur.
@@ -27,6 +29,11 @@ namespace Protogame
         /// when appropriate.
         /// </summary>
         private MouseState? m_LastMouseState;
+
+        /// <summary>
+        /// Determines if we are using the gamepad.
+        /// </summary>
+        private bool m_GamepadEnabled = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventEngineHook"/> class.
@@ -71,7 +78,19 @@ namespace Protogame
         {
             this.UpdateKeyboard(gameContext);
             this.UpdateMouse(gameContext);
-            this.UpdateGamepad(gameContext);
+
+            if (this.m_GamepadEnabled)
+            {
+                try
+                {
+                    this.UpdateGamepad(gameContext);
+                }
+                catch (DllNotFoundException)
+                {
+                    this.m_GamepadEnabled = false;
+                }
+            }
+
 #if PLATFORM_ANDROID || PLATFORM_OUYA
             this.UpdateTouch(gameContext);
 #endif
