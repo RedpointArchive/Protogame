@@ -132,6 +132,24 @@ namespace Protogame
         public Ray MouseRay { get; set; }
 
         /// <summary>
+        /// Gets or sets the plane representing the mouse cursor's Y position in 3D space.  This forms
+        /// a plane such that if it were projected back to the screen it would intersect the mouse's
+        /// Y position along the X axis of the screen.  This is updated automatically by 
+        /// DefaultRenderContext based on the World, View and Projection properties of the current render context.
+        /// </summary>
+        /// <value>The plane representing the mouse cursor's Y position in 3D space.</value>
+        public Plane MouseHorizontalPlane { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plane representing the mouse cursor's X position in 3D space.  This forms
+        /// a plane such that if it were projected back to the screen it would intersect the mouse's
+        /// X position along the Y axis of the screen.  This is updated automatically by 
+        /// DefaultRenderContext based on the World, View and Projection properties of the current render context.
+        /// </summary>
+        /// <value>The plane representing the mouse cursor's X position in 3D space.</value>
+        public Plane MouseVerticalPlane { get; set; }
+
+        /// <summary>
         /// The create world.
         /// </summary>
         /// <typeparam name="T">

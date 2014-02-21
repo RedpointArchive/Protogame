@@ -367,6 +367,29 @@ namespace Protogame
             }
 
             context.MouseRay = new Ray(nearPoint, direction);
+
+            // Calculate the MouseHorizontalPlane and MouseVerticalPlane properties of
+            // the game context if we were able to resolve the mouse ray.
+            if (direction != Vector3.Zero)
+            {
+                var nearSourceHorizontal = new Vector3(mouseState.X + 1, mouseState.Y, 0f);
+                var nearPointHorizontal = this.GraphicsDevice.Viewport.Unproject(
+                    nearSourceHorizontal,
+                    this.Projection,
+                    this.View,
+                    this.World);
+
+                context.MouseVerticalPlane = new Plane(nearSource, nearSource + direction, nearPointHorizontal);
+
+                var nearSourceVertical = new Vector3(mouseState.X, mouseState.Y + 1, 0f);
+                var nearPointVertical = this.GraphicsDevice.Viewport.Unproject(
+                    nearSourceVertical,
+                    this.Projection,
+                    this.View,
+                    this.World);
+
+                context.MouseHorizontalPlane = new Plane(nearSource, nearSource + direction, nearPointVertical);
+            }
         }
 
         /// <summary>
