@@ -196,6 +196,7 @@
     <Compile Include="Events\MouseEvent.cs" />
     <Compile Include="Events\MouseMoveEvent.cs" />
     <Compile Include="Events\MousePressEvent.cs" />
+    <Compile Include="Events\MouseReleaseEvent.cs" />
     <Compile Include="Events\ProtogameEventsIoCModule.cs" />
     <Compile Include="Events\StaticEventBinder.cs" />
     <Compile Include="Events\TouchEvent.cs" />

@@ -103,7 +103,7 @@ namespace Protogame
         public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
             var mouse = Mouse.GetState();
-            if (layout.Contains(mouse.X, mouse.Y) && mouse.LeftPressed(this))
+            if (layout.Contains(mouse.X, mouse.Y) && mouse.LeftChanged(this) == ButtonState.Pressed)
             {
                 (this.Parent as TreeView).SelectedItem = this;
             }

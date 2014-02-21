@@ -148,7 +148,7 @@ namespace Protogame
         {
             this.UpdateCounter++;
             var mouse = Mouse.GetState();
-            var leftPressed = mouse.LeftPressed(this);
+            var leftPressed = mouse.LeftChanged(this) == ButtonState.Pressed;
             if (layout.Contains(mouse.X, mouse.Y) && leftPressed)
             {
                 this.Focus();

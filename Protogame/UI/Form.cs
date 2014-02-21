@@ -192,7 +192,7 @@ namespace Protogame
         public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
             var mouse = Mouse.GetState();
-            if (mouse.LeftPressed(this.GetHashCode()))
+            if (mouse.LeftChanged(this.GetHashCode()) == ButtonState.Pressed)
             {
                 this.Focus();
             }

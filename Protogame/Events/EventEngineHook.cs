@@ -220,25 +220,50 @@ namespace Protogame
                 return;
             }
 
-            if (mouseState.LeftPressed(this))
+            var leftChange = mouseState.LeftChanged(this);
+            var middleChange = mouseState.MiddleChanged(this);
+            var rightChange = mouseState.RightChanged(this);
+
+            if (leftChange == ButtonState.Pressed)
             {
                 this.m_EventEngine.Fire(
                     gameContext, 
                     new MousePressEvent { Button = MouseButton.Left, MouseState = mouseState });
             }
 
-            if (mouseState.RightPressed(this))
+            if (middleChange == ButtonState.Pressed)
+            {
+                this.m_EventEngine.Fire(
+                    gameContext, 
+                    new MousePressEvent { Button = MouseButton.Middle, MouseState = mouseState });
+            }
+
+            if (rightChange == ButtonState.Pressed)
             {
                 this.m_EventEngine.Fire(
                     gameContext, 
                     new MousePressEvent { Button = MouseButton.Right, MouseState = mouseState });
             }
 
-            if (mouseState.MiddlePressed(this))
+            if (leftChange == ButtonState.Released)
             {
                 this.m_EventEngine.Fire(
-                    gameContext, 
-                    new MousePressEvent { Button = MouseButton.Middle, MouseState = mouseState });
+                    gameContext,
+                    new MouseReleaseEvent { Button = MouseButton.Left, MouseState = mouseState });
+            }
+
+            if (middleChange == ButtonState.Released)
+            {
+                this.m_EventEngine.Fire(
+                    gameContext,
+                    new MouseReleaseEvent { Button = MouseButton.Middle, MouseState = mouseState });
+            }
+
+            if (rightChange == ButtonState.Released)
+            {
+                this.m_EventEngine.Fire(
+                    gameContext,
+                    new MouseReleaseEvent { Button = MouseButton.Right, MouseState = mouseState });
             }
 
             if (mouseState.X != this.m_LastMouseState.Value.X || mouseState.Y != this.m_LastMouseState.Value.Y)

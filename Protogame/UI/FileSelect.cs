@@ -6,6 +6,7 @@ namespace Protogame
 #endif
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Input;
+	using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
     /// <summary>
     /// The file select.
@@ -114,7 +115,7 @@ namespace Protogame
         public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
             var mouse = Mouse.GetState();
-            var leftPressed = mouse.LeftPressed(this);
+            var leftPressed = mouse.LeftChanged(this) == ButtonState.Pressed;
             if (layout.Contains(mouse.X, mouse.Y))
             {
                 if (leftPressed)
