@@ -371,6 +371,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
     </Content>
+    <EmbeddedResource Include="Assets\Effects\Macros.fx" />
     <EmbeddedResource Include="font.Default.asset" />
     <EmbeddedResource Include="font.Default-Android.bin" />
     <EmbeddedResource Include="font.Default-iOS.bin" />

@@ -1,6 +1,8 @@
 ﻿#if PLATFORM_WINDOWS
 
+using System;
 using System.IO;
+using System.Reflection;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
@@ -29,7 +31,7 @@ namespace Protogame
             }
 
             var output = new EffectContent();
-            output.EffectCode = asset.Code;
+            output.EffectCode = this.GetEffectPrefixCode() + asset.Code;
 
             var tempPath = Path.GetTempFileName();
             using (var writer = new StreamWriter(tempPath))
@@ -57,6 +59,26 @@ namespace Protogame
             }
             catch (NoAssetContentManagerException)
             {
+            }
+        }
+
+        /// <summary>
+        /// Gets the prefix code for effects compiled under Protogame.
+        /// </summary>
+        /// <returns>The effect prefix code.</returns>
+        private string GetEffectPrefixCode()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var stream = assembly.GetManifestResourceStream("Protogame.Assets.Effects.Macros.fx");
+
+            if (stream == null)
+            {
+                throw new InvalidOperationException("Prefix code for effects could not be found");
+            }
+
+            using (var reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
             }
         }
     }
