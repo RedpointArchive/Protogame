@@ -19,16 +19,6 @@
     <Reference Include="Newtonsoft.Json" />
   </References>
   <Files>
-    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_32.so.3.0.1">
-      <Platforms>Linux</Platforms>
-      <Link>libassimp_32.so.3.0.1</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_64.so.3.0.1">
-      <Platforms>Linux</Platforms>
-      <Link>libassimp_64.so.3.0.1</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Compile Include="Assets\AIAsset.cs" />
     <Compile Include="Assets\AIAssetLoader.cs" />
     <Compile Include="Assets\AndroidCompiledLoadStrategy.cs" />
@@ -345,6 +335,16 @@
     <Compile Include="UI\VerticalContainer.cs" />
     <Compile Include="UI\Window.cs" />
     <Compile Include="VerticalAlignment.cs" />
+    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_32.so.3.0.1">
+      <Platforms>Linux</Platforms>
+      <Link>libassimp_32.so.3.0.1</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_64.so.3.0.1">
+      <Platforms>Linux</Platforms>
+      <Link>libassimp_64.so.3.0.1</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\ThirdParty\Binaries\Windows\Assimp32.dll">
       <Link>Assimp32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
