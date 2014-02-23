@@ -390,6 +390,7 @@
     <EmbeddedResource Include="font.Default-WindowsPhone8.bin" />
     <EmbeddedResource Include="font.Default-WindowsStoreApp.bin" />
     <EmbeddedResource Include="font.Default-Xbox360.bin" />
+    <None Include="Assets\Effects\Template.fx" />
     <None Include="packages.config" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Structure\PositionOctreeUtil.tt">
