@@ -286,8 +286,8 @@ namespace Protogame
             }
 
             var keyboard = Keyboard.GetState();
-            var upPressed = keyboard.IsKeyPressed(this, Keys.Up);
-            var downPressed = keyboard.IsKeyPressed(this, Keys.Down);
+            var upPressed = keyboard.IsKeyChanged(this, Keys.Up) == KeyState.Down;
+            var downPressed = keyboard.IsKeyChanged(this, Keys.Down) == KeyState.Down;
             if (this.SelectedItem != null && (upPressed || downPressed))
             {
                 var tree = this.BuildEntryGraph(layout);

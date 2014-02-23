@@ -153,7 +153,7 @@ namespace Protogame
                 this.m_Input.Remove(this.m_Input.ToString().LastIndexOf('`'), 1);
             }
 
-            if (state.IsKeyPressed(this, Keys.Enter))
+            if (state.IsKeyChanged(this, Keys.Enter) == KeyState.Down)
             {
                 this.m_Log.Add("> " + this.m_Input);
                 this.Execute(gameContext, this.Parse(this.m_Input.ToString()));

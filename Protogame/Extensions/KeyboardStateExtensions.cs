@@ -1,6 +1,8 @@
 namespace Protogame
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using Microsoft.Xna.Framework.Input;
 
     /// <summary>
@@ -14,20 +16,50 @@ namespace Protogame
         private static Dictionary<int, Dictionary<Keys, KeyState>> m_GlobalKeyState;
 
         /// <summary>
-        /// The is key pressed.
+        /// Detects whether the specified key has changed state.
         /// </summary>
-        /// <param name="state">
-        /// The state.
-        /// </param>
-        /// <param name="obj">
-        /// The obj.
-        /// </param>
-        /// <param name="key">
-        /// The key.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
+        /// <param name="state">The keyboard state to check.</param>
+        /// <param name="obj">The object for the unique check to be done against.</param>
+        /// <param name="key">The key to check.</param>
+        /// <returns>The state change of the key, or null if there's no change.</returns>
+        public static KeyState? IsKeyChanged(this KeyboardState state, object obj, Keys key)
+        {
+            if (m_GlobalKeyState == null)
+            {
+                m_GlobalKeyState = new Dictionary<int, Dictionary<Keys, KeyState>>();
+            }
+
+            var hash = obj == null ? 0 : obj.GetHashCode();
+            if (!m_GlobalKeyState.ContainsKey(hash))
+            {
+                m_GlobalKeyState[hash] = new Dictionary<Keys, KeyState>();
+            }
+
+            var m_KeyState = m_GlobalKeyState[hash];
+            var oldPressed = KeyState.Up;
+            var newPressed = state[key];
+            KeyState? result = null;
+            if (m_KeyState.ContainsKey(key))
+            {
+                oldPressed = m_KeyState[key];
+            }
+
+            if (oldPressed == KeyState.Up && newPressed == KeyState.Down)
+            {
+                result = KeyState.Down;
+            }
+            else if (oldPressed == KeyState.Down && newPressed == KeyState.Up)
+            {
+                result = KeyState.Up;
+            }
+
+            m_KeyState[key] = state[key];
+            return result;
+        }
+
+        // ReSharper disable once CSharpWarnings::CS1591
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
+        [Obsolete("Use IsKeyChanged instead", true)]
         public static bool IsKeyPressed(this KeyboardState state, object obj, Keys key)
         {
             if (m_GlobalKeyState == null)

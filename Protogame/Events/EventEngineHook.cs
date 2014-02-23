@@ -198,9 +198,15 @@ namespace Protogame
                     this.m_EventEngine.Fire(gameContext, new KeyHeldEvent { Key = key, KeyboardState = keyboardState });
                 }
 
-                if (keyboardState.IsKeyPressed(this, key))
+                var change = keyboardState.IsKeyChanged(this, key);
+
+                if (change == KeyState.Down)
                 {
                     this.m_EventEngine.Fire(gameContext, new KeyPressEvent { Key = key, KeyboardState = keyboardState });
+                }
+                else if (change == KeyState.Up)
+                {
+                    this.m_EventEngine.Fire(gameContext, new KeyReleaseEvent { Key = key, KeyboardState = keyboardState });
                 }
             }
         }

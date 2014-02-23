@@ -192,6 +192,7 @@
     <Compile Include="Events\KeyboardEvent.cs" />
     <Compile Include="Events\KeyHeldEvent.cs" />
     <Compile Include="Events\KeyPressEvent.cs" />
+    <Compile Include="Events\KeyReleaseEvent.cs" />
     <Compile Include="Events\MouseButton.cs" />
     <Compile Include="Events\MouseEvent.cs" />
     <Compile Include="Events\MouseMoveEvent.cs" />
