@@ -17,6 +17,7 @@
     <Reference Include="AssImp" />
     <Reference Include="Protogame.ThirdParty" />
     <Reference Include="Newtonsoft.Json" />
+    <Reference Include="Jitter" />
   </References>
   <Files>
     <Compile Include="Assets\AIAsset.cs" />
@@ -267,6 +268,7 @@
     <Compile Include="Performance\NullProfiler.cs" />
     <Compile Include="Performance\NullProfilerHandle.cs" />
     <Compile Include="Performance\ProtogamePerformanceIoCModule.cs" />
+    <Compile Include="Physics\ConversionExtensions.cs" />
     <Compile Include="Platform\AndroidGameWindow.cs" />
     <Compile Include="Platform\DefaultGameWindow.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />

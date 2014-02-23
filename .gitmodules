@@ -13,3 +13,6 @@
 [submodule "ThirdParty/Newtonsoft.Json"]
 	path = ThirdParty/Newtonsoft.Json
 	url = https://github.com/hach-que/Newtonsoft.Json.git
+[submodule "ThirdParty/Jitter"]
+	path = ThirdParty/Jitter
+	url = git://github.com/hach-que/Jitter.git
