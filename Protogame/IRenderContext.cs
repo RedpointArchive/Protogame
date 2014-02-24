@@ -98,7 +98,10 @@ namespace Protogame
         /// <summary>
         /// Pop an effect from the current rendering context.
         /// </summary>
-        void PopEffect();
+        /// <returns>
+        /// The effect that was popped from the current rendering context.
+        /// </returns>
+        Effect PopEffect();
 
         /// <summary>
         /// Pops the current render target from the current rendering context.  If there are no more render targets
@@ -114,13 +117,10 @@ namespace Protogame
         /// <summary>
         /// Push an effect onto the current rendering context, making it the active effect used for rendering.
         /// </summary>
-        /// <typeparam name="T">
-        /// The effect type.
-        /// </typeparam>
         /// <param name="effect">
         /// The effect instance.
         /// </param>
-        void PushEffect<T>(T effect) where T : Effect;
+        void PushEffect(Effect effect);
 
         /// <summary>
         /// Push a render target onto the current rendering context, making it

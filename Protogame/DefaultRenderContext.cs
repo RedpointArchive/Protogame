@@ -181,7 +181,10 @@ namespace Protogame
         /// <summary>
         /// Pop an effect from the current rendering context.
         /// </summary>
-        public void PopEffect()
+        /// <returns>
+        /// The effect that was popped from the current rendering context.
+        /// </returns>
+        public Effect PopEffect()
         {
             // Prevent the original effect from ever being pushed off the stack.
             if (this.m_Effects.Count > 1)
@@ -199,7 +202,11 @@ namespace Protogame
                     newMatrices.View = outgoingMatrices.View;
                     newMatrices.World = outgoingMatrices.World;
                 }
+
+                return outgoing;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -265,8 +272,16 @@ namespace Protogame
         /// <param name="effect">
         /// The effect instance.
         /// </param>
-        public void PushEffect<T>(T effect) where T : Effect
+        public void PushEffect(Effect effect)
         {
+            // Ignore if the effect is null.  We might be pushing a value
+            // returned from PopEffect, and that method can return null
+            // if there are no effects on the stack.
+            if (effect == null)
+            {
+                return;
+            }
+
             // Automatically copy the matrices from the current effect to the new
             // effect if applicable.  This reduces confusion when pushing a new effect
             // onto the stack and not having things render correctly.
