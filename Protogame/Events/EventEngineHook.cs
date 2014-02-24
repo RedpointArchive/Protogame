@@ -134,6 +134,16 @@ namespace Protogame
                 lastGamepadState = this.m_LastGamePadStates[index];
             }
 
+            if (gamepadState.ThumbSticks.Left.X != 0 || gamepadState.ThumbSticks.Right.X != 0 || gamepadState.ThumbSticks.Left.Y != 0 || gamepadState.ThumbSticks.Right.Y != 0)
+            {
+                this.m_EventEngine.Fire(
+                    gameContext,
+                    new GamePadThumbstickActiveEvent
+                    {
+                        GamePadState = gamepadState
+                    });
+            }
+
             foreach (Buttons button in Enum.GetValues(typeof(Buttons)))
             {
                 if (gamepadState.IsButtonDown(button))
