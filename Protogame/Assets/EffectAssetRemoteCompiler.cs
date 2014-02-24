@@ -60,9 +60,19 @@ namespace Protogame
 
             // Connect to the target on port 80.
             var webClient = new WebClient();
-            var result = webClient.UploadData("http://" + targetAddress + ":8080/compileeffect?platform=" + (int)platform, Encoding.ASCII.GetBytes(asset.Code));
+            try
+            {
+                var result = webClient.UploadData("http://" + targetAddress + ":8080/compileeffect?platform=" + (int)platform, Encoding.ASCII.GetBytes(asset.Code));
 
-            asset.PlatformData = new PlatformData { Platform = platform, Data = result };
+                asset.PlatformData = new PlatformData { Platform = platform, Data = result };
+            }
+            catch (WebException ex)
+            {
+                using (var reader = new StreamReader(ex.Response.GetResponseStream()))
+                {
+                    throw new InvalidOperationException(reader.ReadToEnd());
+                }
+            }
 
             try
             {
