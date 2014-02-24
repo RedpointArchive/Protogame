@@ -52,7 +52,7 @@ namespace Protogame
 
             game.GameContext.World.RenderBelow(game.GameContext, game.RenderContext);
 
-            foreach (var entity in game.GameContext.World.Entities)
+            foreach (var entity in game.GameContext.World.Entities.ToList())
             {
                 entity.Render(game.GameContext, game.RenderContext);
             }
