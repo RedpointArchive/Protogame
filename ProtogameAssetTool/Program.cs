@@ -224,7 +224,19 @@
                             true);
 
                         var compiler = new EffectAssetCompiler();
-                        compiler.Compile(effect, platform);
+                        try
+                        {
+                            compiler.Compile(effect, platform);
+                        }
+                        catch (Exception ex)
+                        {
+                            response.StatusCode = 500;
+                            var result = Encoding.ASCII.GetBytes(ex.Message);
+                            response.ContentLength64 = result.Length;
+                            response.OutputStream.Write(result, 0, result.Length);
+                            response.Close();
+                            break;
+                        }
 
                         response.ContentLength64 = effect.PlatformData.Data.Length;
                         response.OutputStream.Write(effect.PlatformData.Data, 0, effect.PlatformData.Data.Length);
