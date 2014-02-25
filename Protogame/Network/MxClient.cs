@@ -227,7 +227,7 @@
         /// <summary>
         /// Raised when a message has been received by this client.
         /// </summary>
-        public event MxMessageEventHandler MessageReceived;
+        public event MxMessageReceiveEventHandler MessageReceived;
 
         /// <summary>
         /// Raised when a message has been sent by this client.
@@ -401,7 +401,7 @@
         /// <param name="e">
         /// The event arguments.
         /// </param>
-        protected virtual void OnMessageReceived(MxMessageEventArgs e)
+        protected virtual void OnMessageReceived(MxMessageReceiveEventArgs e)
         {
             var handler = this.MessageReceived;
             if (handler != null)
@@ -547,8 +547,10 @@
                         {
                             this.PushIntoQueue(this.m_ReceiveQueue, false);
                         }
-
-                        this.PushIntoQueue(this.m_ReceiveQueue, true);
+                        
+                        // We push the "true" value for this message after
+                        // firing the OnReceived event (so we can not acknowledge
+                        // it if the event callbacks do not want us to).
 
                         // Check based on items in the queue.
                         foreach (var kv in this.m_SendQueue.ToArray())
@@ -598,9 +600,18 @@
 
                         this.m_RemoteSequenceNumber = message.Sequence;
 
+                        var doNotAcknowledge = false;
+
                         foreach (var payload in message.Payloads)
                         {
-                            this.OnMessageReceived(new MxMessageEventArgs { Client = this, Payload = payload.Data });
+                            var eventArgs = new MxMessageReceiveEventArgs { Client = this, Payload = payload.Data, DoNotAcknowledge = doNotAcknowledge };
+                            this.OnMessageReceived(eventArgs);
+                            doNotAcknowledge = eventArgs.DoNotAcknowledge;
+                        }
+
+                        if (!doNotAcknowledge)
+                        {
+                            this.PushIntoQueue(this.m_ReceiveQueue, true);
                         }
                     }
                 }

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// The class that provides reliability and fragmentation infrastructure for Mx clients.
@@ -46,6 +47,11 @@
         private readonly Queue<byte[]> m_QueuedMessages;
 
         /// <summary>
+        /// A list of active messages that are currently in the process of being sent.
+        /// </summary>
+        private readonly List<MxReliabilitySendState> m_ActiveMessages; 
+
+        /// <summary>
         /// A list of currently received fragments.  Unlike the current send fragments, this
         /// does not include the header fragments.
         /// </summary>
@@ -59,20 +65,9 @@
         private byte m_CurrentReceivingMessageID;
 
         /// <summary>
-        /// A list of fragments that are currently being sent.  Each of the fragments is used to track
-        /// whether or not it has been acknowledged by the remote client.
+        /// The ID of the next message to be sent.
         /// </summary>
-        private List<Fragment> m_CurrentSendFragments;
-
-        /// <summary>
-        /// The current message that is being sent.
-        /// </summary>
-        private byte[] m_CurrentSendMessage;
-
-        /// <summary>
-        /// The ID of the message we are currently sending.
-        /// </summary>
-        private byte m_CurrentSendMessageID;
+        private byte m_CurrentSendMessageIDCounter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MxReliability"/> class.
@@ -85,6 +80,7 @@
             this.m_Client = client;
 
             this.m_QueuedMessages = new Queue<byte[]>();
+            this.m_ActiveMessages = new List<MxReliabilitySendState>();
 
             this.m_CurrentReceiveFragments = null;
             this.m_CurrentUnorderedReceiveFragments = new List<Fragment>();
@@ -113,42 +109,6 @@
         /// Raised when a message has been received by this client.
         /// </summary>
         public event MxMessageEventHandler MessageReceived;
-
-        /// <summary>
-        /// Represents a fragment's status.
-        /// </summary>
-        private enum FragmentStatus
-        {
-            /// <summary>
-            /// This indicates the fragment is currently waiting to be sent.  This can
-            /// either be because it's the first time the fragment is being sent, or we
-            /// received a MessageLost event and we are resending it.
-            /// </summary>
-            WaitingOnSend, 
-
-            /// <summary>
-            /// This indicates the fragment has been sent, but we are waiting on either an
-            /// acknowledgement or lost event to be sent relating to this fragment.
-            /// </summary>
-            WaitingOnAcknowledgement, 
-
-            /// <summary>
-            /// This indicates the fragment has been acknowledged by the remote client.
-            /// </summary>
-            Acknowledged, 
-
-            /// <summary>
-            /// This indicates that we know about this fragment (because we have received the
-            /// header indicating the number of fragments to expect), but we haven't received
-            /// the content fragment yet.
-            /// </summary>
-            WaitingOnReceive, 
-
-            /// <summary>
-            /// This indicates the fragment has been received.
-            /// </summary>
-            Received
-        }
 
         /// <summary>
         /// Sends data to the associated client reliably.
@@ -242,10 +202,13 @@
         {
             var data = mxMessageEventArgs.Payload;
 
-            var fragment = this.m_CurrentSendFragments.First(x => x.Data == data);
-            var index = this.m_CurrentSendFragments.IndexOf(fragment);
-
-            this.m_CurrentSendFragments[index].Status = FragmentStatus.Acknowledged;
+            foreach (var message in this.m_ActiveMessages)
+            {
+                if (message.MarkFragmentIfPresent(data, FragmentStatus.Acknowledged))
+                {
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -261,11 +224,13 @@
         {
             var data = mxMessageEventArgs.Payload;
 
-            var fragment = this.m_CurrentSendFragments.First(x => x.Data == data);
-            var index = this.m_CurrentSendFragments.IndexOf(fragment);
-
-            // Mark the affected fragment as "WaitingForSend" so it will be resent.
-            this.m_CurrentSendFragments[index].Status = FragmentStatus.WaitingOnSend;
+            foreach (var message in this.m_ActiveMessages)
+            {
+                if (message.MarkFragmentIfPresent(data, FragmentStatus.WaitingOnSend))
+                {
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -277,7 +242,7 @@
         /// <param name="mxMessageEventArgs">
         /// The message event args.
         /// </param>
-        private void ClientOnMessageReceived(object sender, MxMessageEventArgs mxMessageEventArgs)
+        private void ClientOnMessageReceived(object sender, MxMessageReceiveEventArgs mxMessageEventArgs)
         {
             var data = mxMessageEventArgs.Payload;
 
@@ -295,8 +260,8 @@
 
                         Console.WriteLine(message);
 
-                        // FIXME: We shouldn't be ever able to hit this situation, but we currently can.
-                        // At the moment we just discard the old state and continue anyway :(
+                        mxMessageEventArgs.DoNotAcknowledge = true;
+                        return;
                     }
 
                     // This is the header fragment.  Bytes 1 through 4 are the binary
@@ -344,8 +309,9 @@
 
                         if (fragmentSequence >= this.m_CurrentReceiveFragments.Count)
                         {
-                            throw new InvalidOperationException(
-                                "Fragment sequence number is larger than total fragments");
+                            // "Fragment sequence number is larger than total fragments"
+                            mxMessageEventArgs.DoNotAcknowledge = true;
+                            break;
                         }
 
                         this.m_CurrentReceiveFragments[fragmentSequence].Data = fragmentData;
@@ -372,8 +338,9 @@
 
                         if (fragmentSequence >= this.m_CurrentReceiveFragments.Count)
                         {
-                            throw new InvalidOperationException(
-                                "Fragment sequence number is larger than total fragments");
+                            // "Fragment sequence number is larger than total fragments"
+                            mxMessageEventArgs.DoNotAcknowledge = true;
+                            break;
                         }
 
                         this.m_CurrentReceiveFragments[fragmentSequence].Data = fragmentData;
@@ -449,137 +416,163 @@
         /// </summary>
         private void UpdateSend()
         {
-            if (this.m_CurrentSendFragments == null)
+            // Update existing active messages before doing anything else; if we
+            // send something for an existing active message then we don't go
+            // any further.
+            if (this.UpdateSendActiveMessages())
             {
-                // We are currently not sending a message.  Check to see if there
-                // are any queued messages and if so kick off the process.
-                if (this.m_QueuedMessages.Count == 0)
+                return;
+            }
+
+            // Re-evaluate the active messages to find and finalize any that
+            // have been full acknowledged.
+            this.CheckForFullAcknowledgement();
+
+            // If we get to here, then there were no active message that had
+            // sends pending, so rather than wasting a cycle doing nothing, we
+            // start sending out the next message by bringing a queued message
+            // into the active list.
+
+            // Make sure there are messages in the queue; if there aren't any
+            // then we have nothing left to do.
+            if (this.m_QueuedMessages.Count == 0)
+            {
+                return;
+            }
+
+            // Dequeue the next message.
+            var packet = this.m_QueuedMessages.Dequeue();
+            
+            // Create the new send state that we're going to use to track this message.
+            var sendState = new MxReliabilitySendState();
+
+            // Assign the send state a unique send message ID and then increment our counter.
+            sendState.CurrentSendMessageID = this.m_CurrentSendMessageIDCounter++;
+
+            // Assign the send state the packet data.
+            sendState.CurrentSendMessage = packet;
+
+            // Fragment the packet up into (SafeFragmentSize - DataOffset) byte chunks.
+            var fragments = new List<Fragment>();
+            for (var i = 0; i < packet.Length; i += SafeFragmentSize - DataOffset)
+            {
+                var length = Math.Min(SafeFragmentSize - DataOffset, packet.Length - i);
+                var fragment = new byte[length + DataOffset];
+                var header = BitConverter.GetBytes(fragments.Count);
+                fragment[0] = 1; // 1 == content
+                fragment[1] = header[0];
+                fragment[2] = header[1];
+                fragment[3] = header[2];
+                fragment[4] = header[3];
+                fragment[5] = sendState.CurrentSendMessageID;
+                for (var idx = 0; idx < length; idx++)
                 {
-                    return;
+                    fragment[idx + DataOffset] = packet[i + idx];
                 }
 
-                var packet = this.m_QueuedMessages.Dequeue();
+                fragments.Add(new Fragment(fragment, FragmentStatus.WaitingOnSend));
+            }
 
-                // Fragment the packet up into (SafeFragmentSize - DataOffset) byte chunks.
-                var fragments = new List<Fragment>();
-                for (var i = 0; i < packet.Length; i += SafeFragmentSize - DataOffset)
-                {
-                    var length = Math.Min(SafeFragmentSize - DataOffset, packet.Length - i);
-                    var fragment = new byte[length + DataOffset];
-                    var header = BitConverter.GetBytes(fragments.Count);
-                    fragment[0] = 1; // 1 == content
-                    fragment[1] = header[0];
-                    fragment[2] = header[1];
-                    fragment[3] = header[2];
-                    fragment[4] = header[3];
-                    fragment[5] = this.m_CurrentSendMessageID;
-                    for (var idx = 0; idx < length; idx++)
+            // If there is only one packet to send, make an optimization and send the packet
+            // with a prefix of "3" (instead of "1"), and then skip the header.
+            if (fragments.Count == 1)
+            {
+                // Change the first byte.
+                fragments[0].Data[0] = 3;
+
+                // Create the list with just one fragment to send.
+                sendState.CurrentSendFragments = new List<Fragment>();
+                sendState.CurrentSendFragments.Add(fragments[0]);
+            }
+            else
+            {
+                // Create the real list with header fragment.
+                // 0 == header
+                var headerBytes = BitConverter.GetBytes(fragments.Count);
+                var headerFragment = new byte[]
                     {
-                        fragment[idx + DataOffset] = packet[i + idx];
-                    }
-
-                    fragments.Add(new Fragment(fragment, FragmentStatus.WaitingOnSend));
-                }
-
-                // If there is only one packet to send, make an optimization and send the packet
-                // with a prefix of "3" (instead of "1"), and then skip the header.
-                if (fragments.Count == 1)
-                {
-                    // Change the first byte.
-                    fragments[0].Data[0] = 3;
-
-                    // Create the list with just one fragment to send.
-                    this.m_CurrentSendFragments = new List<Fragment>();
-                    this.m_CurrentSendFragments.Add(fragments[0]);
-                }
-                else
-                {
-                    // Create the real list with header fragment.
-                    // 0 == header
-                    var headerBytes = BitConverter.GetBytes(fragments.Count);
-                    var headerFragment = new byte[]
-                    {
-                       0, headerBytes[0], headerBytes[1], headerBytes[2], headerBytes[3], this.m_CurrentSendMessageID 
+                       0, headerBytes[0], headerBytes[1], headerBytes[2], headerBytes[3], sendState.CurrentSendMessageID 
                     };
-                    this.m_CurrentSendFragments = new List<Fragment>();
-                    this.m_CurrentSendFragments.Add(new Fragment(headerFragment, FragmentStatus.WaitingOnSend));
-                    this.m_CurrentSendFragments.AddRange(fragments);
-                }
-
-                this.m_CurrentSendMessage = packet;
+                sendState.CurrentSendFragments = new List<Fragment>();
+                sendState.CurrentSendFragments.Add(new Fragment(headerFragment, FragmentStatus.WaitingOnSend));
+                sendState.CurrentSendFragments.AddRange(fragments);
             }
 
-            // Iterate through all of the fragments in the list, and call Send() on the client.
-            // Since the client is in reliable mode, it will send exactly one fragment at a time, thus
-            // reducing the loss over UDP.
-            foreach (var fragment in this.m_CurrentSendFragments)
-            {
-                if (fragment.Status == FragmentStatus.WaitingOnSend)
-                {
-                    this.m_Client.EnqueueSend(fragment.Data);
-                    fragment.Status = FragmentStatus.WaitingOnAcknowledgement;
-                }
-            }
+            // Add the new send state to the end of the list of active messages.
+            this.m_ActiveMessages.Add(sendState);
 
+            // Call UpdateSendActiveMessages again so that the new message gets queued
+            // this step.
+            this.UpdateSendActiveMessages();
+
+            // Fire the progress event which is now an aggregate of all messages
+            // that are waiting to be sent.
             this.OnFragmentReceived(
                 new MxReliabilityTransmitEventArgs
                 {
                     Client = this.m_Client, 
-                    CurrentFragments = this.m_CurrentSendFragments.Count(x => x.Status == FragmentStatus.Acknowledged), 
-                    TotalFragments = this.m_CurrentSendFragments.Count, 
-                    IsSending = true, 
-                    TotalSize = this.m_CurrentSendMessage.Length
+                    CurrentFragments = this.m_ActiveMessages.SelectMany(x => x.CurrentSendFragments).Count(x => x.Status == FragmentStatus.Acknowledged), 
+                    TotalFragments = this.m_ActiveMessages.SelectMany(x => x.CurrentSendFragments).Count(), 
+                    IsSending = true,
+                    TotalSize = this.m_ActiveMessages.Sum(x => x.CurrentSendMessage.Length)
                 });
-
-            // Now check to see if all fragments are in an acknowledged state.  If they are, this message
-            // has been delivered successfully and we can ready ourselves for the next message.
-            if (this.m_CurrentSendFragments.All(x => x.Status == FragmentStatus.Acknowledged))
-            {
-                this.m_CurrentSendFragments = null;
-                this.OnMessageAcknowledged(
-                    new MxMessageEventArgs { Client = this.m_Client, Payload = this.m_CurrentSendMessage });
-
-                // Increment send message identifier.
-                this.m_CurrentSendMessageID++;
-            }
         }
 
         /// <summary>
-        /// Represents a fragment of data being sent over the network.  This is used to
-        /// track what fragments have been received / sent.
+        /// Attempt to queue packets for the current active messages that need sending and
+        /// returns whether it queued anything.  If it didn't, then we return false and
+        /// the caller (UpdateSend) can pick up another active message.
         /// </summary>
-        private class Fragment
+        /// <returns>Whether any messages were queued into the client.</returns>
+        private bool UpdateSendActiveMessages()
         {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Fragment"/> class.
-            /// </summary>
-            /// <param name="data">
-            /// The raw data of the fragment.
-            /// </param>
-            /// <param name="status">
-            /// The fragment status.
-            /// </param>
-            public Fragment(byte[] data, FragmentStatus status)
+            foreach (var message in this.m_ActiveMessages)
             {
-                this.Data = data;
-                this.Status = status;
+                if (message.HasPendingSends())
+                {
+                    // Iterate through all of the fragments in the list, and call Send() on the client.
+                    // Since the client is in reliable mode, it will send exactly one fragment at a time, thus
+                    // reducing the loss over UDP.
+                    foreach (var fragment in message.CurrentSendFragments)
+                    {
+                        if (fragment.Status == FragmentStatus.WaitingOnSend)
+                        {
+                            this.m_Client.EnqueueSend(fragment.Data);
+                            fragment.Status = FragmentStatus.WaitingOnAcknowledgement;
+                        }
+                    }
+
+                    // Re-evaluate the active messages to find and finalize any that
+                    // have been full acknowledged.
+                    this.CheckForFullAcknowledgement();
+
+                    // We only deal with one active message per update.
+                    return true;
+                }
             }
 
-            /// <summary>
-            /// Gets or sets the raw data of the fragment.
-            /// </summary>
-            /// <value>
-            /// The raw data of the fragment.
-            /// </value>
-            public byte[] Data { get; set; }
+            // We didn't send any message this update.
+            return false;
+        }
 
-            /// <summary>
-            /// Gets or sets the status.
-            /// </summary>
-            /// <value>
-            /// The status.
-            /// </value>
-            public FragmentStatus Status { get; set; }
+        /// <summary>
+        /// Checks for and finishes any active messages that have now been completely acknowledged
+        /// by the receiver.
+        /// </summary>
+        private void CheckForFullAcknowledgement()
+        {
+            foreach (var message in this.m_ActiveMessages.ToList())
+            {
+                // Now check to see if all fragments are in an acknowledged state.  If they are, this message
+                // has been delivered successfully and we can ready ourselves for the next message.
+                if (message.CurrentSendFragments.All(x => x.Status == FragmentStatus.Acknowledged))
+                {
+                    this.OnMessageAcknowledged(
+                        new MxMessageEventArgs { Client = this.m_Client, Payload = message.CurrentSendMessage });
+
+                    this.m_ActiveMessages.Remove(message);
+                }
+            }
         }
     }
 }
