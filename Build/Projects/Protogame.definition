@@ -238,6 +238,8 @@
     <Compile Include="Network\DualIPEndPoint.cs" />
     <Compile Include="Network\FlowControlChangedEventArgs.cs" />
     <Compile Include="Network\FlowControlChangedEventHandler.cs" />
+    <Compile Include="Network\Fragment.cs" />
+    <Compile Include="Network\FragmentStatus.cs" />
     <Compile Include="Network\InputPrediction.cs" />
     <Compile Include="Network\MxClient.cs" />
     <Compile Include="Network\MxClientEventArgs.cs" />
@@ -248,9 +250,12 @@
     <Compile Include="Network\MxMessage.cs" />
     <Compile Include="Network\MxMessageEventArgs.cs" />
     <Compile Include="Network\MxMessageEventHandler.cs" />
+    <Compile Include="Network\MxMessageReceiveEventArgs.cs" />
+    <Compile Include="Network\MxMessageReceiveEventHandler.cs" />
     <Compile Include="Network\MxMessageSerializer.cs" />
     <Compile Include="Network\MxPayload.cs" />
     <Compile Include="Network\MxReliability.cs" />
+    <Compile Include="Network\MxReliabilitySendState.cs" />
     <Compile Include="Network\MxReliabilityTransmitEventArgs.cs" />
     <Compile Include="Network\MxReliabilityTransmitEventHandler.cs" />
     <Compile Include="Network\MxUtility.cs" />
