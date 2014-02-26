@@ -44,10 +44,7 @@
     <Project 
       Name="MonoGame.Framework.MacOS"
       Guid="36C538E6-C32A-4A8D-A39C-566173D7118E"
-      Path="MonoGame/MonoGame.Framework/MonoGame.Framework.MacOS.csproj">
-      <ConfigurationMapping Old="Debug" New="Debug|x86" />
-      <ConfigurationMapping Old="Release" New="Release|x86" />
-    </Project>
+      Path="MonoGame/MonoGame.Framework/MonoGame.Framework.MacOS.csproj" />
     <Project 
       Name="Lidgren.Network.MacOS"
       Guid="5C3DC4FF-FE5A-4B94-B4A6-6F79E63F3130"
