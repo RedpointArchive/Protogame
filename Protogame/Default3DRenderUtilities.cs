@@ -83,6 +83,54 @@ namespace Protogame
         }
 
         /// <summary>
+        /// Renders a 3D line using texture UVs.
+        /// </summary>
+        /// <param name="context">
+        /// The rendering context.
+        /// </param>
+        /// <param name="start">
+        /// The start of the line.
+        /// </param>
+        /// <param name="end">
+        /// The end of the line.
+        /// </param>
+        /// <param name="texture">
+        /// The texture to use.
+        /// </param>
+        /// <param name="startUV">
+        /// The UV for the start of the line.
+        /// </param>
+        /// <param name="endUV">
+        /// The UV for the end of the line.
+        /// </param> 
+        public void RenderLine(
+            IRenderContext context,
+            Vector3 start, 
+            Vector3 end,
+            TextureAsset texture,
+            Vector2 startUV,
+            Vector2 endUV)
+        {
+            if (!context.Is3DContext)
+            {
+                throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
+            }
+
+            context.EnableTextures();
+            context.SetActiveTexture(texture.Texture);
+
+            var vertexes = new[] { new VertexPositionTexture(start, startUV), new VertexPositionTexture(end, endUV) };
+            var indicies = new short[] { 0, 1 };
+
+            foreach (var pass in context.Effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                context.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.LineList, vertexes, 0, 2, indicies, 0, 1);
+            }
+        }
+
+        /// <summary>
         /// The render rectangle.
         /// </summary>
         /// <param name="context">

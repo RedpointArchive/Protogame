@@ -42,6 +42,29 @@ namespace Protogame
         void RenderLine(IRenderContext context, Vector3 start, Vector3 end, Color color);
 
         /// <summary>
+        /// Renders a 3D line using texture UVs.
+        /// </summary>
+        /// <param name="context">
+        /// The rendering context.
+        /// </param>
+        /// <param name="start">
+        /// The start of the line.
+        /// </param>
+        /// <param name="end">
+        /// The end of the line.
+        /// </param>
+        /// <param name="texture">
+        /// The texture to use.
+        /// </param>
+        /// <param name="startUV">
+        /// The UV for the start of the line.
+        /// </param>
+        /// <param name="endUV">
+        /// The UV for the end of the line.
+        /// </param> 
+        void RenderLine(IRenderContext context, Vector3 start, Vector3 end, TextureAsset texture, Vector2 startUV, Vector2 endUV);
+
+        /// <summary>
         /// Renders a rectangle.
         /// </summary>
         /// <param name="context">

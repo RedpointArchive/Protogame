@@ -271,6 +271,10 @@
     <Compile Include="Performance\NullProfilerHandle.cs" />
     <Compile Include="Performance\ProtogamePerformanceIoCModule.cs" />
     <Compile Include="Physics\ConversionExtensions.cs" />
+    <Compile Include="Physics\DefaultPhysicsEngine.cs" />
+    <Compile Include="Physics\IPhysicsEngine.cs" />
+    <Compile Include="Physics\IPhysicsEntity.cs" />
+    <Compile Include="Physics\ProtogamePhysicsIoCModule.cs" />
     <Compile Include="Platform\AndroidGameWindow.cs" />
     <Compile Include="Platform\DefaultGameWindow.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />
