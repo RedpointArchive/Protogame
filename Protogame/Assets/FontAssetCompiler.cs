@@ -14,6 +14,7 @@ namespace Protogame
     using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
     using MonoGame.Framework.Content.Pipeline.Builder;
     using Newtonsoft.Json;
+    using Ninject.Parameters;
 
     /// <summary>
     /// The font asset compiler.
@@ -184,7 +185,7 @@ namespace Protogame
             var codeProvider = new CSharpCodeProvider();
             var parameters = new CompilerParameters(new[] { "System.dll", typeof(FontAssetCompiler).Assembly.Location });
             parameters.GenerateExecutable = true;
-            parameters.CompilerOptions = "/platform:x86";
+            parameters.CompilerOptions = "/platform:x86 /target:winexe /optimize";  
             parameters.OutputAssembly = Path.Combine(directory, "fontcompile32.exe");
             var results = codeProvider.CompileAssemblyFromSource(parameters, @"
 using System;
