@@ -22,7 +22,7 @@
         /// <summary>
         /// The ID of the message we are currently sending.
         /// </summary>
-        public byte CurrentSendMessageID { get; set; }
+        public int CurrentSendMessageID { get; set; }
 
         public MxReliabilitySendState()
         {

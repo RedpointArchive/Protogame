@@ -27,19 +27,12 @@
         /// <summary>
         /// The data offset.
         /// </summary>
-        private const int DataOffset = 6;
+        private const int DataOffset = 8;
 
         /// <summary>
         /// The associated <see cref="MxClient"/> that data is sent and received through.
         /// </summary>
         private readonly MxClient m_Client;
-
-        /// <summary>
-        /// A list of unordered, but received fragments.  Fragments are placed into this list
-        /// when they are received before a header.  This can occur if the header fragment is
-        /// lost, but some of the content fragments are received.
-        /// </summary>
-        private readonly List<Fragment> m_CurrentUnorderedReceiveFragments;
 
         /// <summary>
         /// A list of queued messages that are waiting to be sent.
@@ -49,20 +42,9 @@
         /// <summary>
         /// A list of active messages that are currently in the process of being sent.
         /// </summary>
-        private readonly List<MxReliabilitySendState> m_ActiveMessages; 
+        private readonly List<MxReliabilitySendState> m_ActiveMessages;
 
-        /// <summary>
-        /// A list of currently received fragments.  Unlike the current send fragments, this
-        /// does not include the header fragments.
-        /// </summary>
-        private List<Fragment> m_CurrentReceiveFragments;
-
-        /// <summary>
-        /// The ID of the message we are currently receiving; this binds packets to the original
-        /// header so that in the case of duplicated sends we can't get packets that aren't associated
-        /// with the given header.
-        /// </summary>
-        private byte m_CurrentReceivingMessageID;
+        private readonly Dictionary<int, MxReliabilityReceiveState> m_ActiveReceiveMessages; 
 
         /// <summary>
         /// The ID of the next message to be sent.
@@ -82,8 +64,7 @@
             this.m_QueuedMessages = new Queue<byte[]>();
             this.m_ActiveMessages = new List<MxReliabilitySendState>();
 
-            this.m_CurrentReceiveFragments = null;
-            this.m_CurrentUnorderedReceiveFragments = new List<Fragment>();
+            this.m_ActiveReceiveMessages = new Dictionary<int, MxReliabilityReceiveState>();
 
             this.m_Client.MessageAcknowledged += this.ClientOnMessageAcknowledged;
             this.m_Client.MessageLost += this.ClientOnMessageLost;
@@ -246,133 +227,34 @@
         {
             var data = mxMessageEventArgs.Payload;
 
-            // Read the first byte and work out what type of fragment this is.
-            switch (data[0])
+            // Format of a packet is:
+            // Byte 0 - 3: message ID
+            // Byte 4 - 5: length
+            // Byte 6: current index
+            // Byte 7: total packets
+            // Remaining bytes are the fragment data
+            var messageID = BitConverter.ToInt32(data, 0);
+            var length = BitConverter.ToInt16(data, 4);
+            var currentIndex = (int)data[6];
+            var totalPackets = (int)data[7];
+
+            if (!this.m_ActiveReceiveMessages.ContainsKey(messageID))
             {
-                case 0:
-                    if (this.m_CurrentReceiveFragments != null)
-                    {
-                        var message = "Can not start receiving another message.";
-                        message += "  Currently there are "
-                                   + this.m_CurrentReceiveFragments.Count(x => x.Status == FragmentStatus.Received)
-                                   + " received.";
-                        message += "  Currently there are " + this.m_CurrentReceiveFragments.Count + " in total.";
-
-                        Console.WriteLine(message);
-
-                        mxMessageEventArgs.DoNotAcknowledge = true;
-                        return;
-                    }
-
-                    // This is the header fragment.  Bytes 1 through 4 are the binary
-                    // representation of a 32-bit integer.  Byte 5 is a single byte
-                    // representing the message ID.
-                    var fragmentCount = BitConverter.ToInt32(data, 1);
-                    var initialMessageID = data[5];
-                    this.m_CurrentReceiveFragments = new List<Fragment>();
-                    for (var i = 0; i < fragmentCount; i++)
-                    {
-                        this.m_CurrentReceiveFragments.Add(new Fragment(null, FragmentStatus.WaitingOnReceive));
-                    }
-
-                    this.m_CurrentReceivingMessageID = initialMessageID;
-
-                    // Check our unordered fragments list.  We can have a scenario where the
-                    // header is lost, but the rest (or some) of the fragments come through fine.
-                    // In this scenario, because we don't have a header yet, the code under "case 1"
-                    // will place the fragments in the unordered receive fragments list.  Now that we
-                    // have the header, we need to take them out of that list and put them back together.
-                    foreach (var unordered in this.m_CurrentUnorderedReceiveFragments)
-                    {
-                        // The first byte is the fragment type, which will be 1 for content fragments.
-                        var rawData = unordered.Data;
-                        var fragmentType = rawData[0];
-                        if (fragmentType != 1)
-                        {
-                            throw new InvalidOperationException("Fragment type is not 1 for content fragment");
-                        }
-
-                        var fragmentSequence = BitConverter.ToInt32(rawData, 1);
-                        var unorderedMessageID = rawData[5];
-
-                        // Skip any unordered fragments that don't belong the header.
-                        if (unorderedMessageID != this.m_CurrentReceivingMessageID)
-                        {
-                            continue;
-                        }
-
-                        var fragmentData = new byte[rawData.Length - DataOffset];
-                        for (var i = 0; i < rawData.Length - DataOffset; i++)
-                        {
-                            fragmentData[i] = rawData[i + DataOffset];
-                        }
-
-                        if (fragmentSequence >= this.m_CurrentReceiveFragments.Count)
-                        {
-                            // "Fragment sequence number is larger than total fragments"
-                            mxMessageEventArgs.DoNotAcknowledge = true;
-                            break;
-                        }
-
-                        this.m_CurrentReceiveFragments[fragmentSequence].Data = fragmentData;
-                        this.m_CurrentReceiveFragments[fragmentSequence].Status = FragmentStatus.Received;
-                    }
-
-                    // Clear the unordered receive list, since we have now moved all the data from it.
-                    this.m_CurrentUnorderedReceiveFragments.Clear();
-
-                    break;
-                case 1:
-
-                    // This is a content fragment.  If the current receive fragments list is not null, then we have
-                    // previously received the header fragment and can directly update the status in that list.
-                    if (this.m_CurrentReceiveFragments != null)
-                    {
-                        var fragmentSequence = BitConverter.ToInt32(data, 1);
-
-                        var fragmentData = new byte[data.Length - DataOffset];
-                        for (var i = 0; i < data.Length - DataOffset; i++)
-                        {
-                            fragmentData[i] = data[i + DataOffset];
-                        }
-
-                        if (fragmentSequence >= this.m_CurrentReceiveFragments.Count)
-                        {
-                            // "Fragment sequence number is larger than total fragments"
-                            mxMessageEventArgs.DoNotAcknowledge = true;
-                            break;
-                        }
-
-                        this.m_CurrentReceiveFragments[fragmentSequence].Data = fragmentData;
-                        this.m_CurrentReceiveFragments[fragmentSequence].Status = FragmentStatus.Received;
-                    }
-                    else
-                    {
-                        // If the current receive list is null, then we haven't received (or acknowledged) the
-                        // header fragment yet and we need to put it in the unordered list, because we don't
-                        // know exactly how many fragments there are yet.
-                        this.m_CurrentUnorderedReceiveFragments.Add(new Fragment(data, FragmentStatus.Received));
-                    }
-
-                    break;
-                case 3:
-
-                    // This is a special, single fragment.  It is not preceded by a header.  We can raise the message
-                    // received event immediately as this does not rely on
-                    // reconstruction of fragments and does not impact current receiving state (so you could theoretically
-                    // even send them in the middle of a transmission of a fragmented message).
-                    var singleFragmentData = new byte[data.Length - DataOffset];
-                    for (var i = 0; i < data.Length - DataOffset; i++)
-                    {
-                        singleFragmentData[i] = data[i + DataOffset];
-                    }
-
-                    this.OnMessageReceived(
-                        new MxMessageEventArgs { Client = this.m_Client, Payload = singleFragmentData });
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown fragment type!");
+                // Add a new entry in the active receive messages dictionary.
+                this.m_ActiveReceiveMessages.Add(
+                    messageID,
+                    new MxReliabilityReceiveState(messageID, totalPackets));
             }
+
+            // Extract the fragment data.
+            var fragmentData = new byte[length];
+            for (var i = 0; i < length; i++)
+            {
+                fragmentData[i] = data[i + DataOffset];
+            }
+
+            // Set the fragment data into the received message.
+            this.m_ActiveReceiveMessages[messageID].SetFragment(currentIndex, new Fragment(fragmentData, FragmentStatus.Received));
 
             // Perform the receive update to fire events and finalize state if we have all the fragments.
             this.UpdateReceive();
@@ -383,31 +265,21 @@
         /// </summary>
         private void UpdateReceive()
         {
-            if (this.m_CurrentReceiveFragments != null)
+            var pendingRemove = new List<int>();
+
+            foreach (var activeReceive in this.m_ActiveReceiveMessages)
             {
-                this.OnFragmentReceived(
-                    new MxReliabilityTransmitEventArgs
-                    {
-                        Client = this.m_Client, 
-                        CurrentFragments =
-                            this.m_CurrentReceiveFragments.Count(x => x.Status == FragmentStatus.Received), 
-                        TotalFragments = this.m_CurrentReceiveFragments.Count, 
-                        IsSending = false, 
-                        TotalSize = this.m_CurrentReceiveFragments.Count * SafeFragmentSize // TODO: Is this accurate?
-                    });
-
-                // See if all of the fragments are in a received status.
-                if (this.m_CurrentReceiveFragments.All(x => x.Status == FragmentStatus.Received))
+                if (activeReceive.Value.IsComplete())
                 {
-                    // Then we have received a message!  The data field in the fragments is actually
-                    // the original message data (with the fragment headers already removed), so we
-                    // can concatenate the arrays in the fragments and fire the message received event.
-                    var data = this.m_CurrentReceiveFragments.SelectMany(x => x.Data).ToArray();
-                    this.OnMessageReceived(new MxMessageEventArgs { Client = this.m_Client, Payload = data });
+                    this.OnMessageReceived(new MxMessageEventArgs { Client = this.m_Client, Payload = activeReceive.Value.Reconstruct() });
 
-                    // Delete the received list.
-                    this.m_CurrentReceiveFragments = null;
+                    pendingRemove.Add(activeReceive.Key);
                 }
+            }
+
+            foreach (var i in pendingRemove)
+            {
+                this.m_ActiveReceiveMessages.Remove(i);
             }
         }
 
@@ -454,49 +326,38 @@
 
             // Fragment the packet up into (SafeFragmentSize - DataOffset) byte chunks.
             var fragments = new List<Fragment>();
+            var total = 0;
+            for (var i = 0; i < packet.Length; i += SafeFragmentSize - DataOffset)
+            {
+                total += 1;
+            }
+
+            var inc = 0;
             for (var i = 0; i < packet.Length; i += SafeFragmentSize - DataOffset)
             {
                 var length = Math.Min(SafeFragmentSize - DataOffset, packet.Length - i);
                 var fragment = new byte[length + DataOffset];
-                var header = BitConverter.GetBytes(fragments.Count);
-                fragment[0] = 1; // 1 == content
-                fragment[1] = header[0];
-                fragment[2] = header[1];
-                fragment[3] = header[2];
-                fragment[4] = header[3];
-                fragment[5] = sendState.CurrentSendMessageID;
+                var messageIDBytes = BitConverter.GetBytes(sendState.CurrentSendMessageID);
+                var lengthBytes = BitConverter.GetBytes((ushort)length);
+
+                fragment[0] = messageIDBytes[0];
+                fragment[1] = messageIDBytes[1];
+                fragment[2] = messageIDBytes[2];
+                fragment[3] = messageIDBytes[3];
+                fragment[4] = lengthBytes[0];
+                fragment[5] = lengthBytes[1];
+                fragment[6] = (byte)inc;
+                fragment[7] = (byte)total;
                 for (var idx = 0; idx < length; idx++)
                 {
                     fragment[idx + DataOffset] = packet[i + idx];
                 }
 
                 fragments.Add(new Fragment(fragment, FragmentStatus.WaitingOnSend));
+                inc++;
             }
 
-            // If there is only one packet to send, make an optimization and send the packet
-            // with a prefix of "3" (instead of "1"), and then skip the header.
-            if (fragments.Count == 1)
-            {
-                // Change the first byte.
-                fragments[0].Data[0] = 3;
-
-                // Create the list with just one fragment to send.
-                sendState.CurrentSendFragments = new List<Fragment>();
-                sendState.CurrentSendFragments.Add(fragments[0]);
-            }
-            else
-            {
-                // Create the real list with header fragment.
-                // 0 == header
-                var headerBytes = BitConverter.GetBytes(fragments.Count);
-                var headerFragment = new byte[]
-                    {
-                       0, headerBytes[0], headerBytes[1], headerBytes[2], headerBytes[3], sendState.CurrentSendMessageID 
-                    };
-                sendState.CurrentSendFragments = new List<Fragment>();
-                sendState.CurrentSendFragments.Add(new Fragment(headerFragment, FragmentStatus.WaitingOnSend));
-                sendState.CurrentSendFragments.AddRange(fragments);
-            }
+            sendState.CurrentSendFragments = fragments;
 
             // Add the new send state to the end of the list of active messages.
             this.m_ActiveMessages.Add(sendState);

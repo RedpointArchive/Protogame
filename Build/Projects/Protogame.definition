@@ -255,6 +255,7 @@
     <Compile Include="Network\MxMessageSerializer.cs" />
     <Compile Include="Network\MxPayload.cs" />
     <Compile Include="Network\MxReliability.cs" />
+    <Compile Include="Network\MxReliabilityReceiveState.cs" />
     <Compile Include="Network\MxReliabilitySendState.cs" />
     <Compile Include="Network\MxReliabilityTransmitEventArgs.cs" />
     <Compile Include="Network\MxReliabilityTransmitEventHandler.cs" />
