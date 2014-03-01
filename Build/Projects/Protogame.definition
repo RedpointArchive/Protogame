@@ -280,6 +280,7 @@
     <Compile Include="Physics\DefaultPhysicsEngine.cs" />
     <Compile Include="Physics\IPhysicsEngine.cs" />
     <Compile Include="Physics\IPhysicsEntity.cs" />
+    <Compile Include="Physics\PhysicsCharacterController.cs" />
     <Compile Include="Physics\ProtogamePhysicsIoCModule.cs" />
     <Compile Include="Platform\AndroidGameWindow.cs" />
     <Compile Include="Platform\DefaultGameWindow.cs" />
