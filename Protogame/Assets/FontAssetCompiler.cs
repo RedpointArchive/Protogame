@@ -8,10 +8,13 @@ namespace Protogame
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
+    using System.Reflection;
     using System.Text;
     using Microsoft.CSharp;
     using Microsoft.Xna.Framework.Content.Pipeline;
     using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+    using Microsoft.Xna.Framework.Content.Pipeline.Processors;
     using MonoGame.Framework.Content.Pipeline.Builder;
     using Newtonsoft.Json;
     using Ninject.Parameters;
@@ -174,7 +177,7 @@ namespace Protogame
             {
                 "Protogame.dll", "freetype6.dll", "Newtonsoft.Json.dll", "MonoGame.Framework.Content.Pipeline.dll", 
                 "MonoGame.Framework.dll", "protobuf-net.dll", "SharpDX.D3DCompiler.dll", "SharpDX.dll", 
-                "Nvidia.TextureTools.dll", "nvtt.dll", "SharpFont.dll"
+                "Nvidia.TextureTools.dll", "nvtt.dll", "SharpFont.dll", "AssimpNet.dll", "Assimp32.dll", "Assimp64.dll"
             };
 
             foreach (var dependency in dependencies)
@@ -306,6 +309,13 @@ public static class Program
                 return;
             }
 
+            if (output.Trim().StartsWith("incorrect configuration"))
+            {
+                Console.WriteLine("WARNING: Font compilation is not configured correctly and is missing one or more DLLs.");
+                Console.WriteLine("MISSING: " + output.Trim().Substring("incorrect configuration".Length));
+                return;
+            }
+
             var data = Convert.FromBase64String(output);
 
             asset.PlatformData = new PlatformData { Platform = platform, Data = data };
@@ -332,6 +342,21 @@ public static class Program
         /// </returns>
         public string CompileFontFrom32BitArgument(string arg)
         {
+            // Check that we can load all types from the content pipeline
+            // otherwise compilation might silently fail (because the processor
+            // can't be found, which is not what we want the NullReferenceException
+            // to catch).
+            var contentPipelineAssembly = typeof(FontTextureProcessor).Assembly;
+            try
+            {
+                contentPipelineAssembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return "incorrect configuration"
+                       + ex.LoaderExceptions.Select(x => x.Message).Aggregate(string.Empty, (a, b) => a + "\n" + b);
+            }
+
             var arguments =
                 JsonConvert.DeserializeObject<FontCompilationArguments>(
                     Encoding.ASCII.GetString(Convert.FromBase64String(arg)));
