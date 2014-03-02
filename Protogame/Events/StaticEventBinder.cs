@@ -211,6 +211,21 @@ namespace Protogame
         public abstract void Configure();
 
         /// <summary>
+        /// A global filter check that is applied before any events are handled.  If this
+        /// returns false, then this event binder will not handle the event.
+        /// </summary>
+        /// <remarks>
+        /// This is often used to filter static event binders based on the world.
+        /// </remarks>
+        /// <param name="context"></param>
+        /// <param name="event"></param>
+        /// <returns></returns>
+        protected virtual bool Filter(TContext context, Event @event)
+        {
+            return true;
+        }
+
+        /// <summary>
         /// The handle.
         /// </summary>
         /// <param name="context">
@@ -231,6 +246,11 @@ namespace Protogame
             {
                 this.Configure();
                 this.m_Configured = true;
+            }
+
+            if (!this.Filter(context, @event))
+            {
+                return false;
             }
 
             foreach (var binding in this.m_Bindings)
