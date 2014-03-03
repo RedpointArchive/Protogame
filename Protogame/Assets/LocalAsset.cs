@@ -164,7 +164,7 @@ namespace Protogame
                 return obj;
             }
 
-            return new LocalAssetProxy<T>(this.Manager, this, this.Name, obj).GetTransparentProxy() as T;
+            return new LocalAssetProxy(this.Manager, this, this.Name, obj).GetTransparentProxy() as T;
         }
 
         /// <summary>

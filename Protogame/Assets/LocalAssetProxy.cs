@@ -13,8 +13,7 @@ namespace Protogame
     /// <typeparam name="T">
     /// The type of asset that this is a proxy for.
     /// </typeparam>
-    public class LocalAssetProxy<T> : RealProxy
-        where T : class, IAsset
+    public class LocalAssetProxy : RealProxy
     {
         /// <summary>
         /// The m_ asset name.
@@ -34,7 +33,7 @@ namespace Protogame
         /// <summary>
         /// The m_ instance.
         /// </summary>
-        private T m_Instance;
+        private IAsset m_Instance;
 
         /// <summary>
         /// The m_ local asset.
@@ -56,7 +55,7 @@ namespace Protogame
         /// <param name="instance">
         /// The instance.
         /// </param>
-        public LocalAssetProxy(LocalAssetManager manager, LocalAsset networkAsset, string name, T instance)
+        public LocalAssetProxy(LocalAssetManager manager, LocalAsset networkAsset, string name, IAsset instance)
             : base(instance.GetType())
         {
             this.m_Instance = instance;
@@ -85,14 +84,14 @@ namespace Protogame
             {
                 this.m_LocalAsset.Dirtied -= this.MarkDirty;
                 this.m_LocalAsset = this.m_Manager.GetUnresolved(this.m_AssetName) as LocalAsset;
-                var proxy = this.m_LocalAsset.Resolve<T>();
+                var proxy = this.m_LocalAsset.Resolve<IAsset>();
                 if (!RemotingServices.IsTransparentProxy(proxy))
                 {
                     throw new InvalidOperationException("Object retrieved was not transparent proxy.");
                 }
 
                 var realProxy = RemotingServices.GetRealProxy(proxy);
-                var newNetworkAssetProxy = realProxy as LocalAssetProxy<T>;
+                var newNetworkAssetProxy = realProxy as LocalAssetProxy;
                 if (newNetworkAssetProxy == null)
                 {
                     throw new InvalidOperationException("Unable to cast real proxy back to NetworkAssetProxy<>.");
