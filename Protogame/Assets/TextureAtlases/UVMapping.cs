@@ -50,5 +50,13 @@ namespace Protogame
                 return this.BottomRight.Y - this.TopLeft.Y;
             }
         }
+
+        public Vector2 WidthHeight
+        {
+            get
+            {
+                return new Vector2(this.Width, this.Height);
+            }
+        }
     }
 }

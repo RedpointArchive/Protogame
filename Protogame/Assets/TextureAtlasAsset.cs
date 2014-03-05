@@ -12,13 +12,13 @@ namespace Protogame
     public class TextureAtlasAsset : MarshalByRefObject, IAsset
     {
         public TextureAtlasAsset(
+            IAssetManager assetManager,
             string name,
-            string[] sourceTextureNames,
-            Func<IEnumerable<IAsset>> getAssets)
+            string[] sourceTextureNames)
         {
+            this.AssetManager = assetManager;
             this.Name = name;
             this.SourceTextureNames = sourceTextureNames;
-            this.GetAssetsLambda = getAssets;
 
             this.SourceOnly = true;
             this.CompiledOnly = false;
@@ -110,7 +110,7 @@ namespace Protogame
 
         public string[] SourceTextureNames { get; private set; }
 
-        public Func<IEnumerable<IAsset>> GetAssetsLambda { get; private set; }
+        public IAssetManager AssetManager { get; private set; }
 
         /// <summary>
         /// Gets the mappings of texture names to rectangle bounds (as pixels).

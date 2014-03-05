@@ -22,15 +22,19 @@ namespace Protogame
         {
             this.m_AssetContentManager = assetContentManager;
             this.m_TextureAssetCompiler = textureAssetCompiler;
+
+            this.PixelOverscan = 2;
         }
+
+        public int PixelOverscan { get; set; }
 
         public void Compile(TextureAtlasAsset asset, TargetPlatform platform)
         {
-            var allTextures = asset.GetAssetsLambda().OfType<TextureAsset>();
-
-            var textures = asset.SourceTextureNames.Length == 0 
-                           ? allTextures 
-                           : allTextures.Where(x => asset.SourceTextureNames.Contains(x.Name));
+            var textures = asset.AssetManager
+                .GetAllNames()
+                .Where(x => asset.SourceTextureNames.Contains(x))
+                .Select(x => asset.AssetManager.Get<TextureAsset>(x))
+                .ToList();
 
             var textureFallbacks = new Dictionary<TextureAsset, Bitmap>();
             var texturePacker = new TexturePacker<TextureAsset>();
@@ -69,7 +73,7 @@ namespace Protogame
                 }
 
                 texturePacker.AddTexture(
-                    new Vector2(width, height),
+                    new Vector2(width + this.PixelOverscan * 2, height + this.PixelOverscan * 2),
                     texture);
             }
 
@@ -87,16 +91,16 @@ namespace Protogame
                     }
 
                     var fallback = textureFallbacks[packedTexture.Texture];
-                    for (var x = 0; x < fallback.Width; x++)
+                    for (var x = -this.PixelOverscan; x < fallback.Width + this.PixelOverscan; x++)
                     {
-                        for (var y = 0; y < fallback.Height; y++)
+                        for (var y = -this.PixelOverscan; y < fallback.Height + this.PixelOverscan; y++)
                         {
                             bitmap.SetPixel(
-                                (int)packedTexture.Position.X + x, 
-                                (int)packedTexture.Position.Y + y, 
+                                (int)packedTexture.Position.X + this.PixelOverscan + x, 
+                                (int)packedTexture.Position.Y + this.PixelOverscan + y, 
                                 fallback.GetPixel(
-                                    x,
-                                    y));
+                                    MathHelper.Clamp(x, 0, fallback.Width - 1),
+                                    MathHelper.Clamp(y, 0, fallback.Height - 1)));
                         }
                     }
                 }
@@ -105,18 +109,21 @@ namespace Protogame
                     var data = new Microsoft.Xna.Framework.Color[packedTexture.Texture.Texture.Width * packedTexture.Texture.Texture.Height];
                     packedTexture.Texture.Texture.GetData(data);
 
-                    for (var x = 0; x < packedTexture.Texture.Texture.Width; x++)
+                    for (var x = -this.PixelOverscan; x < packedTexture.Texture.Texture.Width + this.PixelOverscan; x++)
                     {
-                        for (var y = 0; y < packedTexture.Texture.Texture.Height; y++)
+                        for (var y = -this.PixelOverscan; y < packedTexture.Texture.Texture.Height + this.PixelOverscan; y++)
                         {
+                            var ax = MathHelper.Clamp(x, 0, packedTexture.Texture.Texture.Width - 1);
+                            var ay = MathHelper.Clamp(y, 0, packedTexture.Texture.Texture.Height - 1);
+
                             bitmap.SetPixel(
-                                (int)packedTexture.Position.X + x, 
-                                (int)packedTexture.Position.Y + y, 
+                                (int)packedTexture.Position.X + this.PixelOverscan + x, 
+                                (int)packedTexture.Position.Y + this.PixelOverscan + y, 
                                 System.Drawing.Color.FromArgb(
-                                    data[x + y * packedTexture.Texture.Texture.Width].A,
-                                    data[x + y * packedTexture.Texture.Texture.Width].R,
-                                    data[x + y * packedTexture.Texture.Texture.Width].G,
-                                    data[x + y * packedTexture.Texture.Texture.Width].B));
+                                    data[ax + ay * packedTexture.Texture.Texture.Width].A,
+                                    data[ax + ay * packedTexture.Texture.Texture.Width].R,
+                                    data[ax + ay * packedTexture.Texture.Texture.Width].G,
+                                    data[ax + ay * packedTexture.Texture.Texture.Width].B));
                         }
                     }
                 }
@@ -132,6 +139,8 @@ namespace Protogame
                 stream.Read(bitmapData, 0, (int)length);
             }
 
+            bitmap.Save("atlas.png");
+
             var textureAsset = new TextureAsset(
                 this.m_AssetContentManager,
                 asset.Name,
@@ -144,6 +153,7 @@ namespace Protogame
                 platform);
 
             var uvMappings = new Dictionary<string, UVMapping>();
+            var pixelVector = new Vector2(this.PixelOverscan, this.PixelOverscan);
 
             foreach (var texture in packedTextures)
             {
@@ -151,8 +161,8 @@ namespace Protogame
                     texture.Texture.Name,
                     new UVMapping
                     {
-                        TopLeft = texture.Position / new Vector2(size.X, size.Y),
-                        BottomRight = (texture.Position + texture.Size) / new Vector2(size.X, size.Y),
+                        TopLeft = (texture.Position + pixelVector) / new Vector2(size.X, size.Y),
+                        BottomRight = (texture.Position + texture.Size - pixelVector) / new Vector2(size.X, size.Y),
                     });
             }
 

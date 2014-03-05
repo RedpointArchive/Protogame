@@ -45,9 +45,9 @@ namespace Protogame
             var sourceTextureNames = ((JArray)data.SourceTextures).Select(x => x.Value<string>()).ToArray();
 
             return new TextureAtlasAsset(
+                assetManager,
                 name,
-                sourceTextureNames,
-                () => assetManager.GetAll());
+                sourceTextureNames);
         }
     }
 }

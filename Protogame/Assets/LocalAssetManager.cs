@@ -384,14 +384,27 @@ namespace Protogame
         }
 
         /// <summary>
+        /// Gets the names of all known assets.
+        /// </summary>
+        /// <returns>The names of all known assets.</returns>
+        public string[] GetAllNames()
+        {
+            if (!this.m_HasScanned)
+            {
+                return this.m_RawAssetLoader.ScanRawAssets().Distinct().ToArray();
+            }
+
+            return this.m_Assets.Select(x => x.Key).ToArray();
+        }
+
+        /// <summary>
         /// The rescan assets.
         /// </summary>
         public void RescanAssets()
         {
             if (this.m_IsScanning)
             {
-                Console.WriteLine("WARNING: Ignoring request to rescan assets because GetAll() was called from an asset loader or compiler.");
-                return;
+                throw new InvalidOperationException("GetAll() and RescanAssets() can not be called from within an asset loader or compiler.");
             }
 
             this.m_IsScanning = true;

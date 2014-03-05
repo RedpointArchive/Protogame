@@ -58,6 +58,8 @@ namespace Protogame
         /// </returns>
         IAsset[] GetAll();
 
+        string[] GetAllNames();
+
         /// <summary>
         /// The get unresolved.
         /// </summary>
