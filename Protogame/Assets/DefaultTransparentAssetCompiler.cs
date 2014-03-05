@@ -52,9 +52,9 @@
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        public IAsset Handle(IAsset asset, bool force = false)
+        public void Handle(IAsset asset, bool force = false)
         {
-            return this.HandlePlatform(asset, TargetPlatformUtility.GetExecutingPlatform(), force);
+            this.HandlePlatform(asset, TargetPlatformUtility.GetExecutingPlatform(), force);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        public IAsset HandlePlatform(IAsset asset, TargetPlatform platform, bool force = false)
+        public void HandlePlatform(IAsset asset, TargetPlatform platform, bool force = false)
         {
             if (asset.SourceOnly || force)
             {
@@ -82,7 +82,7 @@
                 {
                     // The caller will throw AssetNotCompiledException if all of the candidates
                     // for loading only have source information.
-                    return asset;
+                    return;
                 }
 
                 var proxyType = typeof(AssetCompilerProxy<>).MakeGenericType(asset.GetType());
@@ -91,8 +91,6 @@
                     proxyType.GetConstructor(new[] { compilerType }).Invoke(new[] { compiler });
                 proxy.Compile(asset, platform);
             }
-
-            return asset;
         }
 
         /// <summary>

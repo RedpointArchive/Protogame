@@ -17,7 +17,7 @@
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        IAsset Handle(IAsset asset, bool force = false);
+        void Handle(IAsset asset, bool force = false);
 
         /// <summary>
         /// The handle platform.
@@ -34,6 +34,6 @@
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        IAsset HandlePlatform(IAsset asset, TargetPlatform platform, bool force = false);
+        void HandlePlatform(IAsset asset, TargetPlatform platform, bool force = false);
     }
 }

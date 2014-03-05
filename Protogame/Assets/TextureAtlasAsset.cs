@@ -2,6 +2,7 @@ namespace Protogame
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
 
@@ -12,28 +13,87 @@ namespace Protogame
     {
         public TextureAtlasAsset(
             string name,
+            string[] sourceTextureNames,
+            Func<IEnumerable<IAsset>> getAssets)
+        {
+            this.Name = name;
+            this.SourceTextureNames = sourceTextureNames;
+            this.GetAssetsLambda = getAssets;
+
+            this.SourceOnly = true;
+            this.CompiledOnly = false;
+        }
+
+        public TextureAtlasAsset(
+            IAssetContentManager assetContentManager,
+            string name,
+            PlatformData data)
+        {
+            this.Name = name;
+            this.SourceOnly = false;
+            this.CompiledOnly = true;
+
+            var memory = new MemoryStream(data.Data);
+            using (var reader = new BinaryReader(memory))
+            {
+                var textureSize = reader.ReadInt32();
+                var texturePlatformData = reader.ReadBytes(textureSize);
+
+                var textureAsset = new TextureAsset(
+                    assetContentManager,
+                    name,
+                    null,
+                    new PlatformData
+                    {
+                        Platform = data.Platform,
+                        Data = texturePlatformData
+                    },
+                    false);
+                this.AtlasTexture = textureAsset;
+
+                this.Mappings = new Dictionary<string, UVMapping>();
+                var uvMappingCount = reader.ReadInt32();
+                for (var i = 0; i < uvMappingCount; i++)
+                {
+                    var mappingName = reader.ReadString();
+                    var topLeftU = reader.ReadSingle();
+                    var topLeftV = reader.ReadSingle();
+                    var bottomRightU = reader.ReadSingle();
+                    var bottomRightV = reader.ReadSingle();
+                    this.Mappings.Add(
+                        mappingName, 
+                        new UVMapping 
+                        { 
+                            TopLeft = new Vector2(topLeftU, topLeftV), 
+                            BottomRight = new Vector2(bottomRightU, bottomRightV)
+                        });
+                }
+            }
+        }
+
+        public TextureAtlasAsset(
+            string name,
             Texture2D textureAtlas,
             Dictionary<string, UVMapping> mappings)
         {
             this.Name = name;
-            this.TextureAtlas = new TextureAsset(textureAtlas);
+            this.AtlasTexture = new TextureAsset(textureAtlas);
             this.Mappings = mappings;
+
+            this.SourceOnly = false;
+            this.CompiledOnly = true;
         }
 
         public bool SourceOnly 
         {
-            get
-            {
-                return false;
-            }
+            get;
+            private set;
         }
 
         public bool CompiledOnly
         {
-            get
-            {
-                return true;
-            }
+            get;
+            private set;
         }
 
         /// <summary>
@@ -46,13 +106,51 @@ namespace Protogame
         /// Gets the texture for this texture atlas.
         /// </summary>
         /// <value>The texture atlas.</value>
-        public TextureAsset TextureAtlas { get; private set; }
+        public TextureAsset AtlasTexture { get; private set; }
+
+        public string[] SourceTextureNames { get; private set; }
+
+        public Func<IEnumerable<IAsset>> GetAssetsLambda { get; private set; }
 
         /// <summary>
         /// Gets the mappings of texture names to rectangle bounds (as pixels).
         /// </summary>
         /// <value>The mappings.</value>
         public Dictionary<string, UVMapping> Mappings { get; private set; } 
+
+        public void SetCompiledData(
+            TextureAsset texture, 
+            Dictionary<string, UVMapping> uvMappings)
+        {
+            this.AtlasTexture = texture;
+            this.Mappings = uvMappings;
+            this.SourceOnly = false;
+        }
+
+        public byte[] GetCompiledData()
+        {
+            var memory = new MemoryStream();
+            using (var writer = new BinaryWriter(memory))
+            {
+                writer.Write((int)this.AtlasTexture.PlatformData.Data.Length);
+                writer.Write(this.AtlasTexture.PlatformData.Data);
+
+                writer.Write((int)this.Mappings.Count);
+                foreach (var kv in this.Mappings)
+                {
+                    writer.Write(kv.Key);
+                    writer.Write(kv.Value.TopLeft.X);
+                    writer.Write(kv.Value.TopLeft.Y);
+                    writer.Write(kv.Value.BottomRight.X);
+                    writer.Write(kv.Value.BottomRight.Y);
+                }
+
+                var result = new byte[memory.Position];
+                memory.Seek(0, SeekOrigin.Begin);
+                memory.Read(result, 0, result.Length);
+                return result;
+            }
+        }
 
         public T Resolve<T>() where T : class, IAsset
         {

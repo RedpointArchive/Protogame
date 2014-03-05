@@ -21,6 +21,7 @@ namespace Protogame
             this.Bind<IAssetLoader>().To<EffectAssetLoader>();
             this.Bind<IAssetLoader>().To<AIAssetLoader>();
             this.Bind<IAssetLoader>().To<ModelAssetLoader>();
+            this.Bind<IAssetLoader>().To<TextureAtlasAssetLoader>();
             this.Bind<IAssetSaver>().To<FontAssetSaver>();
             this.Bind<IAssetSaver>().To<LanguageAssetSaver>();
             this.Bind<IAssetSaver>().To<TextureAssetSaver>();
@@ -29,6 +30,7 @@ namespace Protogame
             this.Bind<IAssetSaver>().To<TilesetAssetSaver>();
             this.Bind<IAssetSaver>().To<EffectAssetSaver>();
             this.Bind<IAssetSaver>().To<ModelAssetSaver>();
+            this.Bind<IAssetSaver>().To<TextureAtlasAssetSaver>();
             this.Bind<IRawAssetLoader>().To<RawAssetLoader>();
             this.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
@@ -58,6 +60,7 @@ namespace Protogame
             this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
             this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
+            this.Bind<IAssetCompiler<TextureAtlasAsset>>().To<TextureAtlasAssetCompiler>();
 #if PLATFORM_WINDOWS
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
 #elif PLATFORM_LINUX

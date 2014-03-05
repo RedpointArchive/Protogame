@@ -63,7 +63,6 @@
     <Compile Include="Assets\IAssetCompiler.cs" />
     <Compile Include="Assets\IAssetContentManager.cs" />
     <Compile Include="Assets\IAssetEditor.cs" />
-    <Compile Include="Assets\IAssetGenerator.cs" />
     <Compile Include="Assets\IAssetLoader.cs" />
     <Compile Include="Assets\IAssetManager.cs" />
     <Compile Include="Assets\IAssetManagerProvider.cs" />
@@ -122,7 +121,9 @@
     <Compile Include="Assets\TextureAssetLoader.cs" />
     <Compile Include="Assets\TextureAssetSaver.cs" />
     <Compile Include="Assets\TextureAtlasAsset.cs" />
-    <Compile Include="Assets\TextureAtlasAssetGenerator.cs" />
+    <Compile Include="Assets\TextureAtlasAssetCompiler.cs" />
+    <Compile Include="Assets\TextureAtlasAssetLoader.cs" />
+    <Compile Include="Assets\TextureAtlasAssetSaver.cs" />
     <Compile Include="Assets\TextureAtlases\PackedTexture.cs" />
     <Compile Include="Assets\TextureAtlases\TexturePacker.cs" />
     <Compile Include="Assets\TextureAtlases\UVMapping.cs" />

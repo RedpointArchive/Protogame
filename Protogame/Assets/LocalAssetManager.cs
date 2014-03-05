@@ -68,6 +68,11 @@ namespace Protogame
         private bool m_ProxiesLocked;
 
         /// <summary>
+        /// Whether or not the assets are currently being scanned.
+        /// </summary>
+        private bool m_IsScanning;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LocalAssetManager"/> class.
         /// </summary>
         /// <param name="kernel">
@@ -313,7 +318,7 @@ namespace Protogame
                         var result = loader.Handle(this, asset, candidate);
                         if (!this.SkipCompilation)
                         {
-                            result = this.m_TransparentAssetCompiler.Handle(result);
+                            this.m_TransparentAssetCompiler.Handle(result);
 
                             if (result.SourceOnly && (!this.AllowSourceOnly || asset == "font.Default"))
                             {
@@ -383,10 +388,20 @@ namespace Protogame
         /// </summary>
         public void RescanAssets()
         {
+            if (this.m_IsScanning)
+            {
+                Console.WriteLine("WARNING: Ignoring request to rescan assets because GetAll() was called from an asset loader or compiler.");
+                return;
+            }
+
+            this.m_IsScanning = true;
+
             foreach (var asset in this.m_RawAssetLoader.ScanRawAssets())
             {
                 this.GetUnresolved(asset);
             }
+
+            this.m_IsScanning = false;
 
             this.m_HasScanned = true;
         }

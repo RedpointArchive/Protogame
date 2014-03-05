@@ -18,5 +18,37 @@ namespace Protogame
         /// </summary>
         /// <value>The bottom right UV.</value>
         public Vector2 BottomRight { get; set; }
+
+        public float X
+        {
+            get
+            {
+                return this.TopLeft.X;
+            }
+        }
+
+        public float Y
+        {
+            get
+            {
+                return this.TopLeft.Y;
+            }
+        }
+
+        public float Width
+        {
+            get
+            {
+                return this.BottomRight.X - this.TopLeft.X;
+            }
+        }
+
+        public float Height
+        {
+            get
+            {
+                return this.BottomRight.Y - this.TopLeft.Y;
+            }
+        }
     }
 }

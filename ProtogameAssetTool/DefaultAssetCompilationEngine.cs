@@ -1,4 +1,4 @@
-﻿namespace ProtogameAssetTool
+﻿﻿namespace ProtogameAssetTool
 {
     using System;
     using System.Collections.Generic;
@@ -93,7 +93,7 @@
 
                 foreach (var asset in assetNames.Select(assetManager.GetUnresolved))
                 {
-                    var compiledAsset = assetCompiler.HandlePlatform(asset, platform, true);
+                    assetCompiler.HandlePlatform(asset, platform, true);
 
                     foreach (var saver in savers)
                     {
