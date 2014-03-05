@@ -139,8 +139,6 @@ namespace Protogame
                 stream.Read(bitmapData, 0, (int)length);
             }
 
-            bitmap.Save("atlas.png");
-
             var textureAsset = new TextureAsset(
                 this.m_AssetContentManager,
                 asset.Name,
