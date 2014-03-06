@@ -44,7 +44,10 @@
         /// <param name="secondFraction">
         /// The seconds that have elapsed since the animation started playing.
         /// </param>
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction)
+        /// <param name="multiply">
+        /// The rate multiplier to apply.  A higher number multiplies the number of times the animation plays.
+        /// </param>
+        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
         {
             // Normalize the animation name.
             if (string.IsNullOrEmpty(animationName))
@@ -60,7 +63,7 @@
             }
 
             // Multiply the total seconds by the ticks per second.
-            var totalTicks = (int)(secondFraction.TotalSeconds * animation.TicksPerSecond);
+            var totalTicks = (int)(secondFraction.TotalSeconds * (animation.TicksPerSecond * multiply));
 
             // Modulo the total ticks by the animation duration.
             var currentTick = (int)(totalTicks % animation.DurationInTicks);

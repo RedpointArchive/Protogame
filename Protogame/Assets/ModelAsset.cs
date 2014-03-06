@@ -174,9 +174,12 @@
         /// <param name="secondFraction">
         /// The second fraction.
         /// </param>
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction)
+        /// <param name="multiply">
+        /// The rate multiplier to apply.  A higher number multiplies the number of times the animation plays.
+        /// </param>
+        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
         {
-            this.m_Model.Draw(renderContext, transform, animationName, secondFraction);
+            this.m_Model.Draw(renderContext, transform, animationName, secondFraction, multiply);
         }
 
         /// <summary>

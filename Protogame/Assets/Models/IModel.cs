@@ -33,7 +33,10 @@
         /// <param name="secondFraction">
         /// The seconds that have elapsed since the animation started playing.
         /// </param>
-        void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction);
+        /// <param name="multiply">
+        /// The rate multiplier to apply.  A higher number multiplies the number of times the animation plays.
+        /// </param>
+        void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1);
 
         /// <summary>
         /// Draws the model using the specified animation, at a specific frame.
