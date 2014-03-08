@@ -7,7 +7,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Protogame" />
-    <Reference Include="MonoGame" />
+    <Reference Include="MonoGame.Framework" />
     <Reference Include="Ninject" />
     <Reference Include="AssImp" />
     <Reference Include="Newtonsoft.Json" />
