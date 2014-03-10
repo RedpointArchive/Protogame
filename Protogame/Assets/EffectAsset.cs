@@ -182,6 +182,9 @@ namespace Protogame
                     {
                         this.Effect = effect;
                     }
+
+                    // Assign the asset name so we can trace it back.
+                    this.Effect.Name = this.Name;
                 }
             }
         }
