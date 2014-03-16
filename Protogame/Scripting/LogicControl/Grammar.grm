@@ -1,0 +1,129 @@
+"Name"    = 'LogicControl'
+"Author"  = 'James Rhodes'
+"Version" = '1.0'
+"About"   = 'The LogicControl grammer'
+          
+"Case Sensitive" = False
+"Start Symbol"   = <GlobalStatements>
+                 
+Comment Line  = '//'
+Comment Start = '/*'
+Comment End   = '*/'
+              
+! Define string ch 1 / 2 as set of printable character excluding quotes                 
+{String Ch 1} = {Printable} - [''] + [\]
+{String Ch 2} = {Printable} - ["] + [\]
+
+! Allow underscores in identifiers
+{LetterAndUnderscore} = {Letter} + [_]
+{AlphaNumericAndUnderscore} = {AlphaNumeric} + [_]
+              
+! Identifiers are a letter followed by one or more alphanumeric characters              
+Id            = {LetterAndUnderscore}{AlphaNumericAndUnderscore}*
+
+! String allows either single or double quotes              
+StringLiteral = '' {String Ch 1}* ''
+              | '"' {String Ch 2}* '"'
+              
+! Numbers do not require a specific type; integers and floating
+! point numbers are the same format.
+NumberLiteral = {Digit}+('.'{Digit}+)?
+
+<GlobalStatements> ::= <GlobalStatement> <GlobalStatements>
+                     | <GlobalStatement>
+               
+<GlobalStatement> ::= <StructureDeclaration>
+                    | <FunctionDeclaration>
+
+<FunctionDeclaration> ::= <Type> Id '(' <ArgumentDeclarations> ')' <OptionalSemantic> '{' <Statements> '}'
+                        | <Type> Id '(' <ArgumentDeclarations> ')' <OptionalSemantic> '{' '}'
+                    
+<StructureDeclaration> ::= struct Id '{' <FieldDeclarations> '}'
+
+<FieldDeclarations> ::= <FieldDeclaration> <FieldDeclarations>
+                          | <FieldDeclaration>
+
+<FieldDeclaration> ::= <Type> Id <Semantic> ';'
+
+<ArgumentDeclarations> ::= <ArgumentDeclaration> ',' <ArgumentDeclarations>
+                         | <ArgumentDeclaration>
+                         |
+
+<ArgumentDeclaration> ::= <Type> Id <OptionalSemantic>
+
+<Semantic> ::= ':' Id
+
+<OptionalSemantic> ::= <Semantic>
+                    | 
+
+<Statements> ::= <Statement> <Statements>
+               | <Statement>
+              
+<Statement> ::= <WhileStatement>
+              | <IfStatement>      
+              | <AssignStatement> ';'
+              | <ReturnStatement> ';'
+              | <BlockStatement>
+
+<WhileStatement> ::= while '(' <Expression> ')' <Statement>
+                                     
+<IfStatement> ::= if '(' <Expression> ')' <Statement>
+                | if '(' <Expression> ')' <Statement> else <Statement>
+
+<AssignTarget> ::= Id
+                 | <Lookup Exp> '.' Id
+
+<AssignStatement> ::= <AssignTarget> '=' <Expression>
+                    | <AssignTarget> '+=' <Expression>
+                    | <AssignTarget> '-=' <Expression>
+                    | <AssignTarget> '/=' <Expression>
+                    | <AssignTarget> '*=' <Expression>
+
+<ReturnStatement> ::= return <Expression>
+
+<BlockStatement> ::= '{' <Statements> '}'
+                   | '{' '}'
+
+<Parameters> ::= <Expression> ',' <Parameters>
+               | <Expression>
+               |             
+              
+<Expression>   ::= <Expression> '>'  <Add Exp> 
+                 | <Expression> '<'  <Add Exp> 
+                 | <Expression> '<=' <Add Exp> 
+                 | <Expression> '>=' <Add Exp>
+                 | <Expression> '==' <Add Exp>
+                 | <Expression> '!=' <Add Exp>
+                 | <Add Exp> 
+
+<Add Exp>      ::= <Add Exp> '+' <Mult Exp>
+                 | <Add Exp> '-' <Mult Exp>
+                 | <Mult Exp> 
+
+<Mult Exp>    ::= <Mult Exp> '*' <Negate Exp> 
+                | <Mult Exp> '/' <Negate Exp> 
+                | <Negate Exp> 
+
+<Negate Exp>  ::= '-' <Lookup Exp> 
+                | <Lookup Exp> 
+
+<Lookup Exp>  ::= <Lookup Exp> '.' Id
+                | <Value> 
+
+<BooleanLiteral> ::= true
+                   | false
+
+<Value>       ::= <BooleanLiteral>
+                | ID           
+                | StringLiteral
+                | NumberLiteral
+                | '(' <Expression> ')'
+                | <Type> '(' <Parameters> ')'
+                
+<Type>    ::= void
+            | string
+            | float
+            | float2
+            | float3
+            | float4
+            | Id

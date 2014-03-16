@@ -296,6 +296,79 @@
     <Compile Include="Platforming\ProtogamePlatformingIoCModule.cs" />
     <Compile Include="Protogame2DIoCModule.cs" />
     <Compile Include="Protogame3DIoCModule.cs" />
+    <Compile Include="Scripting\GOLD\DataIndex.cs" />
+    <Compile Include="Scripting\GOLD\GrammarProperties.cs" />
+    <Compile Include="Scripting\GOLD\Internal\CharacterRange.cs" />
+    <Compile Include="Scripting\GOLD\Internal\CharacterSet.cs" />
+    <Compile Include="Scripting\GOLD\Internal\CharacterSetList.cs" />
+    <Compile Include="Scripting\GOLD\Internal\EGTReader.cs" />
+    <Compile Include="Scripting\GOLD\Internal\EGTRecord.cs" />
+    <Compile Include="Scripting\GOLD\Internal\FAEdge.cs" />
+    <Compile Include="Scripting\GOLD\Internal\FAEdgeList.cs" />
+    <Compile Include="Scripting\GOLD\Internal\FAState.cs" />
+    <Compile Include="Scripting\GOLD\Internal\FAStateList.cs" />
+    <Compile Include="Scripting\GOLD\Internal\Group.cs" />
+    <Compile Include="Scripting\GOLD\Internal\GroupList.cs" />
+    <Compile Include="Scripting\GOLD\Internal\IntegerList.cs" />
+    <Compile Include="Scripting\GOLD\Internal\LRAction.cs" />
+    <Compile Include="Scripting\GOLD\Internal\LRActionType.cs" />
+    <Compile Include="Scripting\GOLD\Internal\LRConflict.cs" />
+    <Compile Include="Scripting\GOLD\Internal\LRState.cs" />
+    <Compile Include="Scripting\GOLD\Internal\LRStateList.cs" />
+    <Compile Include="Scripting\GOLD\Internal\TokenQueueStack.cs" />
+    <Compile Include="Scripting\GOLD\Internal\TokenStack.cs" />
+    <Compile Include="Scripting\GOLD\ParseMessage.cs" />
+    <Compile Include="Scripting\GOLD\Parser.cs" />
+    <Compile Include="Scripting\GOLD\ParserException.cs" />
+    <Compile Include="Scripting\GOLD\Position.cs" />
+    <Compile Include="Scripting\GOLD\Production.cs" />
+    <Compile Include="Scripting\GOLD\ProductionList.cs" />
+    <Compile Include="Scripting\GOLD\Reduction.cs" />
+    <Compile Include="Scripting\GOLD\Symbol.cs" />
+    <Compile Include="Scripting\GOLD\SymbolList.cs" />
+    <Compile Include="Scripting\GOLD\SymbolType.cs" />
+    <Compile Include="Scripting\GOLD\Token.cs" />
+    <Compile Include="Scripting\GOLD\TokenList.cs" />
+    <Compile Include="Scripting\IScriptEngine.cs" />
+    <Compile Include="Scripting\LogicControl\AdditionLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\AssignLogicStatement.cs" />
+    <Compile Include="Scripting\LogicControl\BlockLogicStatement.cs" />
+    <Compile Include="Scripting\LogicControl\ComparisonLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\ConstantLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\FieldLogicAssignmentTarget.cs" />
+    <Compile Include="Scripting\LogicControl\FunctionCallLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\IdentifierLogicAssignmentTarget.cs" />
+    <Compile Include="Scripting\LogicControl\IdentifierLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\IfElseLogicStatement.cs" />
+    <Compile Include="Scripting\LogicControl\IfLogicStatement.cs" />
+    <Compile Include="Scripting\LogicControl\LogicAssignmentTarget.cs" />
+    <Compile Include="Scripting\LogicControl\LogicBuiltins.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogicBuiltins.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Scripting\LogicControl\LogicExecutionState.cs" />
+    <Compile Include="Scripting\LogicControl\LogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\LogicField.cs" />
+    <Compile Include="Scripting\LogicControl\LogicFunction.cs" />
+    <Compile Include="Scripting\LogicControl\LogicParameter.cs" />
+    <Compile Include="Scripting\LogicControl\LogicParser.cs" />
+    <Compile Include="Scripting\LogicControl\LogicScript.cs" />
+    <Compile Include="Scripting\LogicControl\LogicStatement.cs" />
+    <Compile Include="Scripting\LogicControl\LogicStructure.cs" />
+    <Compile Include="Scripting\LogicControl\LogicUnmappedScriptInstance.cs" />
+    <Compile Include="Scripting\LogicControl\LookupLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\MultiplyLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\ReturnLogicStatement.cs" />
+    <Compile Include="Scripting\LogicControl\TruthfulLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\UnaryLogicExpression.cs" />
+    <Compile Include="Scripting\LogicControl\WhileLogicStatement.cs" />
+    <Compile Include="Scripting\LogicControlScriptAssetLoader.cs" />
+    <Compile Include="Scripting\LogicControlScriptAssetSaver.cs" />
+    <Compile Include="Scripting\LogicControlScriptEngine.cs" />
+    <Compile Include="Scripting\ProtogameScriptIoCModule.cs" />
+    <Compile Include="Scripting\RawLogicControlScriptLoadStrategy.cs" />
+    <Compile Include="Scripting\ScriptAsset.cs" />
     <Compile Include="Server\CoreServer.cs" />
     <Compile Include="Server\DefaultServerContext.cs" />
     <Compile Include="Server\DefaultServerWorldManager.cs" />
@@ -410,9 +483,15 @@
     <EmbeddedResource Include="font.Default-WindowsPhone8.bin" />
     <EmbeddedResource Include="font.Default-WindowsStoreApp.bin" />
     <EmbeddedResource Include="font.Default-Xbox360.bin" />
+    <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
     <None Include="Assets\Effects\Template.fx" />
     <None Include="packages.config" />
     <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Scripting\LogicControl\Grammar.grm" />
+    <None Include="Scripting\LogicControl\LogicBuiltins.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LogicBuiltins.cs</LastGenOutput>
+    </None>
     <None Include="Structure\PositionOctreeUtil.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PositionOctreeUtil.cs</LastGenOutput>
