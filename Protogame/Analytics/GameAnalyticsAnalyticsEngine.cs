@@ -35,6 +35,11 @@
         private readonly ConcurrentQueue<Dictionary<string, object>> m_PendingGameplayEvents;
 
         /// <summary>
+        /// The queue of game errors that still need to be sent to the server.
+        /// </summary>
+        private readonly ConcurrentQueue<Dictionary<string, object>> m_PendingGameplayErrors;
+
+        /// <summary>
         /// The build hash.
         /// </summary>
         private string m_BuildHash;
@@ -85,6 +90,7 @@
         public GameAnalyticsAnalyticsEngine()
         {
             this.m_PendingGameplayEvents = new ConcurrentQueue<Dictionary<string, object>>();
+            this.m_PendingGameplayErrors = new ConcurrentQueue<Dictionary<string, object>>();
             this.m_Stopping = false;
         }
 
@@ -149,6 +155,47 @@
             {
                 // We don't throw an exception here because we may be reporting a crash.
             }
+
+            this.EnsureRunning();
+
+            var values = new Dictionary<string, object>();
+            values.Add("user_id", this.m_UserId);
+            values.Add("session_id", this.m_SessionId);
+            values.Add("build", this.m_BuildHash);
+            values.Add("message", message);
+
+            switch (severity)
+            {
+                case AnalyticsErrorSeverity.Critical:
+                    values.Add("severity", "critical");
+                    break;
+                case AnalyticsErrorSeverity.Error:
+                    values.Add("severity", "error");
+                    break;
+                case AnalyticsErrorSeverity.Warning:
+                    values.Add("severity", "warning");
+                    break;
+                case AnalyticsErrorSeverity.Info:
+                    values.Add("severity", "info");
+                    break;
+                case AnalyticsErrorSeverity.Debug:
+                    values.Add("severity", "debug");
+                    break;
+            }
+
+            if (area != null)
+            {
+                values.Add("area", area);
+            }
+
+            if (position != null)
+            {
+                values.Add("x", position.Value.X);
+                values.Add("y", position.Value.Y);
+                values.Add("z", position.Value.Z);
+            }
+
+            this.m_PendingGameplayErrors.Enqueue(values);
         }
 
         /// <summary>
@@ -308,78 +355,93 @@
         /// </summary>
         private void Run()
         {
-            while (!this.m_Stopping || this.m_PendingGameplayEvents.Count > 0)
+            while (!this.m_Stopping || this.m_PendingGameplayEvents.Count > 0 || this.m_PendingGameplayErrors.Count > 0)
             {
-                var pendingMessages = new List<Dictionary<string, object>>();
+                var pendingGameplayEvents = new List<Dictionary<string, object>>();
+                var pendingGameplayErrors = new List<Dictionary<string, object>>();
                 Dictionary<string, object> result;
 
                 // Take as many messages as possible.
                 while (this.m_PendingGameplayEvents.TryDequeue(out result))
                 {
-                    pendingMessages.Add(result);
+                    pendingGameplayEvents.Add(result);
                 }
 
-                if (pendingMessages.Count == 0)
+                while (this.m_PendingGameplayErrors.TryDequeue(out result))
                 {
-                    Thread.Sleep(1000);
-                    continue;
+                    pendingGameplayErrors.Add(result);
                 }
 
-                var messageString = JsonConvert.SerializeObject(pendingMessages);
-
-                var md5 = new MD5CryptoServiceProvider();
-                var authData = Encoding.Default.GetBytes(messageString + this.m_SecretKey);
-                var authHash = md5.ComputeHash(authData);
-                var hexaHash = authHash.Aggregate(string.Empty, (current, b) => current + string.Format("{0:x2}", b));
-                var jsonData = Encoding.ASCII.GetBytes(messageString);
-
-                var url = EndpointUri + "/" + this.m_GameKey + "/design";
-                var request = WebRequest.Create(url);
-
-                request.Headers.Add("Authorization", hexaHash);
-                request.Method = "POST";
-                request.ContentLength = jsonData.Length;
-                request.ContentType = "application/x-www-form-urlencoded";
-
-                try
+                Action<string, List<Dictionary<string, object>>> submit = (type, dict) =>
                 {
-                    // Send the json data
-                    var dataStream = request.GetRequestStream();
-                    dataStream.Write(jsonData, 0, jsonData.Length);
-                    dataStream.Close();
+                    var messageString = JsonConvert.SerializeObject(dict);
 
-                    // Get the response
-                    var response = request.GetResponse();
-                    var responseData = response.GetResponseStream();
+                    var md5 = new MD5CryptoServiceProvider();
+                    var authData = Encoding.Default.GetBytes(messageString + this.m_SecretKey);
+                    var authHash = md5.ComputeHash(authData);
+                    var hexaHash = authHash.Aggregate(
+                        string.Empty,
+                        (current, b) => current + string.Format("{0:x2}", b));
+                    var jsonData = Encoding.ASCII.GetBytes(messageString);
 
-                    if (responseData != null)
+                    var url = EndpointUri + "/" + this.m_GameKey + "/" + type;
+                    var request = WebRequest.Create(url);
+
+                    request.Headers.Add("Authorization", hexaHash);
+                    request.Method = "POST";
+                    request.ContentLength = jsonData.Length;
+                    request.ContentType = "application/x-www-form-urlencoded";
+
+                    try
                     {
-                        using (var reader = new StreamReader(responseData))
-                        {
-                            var resultString = reader.ReadToEnd();
-                            var resultObj = JsonConvert.DeserializeObject<dynamic>(resultString);
+                        // Send the json data
+                        var dataStream = request.GetRequestStream();
+                        dataStream.Write(jsonData, 0, jsonData.Length);
+                        dataStream.Close();
 
-                            if (resultObj["status"] != "ok")
+                        // Get the response
+                        var response = request.GetResponse();
+                        var responseData = response.GetResponseStream();
+
+                        if (responseData != null)
+                        {
+                            using (var reader = new StreamReader(responseData))
                             {
-                                Console.WriteLine(
-                                    "WARNING: Some gameplay events were rejected by the Game Analytics server.");
-                                Console.WriteLine(resultString);
+                                var resultString = reader.ReadToEnd();
+                                var resultObj = JsonConvert.DeserializeObject<dynamic>(resultString);
+
+                                if (resultObj["status"] != "ok")
+                                {
+                                    Console.WriteLine(
+                                        "WARNING: Some gameplay events were rejected by the Game Analytics server.");
+                                    Console.WriteLine(resultString);
+                                }
                             }
                         }
                     }
-                }
-                catch (WebException)
+                    catch (WebException)
+                    {
+                        Console.WriteLine("WARNING: Unable to send data to the Game Analytics server.");
+                    }
+                    catch (SocketException)
+                    {
+                        Console.WriteLine("WARNING: Unable to send data to the Game Analytics server.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("WARNING: Internal error while sending data to Game Analytics server.");
+                        Console.WriteLine(ex);
+                    }
+                };
+
+                if (pendingGameplayEvents.Count > 0)
                 {
-                    Console.WriteLine("WARNING: Unable to send data to the Game Analytics server.");
+                    submit("design", pendingGameplayEvents);
                 }
-                catch (SocketException)
+
+                if (pendingGameplayErrors.Count > 0)
                 {
-                    Console.WriteLine("WARNING: Unable to send data to the Game Analytics server.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("WARNING: Internal error while sending data to Game Analytics server.");
-                    Console.WriteLine(ex);
+                    submit("error", pendingGameplayErrors);
                 }
 
                 if (!this.m_Stopping)
