@@ -1,6 +1,9 @@
 namespace Protogame
 {
+    using System.Diagnostics.CodeAnalysis;
     using Ninject.Modules;
+
+    // ReSharper disable InconsistentNaming
 
     /// <summary>
     /// The Ninject module to load when using Game Analytics (http://gameanalytics.com) services.
@@ -15,6 +18,10 @@ namespace Protogame
     /// You should ensure that IAnalyticsEngine is bound in a singleton scope.
     /// </para>
     /// </remarks>
+    [SuppressMessage(
+        "StyleCop.CSharp.DocumentationRules",
+        "SA1650:ElementDocumentationMustBeSpelledCorrectly",
+        Justification = "Reviewed. Suppression is OK here.")]
     public class ProtogameGAAnalyticsIoCModule : NinjectModule
     {
         /// <summary>
@@ -26,4 +33,6 @@ namespace Protogame
             this.Bind<IAnalyticsEngine>().To<GameAnalyticsAnalyticsEngine>().InSingletonScope();
         }
     }
+
+    // ReSharper restore InconsistentNaming
 }

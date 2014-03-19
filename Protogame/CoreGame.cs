@@ -212,6 +212,8 @@ namespace Protogame
         {
             this.m_AnalyticsEngine.LogGameplayEvent("Game:Stop");
 
+            this.m_AnalyticsEngine.FlushAndStop();
+
             base.Dispose(disposing);
         }
 

@@ -70,6 +70,9 @@ namespace Protogame
         public void Dispose()
         {
             // TODO: Call dispose on the current world.
+            this.m_AnalyticsEngine.LogGameplayEvent("Server:Stop");
+
+            this.m_AnalyticsEngine.FlushAndStop();
         }
 
         protected virtual void LoadContent()
@@ -105,8 +108,6 @@ namespace Protogame
 
                 this.Update();
             }
-
-            this.m_AnalyticsEngine.LogGameplayEvent("Server:Stop");
         }
 
         public void Setup()

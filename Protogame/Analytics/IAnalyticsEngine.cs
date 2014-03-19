@@ -1,5 +1,6 @@
 ﻿namespace Protogame
 {
+    using System.Collections.Generic;
     using Microsoft.Xna.Framework;
 
     /// <summary>
@@ -23,13 +24,13 @@
         /// <summary>
         /// Initialize the analytics engine with the required session information.
         /// </summary>
-        /// <param name="userID">
+        /// <param name="userId">
         /// A unique identifier for the user; it should remain the same across play
-        /// sessions.  Pass null for autogeneration of user ID based on network MAC address.
+        /// sessions.  Pass null for auto-generated of user ID based on network MAC address.
         /// </param>
-        /// <param name="sessionID">
+        /// <param name="sessionId">
         /// A unique identifier for the session; it should change across play
-        /// sessions.  Pass null for autogeneration of session ID based 
+        /// sessions.  Pass null for auto-generated of session ID based 
         /// on network MAC address and current time.
         /// </param>
         /// <param name="buildHash">
@@ -53,7 +54,7 @@
         /// <summary>
         /// Logs an error event with the analytics service.
         /// </summary>
-        /// <param name="message">Message.</param>
+        /// <param name="message">The error or exception message.</param>
         /// <param name="severity">The severity of the event.</param>
         /// <param name="area">The optional area or level name information.</param>
         /// <param name="position">The optional position of the event.</param>
@@ -62,11 +63,23 @@
         /// <summary>
         /// Logs additional user information with the game analytics service.
         /// </summary>
+        /// <param name="userInfo">
+        /// The user information structure to pass back to the service.
+        /// </param>
         /// <remarks>
         /// This should generally only need to be called once depending on the game analytics service.  This
         /// information is tied with the user ID specified during initialization.
         /// </remarks>
-        void LogUserInformation(dynamic userInfo);
+        void LogUserInformation(Dictionary<string, object> userInfo);
+
+        /// <summary>
+        /// Causes the analytics engine to flush all events to the server and stop.
+        /// </summary>
+        /// <remarks>
+        /// This is called by CoreGame or CoreServer before the game exits to ensure everything
+        /// has been sent to the server.
+        /// </remarks>
+        void FlushAndStop();
     }
 }
 

@@ -1,5 +1,7 @@
 ﻿namespace Protogame
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// An analytics engine that does no reporting.
     /// </summary>
@@ -28,7 +30,11 @@
         {
         }
 
-        public void LogUserInformation(dynamic userInfo)
+        public void LogUserInformation(Dictionary<string, object> userInfo)
+        {
+        }
+
+        public void FlushAndStop()
         {
         }
     }
