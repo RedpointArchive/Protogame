@@ -2,6 +2,7 @@
 <Project Name="Protogame" Path="Protogame" Type="Library">
   <Properties>
     <Property Name="DocumentationFile" Value="True" />
+    <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
   </Properties>
   <References>
     <Reference Include="Microsoft.CSharp" />
@@ -20,6 +21,8 @@
     <Reference Include="Jitter" />
   </References>
   <Files>
+    <Compile Include="Analytics\EmptyClass.cs" />
+    <Compile Include="Analytics\GameAnalyticsAnalyticsEngine.cs" />
     <Compile Include="Assets\AIAsset.cs" />
     <Compile Include="Assets\AIAssetLoader.cs" />
     <Compile Include="Assets\AndroidCompiledLoadStrategy.cs" />

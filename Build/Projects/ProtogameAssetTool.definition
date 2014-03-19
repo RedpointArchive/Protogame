@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Name="ProtogameAssetTool" Path="ProtogameAssetTool" Type="Console" Platforms="Linux,MacOS,Windows">
+  <Properties>
+    <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
+  </Properties>
   <References>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
