@@ -11,6 +11,16 @@ namespace Protogame
 
         private readonly IProfiler m_Profiler;
 
+        /// <summary>
+        /// The current analytics engine instance.
+        /// </summary>
+        private readonly IAnalyticsEngine m_AnalyticsEngine;
+
+        /// <summary>
+        /// The current analytics initializer instance.
+        /// </summary>
+        private readonly IAnalyticsInitializer m_AnalyticsInitializer;
+
         private readonly ITickRegulator m_TickRegulator;
 
         private bool m_HasSetup;
@@ -25,6 +35,22 @@ namespace Protogame
                 kernel.Bind<IProfiler>().To<NullProfiler>();
                 this.m_Profiler = kernel.Get<IProfiler>();
             }
+
+            this.m_AnalyticsEngine = kernel.TryGet<IAnalyticsEngine>();
+            if (this.m_Profiler == null)
+            {
+                kernel.Bind<IAnalyticsEngine>().To<NullAnalyticsEngine>();
+                this.m_AnalyticsEngine = kernel.Get<IAnalyticsEngine>();
+            }
+
+            this.m_AnalyticsInitializer = kernel.TryGet<IAnalyticsInitializer>();
+            if (this.m_Profiler == null)
+            {
+                kernel.Bind<IAnalyticsInitializer>().To<NullAnalyticsInitializer>();
+                this.m_AnalyticsInitializer = kernel.Get<IAnalyticsInitializer>();
+            }
+
+            this.m_AnalyticsInitializer.Initialize(this.m_AnalyticsEngine);
 
             this.m_TickRegulator = this.m_Kernel.Get<ITickRegulator>();
         }
@@ -71,12 +97,16 @@ namespace Protogame
 
             this.LoadContent();
 
+            this.m_AnalyticsEngine.LogGameplayEvent("Server:Start");
+
             while (true)
             {
                 this.m_TickRegulator.WaitUntilReady();
 
                 this.Update();
             }
+
+            this.m_AnalyticsEngine.LogGameplayEvent("Server:Stop");
         }
 
         public void Setup()

@@ -15,6 +15,11 @@ namespace Protogame
         private readonly IKernel m_Kernel;
 
         /// <summary>
+        /// The current analytics engine.
+        /// </summary>
+        private readonly IAnalyticsEngine m_AnalyticsEngine;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGameContext"/> class.
         /// </summary>
         /// <param name="kernel">
@@ -37,6 +42,7 @@ namespace Protogame
         /// </param>
         public DefaultGameContext(
             IKernel kernel, 
+            IAnalyticsEngine analyticsEngine,
             Game game, 
             GraphicsDeviceManager graphics, 
             IGameWindow window, 
@@ -44,6 +50,7 @@ namespace Protogame
             IWorldManager worldManager)
         {
             this.m_Kernel = kernel;
+            this.m_AnalyticsEngine = analyticsEngine;
             this.Game = game;
             this.Graphics = graphics;
             this.World = world;
@@ -213,6 +220,8 @@ namespace Protogame
             }
 
             this.World = this.CreateWorld<T>();
+
+            this.m_AnalyticsEngine.LogGameplayEvent("World:Switch:" + typeof(T).Name);
         }
 
         /// <summary>
@@ -230,7 +239,16 @@ namespace Protogame
                 this.World.Dispose();
             }
 
-            this.World = this.CreateWorld(creator);
+            var world = this.CreateWorld(creator);
+
+            if (world == null)
+            {
+                throw new ArgumentNullException("world");
+            }
+
+            this.World = world;
+
+            this.m_AnalyticsEngine.LogGameplayEvent("World:Switch:" + this.World.GetType().Name);
         }
 
         /// <summary>
@@ -243,12 +261,19 @@ namespace Protogame
         /// </typeparam>
         public void SwitchWorld<T>(T world) where T : IWorld
         {
+            if (world == null)
+            {
+                throw new ArgumentNullException("world");
+            }
+
             if (this.World != null)
             {
                 this.World.Dispose();
             }
 
             this.World = world;
+
+            this.m_AnalyticsEngine.LogGameplayEvent("World:Switch:" + this.World.GetType().Name);
         }
     }
 }

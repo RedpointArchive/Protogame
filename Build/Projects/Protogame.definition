@@ -21,8 +21,13 @@
     <Reference Include="Jitter" />
   </References>
   <Files>
-    <Compile Include="Analytics\EmptyClass.cs" />
+    <Compile Include="Analytics\AnalyticsErrorSeverity.cs" />
     <Compile Include="Analytics\GameAnalyticsAnalyticsEngine.cs" />
+    <Compile Include="Analytics\IAnalyticsEngine.cs" />
+    <Compile Include="Analytics\IAnalyticsInitializer.cs" />
+    <Compile Include="Analytics\NullAnalyticsEngine.cs" />
+    <Compile Include="Analytics\NullAnalyticsInitializer.cs" />
+    <Compile Include="Analytics\ProtogameGAAnalyticsIoCModule.cs" />
     <Compile Include="Assets\AIAsset.cs" />
     <Compile Include="Assets\AIAssetLoader.cs" />
     <Compile Include="Assets\AndroidCompiledLoadStrategy.cs" />

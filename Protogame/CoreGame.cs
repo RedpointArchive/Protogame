@@ -44,6 +44,16 @@ namespace Protogame
         private readonly IProfiler m_Profiler;
 
         /// <summary>
+        /// The current analytics engine instance.
+        /// </summary>
+        private readonly IAnalyticsEngine m_AnalyticsEngine;
+
+        /// <summary>
+        /// The current analytics initializer instance.
+        /// </summary>
+        private readonly IAnalyticsInitializer m_AnalyticsInitializer;
+
+        /// <summary>
         /// An array of the engine hooks that are loaded.
         /// </summary>
         private IEngineHook[] m_EngineHooks;
@@ -95,12 +105,29 @@ namespace Protogame
                     e.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage =
                         RenderTargetUsage.PreserveContents;
                 };
+
             this.m_Profiler = kernel.TryGet<IProfiler>();
             if (this.m_Profiler == null)
             {
                 kernel.Bind<IProfiler>().To<NullProfiler>();
                 this.m_Profiler = kernel.Get<IProfiler>();
             }
+
+            this.m_AnalyticsEngine = kernel.TryGet<IAnalyticsEngine>();
+            if (this.m_Profiler == null)
+            {
+                kernel.Bind<IAnalyticsEngine>().To<NullAnalyticsEngine>();
+                this.m_AnalyticsEngine = kernel.Get<IAnalyticsEngine>();
+            }
+
+            this.m_AnalyticsInitializer = kernel.TryGet<IAnalyticsInitializer>();
+            if (this.m_Profiler == null)
+            {
+                kernel.Bind<IAnalyticsInitializer>().To<NullAnalyticsInitializer>();
+                this.m_AnalyticsInitializer = kernel.Get<IAnalyticsInitializer>();
+            }
+
+            this.m_AnalyticsInitializer.Initialize(this.m_AnalyticsEngine);
 
             // TODO: Fix this because it means we can't have more than one game using the same IoC container.
             var assetContentManager = new AssetContentManager(this.Services);
@@ -176,6 +203,16 @@ namespace Protogame
 
             // Set up defaults.
             this.Window.Title = "Protogame!";
+
+            // Register with analytics services.
+            this.m_AnalyticsEngine.LogGameplayEvent("Game:Start");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            this.m_AnalyticsEngine.LogGameplayEvent("Game:Stop");
+
+            base.Dispose(disposing);
         }
 
         /// <summary>
