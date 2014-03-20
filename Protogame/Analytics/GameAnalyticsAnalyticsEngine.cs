@@ -156,7 +156,12 @@
                 // We don't throw an exception here because we may be reporting a crash.
             }
 
-            this.EnsureRunning();
+            // If we're not already stopping; this method might be called outside the game
+            // loop in which case we can't do it via a thread.
+            if (!this.m_Stopping)
+            {
+                this.EnsureRunning();
+            }
 
             var values = new Dictionary<string, object>();
             values.Add("user_id", this.m_UserId);
@@ -196,6 +201,12 @@
             }
 
             this.m_PendingGameplayErrors.Enqueue(values);
+
+            // If we are in the process of stopping, run the submission ourselves.
+            if (this.m_Stopping)
+            {
+                this.Run();
+            }
         }
 
         /// <summary>
