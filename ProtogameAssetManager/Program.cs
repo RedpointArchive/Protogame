@@ -75,6 +75,7 @@ namespace ProtogameAssetManager
             var kernel = new StandardKernel();
             kernel.Load<Protogame2DIoCModule>();
             kernel.Load<ProtogameAssetIoCModule>();
+            kernel.Load<ProtogameEventsIoCModule>();
             kernel.Load<ProtogamePlatformingIoCModule>();
             kernel.Load<AssetManagerIoCModule>();
 

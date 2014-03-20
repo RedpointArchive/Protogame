@@ -110,11 +110,45 @@ namespace Protogame
         /// </param>
         public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
-            var mouse = Mouse.GetState();
-            var leftPressed = mouse.LeftChanged(this) == ButtonState.Pressed;
-            if (layout.Contains(mouse.X, mouse.Y))
+        }
+
+        /// <summary>
+        /// Requests that the UI container handle the specified event or return false.
+        /// </summary>
+        /// <param name="skin">
+        /// The UI skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout for the element.
+        /// </param>
+        /// <param name="context">
+        /// The current game context.
+        /// </param>
+        /// <param name="event">
+        /// The event that was raised.
+        /// </param>
+        /// <returns>
+        /// Whether or not this UI element handled the event.
+        /// </returns>
+        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        {
+            var mouseEvent = @event as MouseEvent;
+            var mousePressEvent = @event as MousePressEvent;
+            var mouseReleaseEvent = @event as MouseReleaseEvent;
+            var mouseMoveEvent = @event as MouseMoveEvent;
+
+            if (mouseEvent == null)
             {
-                if (leftPressed)
+                return false;
+            }
+
+            if (layout.Contains(mouseEvent.MouseState.X, mouseEvent.MouseState.Y))
+            {
+                if (mouseMoveEvent != null)
+                {
+                    this.State = ButtonUIState.Hover;
+                }
+                else if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
                 {
                     if (this.Click != null && this.State != ButtonUIState.Clicked)
                     {
@@ -123,16 +157,21 @@ namespace Protogame
 
                     this.State = ButtonUIState.Clicked;
                     this.Focus();
-                }
-                else
-                {
-                    this.State = ButtonUIState.Hover;
+
+                    return true;
                 }
             }
             else
             {
                 this.State = ButtonUIState.None;
             }
+
+            if (mouseReleaseEvent != null && mouseReleaseEvent.Button == MouseButton.Left)
+            {
+                this.State = ButtonUIState.None;
+            }
+
+            return false;
         }
     }
 }

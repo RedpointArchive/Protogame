@@ -69,5 +69,25 @@ namespace Protogame
         /// The steal focus.
         /// </param>
         void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus);
+
+        /// <summary>
+        /// Requests that the UI container handle the specified event or return false.
+        /// </summary>
+        /// <param name="skin">
+        /// The UI skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout for the element.
+        /// </param>
+        /// <param name="context">
+        /// The current game context.
+        /// </param>
+        /// <param name="event">
+        /// The event that was raised.
+        /// </param>
+        /// <returns>
+        /// Whether or not this UI element handled the event.
+        /// </returns>
+        bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event);
     }
 }

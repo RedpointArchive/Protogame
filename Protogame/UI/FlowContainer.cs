@@ -214,6 +214,37 @@ namespace Protogame
         }
 
         /// <summary>
+        /// Requests that the UI container handle the specified event or return false.
+        /// </summary>
+        /// <param name="skin">
+        /// The UI skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout for the element.
+        /// </param>
+        /// <param name="context">
+        /// The current game context.
+        /// </param>
+        /// <param name="event">
+        /// The event that was raised.
+        /// </param>
+        /// <returns>
+        /// Whether or not this UI element handled the event.
+        /// </returns>
+        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        {
+            foreach (var kv in this.ChildrenWithLayouts(layout))
+            {
+                if (kv.Key.HandleEvent(skin, kv.Value, context, @event))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// The create child layout.
         /// </summary>
         /// <param name="layout">

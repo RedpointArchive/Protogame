@@ -15,6 +15,7 @@ namespace Protogame
             this.Bind<IEventEngine<IGameContext>>().To<DefaultEventEngine<IGameContext>>().InSingletonScope();
             this.Bind<IEngineHook>().To<EventEngineHook>();
             this.Bind<IEventBinder<IGameContext>>().To<ConsoleEventBinder>();
+            this.Bind<IEventBinder<IGameContext>>().To<UIEventBinder>();
         }
     }
 }

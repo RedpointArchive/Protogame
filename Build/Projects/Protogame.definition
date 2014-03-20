@@ -210,6 +210,8 @@
     <Compile Include="Events\StaticEventBinder.cs" />
     <Compile Include="Events\TouchEvent.cs" />
     <Compile Include="Events\TouchPressEvent.cs" />
+    <Compile Include="Events\UIEventBinder.cs" />
+    <Compile Include="Events\UIEventListener.cs" />
     <Compile Include="Extensions\BoundingBoxExtensions.cs" />
     <Compile Include="Extensions\KeyboardStateExtensions.cs" />
     <Compile Include="Extensions\MouseStateExtensions.cs" />
@@ -418,6 +420,7 @@
     <Compile Include="UI\HorizontalContainer.cs" />
     <Compile Include="UI\IBasicSkin.cs" />
     <Compile Include="UI\IContainer.cs" />
+    <Compile Include="UI\IHasCanvases.cs" />
     <Compile Include="UI\ISkin.cs" />
     <Compile Include="UI\Label.cs" />
     <Compile Include="UI\Link.cs" />

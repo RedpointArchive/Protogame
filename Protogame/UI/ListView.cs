@@ -208,28 +208,64 @@
             {
                 kv.Item.Update(skin, kv.Layout.Value, gameTime, ref stealFocus);
             }
+        }
 
-            var keyboard = Keyboard.GetState();
-            var upPressed = keyboard.IsKeyChanged(this, Keys.Up) == KeyState.Down;
-            var downPressed = keyboard.IsKeyChanged(this, Keys.Down) == KeyState.Down;
-            if (this.SelectedItem != null && (upPressed || downPressed))
+        /// <summary>
+        /// Requests that the UI container handle the specified event or return false.
+        /// </summary>
+        /// <param name="skin">
+        /// The UI skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout for the element.
+        /// </param>
+        /// <param name="context">
+        /// The current game context.
+        /// </param>
+        /// <param name="event">
+        /// The event that was raised.
+        /// </param>
+        /// <returns>
+        /// Whether or not this UI element handled the event.
+        /// </returns>
+        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        {
+            foreach (var kv in this.GetChildrenWithLayouts(skin, layout))
             {
-                var list = this.m_Items.Select(x => new ListEntry { Item = x }).ToList();
-                var current = list.IndexOf(list.First(x => this.SelectedItem == x.Item));
-                if (upPressed)
+                if (kv.Item.HandleEvent(skin, kv.Layout.Value, context, @event))
                 {
-                    current -= 1;
-                }
-                else if (downPressed)
-                {
-                    current += 1;
-                }
-
-                if (current >= 0 && current < list.Count)
-                {
-                    this.SelectedItem = list[current].Item;
+                    return true;
                 }
             }
+
+            var keyPressEvent = @event as KeyPressEvent;
+            if (keyPressEvent != null)
+            {
+                var upPressed = keyPressEvent.Key == Keys.Up;
+                var downPressed = keyPressEvent.Key == Keys.Down;
+                if (this.SelectedItem != null && (upPressed || downPressed))
+                {
+                    var list = this.m_Items.Select(x => new ListEntry { Item = x }).ToList();
+                    var current = list.IndexOf(list.First(x => this.SelectedItem == x.Item));
+                    if (upPressed)
+                    {
+                        current -= 1;
+                    }
+                    else if (downPressed)
+                    {
+                        current += 1;
+                    }
+
+                    if (current >= 0 && current < list.Count)
+                    {
+                        this.SelectedItem = list[current].Item;
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

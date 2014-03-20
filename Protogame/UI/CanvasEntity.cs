@@ -3,16 +3,19 @@ namespace Protogame
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Xna.Framework;
 
     /// <summary>
     /// The canvas entity.
     /// </summary>
-    public class CanvasEntity : Entity
+    public class CanvasEntity : Entity, IHasCanvases
     {
         /// <summary>
         /// The m_ skin.
         /// </summary>
         private readonly ISkin m_Skin;
+
+        private Rectangle m_LastRenderBounds;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CanvasEntity"/> class.
@@ -80,6 +83,8 @@ namespace Protogame
                 return;
             }
 
+            this.m_LastRenderBounds = gameContext.Window.ClientBounds;
+
             base.Render(gameContext, renderContext);
 
             if (this.Canvas != null)
@@ -127,6 +132,20 @@ namespace Protogame
             if (stealFocus)
             {
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Gets the Canvas objects.
+        /// </summary>
+        /// <value>
+        /// The Canvas objects.
+        /// </value>
+        public IEnumerable<KeyValuePair<Canvas, Rectangle>> Canvases
+        {
+            get
+            {
+                return new[] { new KeyValuePair<Canvas, Rectangle>(this.Canvas, this.m_LastRenderBounds) };
             }
         }
     }

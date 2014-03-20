@@ -147,27 +147,63 @@ namespace Protogame
         public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
             this.UpdateCounter++;
-            var mouse = Mouse.GetState();
-            var leftPressed = mouse.LeftChanged(this) == ButtonState.Pressed;
-            if (layout.Contains(mouse.X, mouse.Y) && leftPressed)
-            {
-                this.Focus();
-            }
+        }
 
-            var keyboard = Keyboard.GetState();
-            if (this.Focused)
+        /// <summary>
+        /// Requests that the UI container handle the specified event or return false.
+        /// </summary>
+        /// <param name="skin">
+        /// The UI skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout for the element.
+        /// </param>
+        /// <param name="context">
+        /// The current game context.
+        /// </param>
+        /// <param name="event">
+        /// The event that was raised.
+        /// </param>
+        /// <returns>
+        /// Whether or not this UI element handled the event.
+        /// </returns>
+        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        {
+            var mousePressEvent = @event as MousePressEvent;
+
+            if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
             {
-                this.m_KeyboardReader.Process(keyboard, gameTime, this.m_TextBuilder);
-                if (this.m_TextBuilder.ToString() != this.m_PreviousValue)
+                if (layout.Contains(mousePressEvent.MouseState.X, mousePressEvent.MouseState.Y))
                 {
-                    if (this.TextChanged != null)
-                    {
-                        this.TextChanged(this, new EventArgs());
-                    }
-                }
+                    this.Focus();
 
-                this.m_PreviousValue = this.m_TextBuilder.ToString();
+                    return true;
+                }
             }
+
+            var keyEvent = @event as KeyboardEvent;
+
+            if (keyEvent != null)
+            {
+                var keyboard = keyEvent.KeyboardState;
+                if (this.Focused)
+                {
+                    this.m_KeyboardReader.Process(keyboard, context.GameTime, this.m_TextBuilder);
+                    if (this.m_TextBuilder.ToString() != this.m_PreviousValue)
+                    {
+                        if (this.TextChanged != null)
+                        {
+                            this.TextChanged(this, new EventArgs());
+                        }
+                    }
+
+                    this.m_PreviousValue = this.m_TextBuilder.ToString();
+
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

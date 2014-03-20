@@ -191,29 +191,52 @@ namespace Protogame
         /// </param>
         public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
-            var mouse = Mouse.GetState();
-            if (mouse.LeftChanged(this.GetHashCode()) == ButtonState.Pressed)
+        }
+
+        /// <summary>
+        /// Requests that the UI container handle the specified event or return false.
+        /// </summary>
+        /// <param name="skin">
+        /// The UI skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout for the element.
+        /// </param>
+        /// <param name="context">
+        /// The current game context.
+        /// </param>
+        /// <param name="event">
+        /// The event that was raised.
+        /// </param>
+        /// <returns>
+        /// Whether or not this UI element handled the event.
+        /// </returns>
+        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        {
+            var mousePressEvent = @event as MousePressEvent;
+
+            if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
             {
                 this.Focus();
             }
 
             foreach (var kv in this.LabelsWithLayouts(layout))
             {
-                kv.Key.Update(skin, kv.Value, gameTime, ref stealFocus);
-                if (stealFocus)
+                if (kv.Key.HandleEvent(skin, kv.Value, context, @event))
                 {
-                    return;
+                    return true;
                 }
             }
 
             foreach (var kv in this.ChildrenWithLayouts(layout))
             {
-                kv.Key.Update(skin, kv.Value, gameTime, ref stealFocus);
-                if (stealFocus)
+                if (kv.Key.HandleEvent(skin, kv.Value, context, @event))
                 {
-                    return;
+                    return true;
                 }
             }
+
+            return false;
         }
     }
 }

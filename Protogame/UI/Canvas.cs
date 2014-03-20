@@ -133,5 +133,33 @@ namespace Protogame
                 this.m_Child.Update(skin, layout, gameTime, ref stealFocus);
             }
         }
+        
+        /// <summary>
+        /// Requests that the UI container handle the specified event or return false.
+        /// </summary>
+        /// <param name="skin">
+        /// The UI skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout for the element.
+        /// </param>
+        /// <param name="context">
+        /// The current game context.
+        /// </param>
+        /// <param name="event">
+        /// The event that was raised.
+        /// </param>
+        /// <returns>
+        /// Whether or not this UI element handled the event.
+        /// </returns>
+        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        {
+            if (this.m_Child != null)
+            {
+                return this.m_Child.HandleEvent(skin, layout, context, @event);
+            }
+
+            return false;
+        }
     }
 }

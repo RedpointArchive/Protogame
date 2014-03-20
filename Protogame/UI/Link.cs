@@ -110,23 +110,56 @@ namespace Protogame
         /// </param>
         public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
-            var mouse = Mouse.GetState();
-            if (layout.Contains(mouse.X, mouse.Y))
-            {
-                if (mouse.LeftButton == ButtonState.Pressed)
-                {
-                    if (this.Click != null && this.State != LinkState.Clicked)
-                    {
-                        this.Click(this, new EventArgs());
-                    }
+        }
 
-                    this.State = LinkState.Clicked;
-                }
-            }
-            else
+        /// <summary>
+        /// Requests that the UI container handle the specified event or return false.
+        /// </summary>
+        /// <param name="skin">
+        /// The UI skin.
+        /// </param>
+        /// <param name="layout">
+        /// The layout for the element.
+        /// </param>
+        /// <param name="context">
+        /// The current game context.
+        /// </param>
+        /// <param name="event">
+        /// The event that was raised.
+        /// </param>
+        /// <returns>
+        /// Whether or not this UI element handled the event.
+        /// </returns>
+        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        {
+            if (@event is MousePressEvent)
             {
+                if (!layout.Contains((@event as MouseEvent).MouseState.X, (@event as MouseEvent).MouseState.Y))
+                {
+                    return false;
+                }
+
+                this.State = LinkState.Clicked;
+
+                if (this.Click != null)
+                {
+                    this.Click(this, new EventArgs());
+                }
+
+                return true;
+            }
+
+            if (@event is MouseReleaseEvent)
+            {
+                if (!layout.Contains((@event as MouseEvent).MouseState.X, (@event as MouseEvent).MouseState.Y))
+                {
+                    return false;
+                }
+
                 this.State = LinkState.None;
             }
+
+            return false;
         }
     }
 }
