@@ -37,6 +37,13 @@
         public void Acknowledge(int count)
         {
             var remaining = this.m_CurrentCounter - count;
+            if (remaining < 0)
+            {
+                this.m_CurrentCounter = count;
+                this.m_Replays.Clear();
+                return;
+            }
+
             var amountToRemove = this.m_Replays.Count - remaining;
             if (amountToRemove < 0)
             {
