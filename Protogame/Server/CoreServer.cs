@@ -25,6 +25,8 @@ namespace Protogame
 
         private bool m_HasSetup;
 
+        private bool m_Stopping;
+
         public CoreServer(IKernel kernel)
         {
             this.m_Kernel = kernel;
@@ -67,6 +69,14 @@ namespace Protogame
             private set;
         }
 
+        public bool Running
+        {
+            get
+            {
+                return !this.m_Stopping;
+            }
+        }
+
         public void Dispose()
         {
             // TODO: Call dispose on the current world.
@@ -91,6 +101,11 @@ namespace Protogame
             }
         }
 
+        public void Stop()
+        {
+            this.m_Stopping = true;
+        }
+
         public void Run()
         {
             if (!this.m_HasSetup)
@@ -102,7 +117,7 @@ namespace Protogame
 
             this.m_AnalyticsEngine.LogGameplayEvent("Server:Start");
 
-            while (true)
+            while (!this.m_Stopping)
             {
                 this.m_TickRegulator.WaitUntilReady();
 
