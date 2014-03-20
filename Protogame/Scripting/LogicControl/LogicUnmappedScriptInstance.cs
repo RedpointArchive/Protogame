@@ -13,10 +13,13 @@ namespace LogicControl
 
         private readonly List<LogicFunction> m_Functions;
 
+        private readonly Dictionary<string, Func<object[], object>> m_ApplicationFunctions; 
+
         public LogicUnmappedScriptInstance(List<LogicStructure> logicStructures, List<LogicFunction> logicFunctions)
         {
             this.m_Structures = logicStructures;
             this.m_Functions = logicFunctions;
+            this.m_ApplicationFunctions = new Dictionary<string, Func<object[], object>>();
         }
 
         public Dictionary<string, object> Execute(string name, Dictionary<string, object> semanticInputs)
@@ -24,6 +27,7 @@ namespace LogicControl
             var executionState = new LogicExecutionState();
             executionState.Structures = this.m_Structures;
             executionState.Functions = this.m_Functions;
+            executionState.AppFunctions = this.m_ApplicationFunctions;
 
             var function = this.m_Functions.First(x => x.Name == name);
 
@@ -112,6 +116,11 @@ namespace LogicControl
             }
 
             return semanticInputs;
+        }
+
+        public void RegisterApplicationFunction(string functionName, Func<object[], object> callback)
+        {
+            this.m_ApplicationFunctions[functionName] = callback;
         }
     }
 }

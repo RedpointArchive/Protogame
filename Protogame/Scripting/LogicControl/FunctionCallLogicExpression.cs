@@ -101,8 +101,12 @@ namespace LogicControl
                     return Matrix.CreateScale(Convert.ToSingle(values[0]));
                 case "pi":
                     return MathHelper.Pi;
-                case "rand":
-                    return (float)state.Random.NextDouble();
+                default:
+                    if (state.AppFunctions.ContainsKey(this.Name))
+                    {
+                        return state.AppFunctions[this.Name](values);
+                    }
+                    break;
             }
 
             var userFunction = state.Functions.FirstOrDefault(x => x.Name == this.Name);

@@ -8,7 +8,6 @@ namespace LogicControl
         public LogicExecutionState()
         {
             this.Variables = new Dictionary<string, object>();
-            this.Random = new Random();
         }
 
         public List<LogicFunction> Functions { get; set; }
@@ -21,7 +20,7 @@ namespace LogicControl
 
         public Dictionary<string, object> Variables { get; set; }
 
-        public Random Random { get; set; }
+        public Dictionary<string, Func<object[], object>> AppFunctions { get; set; }
 
         public void Return(object result)
         {

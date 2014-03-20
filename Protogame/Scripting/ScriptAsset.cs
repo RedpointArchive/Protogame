@@ -110,6 +110,15 @@ namespace Protogame
         }
 
         /// <summary>
+        /// Creates a new instance of the script which can then be executed.
+        /// </summary>
+        /// <returns>A new instance of the script which can then be executed.</returns>
+        public ScriptAssetInstance CreateInstance()
+        {
+            return new ScriptAssetInstance(this.m_ScriptEngine.GetNewInstance());
+        }
+
+        /// <summary>
         /// Execute a specified scripting method with semantic-based arguments and return the results.
         /// </summary>
         /// <param name="functionName">
@@ -123,7 +132,7 @@ namespace Protogame
         /// </returns>
         public Dictionary<string, object> Execute(string functionName, Dictionary<string, object> semanticArguments)
         {
-            return this.m_ScriptEngine.Execute(functionName, semanticArguments);
+            return this.CreateInstance().Execute(functionName, semanticArguments);
         }
 
         /// <summary>
@@ -149,7 +158,7 @@ namespace Protogame
             string resultSemanticName,
             Dictionary<string, object> semanticArguments)
         {
-            return this.m_ScriptEngine.Execute<TOutput>(functionName, resultSemanticName, semanticArguments);
+            return this.CreateInstance().Execute<TOutput>(functionName, resultSemanticName, semanticArguments);
         }
     }
 }

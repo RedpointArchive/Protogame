@@ -1,7 +1,5 @@
 ﻿namespace Protogame
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// An interface which represents a script engine.
     /// </summary>
@@ -13,37 +11,9 @@
     public interface IScriptEngine
     {
         /// <summary>
-        /// Execute a specified scripting method with semantic-based arguments and return the results.
+        /// Creates a new instance of the specified script engine and returns it.
         /// </summary>
-        /// <param name="functionName">
-        /// The name of the script function to execute.
-        /// </param>
-        /// <param name="semanticArguments">
-        /// The semantic-based arguments to pass to the script function.
-        /// </param>
-        /// <returns>
-        /// A dictionary of results, where the key is the semantic name associated with the result.
-        /// </returns>
-        Dictionary<string, object> Execute(string functionName, Dictionary<string, object> semanticArguments);
-
-        /// <summary>
-        /// Execute a specified scripting method with semantic-based arguments and return a single result.
-        /// </summary>
-        /// <typeparam name="TOutput">
-        /// The C# type that the result should be as.
-        /// </typeparam>
-        /// <param name="functionName">
-        /// The name of the script function to execute.
-        /// </param>
-        /// <param name="resultSemanticName">
-        /// The semantic name of the return value to return.
-        /// </param>
-        /// <param name="semanticArguments">
-        /// The semantic-based arguments to pass to the script function.
-        /// </param>
-        /// <returns>
-        /// A dictionary of results, where the key is the semantic name associated with the result.
-        /// </returns>
-        TOutput Execute<TOutput>(string functionName, string resultSemanticName, Dictionary<string, object> semanticArguments);
+        /// <returns>A new instance of the specified script engine.</returns>
+        IScriptEngineInstance GetNewInstance();
     }
 }

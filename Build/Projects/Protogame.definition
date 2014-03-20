@@ -340,6 +340,7 @@
     <Compile Include="Scripting\GOLD\Token.cs" />
     <Compile Include="Scripting\GOLD\TokenList.cs" />
     <Compile Include="Scripting\IScriptEngine.cs" />
+    <Compile Include="Scripting\IScriptEngineInstance.cs" />
     <Compile Include="Scripting\LogicControl\AdditionLogicExpression.cs" />
     <Compile Include="Scripting\LogicControl\AssignLogicStatement.cs" />
     <Compile Include="Scripting\LogicControl\BlockLogicStatement.cs" />
@@ -376,9 +377,11 @@
     <Compile Include="Scripting\LogicControlScriptAssetLoader.cs" />
     <Compile Include="Scripting\LogicControlScriptAssetSaver.cs" />
     <Compile Include="Scripting\LogicControlScriptEngine.cs" />
+    <Compile Include="Scripting\LogicControlScriptEngineInstance.cs" />
     <Compile Include="Scripting\ProtogameScriptIoCModule.cs" />
     <Compile Include="Scripting\RawLogicControlScriptLoadStrategy.cs" />
     <Compile Include="Scripting\ScriptAsset.cs" />
+    <Compile Include="Scripting\ScriptAssetInstance.cs" />
     <Compile Include="Server\CoreServer.cs" />
     <Compile Include="Server\DefaultServerContext.cs" />
     <Compile Include="Server\DefaultServerWorldManager.cs" />
