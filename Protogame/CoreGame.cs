@@ -114,14 +114,14 @@ namespace Protogame
             }
 
             this.m_AnalyticsEngine = kernel.TryGet<IAnalyticsEngine>();
-            if (this.m_Profiler == null)
+            if (this.m_AnalyticsEngine == null)
             {
                 kernel.Bind<IAnalyticsEngine>().To<NullAnalyticsEngine>();
                 this.m_AnalyticsEngine = kernel.Get<IAnalyticsEngine>();
             }
 
             this.m_AnalyticsInitializer = kernel.TryGet<IAnalyticsInitializer>();
-            if (this.m_Profiler == null)
+            if (this.m_AnalyticsInitializer == null)
             {
                 kernel.Bind<IAnalyticsInitializer>().To<NullAnalyticsInitializer>();
                 this.m_AnalyticsInitializer = kernel.Get<IAnalyticsInitializer>();
