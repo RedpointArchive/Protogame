@@ -1,6 +1,7 @@
 namespace LogicControl
 {
     using System;
+    using System.Linq.Expressions;
 
     public class AssignLogicStatement : LogicStatement
     {
@@ -49,6 +50,11 @@ namespace LogicControl
         public override void Execute(LogicExecutionState state)
         {
             this.AssignmentTarget.Assign(state, this.Expression.Result(state));
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return this.AssignmentTarget.Compile(stateParameterExpression, returnTarget, this.Expression);
         }
     }
 }

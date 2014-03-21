@@ -2,6 +2,8 @@ namespace LogicControl
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
 
     public class LogicFunction : TruthfulLogicExpression
     {
@@ -28,6 +30,11 @@ namespace LogicControl
             }
 
             return state.Result;
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return Expression.Block(this.Statements.Select(x => x.Compile(stateParameterExpression, returnTarget)));
         }
     }
 }

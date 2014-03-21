@@ -2,6 +2,8 @@ namespace LogicControl
 {
     using System;
     using System.Linq;
+    using System.Linq.Expressions;
+    using Expr = System.Linq.Expressions.Expression;
 
     public class LookupLogicExpression : TruthfulLogicExpression
     {
@@ -27,6 +29,28 @@ namespace LogicControl
             }
 
             throw new InvalidCastException();
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+
+            Expression<Func<LogicStructureInstance, string, LogicField>> lookupField =
+                (x, z) => x.Fields.Keys.First(y => y.Name == z);
+
+            return
+                Expr.Property(
+                    Expr.Property(
+                        Expr.Convert(
+                            this.Expression.Compile(stateParameterExpression, returnTarget),
+                            typeof(LogicStructureInstance)),
+                        "Fields"),
+                    "Item",
+                    Expr.Invoke(
+                        lookupField,
+                        Expr.Convert(
+                            this.Expression.Compile(stateParameterExpression, returnTarget),
+                            typeof(LogicStructureInstance)),
+                        Expr.Constant(this.Field)));
         }
     }
 }

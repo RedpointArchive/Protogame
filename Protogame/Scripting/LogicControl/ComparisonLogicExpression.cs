@@ -1,6 +1,7 @@
 namespace LogicControl
 {
     using System;
+    using System.Linq.Expressions;
     using Microsoft.Xna.Framework;
 
     public class ComparisonLogicExpression : LogicExpression
@@ -26,16 +27,31 @@ namespace LogicControl
             return this.Truthful(state);
         }
 
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return
+                Expression.Invoke(
+                    (Expression<Func<object, string, object, bool>>)((a, op, b) => DoComparison(a, op, b)),
+                    Expression.Convert(this.LeftHandExpression.Compile(stateParameterExpression, returnTarget), typeof(object)),
+                    Expression.Constant(this.Op),
+                    Expression.Convert(this.RightHandExpression.Compile(stateParameterExpression, returnTarget), typeof(object)));
+        }
+
         public override bool Truthful(LogicExecutionState state)
         {
             var leftObj = this.LeftHandExpression.Result(state);
             var rightObj = this.RightHandExpression.Result(state);
 
+            return DoComparison(leftObj, this.Op, rightObj);
+        }
+
+        public static bool DoComparison(object leftObj, string op, object rightObj)
+        {
             if (leftObj is IComparable && rightObj is IComparable)
             {
                 var comparison = ((IComparable)leftObj).CompareTo(rightObj);
 
-                switch (this.Op)
+                switch (op)
                 {
                     case ">":
                         return comparison > 0;
@@ -56,7 +72,7 @@ namespace LogicControl
 
             if (leftObj is Vector2 && rightObj is Vector2)
             {
-                switch (this.Op)
+                switch (op)
                 {
                     case "==":
                         return (Vector2)leftObj == (Vector2)rightObj;
@@ -69,7 +85,7 @@ namespace LogicControl
 
             if (leftObj is Vector3 && rightObj is Vector3)
             {
-                switch (this.Op)
+                switch (op)
                 {
                     case "==":
                         return (Vector3)leftObj == (Vector3)rightObj;
@@ -82,7 +98,7 @@ namespace LogicControl
 
             if (leftObj is Vector4 && rightObj is Vector4)
             {
-                switch (this.Op)
+                switch (op)
                 {
                     case "==":
                         return (Vector4)leftObj == (Vector4)rightObj;
@@ -95,7 +111,7 @@ namespace LogicControl
 
             if (leftObj is Matrix && rightObj is Matrix)
             {
-                switch (this.Op)
+                switch (op)
                 {
                     case "==":
                         return (Matrix)leftObj == (Matrix)rightObj;
@@ -106,7 +122,7 @@ namespace LogicControl
                 throw new InvalidOperationException();
             }
 
-            switch (this.Op)
+            switch (op)
             {
                 case "==":
                     return object.Equals(leftObj, rightObj);

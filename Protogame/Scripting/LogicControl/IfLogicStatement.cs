@@ -1,5 +1,7 @@
 namespace LogicControl
 {
+    using System.Linq.Expressions;
+
     public class IfLogicStatement : LogicStatement
     {
         public IfLogicStatement(LogicExpression condition, LogicStatement statement)
@@ -18,6 +20,13 @@ namespace LogicControl
             {
                 this.Statement.Execute(state);
             }
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return Expression.IfThen(
+                this.Condition.Compile(stateParameterExpression, returnTarget),
+                this.Statement.Compile(stateParameterExpression, returnTarget));
         }
     }
 }

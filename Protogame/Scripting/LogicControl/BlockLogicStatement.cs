@@ -1,6 +1,8 @@
 namespace LogicControl
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
 
     public class BlockLogicStatement : LogicStatement
     {
@@ -22,6 +24,11 @@ namespace LogicControl
                     return;
                 }
             }
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return Expression.Block(this.Statements.Select(x => x.Compile(stateParameterExpression, returnTarget)));
         }
     }
 }

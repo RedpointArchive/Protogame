@@ -2,6 +2,7 @@ namespace LogicControl
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
 
     public class AdditionLogicExpression : TruthfulLogicExpression
     {
@@ -21,14 +22,29 @@ namespace LogicControl
             this.RightHandExpression = rightHandExpression;
         }
 
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return
+                Expression.Invoke(
+                    (Expression<Func<object, string, object, object>>)((a, op, b) => DoAddition(a, op, b)),
+                    Expression.Convert(this.LeftHandExpression.Compile(stateParameterExpression, returnTarget), typeof(object)),
+                    Expression.Constant(this.Op),
+                    Expression.Convert(this.RightHandExpression.Compile(stateParameterExpression, returnTarget), typeof(object)));
+        }
+
         public override object Result(LogicExecutionState state)
         {
             var leftObj = this.LeftHandExpression.Result(state);
             var rightObj = this.RightHandExpression.Result(state);
 
+            return DoAddition(leftObj, this.Op, rightObj);
+        }
+        
+        public static object DoAddition(object leftObj, string op, object rightObj)
+        {
             if (leftObj is float && rightObj is float)
             {
-                switch (this.Op)
+                switch (op)
                 {
                     case "+":
                         return (float)leftObj + (float)rightObj;
@@ -41,7 +57,7 @@ namespace LogicControl
 
             if (leftObj is string)
             {
-                switch (this.Op)
+                switch (op)
                 {
                     case "+":
                         return (string)leftObj + rightObj;
@@ -52,7 +68,7 @@ namespace LogicControl
 
             if (rightObj is string)
             {
-                switch (this.Op)
+                switch (op)
                 {
                     case "+":
                         return leftObj + (string)rightObj;
@@ -61,7 +77,7 @@ namespace LogicControl
                 }
             }
 
-            switch (this.Op)
+            switch (op)
             {
                 case "+":
                     return LogicBuiltins.Add(new List<object> { leftObj, rightObj });

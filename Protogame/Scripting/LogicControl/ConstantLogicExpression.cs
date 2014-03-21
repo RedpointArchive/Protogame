@@ -1,6 +1,7 @@
 namespace LogicControl
 {
     using System;
+    using System.Linq.Expressions;
 
     public class ConstantLogicExpression : TruthfulLogicExpression
     {
@@ -24,6 +25,11 @@ namespace LogicControl
         public override object Result(LogicExecutionState state)
         {
             return this.Value;
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return Expression.Constant(this.Value);
         }
     }
 }

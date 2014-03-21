@@ -3,7 +3,7 @@ namespace LogicControl
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Cryptography.X509Certificates;
+    using System.Linq.Expressions;
     using Microsoft.Xna.Framework;
 
     public class FunctionCallLogicExpression : TruthfulLogicExpression
@@ -20,16 +20,42 @@ namespace LogicControl
 
         public override object Result(LogicExecutionState state)
         {
-            var structType = state.Structures.FirstOrDefault(x => x.Name == this.Name);
+            return DoCall(this.Name, this.Arguments.Select(x => x.Result(state)), state);
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            Expression<Func<string, IEnumerable<object>, LogicExecutionState, object>> callInvoke =
+                (name, arguments, state) => DoCall(name, arguments, state);
+
+            var addMethod = typeof(List<object>).GetMethod("Add");
+
+            var elementInits = this.Arguments.Select(x => Expression.ElementInit(addMethod, Expression.Convert(x.Compile(stateParameterExpression, returnTarget), typeof(object)))).ToList();
+
+            var newList = Expression.New(typeof(List<object>));
+
+            var listInit = elementInits.Count == 0 ? (Expression)newList : Expression.ListInit(newList, elementInits);
+
+            return
+                Expression.Invoke(
+                    callInvoke,
+                    Expression.Constant(this.Name),
+                    listInit,
+                    stateParameterExpression);
+        }
+
+        public static object DoCall(string name, IEnumerable<object> arguments, LogicExecutionState state)
+        {
+            var structType = state.Structures.FirstOrDefault(x => x.Name == name);
 
             if (structType != null)
             {
                 return new LogicStructureInstance(structType);
             }
 
-            var values = this.Arguments.Select(x => x.Result(state)).ToList();
+            var values = arguments.ToList();
 
-            switch (this.Name)
+            switch (name)
             {
                 case "float":
                     return Convert.ToSingle(values[0]);
@@ -55,7 +81,7 @@ namespace LogicControl
                     return new Matrix();
             }
 
-            switch (this.Name)
+            switch (name)
             {
                 case "max":
                     return LogicBuiltins.Max(values);
@@ -102,21 +128,21 @@ namespace LogicControl
                 case "pi":
                     return MathHelper.Pi;
                 default:
-                    if (state.AppFunctions.ContainsKey(this.Name))
+                    if (state.AppFunctions.ContainsKey(name))
                     {
-                        return state.AppFunctions[this.Name](values.ToArray());
+                        return state.AppFunctions[name](values.ToArray());
                     }
                     break;
             }
 
-            var userFunction = state.Functions.FirstOrDefault(x => x.Name == this.Name);
+            var userFunction = state.Functions.FirstOrDefault(x => x.Name == name);
 
             if (userFunction != null)
             {
                 throw new NotImplementedException();
             }
 
-            throw new InvalidOperationException("Function missing: " + this.Name);
+            throw new InvalidOperationException("Function missing: " + name);
         }
     }
 }

@@ -1,5 +1,7 @@
 namespace LogicControl
 {
+    using System.Linq.Expressions;
+
     public class WhileLogicStatement : LogicStatement
     {
         public WhileLogicStatement(LogicExpression condition, LogicStatement statement)
@@ -23,6 +25,19 @@ namespace LogicControl
                     return;
                 }
             }
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            var breakLabel = Expression.Label(Expression.Label());
+            return
+                Expression.Block(
+                    Expression.Loop(
+                        Expression.IfThenElse(
+                            this.Condition.Compile(stateParameterExpression, returnTarget),
+                            this.Statement.Compile(stateParameterExpression, returnTarget),
+                            Expression.Break(breakLabel.Target))),
+                    breakLabel);
         }
     }
 }

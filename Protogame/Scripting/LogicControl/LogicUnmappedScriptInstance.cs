@@ -3,9 +3,7 @@ namespace LogicControl
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using Microsoft.Xna.Framework;
-    using Newtonsoft.Json.Schema;
 
     public class LogicUnmappedScriptInstance
     {
@@ -13,13 +11,16 @@ namespace LogicControl
 
         private readonly List<LogicFunction> m_Functions;
 
-        private readonly Dictionary<string, Func<object[], object>> m_ApplicationFunctions; 
+        private readonly Dictionary<string, Func<object[], object>> m_ApplicationFunctions;
+
+        private readonly Dictionary<string, Func<LogicExecutionState, object>> m_CompiledFunctions;
 
         public LogicUnmappedScriptInstance(List<LogicStructure> logicStructures, List<LogicFunction> logicFunctions)
         {
             this.m_Structures = logicStructures;
             this.m_Functions = logicFunctions;
             this.m_ApplicationFunctions = new Dictionary<string, Func<object[], object>>();
+            this.m_CompiledFunctions = new Dictionary<string, Func<LogicExecutionState, object>>();
         }
 
         public Dictionary<string, object> Execute(string name, Dictionary<string, object> semanticInputs)
@@ -57,7 +58,14 @@ namespace LogicControl
                 }
             }
 
-            var result = function.Result(executionState);
+            Func<LogicExecutionState, object> compiledFunc;
+            if (!this.m_CompiledFunctions.TryGetValue(name, out compiledFunc))
+            {
+                compiledFunc = LogicScriptCompiler.Compile(function);
+                this.m_CompiledFunctions[name] = compiledFunc;
+            }
+
+            var result = compiledFunc(executionState);
 
             if (function.ReturnSemantic != null)
             {

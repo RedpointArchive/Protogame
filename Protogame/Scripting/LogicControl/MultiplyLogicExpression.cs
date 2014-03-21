@@ -2,6 +2,7 @@ namespace LogicControl
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
     using Microsoft.Xna.Framework;
 
     public class MultiplyLogicExpression : TruthfulLogicExpression
@@ -19,14 +20,29 @@ namespace LogicControl
             this.RightHandExpression = rightHandExpression;
         }
 
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return
+                Expression.Invoke(
+                    (Expression<Func<object, string, object, object>>)((a, op, b) => DoMultiply(a, op, b)),
+                    Expression.Convert(this.LeftHandExpression.Compile(stateParameterExpression, returnTarget), typeof(object)),
+                    Expression.Constant(this.Op),
+                    Expression.Convert(this.RightHandExpression.Compile(stateParameterExpression, returnTarget), typeof(object)));
+        }
+
         public override object Result(LogicExecutionState state)
         {
             var leftObj = this.LeftHandExpression.Result(state);
             var rightObj = this.RightHandExpression.Result(state);
 
+            return DoMultiply(leftObj, this.Op, rightObj);
+        }
+
+        public static object DoMultiply(object leftObj, string op, object rightObj)
+        {
             if (leftObj is float && rightObj is float)
             {
-                switch (this.Op)
+                switch (op)
                 {
                     case "*":
                         return (float)leftObj * (float)rightObj;
@@ -37,7 +53,7 @@ namespace LogicControl
                 }
             }
 
-            if (this.Op == "*")
+            if (op == "*")
             {
                 if ((leftObj is Vector2 || leftObj is Vector3 || leftObj is Vector4) && rightObj is Matrix)
                 {
@@ -50,7 +66,7 @@ namespace LogicControl
                 }
             }
 
-            switch (this.Op)
+            switch (op)
             {
                 case "*":
                     return LogicBuiltins.Multiply(new List<object> { leftObj, rightObj });

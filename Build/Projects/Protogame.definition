@@ -365,6 +365,7 @@
     <Compile Include="Scripting\LogicControl\LogicParameter.cs" />
     <Compile Include="Scripting\LogicControl\LogicParser.cs" />
     <Compile Include="Scripting\LogicControl\LogicScript.cs" />
+    <Compile Include="Scripting\LogicControl\LogicScriptCompiler.cs" />
     <Compile Include="Scripting\LogicControl\LogicStatement.cs" />
     <Compile Include="Scripting\LogicControl\LogicStructure.cs" />
     <Compile Include="Scripting\LogicControl\LogicUnmappedScriptInstance.cs" />

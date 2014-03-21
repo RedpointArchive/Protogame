@@ -2,6 +2,7 @@ namespace LogicControl
 {
     using System;
     using System.Linq;
+    using System.Linq.Expressions;
 
     public class FieldLogicAssignmentTarget : LogicAssignmentTarget
     {
@@ -34,6 +35,38 @@ namespace LogicControl
         public override LogicExpression GetReadExpression()
         {
             return new LookupLogicExpression(this.Target, this.Field);
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget, LogicExpression valueExpression)
+        {
+            var value = this.Target.Compile(stateParameterExpression, returnTarget);
+            var convertedValue = Expression.Convert(value, typeof(LogicStructureInstance));
+
+            var valueVariable = Expression.Variable(typeof(LogicStructureInstance), "value");
+            var field = Expression.Variable(typeof(LogicField), "field");
+
+            Expression<Func<LogicStructureInstance, string, LogicField>> lookupField =
+                (x, z) => x.Fields.Keys.First(y => y.Name == z);
+
+            var assignValue = Expression.Assign(valueVariable, convertedValue);
+            var assignFieldName = Expression.Assign(
+                field,
+                Expression.Invoke(lookupField, valueVariable, Expression.Constant(this.Field)));
+            var assignField =
+                Expression.Assign(
+                    Expression.Property(Expression.Property(valueVariable, "Fields"), "Item", field),
+                    Expression.Convert(valueExpression.Compile(stateParameterExpression, returnTarget), typeof(object)));
+            var assignFieldSet =
+                Expression.Assign(
+                    Expression.Property(Expression.Property(valueVariable, "FieldsSet"), "Item", field),
+                    Expression.Constant(true));
+
+            return Expression.Block(
+                new[] { valueVariable, field },
+                assignValue,
+                assignFieldName,
+                assignField,
+                assignFieldSet);
         }
     }
 }

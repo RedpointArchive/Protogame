@@ -1,5 +1,7 @@
 namespace LogicControl
 {
+    using System.Linq.Expressions;
+
     public class IfElseLogicStatement : LogicStatement
     {
         public IfElseLogicStatement(LogicExpression condition, LogicStatement statement, LogicStatement elseStatement)
@@ -25,6 +27,14 @@ namespace LogicControl
             {
                 this.ElseStatement.Execute(state);
             }
+        }
+
+        public override Expression Compile(ParameterExpression stateParameterExpression, LabelTarget returnTarget)
+        {
+            return Expression.IfThenElse(
+                Expression.Convert(this.Condition.Compile(stateParameterExpression, returnTarget), typeof(bool)),
+                this.Statement.Compile(stateParameterExpression, returnTarget),
+                this.ElseStatement.Compile(stateParameterExpression, returnTarget));
         }
     }
 }
