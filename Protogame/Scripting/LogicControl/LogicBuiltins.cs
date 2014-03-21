@@ -6,7 +6,7 @@ namespace LogicControl
 
     public static class LogicBuiltins
     {
-    public static object Max(params object[] values)
+    public static object Max(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -38,7 +38,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Max");
     }
-        public static object Min(params object[] values)
+        public static object Min(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -70,7 +70,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Min");
     }
-        public static object Lerp(params object[] values)
+        public static object Lerp(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -114,7 +114,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Lerp");
     }
-        public static object Sin(params object[] values)
+        public static object Sin(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -164,7 +164,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Sin");
     }
-        public static object Cos(params object[] values)
+        public static object Cos(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -214,7 +214,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Cos");
     }
-        public static object Tan(params object[] values)
+        public static object Tan(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -264,7 +264,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Tan");
     }
-        public static object Asin(params object[] values)
+        public static object Asin(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -314,7 +314,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Asin");
     }
-        public static object Acos(params object[] values)
+        public static object Acos(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -364,7 +364,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Acos");
     }
-        public static object Atan(params object[] values)
+        public static object Atan(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -414,7 +414,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Atan");
     }
-        public static object Atan2(params object[] values)
+        public static object Atan2(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -474,7 +474,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Atan2");
     }
-        public static object Abs(params object[] values)
+        public static object Abs(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -524,7 +524,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Abs");
     }
-        public static object Ceiling(params object[] values)
+        public static object Ceiling(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -574,7 +574,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Ceiling");
     }
-        public static object Floor(params object[] values)
+        public static object Floor(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -624,7 +624,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Floor");
     }
-        public static object Round(params object[] values)
+        public static object Round(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -674,7 +674,7 @@ namespace LogicControl
         
         throw new InvalidOperationException("Invalid type for Round");
     }
-        public static object Add(params object[] values)
+        public static object Add(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -706,7 +706,7 @@ namespace LogicControl
                 
         throw new InvalidOperationException("Invalid type for Add");
     }
-        public static object Subtract(params object[] values)
+        public static object Subtract(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -738,7 +738,7 @@ namespace LogicControl
                 
         throw new InvalidOperationException("Invalid type for Subtract");
     }
-        public static object Multiply(params object[] values)
+        public static object Multiply(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -770,7 +770,7 @@ namespace LogicControl
                 
         throw new InvalidOperationException("Invalid type for Multiply");
     }
-        public static object Divide(params object[] values)
+        public static object Divide(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -802,7 +802,7 @@ namespace LogicControl
                 
         throw new InvalidOperationException("Invalid type for Divide");
     }
-        public static object Negate(params object[] values)
+        public static object Negate(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -830,7 +830,7 @@ namespace LogicControl
                 
         throw new InvalidOperationException("Invalid type for Negate");
     }
-        public static object Dot(params object[] values)
+        public static object Dot(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -855,7 +855,7 @@ namespace LogicControl
         }        
         throw new InvalidOperationException("Invalid type for Dot");
     }
-        public static object Cross(params object[] values)
+        public static object Cross(System.Collections.Generic.List<object> values)
     {
     
         if (values[0] is Vector3&&values[1] is Vector3)
@@ -868,7 +868,7 @@ namespace LogicControl
                 
         throw new InvalidOperationException("Invalid type for Cross");
     }
-        public static object Normalize(params object[] values)
+        public static object Normalize(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2)
         {
@@ -890,7 +890,7 @@ namespace LogicControl
         }        
         throw new InvalidOperationException("Invalid type for Normalize");
     }
-        public static object Distance(params object[] values)
+        public static object Distance(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {
@@ -915,7 +915,7 @@ namespace LogicControl
         }        
         throw new InvalidOperationException("Invalid type for Distance");
     }
-        public static object DistanceSquared(params object[] values)
+        public static object DistanceSquared(System.Collections.Generic.List<object> values)
     {
             if (values[0] is Vector2&&values[1] is Vector2)
         {

@@ -52,7 +52,7 @@ namespace LogicControl
     foreach (var def in definitions)
     {
     #>
-    public static object <#=def.Name#>(params object[] values)
+    public static object <#=def.Name#>(System.Collections.Generic.List<object> values)
     {
     <#
     if (def.VectorDirectlySupported || def.MatrixAllowed)

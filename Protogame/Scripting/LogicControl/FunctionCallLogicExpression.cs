@@ -27,7 +27,7 @@ namespace LogicControl
                 return new LogicStructureInstance(structType);
             }
 
-            var values = this.Arguments.Select(x => x.Result(state)).ToArray();
+            var values = this.Arguments.Select(x => x.Result(state)).ToList();
 
             switch (this.Name)
             {
@@ -104,7 +104,7 @@ namespace LogicControl
                 default:
                     if (state.AppFunctions.ContainsKey(this.Name))
                     {
-                        return state.AppFunctions[this.Name](values);
+                        return state.AppFunctions[this.Name](values.ToArray());
                     }
                     break;
             }

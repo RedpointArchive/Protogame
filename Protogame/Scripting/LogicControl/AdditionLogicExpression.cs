@@ -1,6 +1,7 @@
 namespace LogicControl
 {
     using System;
+    using System.Collections.Generic;
 
     public class AdditionLogicExpression : TruthfulLogicExpression
     {
@@ -63,9 +64,9 @@ namespace LogicControl
             switch (this.Op)
             {
                 case "+":
-                    return LogicBuiltins.Add(leftObj, rightObj);
+                    return LogicBuiltins.Add(new List<object> { leftObj, rightObj });
                 case "-":
-                    return LogicBuiltins.Subtract(leftObj, rightObj);
+                    return LogicBuiltins.Subtract(new List<object> { leftObj, rightObj });
                 default:
                     throw new InvalidOperationException();
             }

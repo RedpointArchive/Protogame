@@ -1,6 +1,7 @@
 namespace LogicControl
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.Xna.Framework;
 
     public class MultiplyLogicExpression : TruthfulLogicExpression
@@ -52,9 +53,9 @@ namespace LogicControl
             switch (this.Op)
             {
                 case "*":
-                    return LogicBuiltins.Multiply(leftObj, rightObj);
+                    return LogicBuiltins.Multiply(new List<object> { leftObj, rightObj });
                 case "/":
-                    return LogicBuiltins.Divide(leftObj, rightObj);
+                    return LogicBuiltins.Divide(new List<object> { leftObj, rightObj });
                 default:
                     throw new InvalidOperationException();
             }

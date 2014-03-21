@@ -1,6 +1,7 @@
 namespace LogicControl
 {
     using System;
+    using System.Collections.Generic;
 
     public class UnaryLogicExpression : TruthfulLogicExpression
     {
@@ -32,7 +33,7 @@ namespace LogicControl
             switch (this.Op)
             {
                 case "-":
-                    return LogicBuiltins.Negate(obj);
+                    return LogicBuiltins.Negate(new List<object> { obj });
                 default:
                     throw new InvalidOperationException();
             }
