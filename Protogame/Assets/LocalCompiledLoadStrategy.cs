@@ -108,8 +108,6 @@
                             memory.Seek(0, SeekOrigin.Begin);
                             var serializer = new CompiledAssetSerializer();
                             var result = (CompiledAsset)serializer.Deserialize(memory, null, typeof(CompiledAsset));
-                            Console.WriteLine(
-                                "Decompressed " + name + " from file in " + (DateTime.Now - start).TotalSeconds + "s");
                             return result;
                         }
                     }
