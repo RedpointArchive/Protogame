@@ -65,6 +65,7 @@
             // Create kernel.
             var kernel = new StandardKernel();
             kernel.Load<ProtogameAssetIoCModule>();
+            kernel.Load<ProtogameScriptIoCModule>();
             var services = new GameServiceContainer();
             var assetContentManager = new AssetContentManager(services);
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
@@ -77,6 +78,7 @@
             kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
 
             // The assembly load strategy is required for references.
             // Assets loaded with the assembly load strategy won't have
