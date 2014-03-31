@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace LogicControl
 {
+    using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Runtime.InteropServices;
@@ -309,7 +310,7 @@ namespace LogicControl
                             this.ParseString((string)expression[0].Data));
                     case "NumberLiteral":
                         return new ConstantLogicExpression(
-                            float.Parse((string)expression[0].Data));
+                            float.Parse((string)expression[0].Data, CultureInfo.InvariantCulture.NumberFormat));
                     case "BooleanLiteral":
                         return new ConstantLogicExpression(
                             (string)((Reduction)expression[0].Data)[0].Data == "true");
