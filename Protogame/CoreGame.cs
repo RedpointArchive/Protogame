@@ -97,6 +97,18 @@ namespace Protogame
         /// </param>
         public CoreGame(IKernel kernel)
         {
+#if PLATFORM_MACOS
+            // On Mac, the MonoGame launcher changes the current working
+            // directory which means we can't find any assets.  Change it
+            // back to where Protogame is located (because this is usually
+            // beside the game).
+            var directory = new System.IO.FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).Directory;
+            if (directory != null)
+            {
+                System.Environment.CurrentDirectory = directory.FullName;
+            }
+#endif
+
             this.m_Kernel = kernel;
             this.m_GraphicsDeviceManager = new GraphicsDeviceManager(this);
             this.m_GraphicsDeviceManager.PreparingDeviceSettings +=
