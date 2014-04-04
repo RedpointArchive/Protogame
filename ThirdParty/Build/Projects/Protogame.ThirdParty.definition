@@ -36,7 +36,6 @@
   </Platform>
 
   <Platform Type="MacOS">
-    <Reference Include="MonoMac" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Binary
