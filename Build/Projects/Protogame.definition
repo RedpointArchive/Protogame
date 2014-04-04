@@ -484,7 +484,6 @@
       <Platforms>Windows</Platforms>
     </Content>
     <EmbeddedResource Include="Assets\Effects\Macros.fx" />
-    <EmbeddedResource Include="font.Default.asset" />
     <EmbeddedResource Include="font.Default-Android.bin" />
     <EmbeddedResource Include="font.Default-iOS.bin" />
     <EmbeddedResource Include="font.Default-Linux.bin" />
@@ -499,6 +498,7 @@
     <EmbeddedResource Include="font.Default-WindowsStoreApp.bin" />
     <EmbeddedResource Include="font.Default-Xbox360.bin" />
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
+    <None Include="font.Default.asset" />
     <None Include="Assets\Effects\Template.fx" />
     <None Include="packages.config" />
     <None Include="Properties\AndroidManifest.xml" />
