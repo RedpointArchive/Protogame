@@ -293,7 +293,18 @@ public static class Program
                 RedirectStandardOutput = true, 
                 UseShellExecute = false
             };
-            process.Start();
+
+            try
+            {
+                process.Start();
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                // Protection system may have blocked font compilation.  See T778.
+                Console.WriteLine("WARNING: Font compiler could not be started.");
+                return;
+            }
+
             var output = process.StandardOutput.ReadToEnd().Trim();
             process.WaitForExit();
 
