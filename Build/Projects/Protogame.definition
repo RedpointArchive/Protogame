@@ -19,6 +19,7 @@
     <Reference Include="Protogame.ThirdParty" />
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="Jitter" />
+    <Reference Include="Cloo" />
   </References>
   <Files>
     <Compile Include="Analytics\AnalyticsErrorSeverity.cs" />
@@ -498,8 +499,8 @@
     <EmbeddedResource Include="font.Default-WindowsStoreApp.bin" />
     <EmbeddedResource Include="font.Default-Xbox360.bin" />
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
-    <None Include="font.Default.asset" />
     <None Include="Assets\Effects\Template.fx" />
+    <None Include="font.Default.asset" />
     <None Include="packages.config" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Scripting\LogicControl\Grammar.grm" />

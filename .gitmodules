@@ -16,3 +16,6 @@
 [submodule "ThirdParty/Jitter"]
 	path = ThirdParty/Jitter
 	url = git://github.com/hach-que/Jitter.git
+[submodule "ThirdParty/Cloo"]
+	path = ThirdParty/Cloo
+	url = git://github.com/hach-que/Cloo.git
