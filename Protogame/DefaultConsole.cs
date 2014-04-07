@@ -1,5 +1,6 @@
 namespace Protogame
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -24,12 +25,14 @@ namespace Protogame
         /// <summary>
         /// The m_ default font asset.
         /// </summary>
-        private readonly FontAsset m_DefaultFontAsset;
+        private FontAsset m_DefaultFontAsset;
 
         /// <summary>
         /// The m_ keyboard string reader.
         /// </summary>
         private readonly IKeyboardStringReader m_KeyboardStringReader;
+
+        private readonly IAssetManagerProvider m_AssetManagerProvider;
 
         /// <summary>
         /// The m_ log.
@@ -64,8 +67,8 @@ namespace Protogame
         {
             this.m_2DRenderUtilities = _2DRenderUtilities;
             this.m_KeyboardStringReader = keyboardStringReader;
+            this.m_AssetManagerProvider = assetManagerProvider;
             this.m_Commands = commands;
-            this.m_DefaultFontAsset = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
         }
 
         /// <summary>
@@ -87,6 +90,11 @@ namespace Protogame
         /// </param>
         public void Render(IGameContext gameContext, IRenderContext renderContext)
         {
+            if (this.m_DefaultFontAsset == null)
+            {
+                this.m_DefaultFontAsset = this.m_AssetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            }
+
             if (!this.Open || renderContext.Is3DContext)
             {
                 return;
@@ -111,13 +119,20 @@ namespace Protogame
                 new Vector2(2, 300 - 16), 
                 this.m_Input.ToString(), 
                 this.m_DefaultFontAsset);
-            for (var i = 0; i < this.m_Log.Count; i++)
+            var a = 0;
+            for (var i = Math.Max(0, this.m_Log.Count - 30); i < this.m_Log.Count; i++)
             {
                 this.m_2DRenderUtilities.RenderText(
                     renderContext, 
-                    new Vector2(2, 300 - 32 - i * 16), 
+                    new Vector2(2, 300 - 32 - a * 16), 
                     this.m_Log[this.m_Log.Count - i - 1], 
                     this.m_DefaultFontAsset);
+                a++;
+            }
+
+            if (this.m_Log.Count > 31)
+            {
+                this.m_Log.RemoveRange(0, this.m_Log.Count - 31);
             }
         }
 
@@ -159,6 +174,11 @@ namespace Protogame
                 this.Execute(gameContext, this.Parse(this.m_Input.ToString()));
                 this.m_Input = new StringBuilder();
             }
+        }
+
+        public void Log(string message)
+        {
+            this.m_Log.Add(message);
         }
 
         /// <summary>

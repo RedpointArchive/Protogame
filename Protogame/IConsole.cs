@@ -39,5 +39,11 @@ namespace Protogame
         /// The update context.
         /// </param>
         void Update(IGameContext gameContext, IUpdateContext updateContext);
+
+        /// <summary>
+        /// Add a message to the console.
+        /// </summary>
+        /// <param name="message">The message to add.</param>
+        void Log(string message);
     }
 }
