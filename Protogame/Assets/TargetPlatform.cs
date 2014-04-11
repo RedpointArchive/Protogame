@@ -69,5 +69,10 @@
         /// The raspberry pi.
         /// </summary>
         RaspberryPi, 
+        
+        /// <summary>
+        /// JSIL
+        /// </summary>
+        Web,
     }
 }

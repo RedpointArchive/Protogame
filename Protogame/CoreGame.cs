@@ -318,7 +318,7 @@ namespace Protogame
         /// </returns>
         private IGameWindow ConstructGameWindow()
         {
-#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB
             return new DefaultGameWindow(base.Window);
 #elif PLATFORM_ANDROID || PLATFORM_OUYA
             return new AndroidGameWindow(base.Window);

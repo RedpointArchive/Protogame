@@ -33,6 +33,8 @@
             return TargetPlatform.WindowsGL;
 #elif PLATFORM_WINDOWSPHONE
             return TargetPlatform.WindowsPhone;
+#elif PLATFORM_WEB
+            return TargetPlatform.Web;
 #else
             throw new NotSupportedException();
 #endif
