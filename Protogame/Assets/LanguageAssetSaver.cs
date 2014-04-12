@@ -31,11 +31,12 @@ namespace Protogame
         /// <returns>
         /// The <see cref="dynamic"/>.
         /// </returns>
-        public dynamic Handle(IAsset asset, AssetTarget target)
+        public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
             var textAsset = asset as LanguageAsset;
 
-            return new { Loader = typeof(LanguageAssetLoader).FullName, textAsset.Value };
+            return
+                new AnonymousObjectBasedRawAsset(new { Loader = typeof(LanguageAssetLoader).FullName, textAsset.Value });
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="dynamic"/>.
         /// </returns>
-        public dynamic Handle(IAsset asset, AssetTarget target)
+        public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
             var effectAsset = asset as EffectAsset;
 
@@ -62,12 +62,13 @@ namespace Protogame
             }
 
             return
-                new
-                {
-                    Loader = typeof(EffectAssetLoader).FullName, 
-                    effectAsset.Code, 
-                    PlatformData = target == AssetTarget.SourceFile ? null : effectAsset.PlatformData
-                };
+                new AnonymousObjectBasedRawAsset(
+                    new
+                    {
+                        Loader = typeof(EffectAssetLoader).FullName,
+                        effectAsset.Code,
+                        PlatformData = target == AssetTarget.SourceFile ? null : effectAsset.PlatformData
+                    });
         }
     }
 }

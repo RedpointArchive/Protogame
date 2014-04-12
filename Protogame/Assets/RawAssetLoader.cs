@@ -69,7 +69,7 @@ namespace Protogame
         /// </summary>
         /// <param name="name">The name of the asset.</param>
         /// <returns>The raw asset candidates.</returns>
-        public IEnumerable<object> LoadRawAssetCandidates(string name)
+        public IEnumerable<IRawAsset> LoadRawAssetCandidates(string name)
         {
             return this.LoadRawAssetCandidatesWithModificationDates(name).Select(x => x.Key);
         }
@@ -81,11 +81,11 @@ namespace Protogame
         /// </summary>
         /// <param name="name">The name of the asset.</param>
         /// <returns>The raw asset candidates.</returns>
-        public IEnumerable<KeyValuePair<object, DateTime?>> LoadRawAssetCandidatesWithModificationDates(string name)
+        public IEnumerable<KeyValuePair<IRawAsset, DateTime?>> LoadRawAssetCandidatesWithModificationDates(string name)
         {
             foreach (var strategy in this.m_Strategies)
             {
-                object result;
+                IRawAsset result;
 
                 if (strategy.ScanSourcePath && this.m_SourcePath != null)
                 {
@@ -93,7 +93,7 @@ namespace Protogame
                     result = strategy.AttemptLoad(this.m_SourcePath, name, ref lastModified);
                     if (result != null)
                     {
-                        yield return new KeyValuePair<object, DateTime?>(result, lastModified);
+                        yield return new KeyValuePair<IRawAsset, DateTime?>(result, lastModified);
                     }
                 }
 
@@ -102,7 +102,7 @@ namespace Protogame
                     result = strategy.AttemptLoad(this.m_Path, name, ref lastModified);
                     if (result != null)
                     {
-                        yield return new KeyValuePair<object, DateTime?>(result, lastModified);
+                        yield return new KeyValuePair<IRawAsset, DateTime?>(result, lastModified);
                     }
                 }
             }

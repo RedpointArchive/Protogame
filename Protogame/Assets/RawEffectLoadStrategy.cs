@@ -50,7 +50,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".fx"));
             if (file.Exists)
@@ -68,13 +68,14 @@
                         }
 
                         return
-                            new
-                            {
-                                Loader = typeof(EffectAssetLoader).FullName, 
-                                PlatformData = (PlatformData)null,
-                                Code = code, 
-                                SourcedFromRaw = true
-                            };
+                            new AnonymousObjectBasedRawAsset(
+                                new
+                                {
+                                    Loader = typeof(EffectAssetLoader).FullName,
+                                    PlatformData = (PlatformData)null,
+                                    Code = code,
+                                    SourcedFromRaw = true
+                                });
                     }
                 }
             }

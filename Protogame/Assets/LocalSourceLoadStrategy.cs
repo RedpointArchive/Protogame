@@ -1,6 +1,7 @@
 ﻿namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
     using Newtonsoft.Json;
@@ -50,7 +51,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".asset"));
             if (file.Exists)
@@ -58,7 +59,9 @@
                 lastModified = file.LastWriteTime;
                 using (var reader = new StreamReader(file.FullName, Encoding.UTF8))
                 {
-                    return JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
+                    return
+                        new DictionaryBasedRawAsset(
+                            JsonConvert.DeserializeObject<Dictionary<string, object>>(reader.ReadToEnd()));
                 }
             }
 

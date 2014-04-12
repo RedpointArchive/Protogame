@@ -52,8 +52,8 @@ namespace Protogame
         /// The target format for the asset.
         /// </param>
         /// <returns>
-        /// The dynamic object or instance of <see cref="CompiledAsset"/> for storage.
+        /// The raw asset representation.
         /// </returns>
-        dynamic Handle(IAsset asset, AssetTarget target);
+        IRawAsset Handle(IAsset asset, AssetTarget target);
     }
 }

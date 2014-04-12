@@ -14,9 +14,9 @@ namespace Protogame
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool CanHandle(dynamic data)
+        public bool CanHandle(IRawAsset data)
         {
-            return data.Loader == typeof(LanguageAssetLoader).FullName;
+            return data.GetProperty<string>("Loader") == typeof(LanguageAssetLoader).FullName;
         }
 
         /// <summary>
@@ -79,10 +79,10 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
             // The text key is the asset name.
-            return new LanguageAsset(name, (string)data.Value);
+            return new LanguageAsset(name, data.GetProperty<string>("Value"));
         }
     }
 }

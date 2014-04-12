@@ -30,9 +30,9 @@ namespace Protogame
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool CanHandle(dynamic data)
+        public bool CanHandle(IRawAsset data)
         {
-            return data.Loader == typeof(ModelAssetLoader).FullName;
+            return data.GetProperty<string>("Loader") == typeof(ModelAssetLoader).FullName;
         }
 
         /// <summary>
@@ -95,26 +95,30 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
             if (data is CompiledAsset)
             {
-                return new ModelAsset(name, null, null, data.PlatformData, false, string.Empty);
+                return new ModelAsset(name, null, null, data.GetProperty<PlatformData>("PlatformData"), false, string.Empty);
             }
 
             PlatformData platformData = null;
-            if (data.PlatformData != null)
+            if (data.GetProperty<PlatformData>("PlatformData") != null)
             {
-                platformData = new PlatformData { Platform = data.PlatformData.Platform, Data = data.PlatformData.Data };
+                platformData = new PlatformData
+                {
+                    Platform = data.GetProperty<PlatformData>("PlatformData").Platform,
+                    Data = data.GetProperty<PlatformData>("PlatformData").Data
+                };
             }
 
             var model = new ModelAsset(
                 name, 
-                ByteReader.ReadAsByteArray(data.RawData), 
-                data.RawAdditionalAnimations, 
-                platformData, 
-                data.SourcedFromRaw != null && (bool)data.SourcedFromRaw,
-                data.Extension ?? string.Empty);
+                ByteReader.ReadAsByteArray(data.GetProperty<object>("RawData")),
+                data.GetProperty<System.Collections.Generic.Dictionary<string, byte[]>>("RawAdditionalAnimations"), 
+                platformData,
+                data.GetProperty<bool>("SourcedFromRaw"),
+                data.GetProperty<string>("Extension"));
 
             return model;
         }

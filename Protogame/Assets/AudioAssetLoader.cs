@@ -1,5 +1,7 @@
 namespace Protogame
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// The audio asset loader.
     /// </summary>
@@ -30,9 +32,9 @@ namespace Protogame
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool CanHandle(dynamic data)
+        public bool CanHandle(IRawAsset data)
         {
-            return data.Loader == typeof(AudioAssetLoader).FullName;
+            return data.GetProperty<string>("Loader") == typeof(AudioAssetLoader).FullName;
         }
 
         /// <summary>
@@ -95,24 +97,28 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
-            if (data is CompiledAsset)
+            if (data.IsCompiled)
             {
-                return new AudioAsset(name, null, data.PlatformData, false);
+                return new AudioAsset(name, null, data.GetProperty<PlatformData>("PlatformData"), false);
             }
 
             PlatformData platformData = null;
-            if (data.PlatformData != null)
+            if (data.GetProperty<PlatformData>("PlatformData") != null)
             {
-                platformData = new PlatformData { Platform = data.PlatformData.Platform, Data = data.PlatformData.Data };
+                platformData = new PlatformData
+                {
+                    Platform = data.GetProperty<PlatformData>("PlatformData").Platform,
+                    Data = data.GetProperty<PlatformData>("PlatformData").Data
+                };
             }
 
             var audio = new AudioAsset(
                 name, 
-                ByteReader.ReadAsByteArray(data.RawData), 
+                ByteReader.ReadAsByteArray(data.GetProperty<object>("RawData")), 
                 platformData, 
-                data.SourcedFromRaw != null && (bool)data.SourcedFromRaw);
+                data.GetProperty<bool>("SourcedFromRaw"));
 
             return audio;
         }

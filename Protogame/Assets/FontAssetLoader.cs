@@ -30,9 +30,9 @@ namespace Protogame
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool CanHandle(dynamic data)
+        public bool CanHandle(IRawAsset data)
         {
-            return data.Loader == typeof(FontAssetLoader).FullName;
+            return data.GetProperty<string>("Loader") == typeof(FontAssetLoader).FullName;
         }
 
         /// <summary>
@@ -95,30 +95,30 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
-            if (data is CompiledAsset)
+            if (data.IsCompiled)
             {
-                return new FontAsset(this.m_AssetContentManager, name, null, 0, false, 0, data.PlatformData);
+                return new FontAsset(this.m_AssetContentManager, name, null, 0, false, 0, data.GetProperty<PlatformData>("PlatformData"));
             }
 
             PlatformData platformData = null;
-            if (data.PlatformData != null)
+            if (data.GetProperty<PlatformData>("PlatformData") != null)
             {
                 platformData = new PlatformData
                 {
-                    Platform = data.PlatformData.Platform, 
-                    Data = ByteReader.ReadAsByteArray(data.PlatformData.Data)
+                    Platform = data.GetProperty<PlatformData>("PlatformData").Platform,
+                    Data = ByteReader.ReadAsByteArray(data.GetProperty<PlatformData>("PlatformData").Data)
                 };
             }
 
             var effect = new FontAsset(
                 this.m_AssetContentManager, 
                 name, 
-                (string)data.FontName, 
-                (int)data.FontSize, 
-                (bool)data.UseKerning, 
-                (int)data.Spacing, 
+                data.GetProperty<string>("FontName"), 
+                data.GetProperty<int>("FontSize"), 
+                data.GetProperty<bool>("UseKerning"), 
+                data.GetProperty<int>("Spacing"), 
                 platformData);
 
             return effect;

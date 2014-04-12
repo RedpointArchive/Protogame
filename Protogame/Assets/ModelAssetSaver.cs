@@ -34,7 +34,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="dynamic"/>.
         /// </returns>
-        public dynamic Handle(IAsset asset, AssetTarget target)
+        public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
             var modelAsset = asset as ModelAsset;
 
@@ -55,13 +55,14 @@ namespace Protogame
             }
 
             return
-                new
-                {
-                    Loader = typeof(ModelAssetLoader).FullName, 
-                    PlatformData = target == AssetTarget.SourceFile ? null : modelAsset.PlatformData, 
-                    RawData = modelAsset.RawData == null ? null : modelAsset.RawData.Select(x => (int)x).ToList(), 
-                    RawAdditionalAnimations = (Dictionary<string, byte[]>)null
-                };
+                new AnonymousObjectBasedRawAsset(
+                    new
+                    {
+                        Loader = typeof(ModelAssetLoader).FullName,
+                        PlatformData = target == AssetTarget.SourceFile ? null : modelAsset.PlatformData,
+                        RawData = modelAsset.RawData == null ? null : modelAsset.RawData.Select(x => (int)x).ToList(),
+                        RawAdditionalAnimations = (Dictionary<string, byte[]>)null
+                    });
         }
     }
 }

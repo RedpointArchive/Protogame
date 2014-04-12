@@ -1,6 +1,7 @@
 ﻿namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -51,7 +52,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             lastModified = new DateTime(1970, 1, 1, 0, 0, 0);
 
@@ -64,7 +65,9 @@
             {
                 using (var reader = new StreamReader(embedded.First(), Encoding.UTF8))
                 {
-                    return JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
+                    return
+                        new DictionaryBasedRawAsset(
+                            JsonConvert.DeserializeObject<Dictionary<string, object>>(reader.ReadToEnd()));
                 }
             }
 

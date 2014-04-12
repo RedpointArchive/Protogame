@@ -27,11 +27,13 @@ namespace Protogame
         /// <param name="asset">The script asset to save.</param>
         /// <param name="target">The saved asset target.</param>
         /// <returns>The raw asset data to be saved by <see cref="IRawAssetSaver"/>.</returns>
-        public dynamic Handle(IAsset asset, AssetTarget target)
+        public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
             var scriptAsset = asset as ScriptAsset;
 
-            return new { Loader = typeof(LogicControlScriptAssetLoader).FullName, scriptAsset.Code };
+            return
+                new AnonymousObjectBasedRawAsset(
+                    new { Loader = typeof(LogicControlScriptAssetLoader).FullName, scriptAsset.Code });
         }
     }
 }

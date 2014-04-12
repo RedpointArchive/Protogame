@@ -38,6 +38,6 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        object AttemptLoad(string path, string name, ref DateTime? lastModified);
+        IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified);
     }
 }

@@ -925,13 +925,13 @@ namespace GOLD
                 // =================================
                 if (nestGroup)
                 {
-                    this.ConsumeBuffer(read.Data.Length);
+                    this.ConsumeBuffer(((string)read.Data).Length);
                     this.m_GroupStack.Push(ref read);
                 }
                 else if (this.m_GroupStack.Count == 0)
                 {
                     // The token is ready to be analyzed.             
-                    this.ConsumeBuffer(read.Data.Length);
+                    this.ConsumeBuffer(((string)read.Data).Length);
                     result = read;
                     done = true;
                 }
@@ -943,10 +943,10 @@ namespace GOLD
                     // === Ending logic
                     if (pop.Group().Ending == Group.EndingMode.Closed)
                     {
-                        pop.Data += read.Data;
+                        pop.Data = (string)pop.Data + (string)read.Data;
 
                         // Append text
-                        this.ConsumeBuffer(read.Data.Length);
+                        this.ConsumeBuffer(((string)read.Data).Length);
 
                         // Consume token
                     }
@@ -962,7 +962,7 @@ namespace GOLD
                     }
                     else
                     {
-                        this.m_GroupStack.Top().Data += pop.Data;
+                        this.m_GroupStack.Top().Data = (string)this.m_GroupStack.Top().Data + (string)pop.Data;
 
                         // Append group text to parent
                     }
@@ -981,14 +981,14 @@ namespace GOLD
 
                     if (top.Group().Advance == Group.AdvanceMode.Token)
                     {
-                        top.Data += read.Data;
+                        top.Data = (string)top.Data + (string)read.Data;
 
                         // Append all text
-                        this.ConsumeBuffer(read.Data.Length);
+                        this.ConsumeBuffer(((string)read.Data).Length);
                     }
                     else
                     {
-                        top.Data += read.Data[0];
+                        top.Data = (string)top.Data +((string)read.Data)[0];
 
                         // Append one character
                         this.ConsumeBuffer(1);

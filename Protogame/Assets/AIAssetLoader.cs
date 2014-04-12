@@ -1,6 +1,7 @@
 ﻿namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
     using Ninject;
 
     /// <summary>
@@ -33,9 +34,9 @@
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool CanHandle(dynamic data)
+        public bool CanHandle(IRawAsset data)
         {
-            return typeof(AIAsset).IsAssignableFrom(data.Type);
+            return typeof(AIAsset).IsAssignableFrom(data.GetProperty<Type>("Type"));
         }
 
         /// <summary>
@@ -102,9 +103,9 @@
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
-            var value = (AIAsset)this.m_Kernel.Get((Type)data.Type);
+            var value = (AIAsset)this.m_Kernel.Get(data.GetProperty<Type>("Type"));
             value.Name = name;
             return value;
         }

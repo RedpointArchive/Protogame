@@ -1,72 +1,72 @@
 namespace Protogame
 {
     /// <summary>
-    /// The AssetLoader interface.
+    /// An interface which allows raw assets to be loaded into the running game or application.
     /// </summary>
     public interface IAssetLoader
     {
         /// <summary>
-        /// The can handle.
+        /// Indicates whether the current loader can handle the specified raw asset.
         /// </summary>
         /// <param name="data">
-        /// The data.
+        /// The raw asset data to check.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        /// <em>true</em>, if the loader can handle the asset, <em>false</em> otherwise.
         /// </returns>
-        bool CanHandle(dynamic data);
+        bool CanHandle(IRawAsset data);
 
         /// <summary>
-        /// The can new.
+        /// Indicates whether this loader can construct new assets.
         /// </summary>
         /// <returns>
-        /// The <see cref="bool"/>.
+        /// <em>true</em>, if the loader can construct a new asset, <em>false</em> otherwise.
         /// </returns>
         bool CanNew();
 
         /// <summary>
-        /// The get default.
+        /// Returns the default representation of an asset from this loader.
         /// </summary>
         /// <param name="assetManager">
         /// The asset manager.
         /// </param>
         /// <param name="name">
-        /// The name.
+        /// The name of the asset.
         /// </param>
         /// <returns>
-        /// The <see cref="IAsset"/>.
+        /// A default representation for an asset loaded by this loader.
         /// </returns>
         IAsset GetDefault(IAssetManager assetManager, string name);
 
         /// <summary>
-        /// The get new.
+        /// Returns the new representation of an asset created by this loader.
         /// </summary>
         /// <param name="assetManager">
         /// The asset manager.
         /// </param>
         /// <param name="name">
-        /// The name.
+        /// The name of the new asset.
         /// </param>
         /// <returns>
-        /// The <see cref="IAsset"/>.
+        /// A new asset created by this loader.
         /// </returns>
         IAsset GetNew(IAssetManager assetManager, string name);
 
         /// <summary>
-        /// The handle.
+        /// Loads the specified raw asset and returns the runtime representation.
         /// </summary>
         /// <param name="assetManager">
         /// The asset manager.
         /// </param>
         /// <param name="name">
-        /// The name.
+        /// The name of the asset that is being loaded.
         /// </param>
         /// <param name="data">
-        /// The data.
+        /// The associated raw asset data to load.
         /// </param>
         /// <returns>
-        /// The <see cref="IAsset"/>.
+        /// The loaded asset.
         /// </returns>
-        IAsset Handle(IAssetManager assetManager, string name, dynamic data);
+        IAsset Handle(IAssetManager assetManager, string name, IRawAsset data);
     }
 }

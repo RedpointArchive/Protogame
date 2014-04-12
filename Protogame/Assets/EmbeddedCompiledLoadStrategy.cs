@@ -52,7 +52,7 @@
         /// </returns>
         /// <exception cref="InvalidDataException">
         /// </exception>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             lastModified = new DateTime(1970, 1, 1, 0, 0, 0);
 

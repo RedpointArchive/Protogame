@@ -12,9 +12,9 @@ namespace Protogame
             this.m_AssetContentManager = assetContentManager;
         }
 
-        public bool CanHandle(dynamic data)
+        public bool CanHandle(IRawAsset data)
         {
-            return data.Loader == typeof(TextureAtlasAssetLoader).FullName;
+            return data.GetProperty<string>("Loader") == typeof(TextureAtlasAssetLoader).FullName;
         }
 
         public bool CanNew()
@@ -32,17 +32,17 @@ namespace Protogame
             return null;
         }
 
-        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
             if (data is CompiledAsset)
             {
                 return new TextureAtlasAsset(
                     this.m_AssetContentManager,
                     name,
-                    data.PlatformData);
+                    data.GetProperty<PlatformData>("PlatformData"));
             }
 
-            var sourceTextureNames = ((JArray)data.SourceTextures).Select(x => x.Value<string>()).ToArray();
+            var sourceTextureNames = (data.GetProperty<JArray>("SourceTextures")).Select(x => x.Value<string>()).ToArray();
 
             return new TextureAtlasAsset(
                 assetManager,

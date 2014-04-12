@@ -5,7 +5,6 @@
     <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
   </Properties>
   <References>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="MonoGame.Framework" />
     <Reference Include="MonoGame.Framework.Content.Pipeline" />
     <Reference Include="Ninject" />
@@ -33,6 +32,7 @@
     <Compile Include="Assets\AIAssetLoader.cs" />
     <Compile Include="Assets\AndroidCompiledLoadStrategy.cs" />
     <Compile Include="Assets\AndroidSourceLoadStrategy.cs" />
+    <Compile Include="Assets\AnonymousObjectBasedRawAsset.cs" />
     <Compile Include="Assets\AssemblyLoadStrategy.cs" />
     <Compile Include="Assets\AssetAttribute.cs" />
     <Compile Include="Assets\AssetContentManager.cs" />
@@ -53,6 +53,7 @@
     <Compile Include="Assets\ContentCompilation\MojoShaderDeploy.cs" />
     <Compile Include="Assets\ContentCompilation\MonoGameContentCompiler.cs" />
     <Compile Include="Assets\DefaultTransparentAssetCompiler.cs" />
+    <Compile Include="Assets\DictionaryBasedRawAsset.cs" />
     <Compile Include="Assets\EffectAsset.cs" />
     <Compile Include="Assets\EffectAssetCompiler.cs" />
     <Compile Include="Assets\EffectAssetLoader.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Assets\IAssetManagerProvider.cs" />
     <Compile Include="Assets\IAssetSaver.cs" />
     <Compile Include="Assets\ILoadStrategy.cs" />
+    <Compile Include="Assets\IRawAsset.cs" />
     <Compile Include="Assets\IRawAssetLoader.cs" />
     <Compile Include="Assets\IRawAssetSaver.cs" />
     <Compile Include="Assets\ITransparentAssetCompiler.cs" />
@@ -139,6 +141,7 @@
     <Compile Include="Assets\TilesetAsset.cs" />
     <Compile Include="Assets\TilesetAssetLoader.cs" />
     <Compile Include="Assets\TilesetAssetSaver.cs" />
+    <Compile Include="Assets\TypeBasedRawAsset.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Caching\DefaultRenderCache.cs" />
     <Compile Include="Caching\IRenderCache.cs" />

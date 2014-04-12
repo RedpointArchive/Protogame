@@ -14,7 +14,7 @@ namespace Protogame
         /// </summary>
         /// <param name="name">The name of the asset.</param>
         /// <returns>The raw asset candidates.</returns>
-        IEnumerable<object> LoadRawAssetCandidates(string name);
+        IEnumerable<IRawAsset> LoadRawAssetCandidates(string name);
 
         /// <summary>
         /// Loads all potential raw asset candidates for the given asset name, including the last
@@ -23,7 +23,7 @@ namespace Protogame
         /// </summary>
         /// <param name="name">The name of the asset.</param>
         /// <returns>The raw asset candidates.</returns>
-        IEnumerable<KeyValuePair<object, DateTime?>> LoadRawAssetCandidatesWithModificationDates(string name);
+        IEnumerable<KeyValuePair<IRawAsset, DateTime?>> LoadRawAssetCandidatesWithModificationDates(string name);
 
         /// <summary>
         /// Return all available asset names.

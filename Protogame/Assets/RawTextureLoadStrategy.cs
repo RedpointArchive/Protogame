@@ -48,7 +48,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".png"));
             if (file.Exists)
@@ -59,13 +59,14 @@
                     using (var binary = new BinaryReader(fileStream))
                     {
                         return
-                            new
-                            {
-                                Loader = typeof(TextureAssetLoader).FullName, 
-                                PlatformData = (PlatformData)null, 
-                                RawData = binary.ReadBytes((int)file.Length), 
-                                SourcedFromRaw = true
-                            };
+                            new AnonymousObjectBasedRawAsset(
+                                new
+                                {
+                                    Loader = typeof(TextureAssetLoader).FullName,
+                                    PlatformData = (PlatformData)null,
+                                    RawData = binary.ReadBytes((int)file.Length),
+                                    SourcedFromRaw = true
+                                });
                     }
                 }
             }

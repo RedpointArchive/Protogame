@@ -48,7 +48,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".oel"));
             if (file.Exists)
@@ -59,14 +59,15 @@
                     using (var reader = new StreamReader(fileStream))
                     {
                         return
-                            new
-                            {
-                                Loader = typeof(LevelAssetLoader).FullName, 
-                                PlatformData = (PlatformData)null, 
-                                Value = reader.ReadToEnd(), 
-                                SourcePath = (string)null, 
-                                SourcedFromRaw = true
-                            };
+                            new AnonymousObjectBasedRawAsset(
+                                new
+                                {
+                                    Loader = typeof(LevelAssetLoader).FullName,
+                                    PlatformData = (PlatformData)null,
+                                    Value = reader.ReadToEnd(),
+                                    SourcePath = (string)null,
+                                    SourcedFromRaw = true
+                                });
                     }
                 }
             }

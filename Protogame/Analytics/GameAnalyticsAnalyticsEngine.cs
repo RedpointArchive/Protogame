@@ -419,7 +419,7 @@
                             using (var reader = new StreamReader(responseData))
                             {
                                 var resultString = reader.ReadToEnd();
-                                var resultObj = JsonConvert.DeserializeObject<dynamic>(resultString);
+                                var resultObj = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultString);
 
                                 if (resultObj["status"] != "ok")
                                 {

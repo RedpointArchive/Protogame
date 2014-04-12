@@ -14,9 +14,9 @@ namespace Protogame
         /// <returns>
         /// Whether this asset loader can handle the specified asset.
         /// </returns>
-        public bool CanHandle(dynamic data)
+        public bool CanHandle(IRawAsset data)
         {
-            return data.Loader == typeof(LogicControlScriptAssetLoader).FullName;
+            return data.GetProperty<string>("Loader") == typeof(LogicControlScriptAssetLoader).FullName;
         }
 
         /// <summary>
@@ -59,12 +59,12 @@ namespace Protogame
         /// <param name="name">The name of the LogicControl script.</param>
         /// <param name="data">The raw data associated with the asset.</param>
         /// <returns>The ScriptAsset from the load.</returns>
-        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
             return new ScriptAsset(
                 name,
-                (string)data.Code,
-                new LogicControlScriptEngine((string)data.Code));
+                data.GetProperty<string>("Code"),
+                new LogicControlScriptEngine(data.GetProperty<string>("Code")));
         }
     }
 }

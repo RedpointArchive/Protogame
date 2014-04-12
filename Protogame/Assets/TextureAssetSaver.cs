@@ -33,7 +33,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="dynamic"/>.
         /// </returns>
-        public dynamic Handle(IAsset asset, AssetTarget target)
+        public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
             var textureAsset = asset as TextureAsset;
 
@@ -54,12 +54,14 @@ namespace Protogame
             }
 
             return
-                new
-                {
-                    Loader = typeof(TextureAssetLoader).FullName, 
-                    PlatformData = target == AssetTarget.SourceFile ? null : textureAsset.PlatformData, 
-                    RawData = textureAsset.RawData == null ? null : textureAsset.RawData.Select(x => (int)x).ToList()
-                };
+                new AnonymousObjectBasedRawAsset(
+                    new
+                    {
+                        Loader = typeof(TextureAssetLoader).FullName,
+                        PlatformData = target == AssetTarget.SourceFile ? null : textureAsset.PlatformData,
+                        RawData =
+                            textureAsset.RawData == null ? null : textureAsset.RawData.Select(x => (int)x).ToList()
+                    });
         }
     }
 }

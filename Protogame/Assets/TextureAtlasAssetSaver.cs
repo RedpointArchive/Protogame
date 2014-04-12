@@ -7,7 +7,7 @@ namespace Protogame
             return asset is TextureAtlasAsset;
         }
 
-        public dynamic Handle(IAsset asset, AssetTarget target)
+        public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
             var textureAtlasAsset = (TextureAtlasAsset)asset;
 

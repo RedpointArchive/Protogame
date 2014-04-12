@@ -22,7 +22,7 @@
         /// <exception cref="InvalidOperationException">
         /// Thrown if the input value can not be read as a byte array.
         /// </exception>
-        public static byte[] ReadAsByteArray(dynamic value)
+        public static byte[] ReadAsByteArray(object value)
         {
             var array = value as JArray;
             if (array != null)
@@ -37,7 +37,7 @@
 
             if (value is byte[])
             {
-                return value;
+                return (byte[])value;
             }
 
             if (value == null)
@@ -45,7 +45,8 @@
                 return null;
             }
 
-            throw new InvalidOperationException("Unknown type to convert to byte array: " + value.GetType().FullName);
+            string typeName = value.GetType().FullName;
+            throw new InvalidOperationException("Unknown type to convert to byte array: " + typeName);
         }
     }
 }

@@ -31,18 +31,19 @@ namespace Protogame
         /// <returns>
         /// The <see cref="dynamic"/>.
         /// </returns>
-        public dynamic Handle(IAsset asset, AssetTarget target)
+        public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
             var tilesetAsset = asset as TilesetAsset;
 
             return
-                new
-                {
-                    Loader = typeof(TilesetAssetLoader).FullName, 
-                    TextureName = tilesetAsset.Texture != null ? tilesetAsset.Texture.Name : null, 
-                    tilesetAsset.CellWidth, 
-                    tilesetAsset.CellHeight
-                };
+                new AnonymousObjectBasedRawAsset(
+                    new
+                    {
+                        Loader = typeof(TilesetAssetLoader).FullName,
+                        TextureName = tilesetAsset.Texture != null ? tilesetAsset.Texture.Name : null,
+                        tilesetAsset.CellWidth,
+                        tilesetAsset.CellHeight
+                    });
         }
     }
 }

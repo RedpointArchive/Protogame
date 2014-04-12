@@ -33,7 +33,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="dynamic"/>.
         /// </returns>
-        public dynamic Handle(IAsset asset, AssetTarget target)
+        public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
             var fontAsset = asset as FontAsset;
 
@@ -54,15 +54,16 @@ namespace Protogame
             }
 
             return
-                new
-                {
-                    Loader = typeof(FontAssetLoader).FullName, 
-                    fontAsset.FontSize, 
-                    fontAsset.FontName, 
-                    fontAsset.UseKerning, 
-                    fontAsset.Spacing, 
-                    PlatformData = target == AssetTarget.SourceFile ? null : fontAsset.PlatformData
-                };
+                new AnonymousObjectBasedRawAsset(
+                    new
+                    {
+                        Loader = typeof(FontAssetLoader).FullName,
+                        fontAsset.FontSize,
+                        fontAsset.FontName,
+                        fontAsset.UseKerning,
+                        fontAsset.Spacing,
+                        PlatformData = target == AssetTarget.SourceFile ? null : fontAsset.PlatformData
+                    });
         }
     }
 }

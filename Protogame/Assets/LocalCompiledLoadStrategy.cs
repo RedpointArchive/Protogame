@@ -49,7 +49,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file1 =
                 new FileInfo(
@@ -88,7 +88,7 @@
         /// </returns>
         /// <exception cref="InvalidDataException">
         /// </exception>
-        private object AttemptLoadOfFile(FileInfo file, string name)
+        private IRawAsset AttemptLoadOfFile(FileInfo file, string name)
         {
             if (file.Exists)
             {

@@ -32,7 +32,7 @@ namespace GOLD
         }
 
         [Description("Returns/sets the object associated with the token.")]
-        public dynamic Data
+        public object Data
         {
             get
             {

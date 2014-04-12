@@ -48,7 +48,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             lastModified = new DateTime(1970, 1, 1, 0, 0, 0);
 
@@ -69,7 +69,7 @@
                             {
                                 if (attribute.Name == name)
                                 {
-                                    return new { Type = type, Name = name };
+                                    return new TypeBasedRawAsset(name, type);
                                 }
                             }
                         }

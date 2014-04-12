@@ -105,10 +105,41 @@ namespace LogicControl
                 {
                     value = string.Empty;
                 }
-                else if (value is byte || value is char || value is short || value is ushort || value is int || value is uint
-                    || value is long || value is ulong || value is double)
+                else if (value is byte)
                 {
-                    value = Convert.ToSingle((dynamic)value);
+                    value = Convert.ToSingle((byte)value);
+                }
+                else if (value is char)
+                {
+                    value = Convert.ToSingle((char)value);
+                }
+                else if (value is short)
+                {
+                    value = Convert.ToSingle((short)value);
+                }
+                else if (value is ushort)
+                {
+                    value = Convert.ToSingle((ushort)value);
+                }
+                else if (value is int)
+                {
+                    value = Convert.ToSingle((int)value);
+                }
+                else if (value is uint)
+                {
+                    value = Convert.ToSingle((uint)value);
+                }
+                else if (value is long)
+                {
+                    value = Convert.ToSingle((long)value);
+                }
+                else if (value is ulong)
+                {
+                    value = Convert.ToSingle((ulong)value);
+                }
+                else if (value is double)
+                {
+                    value = Convert.ToSingle((double)value);
                 }
                 else if (value is float || value is string || value is Vector2 || value is Vector3 
                     || value is Vector4 || value is LogicStructureInstance || value is bool)

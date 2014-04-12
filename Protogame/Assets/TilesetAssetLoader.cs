@@ -14,9 +14,9 @@ namespace Protogame
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public bool CanHandle(dynamic data)
+        public bool CanHandle(IRawAsset data)
         {
-            return data.Loader == typeof(TilesetAssetLoader).FullName;
+            return data.GetProperty<string>("Loader") == typeof(TilesetAssetLoader).FullName;
         }
 
         /// <summary>
@@ -79,14 +79,14 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IAsset"/>.
         /// </returns>
-        public IAsset Handle(IAssetManager assetManager, string name, dynamic data)
+        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
             return new TilesetAsset(
                 assetManager,
                 name,
-                (string)data.TextureName,
-                (int)data.CellWidth,
-                (int)data.CellHeight);
+                data.GetProperty<string>("TextureName"),
+                data.GetProperty<int>("CellWidth"),
+                data.GetProperty<int>("CellHeight"));
         }
     }
 }

@@ -48,7 +48,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
         {
             var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".wav"));
             if (file.Exists)
@@ -58,14 +58,14 @@
                 {
                     using (var binary = new BinaryReader(fileStream))
                     {
-                        return
+                        return new AnonymousObjectBasedRawAsset(
                             new
                             {
                                 Loader = typeof(AudioAssetLoader).FullName, 
                                 PlatformData = (PlatformData)null, 
                                 RawData = binary.ReadBytes((int)file.Length), 
                                 SourcedFromRaw = true
-                            };
+                            });
                     }
                 }
             }
