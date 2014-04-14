@@ -469,12 +469,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
     </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\NVTT\Windows\x86\nvtt.dll">
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\NVTT\Windows\x86\nvtt.dll">
       <Link>nvtt.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
     </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Libs\SharpFont\freetype6.dll">
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\freetype6.dll">
       <Link>freetype6.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
