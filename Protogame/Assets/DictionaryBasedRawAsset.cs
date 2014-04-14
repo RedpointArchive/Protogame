@@ -38,42 +38,56 @@
         {
             if (this.m_Dictionary.ContainsKey(name))
             {
-                if (typeof(T).IsEnum)
+                try
                 {
-                    if (this.m_Dictionary[name] is string)
+                    if (typeof(T).IsEnum)
                     {
-                        return (T)Enum.Parse(typeof(T), (string)this.m_Dictionary[name]);
+                        if (this.m_Dictionary[name] is string)
+                        {
+                            return (T)Enum.Parse(typeof(T), (string)this.m_Dictionary[name]);
+                        }
+
+                        if (this.m_Dictionary[name] is long)
+                        {
+                            return (T)Enum.ToObject(typeof(T), (long)this.m_Dictionary[name]);
+                        }
+
+                        throw new InvalidOperationException(
+                            "Enumeration was stored as " + this.m_Dictionary[name].GetType());
                     }
 
-                    if (this.m_Dictionary[name] is long)
+                    if (typeof(T) == typeof(int) && this.m_Dictionary[name] is string)
                     {
-                        return (T)Enum.ToObject(typeof(T), (long)this.m_Dictionary[name]);
+                        return
+                            (T)
+                            (object)
+                            int.Parse((string)this.m_Dictionary[name], CultureInfo.InvariantCulture.NumberFormat);
                     }
 
-                    throw new InvalidOperationException("Enumeration was stored as " + this.m_Dictionary[name].GetType());
-                }
+                    if (typeof(T) == typeof(int) && this.m_Dictionary[name] is long)
+                    {
+                        return (T)(object)(int)((long)this.m_Dictionary[name]);
+                    }
 
-                if (typeof(T) == typeof(int) && this.m_Dictionary[name] is string)
+                    if (typeof(T) == typeof(short) && this.m_Dictionary[name] is long)
+                    {
+                        return (T)(object)(short)((long)this.m_Dictionary[name]);
+                    }
+
+                    if (typeof(T) == typeof(float) && this.m_Dictionary[name] is long)
+                    {
+                        return (T)(object)(float)((long)this.m_Dictionary[name]);
+                    }
+
+                    return (T)this.m_Dictionary[name];
+                }
+                catch (InvalidCastException)
                 {
-                    return (T)(object)int.Parse((string)this.m_Dictionary[name], CultureInfo.InvariantCulture.NumberFormat);
-                }
+                    var obj = this.m_Dictionary[name];
+                    var type = obj == null ? "<null>" : obj.GetType().FullName;
 
-                if (typeof(T) == typeof(int) && this.m_Dictionary[name] is long)
-                {
-                    return (T)(object)(int)((long)this.m_Dictionary[name]);
+                    throw new InvalidCastException("Attempted to cast property '" + name + "' stored as " + type + " to target type " + typeof(T).FullName);
                 }
-
-                if (typeof(T) == typeof(short) && this.m_Dictionary[name] is long)
-                {
-                    return (T)(object)(short)((long)this.m_Dictionary[name]);
-                }
-
-                if (typeof(T) == typeof(float) && this.m_Dictionary[name] is long)
-                {
-                    return (T)(object)(float)((long)this.m_Dictionary[name]);
-                }
-
-                return (T)this.m_Dictionary[name];
             }
 
             return defaultValue;
