@@ -1,5 +1,8 @@
 ﻿namespace Protogame
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+
     /// <summary>
     /// Represents data contained in a raw asset.
     /// </summary>
@@ -9,6 +12,11 @@
         /// Whether or not the raw asset is compiled.
         /// </summary>
         bool IsCompiled { get; }
+
+        /// <summary>
+        /// A read-only copy of the properties associated with this raw asset.
+        /// </summary>
+        ReadOnlyCollection<KeyValuePair<string, object>> Properties { get; }
 
         /// <summary>
         /// Retrieve a property value from a raw asset.

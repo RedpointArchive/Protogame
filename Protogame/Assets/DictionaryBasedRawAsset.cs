@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Globalization;
+    using System.Linq;
 
     public class DictionaryBasedRawAsset : IRawAsset
     {
@@ -21,13 +23,34 @@
             }
         }
 
+        /// <summary>
+        /// A read-only copy of the properties associated with this raw asset.
+        /// </summary>
+        public ReadOnlyCollection<KeyValuePair<string, object>> Properties
+        {
+            get
+            {
+                return new ReadOnlyCollection<KeyValuePair<string, object>>(this.m_Dictionary.ToList());
+            }
+        }
+
         public T GetProperty<T>(string name, T defaultValue = default(T))
         {
             if (this.m_Dictionary.ContainsKey(name))
             {
                 if (typeof(T).IsEnum)
                 {
-                    return (T)Enum.Parse(typeof(T), (string)this.m_Dictionary[name]);
+                    if (this.m_Dictionary[name] is string)
+                    {
+                        return (T)Enum.Parse(typeof(T), (string)this.m_Dictionary[name]);
+                    }
+
+                    if (this.m_Dictionary[name] is long)
+                    {
+                        return (T)Enum.ToObject(typeof(T), (long)this.m_Dictionary[name]);
+                    }
+
+                    throw new InvalidOperationException("Enumeration was stored as " + this.m_Dictionary[name].GetType());
                 }
 
                 if (typeof(T) == typeof(int) && this.m_Dictionary[name] is string)

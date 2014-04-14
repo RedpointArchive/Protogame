@@ -14,6 +14,6 @@ namespace Protogame
         /// <param name="data">
         /// The data.
         /// </param>
-        void SaveRawAsset(string name, object data);
+        void SaveRawAsset(string name, IRawAsset data);
     }
 }

@@ -1,6 +1,8 @@
 ﻿namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using ProtoBuf;
 
     /// <summary>
@@ -41,6 +43,21 @@
             get
             {
                 return true;
+            }
+        }
+
+        /// <summary>
+        /// A read-only copy of the properties associated with this raw asset.
+        /// </summary>
+        public ReadOnlyCollection<KeyValuePair<string, object>> Properties
+        {
+            get
+            {
+                return new ReadOnlyCollection<KeyValuePair<string, object>>(new[]
+                {
+                    new KeyValuePair<string, object>("Loader", this.Loader),
+                    new KeyValuePair<string, object>("PlatformData", this.PlatformData), 
+                });
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿namespace Protogame
 {
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
 
@@ -20,6 +21,17 @@
             get
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// A read-only copy of the properties associated with this raw asset.
+        /// </summary>
+        public ReadOnlyCollection<KeyValuePair<string, object>> Properties
+        {
+            get
+            {
+                return new ReadOnlyCollection<KeyValuePair<string, object>>(this.m_Dictionary.ToList());
             }
         }
 

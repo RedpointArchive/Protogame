@@ -1,6 +1,8 @@
 ﻿namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     public class TypeBasedRawAsset : IRawAsset
     {
@@ -19,6 +21,21 @@
             get
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// A read-only copy of the properties associated with this raw asset.
+        /// </summary>
+        public ReadOnlyCollection<KeyValuePair<string, object>> Properties
+        {
+            get
+            {
+                return new ReadOnlyCollection<KeyValuePair<string, object>>(new[]
+                {
+                    new KeyValuePair<string, object>("Name", this.m_Name),
+                    new KeyValuePair<string, object>("Type", this.m_Type), 
+                });
             }
         }
 

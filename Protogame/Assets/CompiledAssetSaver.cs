@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using Newtonsoft.Json;
     using Protogame.Compression;
@@ -28,7 +29,7 @@
         /// </param>
         /// <exception cref="InvalidOperationException">
         /// </exception>
-        public void SaveCompiledAsset(string rootPath, string name, object data, bool isCompiled)
+        public void SaveCompiledAsset(string rootPath, string name, IRawAsset data, bool isCompiled)
         {
             var extension = "asset";
             if (isCompiled)
@@ -63,7 +64,7 @@
             {
                 using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))
                 {
-                    writer.Write(JsonConvert.SerializeObject(data));
+                    writer.Write(JsonConvert.SerializeObject(data.Properties.ToDictionary(k => k.Key, v => v.Value)));
                 }
             }
         }

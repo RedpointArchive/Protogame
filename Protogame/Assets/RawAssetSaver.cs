@@ -2,6 +2,7 @@ namespace Protogame
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using Newtonsoft.Json;
 
@@ -52,7 +53,7 @@ namespace Protogame
         /// </param>
         /// <exception cref="AssetNotFoundException">
         /// </exception>
-        public void SaveRawAsset(string name, object data)
+        public void SaveRawAsset(string name, IRawAsset data)
         {
             try
             {
@@ -61,7 +62,7 @@ namespace Protogame
                 this.CreateDirectories(file.Directory);
                 using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))
                 {
-                    writer.Write(JsonConvert.SerializeObject(data));
+                    writer.Write(JsonConvert.SerializeObject(data.Properties.ToDictionary(k => k.Key, v => v.Value)));
                 }
             }
             catch (Exception ex)
