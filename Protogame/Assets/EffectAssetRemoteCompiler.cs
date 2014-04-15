@@ -30,7 +30,15 @@ namespace Protogame
             var client = new UdpClient(4321);
             client.Client.ReceiveTimeout = 500;
 
-            client.Send(announceString, announceString.Length, new IPEndPoint(IPAddress.Broadcast, 4321));
+            try
+            {
+                client.Send(announceString, announceString.Length, new IPEndPoint(IPAddress.Broadcast, 4321));
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("WARNING: Unable to locate remote compiler for effect compilation.");
+                return;
+            }
 
             var endpoint = new IPEndPoint(IPAddress.Loopback, 4321);
             try
