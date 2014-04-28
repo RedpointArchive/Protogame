@@ -1,5 +1,6 @@
 namespace Protogame
 {
+    using System;
     using Ninject.Modules;
 
     /// <summary>
@@ -60,8 +61,13 @@ namespace Protogame
             this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
             this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
             this.Bind<IAssetCompiler<TextureAtlasAsset>>().To<TextureAtlasAssetCompiler>();
+
+            // MonoGame font compilation now requires a 64-bit process.
+            if (IntPtr.Size == 8)
+            {
+                this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
+            }
 #if PLATFORM_WINDOWS
-            this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
 #elif PLATFORM_LINUX
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>();

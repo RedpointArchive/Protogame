@@ -293,10 +293,12 @@ namespace Protogame
                 return this.m_Assets[asset];
             }
 
-            var candidates = this.m_RawAssetLoader.LoadRawAssetCandidates(asset);
+            var candidatesWithTimes = this.m_RawAssetLoader.LoadRawAssetCandidatesWithModificationDates(asset);
             var loaders = this.m_AssetLoaders.ToArray();
             var failedDueToCompilation = false;
             var hasMoreThanZeroCandidates = false;
+
+            var candidates = candidatesWithTimes.OrderByDescending(x => x.Value).Select(x => x.Key).ToList();
 
             foreach (var candidate in candidates)
             {

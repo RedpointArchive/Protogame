@@ -156,6 +156,25 @@ namespace Protogame
         public new IGameWindow Window { get; private set; }
 
         /// <summary>
+        /// The graphics device manager used by the game.
+        /// </summary>
+        /// <value>
+        /// The graphics device manager.
+        /// </value>
+        public GraphicsDeviceManager GraphicsDeviceManager
+        {
+            get
+            {
+                return this.m_GraphicsDeviceManager;
+            }
+        }
+
+        /// <summary>
+        /// The number of frames to skip before updating or rendering.
+        /// </summary>
+        public int SkipFrames { get; set; }
+
+        /// <summary>
         /// The load content.
         /// </summary>
         protected override void LoadContent()
@@ -252,8 +271,8 @@ namespace Protogame
                     }
                 }
 
-                // If this is before the 60th frame, skip so that MonoGame can initialize properly.
-                if (this.GameContext.FrameCount < 60)
+                // This can be used in case MonoGame does not initialize correctly before the first frame.
+                if (this.GameContext.FrameCount < this.SkipFrames)
                 {
                     return;
                 }
@@ -286,8 +305,8 @@ namespace Protogame
             {
                 this.m_TotalFrames++;
 
-                // If this is before the 60th frame, skip so that MonoGame can initialize properly.
-                if (this.GameContext.FrameCount < 60)
+                // This can be used in case MonoGame does not initialize correctly before the first frame.
+                if (this.GameContext.FrameCount < this.SkipFrames)
                 {
                     this.GraphicsDevice.Clear(Color.Black);
                     return;
