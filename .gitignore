@@ -8,7 +8,7 @@ obj
 *.csproj
 *.nuspec
 *.nupkg
-
+repositories.config
 StyleCop.Cache
 *.csproj.user
 *.suo
