@@ -57,11 +57,11 @@ namespace Protogame
 
 #if PLATFORM_WINDOWS || PLATFORM_LINUX
             this.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
-            this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
             this.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
             this.Bind<IAssetCompiler<TextureAtlasAsset>>().To<TextureAtlasAssetCompiler>();
 #if PLATFORM_WINDOWS
+            this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
 #elif PLATFORM_LINUX
             this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>();
