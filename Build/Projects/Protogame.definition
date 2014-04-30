@@ -142,6 +142,9 @@
     <Compile Include="Assets\TilesetAssetLoader.cs" />
     <Compile Include="Assets\TilesetAssetSaver.cs" />
     <Compile Include="Assets\TypeBasedRawAsset.cs" />
+    <Compile Include="Assets\VariableAsset.cs" />
+    <Compile Include="Assets\VariableAssetLoader.cs" />
+    <Compile Include="Assets\VariableAssetSaver.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Caching\DefaultRenderCache.cs" />
     <Compile Include="Caching\IRenderCache.cs" />
