@@ -531,8 +531,8 @@ namespace Protogame
             if (string.IsNullOrEmpty(textBox.Text) && !textBox.Focused)
             {
                 this.m_RenderUtilities.RenderText(
-                    context, 
-                    new Vector2(layout.X, layout.Center.Y), 
+                    context,
+                    new Vector2(layout.X + 4, layout.Center.Y), 
                     textBox.Hint, 
                     this.m_AssetManager.Get<FontAsset>("font.Default"), 
                     textColor: Color.DimGray, 
@@ -542,7 +542,7 @@ namespace Protogame
             {
                 this.m_RenderUtilities.RenderText(
                     context, 
-                    new Vector2(layout.X, layout.Center.Y), 
+                    new Vector2(layout.X + 4, layout.Center.Y), 
                     textToRender, 
                     this.m_AssetManager.Get<FontAsset>("font.Default"), 
                     verticalAlignment: VerticalAlignment.Center);
