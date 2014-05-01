@@ -208,11 +208,19 @@ namespace Protogame
             {
                 lock (this.m_Assets)
                 {
-                    var assetObj = this.m_Assets[asset];
-                    this.m_Assets.Remove(asset);
-                    if (assetObj != null)
+                    try
                     {
-                        ((LocalAsset)assetObj).Dirty();
+                        var assetObj = this.m_Assets[asset];
+                        this.m_Assets.Remove(asset);
+                        if (assetObj != null)
+                        {
+                            ((LocalAsset)assetObj).Dirty();
+                        }
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        // Attempted to dirty an asset that doesn't exist
+                        // Just ignore this error
                     }
                 }
             }
