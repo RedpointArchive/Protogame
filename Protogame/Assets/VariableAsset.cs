@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class VariableAsset : IAsset
+    public class VariableAsset : MarshalByRefObject, IAsset
     {
         private object m_CachedValue;
 
