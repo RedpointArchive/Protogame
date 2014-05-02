@@ -5,27 +5,41 @@ namespace Protogame
     using Microsoft.Xna.Framework.Graphics;
 
     /// <summary>
-    /// The default 2 d render utilities.
+    /// An implementation of <see cref="I2DRenderUtilities"/>.
     /// </summary>
     public class Default2DRenderUtilities : I2DRenderUtilities
     {
         /// <summary>
-        /// The measure text.
+        /// The string sanitizer used to sanitize text before it is rendered.
+        /// </summary>
+        private readonly IStringSanitizer m_StringSanitizer;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Default2DRenderUtilities"/> class.
+        /// </summary>
+        /// <param name="stringSanitizer">
+        /// The dependency injected <see cref="IStringSanitizer"/> instance.
+        /// </param>
+        public Default2DRenderUtilities(IStringSanitizer stringSanitizer)
+        {
+            this.m_StringSanitizer = stringSanitizer;
+        }
+
+        /// <summary>
+        /// Measures text as if it was rendered with the font asset.
         /// </summary>
         /// <param name="context">
-        /// The context.
+        /// The rendering context.
         /// </param>
         /// <param name="text">
-        /// The text.
+        /// The text to render.
         /// </param>
         /// <param name="font">
-        /// The font.
+        /// The font to use for rendering.
         /// </param>
         /// <returns>
         /// The <see cref="Vector2"/>.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// </exception>
         public Vector2 MeasureText(IRenderContext context, string text, FontAsset font)
         {
             if (context == null)
@@ -43,26 +57,26 @@ namespace Protogame
                 throw new ArgumentNullException("font");
             }
 
-            return font.Font.MeasureString(text);
+            return font.Font.MeasureString(this.m_StringSanitizer.SanitizeCharacters(font.Font, text));
         }
 
         /// <summary>
-        /// The render line.
+        /// Renders a 2D line.
         /// </summary>
         /// <param name="context">
-        /// The context.
+        /// The rendering context.
         /// </param>
         /// <param name="start">
-        /// The start.
+        /// The start of the line.
         /// </param>
         /// <param name="end">
-        /// The end.
+        /// The end of the line.
         /// </param>
         /// <param name="color">
-        /// The color.
+        /// The color of the line.
         /// </param>
         /// <param name="width">
-        /// The width.
+        /// The width of the line (defaults to 1).
         /// </param>
         public void RenderLine(IRenderContext context, Vector2 start, Vector2 end, Color color, float width = 1f)
         {
@@ -82,19 +96,19 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The render rectangle.
+        /// Renders a rectangle.
         /// </summary>
         /// <param name="context">
-        /// The context.
+        /// The rendering context.
         /// </param>
         /// <param name="rectangle">
-        /// The rectangle.
+        /// The rectangle to render.
         /// </param>
         /// <param name="color">
-        /// The color.
+        /// The color of the rectangle.
         /// </param>
         /// <param name="filled">
-        /// The filled.
+        /// If set to <c>true</c>, the rectangle is rendered filled.
         /// </param>
         public void RenderRectangle(IRenderContext context, Rectangle rectangle, Color color, bool filled = false)
         {
@@ -137,38 +151,40 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The render text.
+        /// Renders text at the specified position.
         /// </summary>
         /// <param name="context">
-        /// The context.
+        /// The rendering context.
         /// </param>
         /// <param name="position">
-        /// The position.
+        /// The position to render the text.
         /// </param>
         /// <param name="text">
-        /// The text.
+        /// The text to render.
         /// </param>
         /// <param name="font">
-        /// The font.
+        /// The font to use for rendering.
         /// </param>
         /// <param name="horizontalAlignment">
-        /// The horizontal alignment.
+        /// The horizontal alignment of the text (defaults to Left).
         /// </param>
         /// <param name="verticalAlignment">
-        /// The vertical alignment.
+        /// The vertical alignment of the text (defaults to Top).
         /// </param>
         /// <param name="textColor">
-        /// The text color.
+        /// The text color (defaults to white).
         /// </param>
         /// <param name="renderShadow">
-        /// The render shadow.
+        /// Whether to render a shadow on the text (defaults to true).
         /// </param>
         /// <param name="shadowColor">
-        /// The shadow color.
+        /// The text shadow's color (defaults to black).
         /// </param>
         /// <exception cref="ArgumentNullException">
+        /// Thrown if the render context or font asset is null.
         /// </exception>
         /// <exception cref="AssetNotCompiledException">
+        /// Thrown if the font asset has not been compiled.
         /// </exception>
         public void RenderText(
             IRenderContext context, 
@@ -211,6 +227,9 @@ namespace Protogame
                 throw new AssetNotCompiledException(font.Name);
             }
 
+            // Sanitize the text.
+            text = this.m_StringSanitizer.SanitizeCharacters(font.Font, text);
+
             // Determine position to draw.
             var size = font.Font.MeasureString(text);
             float xx = 0, yy = 0;
@@ -220,7 +239,7 @@ namespace Protogame
                     xx = position.X;
                     break;
                 case HorizontalAlignment.Center:
-                    xx = position.X - size.X / 2;
+                    xx = position.X - (size.X / 2);
                     break;
                 case HorizontalAlignment.Right:
                     xx = position.X - size.X;
@@ -233,7 +252,7 @@ namespace Protogame
                     yy = position.Y;
                     break;
                 case VerticalAlignment.Center:
-                    yy = position.Y - size.Y / 2;
+                    yy = position.Y - (size.Y / 2);
                     break;
                 case VerticalAlignment.Bottom:
                     yy = position.Y - size.Y;
@@ -255,34 +274,34 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The render texture.
+        /// Renders a texture at the specified position.
         /// </summary>
         /// <param name="context">
-        /// The context.
+        /// The rendering context.
         /// </param>
         /// <param name="position">
-        /// The position.
+        /// The position to render the texture.
         /// </param>
         /// <param name="texture">
         /// The texture.
         /// </param>
         /// <param name="size">
-        /// The size.
+        /// The size to render the texture as (defaults to the texture size).
         /// </param>
         /// <param name="color">
-        /// The color.
+        /// The colorization to apply to the texture.
         /// </param>
         /// <param name="rotation">
-        /// The rotation.
+        /// The rotation to apply to the texture.
         /// </param>
         /// <param name="flipHorizontally">
-        /// The flip horizontally.
+        /// If set to <c>true</c> the texture is flipped horizontally.
         /// </param>
         /// <param name="flipVertically">
-        /// The flip vertically.
+        /// If set to <c>true</c> the texture is flipped vertically.
         /// </param>
         /// <param name="sourceArea">
-        /// The source area.
+        /// The source area of the texture (defaults to the full texture).
         /// </param>
         public void RenderTexture(
             IRenderContext context, 
@@ -305,22 +324,28 @@ namespace Protogame
                 color = Color.White;
             }
 
+            var effects =
+                (SpriteEffects)
+                ((int)(flipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None)
+                 + (int)(flipVertically ? SpriteEffects.FlipVertically : SpriteEffects.None));
+
             context.SpriteBatch.Draw(
                 texture.Texture, 
                 new Rectangle((int)position.X, (int)position.Y, (int)size.Value.X, (int)size.Value.Y), 
                 sourceArea, 
                 color.Value.ToPremultiplied(), 
-                rotation, 
-                new Vector2(0, 0), 
-                (SpriteEffects)
-                ((int)(flipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None)
-                 + (int)(flipVertically ? SpriteEffects.FlipVertically : SpriteEffects.None)), 
+                rotation,
+                new Vector2(0, 0),
+                effects, 
                 0);
         }
 
         /// <summary>
         /// Suspends usage of the sprite batch so that direct rendering can occur during a 2D context.
         /// </summary>
+        /// <param name="renderContext">
+        /// The current rendering context.
+        /// </param>
         public void SuspendSpriteBatch(IRenderContext renderContext)
         {
             renderContext.SpriteBatch.End();
@@ -329,6 +354,9 @@ namespace Protogame
         /// <summary>
         /// Resumes usage of the sprite batch again.
         /// </summary>
+        /// <param name="renderContext">
+        /// The current rendering context.
+        /// </param>
         public void ResumeSpriteBatch(IRenderContext renderContext)
         {
             renderContext.SpriteBatch.Begin();

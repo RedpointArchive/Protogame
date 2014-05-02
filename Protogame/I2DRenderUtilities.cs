@@ -1,5 +1,6 @@
 namespace Protogame
 {
+    using System;
     using Microsoft.Xna.Framework;
 
     /// <summary>
@@ -91,6 +92,12 @@ namespace Protogame
         /// <param name="shadowColor">
         /// The text shadow's color (defaults to black).
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if the render context or font asset is null.
+        /// </exception>
+        /// <exception cref="AssetNotCompiledException">
+        /// Thrown if the font asset has not been compiled.
+        /// </exception>
         void RenderText(
             IRenderContext context, 
             Vector2 position, 
@@ -115,7 +122,7 @@ namespace Protogame
         /// The texture.
         /// </param>
         /// <param name="size">
-        /// The size to render the texture as (defauls to the texture size).
+        /// The size to render the texture as (defaults to the texture size).
         /// </param>
         /// <param name="color">
         /// The colorization to apply to the texture.
@@ -130,7 +137,7 @@ namespace Protogame
         /// If set to <c>true</c> the texture is flipped vertically.
         /// </param>
         /// <param name="sourceArea">
-        /// The source Area.
+        /// The source area of the texture (defaults to the full texture).
         /// </param>
         void RenderTexture(
             IRenderContext context, 
@@ -146,11 +153,17 @@ namespace Protogame
         /// <summary>
         /// Suspends usage of the sprite batch so that direct rendering can occur during a 2D context.
         /// </summary>
-        void SuspendSpriteBatch(IRenderContext renderContex);
+        /// <param name="renderContext">
+        /// The current rendering context.
+        /// </param>
+        void SuspendSpriteBatch(IRenderContext renderContext);
 
         /// <summary>
         /// Resumes usage of the sprite batch again.
         /// </summary>
-        void ResumeSpriteBatch(IRenderContext renderContex);
+        /// <param name="renderContext">
+        /// The current rendering context.
+        /// </param>
+        void ResumeSpriteBatch(IRenderContext renderContext);
     }
 }
