@@ -116,6 +116,16 @@ namespace Protogame
                 {
                     e.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage =
                         RenderTargetUsage.PreserveContents;
+#if PLATFORM_WINDOWS
+                    // This will actually select the highest multisampling count possible
+                    // with PR #2465: https://github.com/mono/MonoGame/pull/2465
+                    e.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 32;
+
+                    // At some point in the future, we should probably allow the multisampling count
+                    // to be configurable through the API.  However, at the moment we're still waiting
+                    // on Linux and Mac OS support for multisampling in MonoGame before we expose this
+                    // more.
+#endif
                 };
 
             this.m_Profiler = kernel.TryGet<IProfiler>();
