@@ -90,7 +90,6 @@ namespace Protogame
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CoreGame{TInitialWorld,TWorldManager}"/> class. 
-        /// Initializes a new instance of the <see cref="Protogame.CoreGame&lt;&gt;"/> class.
         /// </summary>
         /// <param name="kernel">
         /// The dependency injection kernel.
