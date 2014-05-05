@@ -32,6 +32,7 @@
     <Compile Include="Assets\AIAssetLoader.cs" />
     <Compile Include="Assets\AndroidCompiledLoadStrategy.cs" />
     <Compile Include="Assets\AndroidSourceLoadStrategy.cs" />
+    <Compile Include="Assets\AnimationController.cs" />
     <Compile Include="Assets\AnonymousObjectBasedRawAsset.cs" />
     <Compile Include="Assets\AssemblyLoadStrategy.cs" />
     <Compile Include="Assets\AssetAttribute.cs" />
