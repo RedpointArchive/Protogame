@@ -41,6 +41,11 @@ namespace Protogame
         private double m_TickNumber;
 
         /// <summary>
+        /// Whether the animation is changing on the next frame.
+        /// </summary>
+        private bool m_ChangeOnNextFrame;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AnimationController"/> class.
         /// </summary>
         /// <param name="model">
@@ -81,6 +86,18 @@ namespace Protogame
             {
                 return (int)this.m_TickNumber;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets a string representing a custom effect that should be applied to rendering.
+        /// </summary>
+        /// <value>
+        /// The custom effect that should be applied to rendering.
+        /// </value>
+        public string Effect
+        {
+            get; 
+            set;
         }
 
         /// <summary>
@@ -128,17 +145,30 @@ namespace Protogame
                     { "IN_CurrentAnim", this.m_CurrentState }, 
                     { "IN_RequestedAnim", this.m_TargetState }, 
                     { "IN_Tick", this.m_TickNumber }, 
-                    { "IN_LastTick", this.m_Model.AvailableAnimations[this.m_CurrentState].DurationInTicks - 1 }
+                    { "IN_LastTick", this.m_Model.AvailableAnimations[this.m_CurrentState].DurationInTicks - 1 },
+                    { "IN_JustChanged", this.m_ChangeOnNextFrame ? 1 : 0 }
                 });
+
+            this.m_ChangeOnNextFrame = false;
 
             if (results.ContainsKey("OUT_Anim"))
             {
+                if (this.m_CurrentState != (string)results["OUT_Anim"])
+                {
+                    this.m_ChangeOnNextFrame = true;
+                }
+
                 this.m_CurrentState = (string)results["OUT_Anim"];
             }
 
             if (results.ContainsKey("OUT_Tick"))
             {
                 this.m_TickNumber = (float)results["OUT_Tick"];
+            }
+
+            if (results.ContainsKey("OUT_Effect"))
+            {
+                this.Effect = (string)results["OUT_Effect"];
             }
         }
     }
