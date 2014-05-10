@@ -13,7 +13,7 @@ namespace Protogame
 
             return
                 new AnonymousObjectBasedRawAsset(
-                    new { Loader = typeof(LevelAssetLoader).FullName, Value = variableAsset.RawValue });
+                    new { Loader = typeof(VariableAssetLoader).FullName, Value = variableAsset.RawValue });
         }
     }
 }
