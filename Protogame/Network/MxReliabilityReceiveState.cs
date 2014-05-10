@@ -65,17 +65,6 @@
         }
 
         /// <summary>
-        /// The is corrupt.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        public bool IsCorrupt()
-        {
-            return false;
-        }
-
-        /// <summary>
         /// The reconstruct.
         /// </summary>
         /// <returns>

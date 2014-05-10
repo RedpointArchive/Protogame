@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
 
@@ -330,6 +331,14 @@
             for (var i = 0; i < packet.Length; i += SafeFragmentSize - DataOffset)
             {
                 total += 1;
+            }
+
+            if (total >= byte.MaxValue)
+            {
+                throw new OverflowException(
+                    "The input data was " + packet.Length
+                    + " bytes in length which is larger than the maximum " + ((SafeFragmentSize - DataOffset) * (byte.MaxValue - 1))
+                    + " bytes.");
             }
 
             var inc = 0;

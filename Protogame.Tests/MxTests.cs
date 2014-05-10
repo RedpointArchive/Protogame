@@ -127,7 +127,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
         [Fact]
         public void TestHugeReliableData()
         {
-            var text = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+            const string Content = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 Sed id enim et est aliquet mollis. Suspendisse tempus libero in mauris 
 iaculis interdum. Ut quis purus in libero euismod suscipit a non est. 
 Vestibulum nec scelerisque tellus. Nullam porttitor, metus vitae placerat 
@@ -143,9 +143,11 @@ Proin id neque varius, porta eros eget, pellentesque massa. Suspendisse viverra
 ligula at lorem dignissim fringilla. Proin viverra nunc neque, nec dignissim 
 velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 ";
-            while (text.Length < 256 * 1024)
+            var text = string.Empty;
+
+            while (text.Length < 128016 - Content.Length)
             {
-                text += text;
+                text += Content;
             }
 
             var dispatcher1 = new MxDispatcher(9017, 9018);
@@ -172,7 +174,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 
                 Assert.Null(receivedText);
 
-                for (var i = 0; i < 256 * 1024 && receivedText == null; i++)
+                for (var i = 0; i < 246 * 1024 && receivedText == null; i++)
                 {
                     this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
                 }
