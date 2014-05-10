@@ -79,6 +79,21 @@
                         return (T)(object)(float)((long)this.m_Dictionary[name]);
                     }
 
+                    if (typeof(T) == typeof(int) && this.m_Dictionary[name] is double)
+                    {
+                        return (T)(object)(int)((double)this.m_Dictionary[name]);
+                    }
+
+                    if (typeof(T) == typeof(short) && this.m_Dictionary[name] is double)
+                    {
+                        return (T)(object)(short)((double)this.m_Dictionary[name]);
+                    }
+
+                    if (typeof(T) == typeof(float) && this.m_Dictionary[name] is double)
+                    {
+                        return (T)(object)(float)((double)this.m_Dictionary[name]);
+                    }
+
                     return (T)this.m_Dictionary[name];
                 }
                 catch (InvalidCastException)
