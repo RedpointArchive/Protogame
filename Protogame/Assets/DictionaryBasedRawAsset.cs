@@ -79,6 +79,11 @@
                         return (T)(object)(float)((long)this.m_Dictionary[name]);
                     }
 
+                    if (typeof(T) == typeof(double) && this.m_Dictionary[name] is long)
+                    {
+                        return (T)(object)(double)((long)this.m_Dictionary[name]);
+                    }
+
                     if (typeof(T) == typeof(int) && this.m_Dictionary[name] is double)
                     {
                         return (T)(object)(int)((double)this.m_Dictionary[name]);
