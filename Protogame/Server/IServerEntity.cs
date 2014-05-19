@@ -13,12 +13,6 @@ namespace Protogame
     public interface IServerEntity : IHasPosition
     {
         /// <summary>
-        /// Gets the unique identifier for the server entity.
-        /// </summary>
-        /// <value>The unique identifier for the server entity.</value>
-        int UniqueIdentifier { get; }
-
-        /// <summary>
         /// The update.
         /// </summary>
         /// <param name="serverContext">
