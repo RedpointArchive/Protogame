@@ -62,7 +62,9 @@
     <Compile Include="Assets\EffectAssetSaver.cs" />
     <Compile Include="Assets\Effects\EffectWithMatrices.cs" />
     <Compile Include="Assets\Effects\EffectWithMatricesAndTexture.cs" />
+    <Compile Include="Assets\Effects\EffectWithMatricesAndTextureAndBones.cs" />
     <Compile Include="Assets\Effects\EffectWithTexture.cs" />
+    <Compile Include="Assets\Effects\IEffectBones.cs" />
     <Compile Include="Assets\Effects\IEffectTexture.cs" />
     <Compile Include="Assets\EmbeddedCompiledLoadStrategy.cs" />
     <Compile Include="Assets\EmbeddedSourceLoadStrategy.cs" />
@@ -104,13 +106,14 @@
     <Compile Include="Assets\Models\Animation.cs" />
     <Compile Include="Assets\Models\AnimationCollection.cs" />
     <Compile Include="Assets\Models\FbxReader.cs" />
-    <Compile Include="Assets\Models\Frame.cs" />
     <Compile Include="Assets\Models\IAnimation.cs" />
     <Compile Include="Assets\Models\IAnimationCollection.cs" />
-    <Compile Include="Assets\Models\IFrame.cs" />
     <Compile Include="Assets\Models\IModel.cs" />
+    <Compile Include="Assets\Models\IModelBone.cs" />
     <Compile Include="Assets\Models\Model.cs" />
+    <Compile Include="Assets\Models\ModelBone.cs" />
     <Compile Include="Assets\Models\ModelSerializer.cs" />
+    <Compile Include="Assets\Models\VertexPositionNormalTextureBlendable.cs" />
     <Compile Include="Assets\NetworkAsset.cs" />
     <Compile Include="Assets\NetworkAssetManager.cs" />
     <Compile Include="Assets\NetworkAssetProxy.cs" />
@@ -292,6 +295,7 @@
     <Compile Include="Network\TimeMachines\Int16TimeMachine.cs" />
     <Compile Include="Network\TimeMachines\Int32TimeMachine.cs" />
     <Compile Include="Network\TimeMachines\SingleTimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\Vector3TimeMachine.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
     <Compile Include="Noise\PerlinNoise.cs" />
     <Compile Include="Particles\ParticleDefinition.cs" />
@@ -514,21 +518,126 @@
       <Platforms>Windows</Platforms>
     </Content>
     <EmbeddedResource Include="Assets\Effects\Macros.fx" />
-    <EmbeddedResource Include="font.Default-Android.bin" />
-    <EmbeddedResource Include="font.Default-iOS.bin" />
-    <EmbeddedResource Include="font.Default-Linux.bin" />
-    <EmbeddedResource Include="font.Default-MacOSX.bin" />
-    <EmbeddedResource Include="font.Default-NativeClient.bin" />
-    <EmbeddedResource Include="font.Default-Ouya.bin" />
-    <EmbeddedResource Include="font.Default-PlayStationMobile.bin" />
-    <EmbeddedResource Include="font.Default-RaspberryPi.bin" />
-    <EmbeddedResource Include="font.Default-Windows.bin" />
-    <EmbeddedResource Include="font.Default-WindowsPhone.bin" />
-    <EmbeddedResource Include="font.Default-WindowsPhone8.bin" />
-    <EmbeddedResource Include="font.Default-WindowsStoreApp.bin" />
-    <EmbeddedResource Include="font.Default-Xbox360.bin" />
+    <EmbeddedResource Include="effect.Basic-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-NativeClient.bin">
+      <Platforms>NativeClient</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-PlayStationMobile.bin">
+      <Platforms>PSMobile</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-RaspberryPi.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-WindowsPhone.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-Xbox360.bin">
+      <Platforms>Xbox360</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-NativeClient.bin">
+      <Platforms>NativeClient</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-PlayStationMobile.bin">
+      <Platforms>PSMobile</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-RaspberryPi.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-WindowsPhone.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Xbox360.bin">
+      <Platforms>Xbox360</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-NativeClient.bin">
+      <Platforms>NativeClient</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-PlayStationMobile.bin">
+      <Platforms>PSMobile</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-RaspberryPi.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-WindowsPhone.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Xbox360.bin">
+      <Platforms>Xbox360</Platforms>
+    </EmbeddedResource>
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
-    <None Include="Assets\Effects\Template.fx" />
+    <None Include="effect.Basic.fx" />
+    <None Include="effect.Skinned.fx" />
     <None Include="font.Default.asset" />
     <None Include="packages.config" />
     <None Include="Properties\AndroidManifest.xml" />

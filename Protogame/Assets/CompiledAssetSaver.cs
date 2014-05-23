@@ -29,7 +29,7 @@
         /// </param>
         /// <exception cref="InvalidOperationException">
         /// </exception>
-        public void SaveCompiledAsset(string rootPath, string name, IRawAsset data, bool isCompiled)
+        public void SaveCompiledAsset(string rootPath, string name, IRawAsset data, bool isCompiled, string embedPlatform = null)
         {
             var extension = "asset";
             if (isCompiled)
@@ -37,8 +37,13 @@
                 extension = "bin";
             }
 
-            var file =
-                new FileInfo(Path.Combine(rootPath, name.Replace('.', Path.DirectorySeparatorChar) + "." + extension));
+            var filename = name.Replace('.', Path.DirectorySeparatorChar) + "." + extension;
+            if (!string.IsNullOrWhiteSpace(embedPlatform))
+            {
+                filename = name + "-" + embedPlatform + "." + extension;
+            }
+
+            var file = new FileInfo(Path.Combine(rootPath, filename));
             this.CreateDirectories(file.Directory);
             if (isCompiled)
             {

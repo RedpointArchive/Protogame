@@ -6,7 +6,6 @@
 namespace Protogame
 {
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.Xna.Framework;
 
     /// <summary>
@@ -80,11 +79,11 @@ namespace Protogame
         /// <value>
         /// The current frame to render.
         /// </value>
-        public int Frame
+        public double Frame
         {
             get
             {
-                return (int)this.m_TickNumber;
+                return this.m_TickNumber;
             }
         }
 

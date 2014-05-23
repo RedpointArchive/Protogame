@@ -48,9 +48,9 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
-            var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".wav"));
+            var file = new FileInfo(Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".wav"));
             if (file.Exists)
             {
                 lastModified = file.LastWriteTime;

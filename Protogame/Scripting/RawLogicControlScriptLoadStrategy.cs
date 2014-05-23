@@ -43,9 +43,9 @@
         /// <param name="name">The name of the asset.</param>
         /// <param name="lastModified">The date and time that the asset was last modified.</param>
         /// <returns>The anonymous object to be loaded by <see cref="LogicControlScriptAssetLoader"/> or null.</returns>
-        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
-            var file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".lc"));
+            var file = new FileInfo(Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".lc"));
             if (file.Exists)
             {
                 lastModified = file.LastWriteTime;

@@ -16,6 +16,7 @@
     <Reference Include="Newtonsoft.Json" />
   </References>
   <Files>
+    <Compile Include="BuiltinRawAssetLoader.cs" />
     <Compile Include="DefaultAssetCleanup.cs" />
     <Compile Include="DefaultAssetCompilationEngine.cs" />
     <Compile Include="DefaultAssetOutOfDateCalculator.cs" />

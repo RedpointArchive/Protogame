@@ -48,10 +48,10 @@
         }
 
         /// <summary>
-        /// The get enumerator.
+        /// Retrieves the enumerator for enumerating over the collection of animations.
         /// </summary>
         /// <returns>
-        /// The <see cref="IEnumerator"/>.
+        /// The <see cref="IEnumerator"/> for enumerating over the collection of animations.
         /// </returns>
         public IEnumerator<IAnimation> GetEnumerator()
         {
@@ -59,10 +59,10 @@
         }
 
         /// <summary>
-        /// The get enumerator.
+        /// Retrieves the enumerator for enumerating over the collection of animations.
         /// </summary>
         /// <returns>
-        /// The <see cref="IEnumerator"/>.
+        /// The <see cref="IEnumerator"/> for enumerating over the collection of animations.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {

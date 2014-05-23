@@ -166,7 +166,12 @@ namespace Protogame
                     var hasSeperatedMatrixes = effect.Parameters["World"] != null && effect.Parameters["View"] != null && effect.Parameters["Projection"] != null;
                     var hasMatrix = effect.Parameters["WorldViewProj"] != null || hasSeperatedMatrixes;
                     var hasTexture = effect.Parameters["Texture"] != null;
-                    if (hasMatrix && hasTexture)
+                    var hasBones = effect.Parameters["Bones"] != null;
+                    if (hasMatrix && hasTexture && hasBones)
+                    {
+                        this.Effect = new EffectWithMatricesAndTextureAndBones(graphicsDevice, this.PlatformData.Data, hasSeperatedMatrixes);
+                    }
+                    else if (hasMatrix && hasTexture)
                     {
                         this.Effect = new EffectWithMatricesAndTexture(graphicsDevice, this.PlatformData.Data, hasSeperatedMatrixes);
                     }

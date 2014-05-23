@@ -1,6 +1,7 @@
 ﻿namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
 
@@ -18,6 +19,66 @@
         IAnimationCollection AvailableAnimations { get; }
 
         /// <summary>
+        /// Gets the root bone of the model's skeleton.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no skeleton attached to the model.
+        /// </remarks>
+        /// <value>
+        /// The root bone of the model's skeleton.
+        /// </value>
+        IModelBone Root { get; }
+
+        /// <summary>
+        /// Gets the model's bones by their names.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no skeleton attached to the model.
+        /// </remarks>
+        /// <value>
+        /// The model bones addressed by their names.
+        /// </value>
+        IDictionary<string, IModelBone> Bones { get; }
+
+        /// <summary>
+        /// Gets the index buffer.
+        /// </summary>
+        /// <value>
+        /// The index buffer.
+        /// </value>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
+        /// </exception>
+        IndexBuffer IndexBuffer { get; }
+
+        /// <summary>
+        /// Gets the indices of the model.
+        /// </summary>
+        /// <value>
+        /// The indices of the model.
+        /// </value>
+        int[] Indices { get; }
+
+        /// <summary>
+        /// Gets the vertex buffer.
+        /// </summary>
+        /// <value>
+        /// The vertex buffer.
+        /// </value>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
+        /// </exception>
+        VertexBuffer VertexBuffer { get; }
+
+        /// <summary>
+        /// Gets the vertexes of the model.
+        /// </summary>
+        /// <value>
+        /// The vertexes of the model.
+        /// </value>
+        VertexPositionNormalTextureBlendable[] Vertexes { get; }
+
+        /// <summary>
         /// Draws the model using the specified animation, calculating the appropriate frame to play
         /// based on how much time has elapsed.
         /// </summary>
@@ -27,33 +88,7 @@
         /// <param name="transform">
         /// The transform.
         /// </param>
-        /// <param name="animationName">
-        /// The animation name.
-        /// </param>
-        /// <param name="secondFraction">
-        /// The seconds that have elapsed since the animation started playing.
-        /// </param>
-        /// <param name="multiply">
-        /// The rate multiplier to apply.  A higher number multiplies the number of times the animation plays.
-        /// </param>
-        void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1);
-
-        /// <summary>
-        /// Draws the model using the specified animation, at a specific frame.
-        /// </summary>
-        /// <param name="renderContext">
-        /// The render context.
-        /// </param>
-        /// <param name="transform">
-        /// The transform.
-        /// </param>
-        /// <param name="animationName">
-        /// The animation name.
-        /// </param>
-        /// <param name="frame">
-        /// The frame.
-        /// </param>
-        void Draw(IRenderContext renderContext, Matrix transform, string animationName, int frame);
+        void Draw(IRenderContext renderContext, Matrix transform);
 
         /// <summary>
         /// Loads vertex and index buffers for all of animations in this model.

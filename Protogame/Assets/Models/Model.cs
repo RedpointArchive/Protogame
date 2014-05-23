@@ -1,8 +1,11 @@
 ﻿namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
+    using PrimitiveType = Microsoft.Xna.Framework.Graphics.PrimitiveType;
 
     /// <summary>
     /// This represents a runtime model, with full support for animation and bone manipulation.
@@ -10,14 +13,51 @@
     public class Model : IModel
     {
         /// <summary>
+        /// The flattened version of the bone structures.
+        /// </summary>
+        private readonly IModelBone[] m_FlattenedBones;
+
+        /// <summary>
+        /// The index buffer.
+        /// </summary>
+        private IndexBuffer m_IndexBuffer;
+
+        /// <summary>
+        /// The vertex buffer.
+        /// </summary>
+        private VertexBuffer m_VertexBuffer;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Model"/> class.
         /// </summary>
         /// <param name="availableAnimations">
         /// The available animations.
         /// </param>
-        public Model(IAnimationCollection availableAnimations)
+        /// <param name="rootBone">
+        /// The root bone, or null if there's no skeletal information.
+        /// </param>
+        /// <param name="vertexes">
+        /// The vertexes associated with this model.
+        /// </param>
+        /// <param name="indices">
+        /// The indices associated with the model.
+        /// </param>
+        public Model(
+            IAnimationCollection availableAnimations,
+            IModelBone rootBone,
+            VertexPositionNormalTextureBlendable[] vertexes,
+            int[] indices)
         {
             this.AvailableAnimations = availableAnimations;
+            this.Root = rootBone;
+            this.Vertexes = vertexes;
+            this.Indices = indices;
+
+            if (this.Root != null)
+            {
+                this.m_FlattenedBones = this.Root.Flatten();
+                this.Bones = this.m_FlattenedBones.ToDictionary(k => k.Name, v => v);
+            }
         }
 
         /// <summary>
@@ -29,6 +69,88 @@
         public IAnimationCollection AvailableAnimations { get; private set; }
 
         /// <summary>
+        /// Gets the root bone of the model's skeleton.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no skeleton attached to the model.
+        /// </remarks>
+        /// <value>
+        /// The root bone of the model's skeleton.
+        /// </value>
+        public IModelBone Root { get; private set; }
+
+        /// <summary>
+        /// Gets the model's bones by their names.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no skeleton attached to the model.
+        /// </remarks>
+        /// <value>
+        /// The model bones addressed by their names.
+        /// </value>
+        public IDictionary<string, IModelBone> Bones { get; private set; }
+
+        /// <summary>
+        /// Gets the index buffer.
+        /// </summary>
+        /// <value>
+        /// The index buffer.
+        /// </value>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
+        /// </exception>
+        public IndexBuffer IndexBuffer
+        {
+            get
+            {
+                if (this.m_IndexBuffer == null)
+                {
+                    throw new InvalidOperationException("Call LoadBuffers before accessing the index buffer");
+                }
+
+                return this.m_IndexBuffer;
+            }
+        }
+
+        /// <summary>
+        /// Gets the indices of the model.
+        /// </summary>
+        /// <value>
+        /// The indices of the model.
+        /// </value>
+        public int[] Indices { get; private set; }
+
+        /// <summary>
+        /// Gets the vertex buffer.
+        /// </summary>
+        /// <value>
+        /// The vertex buffer.
+        /// </value>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
+        /// </exception>
+        public VertexBuffer VertexBuffer
+        {
+            get
+            {
+                if (this.m_VertexBuffer == null)
+                {
+                    throw new InvalidOperationException("Call LoadBuffers before accessing the vertex buffer");
+                }
+
+                return this.m_VertexBuffer;
+            }
+        }
+
+        /// <summary>
+        /// Gets the vertexes of the model.
+        /// </summary>
+        /// <value>
+        /// The vertexes of the model.
+        /// </value>
+        public VertexPositionNormalTextureBlendable[] Vertexes { get; private set; }
+
+        /// <summary>
         /// Draws the model using the specified animation, calculating the appropriate frame to play
         /// based on how much time has elapsed.
         /// </summary>
@@ -38,78 +160,29 @@
         /// <param name="transform">
         /// The transform.
         /// </param>
-        /// <param name="animationName">
-        /// The animation name.
-        /// </param>
-        /// <param name="secondFraction">
-        /// The seconds that have elapsed since the animation started playing.
-        /// </param>
-        /// <param name="multiply">
-        /// The rate multiplier to apply.  A higher number multiplies the number of times the animation plays.
-        /// </param>
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
+        public void Draw(IRenderContext renderContext, Matrix transform)
         {
-            // Normalize the animation name.
-            if (string.IsNullOrEmpty(animationName))
+            this.LoadBuffers(renderContext.GraphicsDevice);
+
+            var effectBones = renderContext.Effect as IEffectBones;
+
+            if (effectBones == null)
             {
-                animationName = Animation.AnimationNullName;
+                throw new InvalidOperationException(
+                    "The current effect on the render context does " +
+                    "not implement IEffectBones.  You can use " +
+                    "'effect.Skinned' for a basic model rendering effect.");
             }
 
-            // Get a reference to the animation.
-            var animation = this.AvailableAnimations[animationName];
-            if (animation == null)
+            foreach (var bone in this.m_FlattenedBones)
             {
-                throw new InvalidOperationException("No such animation exists.");
+                if (bone.ID == -1)
+                {
+                    continue;
+                }
+
+                effectBones.Bones[bone.ID] = bone.GetFinalMatrix();
             }
-
-            // Multiply the total seconds by the ticks per second.
-            var totalTicks = (int)(secondFraction.TotalSeconds * (animation.TicksPerSecond * multiply));
-
-            // Modulo the total ticks by the animation duration.
-            var currentTick = (int)(totalTicks % animation.DurationInTicks);
-
-            // Call the other draw function with the appropriate tick value.
-            this.Draw(renderContext, transform, animationName, currentTick);
-        }
-
-        /// <summary>
-        /// Draws the model using the specified animation, at a specific frame.
-        /// </summary>
-        /// <param name="renderContext">
-        /// The render context.
-        /// </param>
-        /// <param name="transform">
-        /// The transform.
-        /// </param>
-        /// <param name="animationName">
-        /// The animation name.
-        /// </param>
-        /// <param name="frame">
-        /// The frame.
-        /// </param>
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, int frame)
-        {
-            // Normalize the animation name.
-            if (string.IsNullOrEmpty(animationName))
-            {
-                animationName = Animation.AnimationNullName;
-            }
-
-            var animation = this.AvailableAnimations[animationName];
-            if (animation == null)
-            {
-                throw new InvalidOperationException("No such animation exists.");
-            }
-
-            // Get a reference to the frame we will render.
-            var frames = animation.Frames;
-            frame = frame % frames.Length;
-            var frameRef = frames[frame];
-
-            // Load the buffers for the frame if not already loaded (generally
-            // developers are expected to call LoadBuffers on whatever animation
-            // they will be playing).
-            frameRef.LoadBuffers(renderContext.GraphicsDevice);
 
             // Keep a copy of the current world transformation and then apply the
             // transformation that was passed in.
@@ -117,35 +190,50 @@
             renderContext.World *= transform;
 
             // Render the vertex and index buffer.
-            renderContext.GraphicsDevice.Indices = frameRef.IndexBuffer;
-            renderContext.GraphicsDevice.SetVertexBuffer(frameRef.VertexBuffer);
+            renderContext.GraphicsDevice.Indices = this.IndexBuffer;
+            renderContext.GraphicsDevice.SetVertexBuffer(this.VertexBuffer);
             foreach (var pass in renderContext.Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
                 renderContext.GraphicsDevice.DrawIndexedPrimitives(
-                    PrimitiveType.TriangleList, 
-                    0, 
-                    0, 
-                    frameRef.VertexBuffer.VertexCount, 
-                    0, 
-                    frameRef.IndexBuffer.IndexCount / 3);
+                    PrimitiveType.TriangleList,
+                    0,
+                    0,
+                    this.VertexBuffer.VertexCount,
+                    0,
+                    this.IndexBuffer.IndexCount / 3);
             }
 
             // Restore the world matrix.
             renderContext.World = oldWorld;
         }
-
+        
         /// <summary>
-        /// Loads vertex and index buffers for all of animations in this model.
+        /// Load the vertex and index buffer for this model.
         /// </summary>
         /// <param name="graphicsDevice">
         /// The graphics device.
         /// </param>
         public void LoadBuffers(GraphicsDevice graphicsDevice)
         {
-            foreach (var animation in this.AvailableAnimations)
+            if (this.m_VertexBuffer == null)
             {
-                animation.LoadBuffers(graphicsDevice);
+                this.m_VertexBuffer = new VertexBuffer(
+                    graphicsDevice,
+                    VertexPositionNormalTextureBlendable.VertexDeclaration, 
+                    this.Vertexes.Length, 
+                    BufferUsage.WriteOnly);
+                this.m_VertexBuffer.SetData(this.Vertexes);
+            }
+
+            if (this.m_IndexBuffer == null)
+            {
+                this.m_IndexBuffer = new IndexBuffer(
+                    graphicsDevice, 
+                    IndexElementSize.ThirtyTwoBits, 
+                    this.Indices.Length, 
+                    BufferUsage.WriteOnly);
+                this.m_IndexBuffer.SetData(this.Indices);
             }
         }
     }

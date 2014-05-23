@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Reflection;
@@ -30,7 +31,7 @@
                 { "a|assembly=", "Load an assembly.", v => assemblies.Add(v) },
                 { "p|platform=", "Specify one or more platforms to target.", v => platforms.Add(v) },
                 { "o|output=", "Specify the output folder for the compiled assets.", v => output = v },
-                { "m|operation=", "Specify the mode of operation (either 'bulk' or 'remote', default is 'bulk').", v => operation = v }
+                { "m|operation=", "Specify the mode of operation (either 'bulk', 'remote' or 'builtin', default is 'bulk').", v => operation = v }
             };
 
             try
@@ -54,9 +55,134 @@
                 case "remote":
                     RemoteCompileService();
                     break;
+                case "builtin":
+                    BuiltinCompile();
+                    break;
                 default:
                     BulkCompile(assemblies, platforms, output);
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Compiles the built-in embedded resources.
+        /// </summary>
+        private static void BuiltinCompile()
+        {
+            // Create kernel.
+            var kernel = new StandardKernel();
+            kernel.Load<ProtogameAssetIoCModule>();
+            kernel.Load<ProtogameScriptIoCModule>();
+            var services = new GameServiceContainer();
+            var assetContentManager = new AssetContentManager(services);
+            kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+
+            // Only allow source and raw load strategies.
+            kernel.Unbind<ILoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
+
+            // Set up remaining bindings.
+            kernel.Bind<IAssetCleanup>().To<DefaultAssetCleanup>();
+            kernel.Bind<IAssetOutOfDateCalculator>().To<DefaultAssetOutOfDateCalculator>();
+            kernel.Bind<IAssetCompilationEngine>().To<DefaultAssetCompilationEngine>();
+
+            // Rebind for builtin compilation.
+            kernel.Rebind<IRawAssetLoader>().To<BuiltinRawAssetLoader>();
+
+            // Set up the compiled asset saver.
+            var compiledAssetSaver = new CompiledAssetSaver();
+
+            // Retrieve the asset manager.
+            var assetManager = kernel.Get<LocalAssetManager>();
+            assetManager.AllowSourceOnly = true;
+            assetManager.SkipCompilation = true;
+
+            // Retrieve the transparent asset compiler.
+            var assetCompiler = kernel.Get<ITransparentAssetCompiler>();
+
+            // Retrieve all of the asset savers.
+            var savers = kernel.GetAll<IAssetSaver>();
+
+            var rawLoader = kernel.Get<IRawAssetLoader>();
+
+            // For each of the platforms, perform the compilation of assets.
+            foreach (var platformName in new[]
+                {
+                    "Android",
+                    "iOS",
+                    "Linux",
+                    "MacOSX",
+                    "NativeClient",
+                    "Ouya",
+                    "PlayStationMobile",
+                    "RaspberryPi",
+                    "Windows",
+                    "WindowsPhone",
+                    "WindowsPhone8",
+                    "WindowsStoreApp",
+                    "Xbox360"
+                })
+            {
+                Console.WriteLine("Starting compilation for " + platformName);
+                var platform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), platformName);
+                var outputPath = Environment.CurrentDirectory;
+                assetManager.RescanAssets();
+
+                // Create the output directory if it doesn't exist.
+                if (!Directory.Exists(outputPath))
+                {
+                    Directory.CreateDirectory(outputPath);
+                }
+
+                // Get a list of asset names that we need to recompile for this platform.
+                var assetNames = rawLoader.ScanRawAssets();
+
+                foreach (var asset in assetNames.Select(assetManager.GetUnresolved))
+                {
+                    assetCompiler.HandlePlatform(asset, platform, true);
+
+                    foreach (var saver in savers)
+                    {
+                        var canSave = false;
+                        try
+                        {
+                            canSave = saver.CanHandle(asset);
+                        }
+                        catch (Exception)
+                        {
+                        }
+
+                        if (canSave)
+                        {
+                            try
+                            {
+                                var result = saver.Handle(asset, AssetTarget.CompiledFile);
+                                compiledAssetSaver.SaveCompiledAsset(
+                                    outputPath,
+                                    asset.Name,
+                                    result,
+                                    result is CompiledAsset,
+                                    platformName);
+                                Console.WriteLine("Compiled " + asset.Name + " for " + platform);
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("ERROR: Unable to compile " + asset.Name + " for " + platform);
+                                Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
+                                break;
+                            }
+                        }
+                    }
+
+                    assetManager.Dirty(asset.Name);
+                }
             }
         }
 

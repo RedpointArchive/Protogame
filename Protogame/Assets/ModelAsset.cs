@@ -25,13 +25,13 @@
         /// The name of the model asset.
         /// </param>
         /// <param name="rawData">
-        /// The raw Data.
+        /// The raw, serialized model data.
         /// </param>
         /// <param name="rawAdditionalAnimations">
         /// The source raw data that contains additional animations, mapping byte arrays to animation names.
         /// </param>
         /// <param name="data">
-        /// The data.
+        /// The platform specific data.
         /// </param>
         /// <param name="sourcedFromRaw">
         /// Whether or not this asset was sourced from a purely raw asset file (such as a PNG).
@@ -77,6 +77,102 @@
             get
             {
                 return this.m_Model.AvailableAnimations;
+            }
+        }
+
+        /// <summary>
+        /// Gets the root bone of the model's skeleton.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no skeleton attached to the model.
+        /// </remarks>
+        /// <value>
+        /// The root bone of the model's skeleton.
+        /// </value>
+        public IModelBone Root
+        {
+            get
+            {
+                return this.m_Model.Root;
+            }
+        }
+
+        /// <summary>
+        /// Gets the model's bones by their names.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no skeleton attached to the model.
+        /// </remarks>
+        /// <value>
+        /// The model bones addressed by their names.
+        /// </value>
+        public IDictionary<string, IModelBone> Bones
+        {
+            get
+            {
+                return this.m_Model.Bones;
+            }
+        }
+
+        /// <summary>
+        /// Gets the index buffer.
+        /// </summary>
+        /// <value>
+        /// The index buffer.
+        /// </value>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
+        /// </exception>
+        public IndexBuffer IndexBuffer
+        {
+            get
+            {
+                return this.m_Model.IndexBuffer;
+            }
+        }
+
+        /// <summary>
+        /// Gets the indices.
+        /// </summary>
+        /// <value>
+        /// The indices.
+        /// </value>
+        public int[] Indices
+        {
+            get
+            {
+                return this.m_Model.Indices;
+            }
+        }
+
+        /// <summary>
+        /// Gets the vertex buffer.
+        /// </summary>
+        /// <value>
+        /// The vertex buffer.
+        /// </value>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
+        /// </exception>
+        public VertexBuffer VertexBuffer
+        {
+            get
+            {
+                return this.m_Model.VertexBuffer;
+            }
+        }
+
+        /// <summary>
+        /// Gets the vertexes.
+        /// </summary>
+        /// <value>
+        /// The vertexes.
+        /// </value>
+        public VertexPositionNormalTextureBlendable[] Vertexes
+        {
+            get
+            {
+                return this.m_Model.Vertexes;
             }
         }
 
@@ -129,7 +225,7 @@
         public byte[] RawData { get; set; }
 
         /// <summary>
-        /// The appropriate file extension for the raw model data.  This is only used during model
+        /// Gets or sets the appropriate file extension for the raw model data.  This is only used during model
         /// compilation.
         /// </summary>
         /// <value>
@@ -160,46 +256,53 @@
         public bool SourcedFromRaw { get; private set; }
 
         /// <summary>
-        /// The draw.
+        /// Modifies the specified model to align to this animation at the specified frame and then renders it.
         /// </summary>
-        /// <param name="renderContext">
-        /// The render context.
-        /// </param>
-        /// <param name="transform">
-        /// The transform.
-        /// </param>
-        /// <param name="animationName">
-        /// The animation name.
-        /// </param>
-        /// <param name="secondFraction">
-        /// The second fraction.
-        /// </param>
-        /// <param name="multiply">
-        /// The rate multiplier to apply.  A higher number multiplies the number of times the animation plays.
-        /// </param>
+        /// <param name="renderContext">The current render context.</param>
+        /// <param name="transform">The world transformation to apply.</param>
+        /// <param name="animationName">The animation to play.</param>
+        /// <param name="secondFraction">The time elapsed.</param>
+        /// <param name="multiply">The multiplication factor to apply to the animation speed.</param>
         public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
         {
-            this.m_Model.Draw(renderContext, transform, animationName, secondFraction, multiply);
+            this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
+
+            this.m_Model.AvailableAnimations[animationName].Draw(
+                renderContext,
+                transform,
+                this.m_Model,
+                secondFraction,
+                multiply);
         }
 
         /// <summary>
-        /// The draw.
+        /// Modifies the specified model to align to this animation at the specified frame and then renders it.
         /// </summary>
-        /// <param name="renderContext">
-        /// The render context.
-        /// </param>
-        /// <param name="transform">
-        /// The transform.
-        /// </param>
-        /// <param name="animationName">
-        /// The animation name.
-        /// </param>
-        /// <param name="frame">
-        /// The frame.
-        /// </param>
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, int frame)
+        /// <param name="renderContext">The current render context.</param>
+        /// <param name="transform">The world transformation to apply.</param>
+        /// <param name="animationName">The animation to play.</param>
+        /// <param name="frame">The frame to draw at.</param>
+        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, double frame)
         {
-            this.m_Model.Draw(renderContext, transform, animationName, frame);
+            this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
+
+            this.m_Model.AvailableAnimations[animationName].Draw(
+                renderContext,
+                transform,
+                this.m_Model,
+                frame);
+        }
+
+        /// <summary>
+        /// Renders the specified model in it's current state.
+        /// </summary>
+        /// <param name="renderContext">The current render context.</param>
+        /// <param name="transform">The world transformation to apply.</param>
+        public void Draw(IRenderContext renderContext, Matrix transform)
+        {
+            this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
+
+            this.m_Model.Draw(renderContext, transform);
         }
 
         /// <summary>

@@ -48,7 +48,7 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
             lastModified = new DateTime(1970, 1, 1, 0, 0, 0);
 

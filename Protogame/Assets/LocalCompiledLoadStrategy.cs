@@ -49,14 +49,14 @@
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
             var file1 =
                 new FileInfo(
                     Path.Combine(
                         path, 
-                        TargetPlatformUtility.GetExecutingPlatform().ToString(), 
-                        name.Replace('.', Path.DirectorySeparatorChar) + ".bin"));
+                        TargetPlatformUtility.GetExecutingPlatform().ToString(),
+                        (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin"));
             var attempt1 = this.AttemptLoadOfFile(file1, name);
             if (attempt1 != null)
             {
@@ -64,7 +64,9 @@
                 return attempt1;
             }
 
-            var file2 = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".bin"));
+            var file2 =
+                new FileInfo(
+                    Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin"));
             var attempt2 = this.AttemptLoadOfFile(file2, name);
             if (attempt2 != null)
             {
