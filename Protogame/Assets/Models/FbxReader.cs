@@ -4,7 +4,13 @@ namespace Protogame
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+#if PLATFORM_LINUX
+    using System.Reflection;
+#endif
     using Assimp;
+#if PLATFORM_LINUX
+    using Assimp.Unmanaged;
+#endif
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics.PackedVector;
     using Quaternion = Microsoft.Xna.Framework.Quaternion;
