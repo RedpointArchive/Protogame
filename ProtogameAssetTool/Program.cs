@@ -366,16 +366,23 @@
                             break;
                         }
 
-                        response.ContentLength64 = effect.PlatformData.Data.Length;
-                        response.OutputStream.Write(effect.PlatformData.Data, 0, effect.PlatformData.Data.Length);
-                        response.Close();
+                        try
+                        {
+                            response.ContentLength64 = effect.PlatformData.Data.Length;
+                            response.OutputStream.Write(effect.PlatformData.Data, 0, effect.PlatformData.Data.Length);
+                            response.Close();
+                        }
+                        catch (HttpListenerException)
+                        {
+                        }
+
                         break;
                     }
                     case "/compilefont":
                     {
                         var platform = (TargetPlatform) Convert.ToInt32(request.QueryString["platform"]);
 
-                        var content = input.Split(",");
+                        var content = input.Split('\0');
                         var fontName = content[0];
                         var fontSize = int.Parse(content[1]);
                         var spacing = int.Parse(content[2]);
@@ -388,8 +395,7 @@
                             fontSize,
                             useKerning,
                             spacing,
-                            null,
-                            true);
+                            null);
 
                         var compiler = new FontAssetCompiler();
                         try
@@ -406,9 +412,16 @@
                             break;
                         }
 
-                        response.ContentLength64 = font.PlatformData.Data.Length;
-                        response.OutputStream.Write(font.PlatformData.Data, 0, font.PlatformData.Data.Length);
-                        response.Close();
+                        try
+                        {
+                            response.ContentLength64 = font.PlatformData.Data.Length;
+                            response.OutputStream.Write(font.PlatformData.Data, 0, font.PlatformData.Data.Length);
+                            response.Close();
+                        }
+                        catch (HttpListenerException)
+                        {
+                        }
+
                         break;
                     }
                     default:

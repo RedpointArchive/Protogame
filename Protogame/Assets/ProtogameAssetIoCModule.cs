@@ -72,8 +72,8 @@ namespace Protogame
 #elif PLATFORM_LINUX
                 this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>();
                 this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetRemoteCompiler>();
-            }
 #endif
+            }
 #endif
         }
     }

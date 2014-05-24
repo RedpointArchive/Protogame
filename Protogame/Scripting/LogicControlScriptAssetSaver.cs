@@ -33,7 +33,7 @@ namespace Protogame
 
             return
                 new AnonymousObjectBasedRawAsset(
-                    new { Loader = typeof(LogicControlScriptAssetLoader).FullName, scriptAsset.Code });
+                    new { Loader = typeof(LogicControlScriptAssetLoader).FullName, Code = scriptAsset.Code.Replace("\r\n", "\n") });
         }
     }
 }

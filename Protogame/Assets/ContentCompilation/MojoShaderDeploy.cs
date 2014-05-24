@@ -24,35 +24,18 @@
             var current = Environment.CurrentDirectory;
             Environment.CurrentDirectory = location;
 
-#if PLATFORM_WINDOWS
             if (File.Exists("libmojoshader_32.dll"))
             {
                 File.Delete("libmojoshader_32.dll");
             }
 
-#else
-            if (File.Exists("libmojoshader.dll"))
+            if (File.Exists("libmojoshader_64.dll"))
             {
-                File.Delete("libmojoshader.dll");
+                File.Delete("libmojoshader_64.dll");
             }
-#endif
 
-            if (Environment.Is64BitProcess)
-            {
-#if PLATFORM_WINDOWS
-                File.Copy("libmojoshader_src_64.dll", "libmojoshader_32.dll");
-#else
-                File.Copy("libmojoshader_src_64.dll", "libmojoshader.dll");
-#endif
-            }
-            else
-            {
-#if PLATFORM_WINDOWS
-                File.Copy("libmojoshader_src_32.dll", "libmojoshader_32.dll");
-#else
-                File.Copy("libmojoshader_src_32.dll", "libmojoshader.dll");
-#endif
-            }
+            File.Copy("libmojoshader_src_32.dll", "libmojoshader_32.dll");
+            File.Copy("libmojoshader_src_64.dll", "libmojoshader_64.dll");
 
             Environment.CurrentDirectory = current;
         }
