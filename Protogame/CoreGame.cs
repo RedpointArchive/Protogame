@@ -113,18 +113,7 @@ namespace Protogame
             this.m_GraphicsDeviceManager.PreparingDeviceSettings +=
                 (sender, e) =>
                 {
-                    e.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage =
-                        RenderTargetUsage.PreserveContents;
-#if PLATFORM_WINDOWS
-                    // This will actually select the highest multisampling count possible
-                    // with PR #2465: https://github.com/mono/MonoGame/pull/2465
-                    e.GraphicsDeviceInformation.PresentationParameters.MultiSampleCount = 32;
-
-                    // At some point in the future, we should probably allow the multisampling count
-                    // to be configurable through the API.  However, at the moment we're still waiting
-                    // on Linux and Mac OS support for multisampling in MonoGame before we expose this
-                    // more.
-#endif
+                    this.PrepareDeviceSettings(e.GraphicsDeviceInformation);
                 };
 
             this.m_Profiler = kernel.TryGet<IProfiler>();
@@ -335,6 +324,27 @@ namespace Protogame
 
                 base.Draw(gameTime);
             }
+        }
+
+        /// <summary>
+        /// Prepares the graphics devices settings.
+        /// </summary>
+        /// <remarks>
+        /// The default configuration is to enable multisampling.  To disable multisampling,
+        /// override PrepareDeviceSettings in your derived class.
+        /// </remarks>
+        /// <param name="deviceInformation">The device information.</param>
+        protected virtual void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)
+        {
+            deviceInformation.PresentationParameters.RenderTargetUsage =
+                RenderTargetUsage.PreserveContents;
+
+            // This will select the highest available multisampling.
+            deviceInformation.PresentationParameters.MultiSampleCount = 32;
+
+            // On OpenGL platform, we need to set this to true otherwise it
+            // won't use multisampling regardless of whether we configure it.
+            this.m_GraphicsDeviceManager.PreferMultiSampling = true;
         }
 
         /// <summary>
