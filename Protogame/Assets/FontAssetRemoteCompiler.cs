@@ -67,7 +67,7 @@ namespace Protogame
             }
 
             var content = string.Join(
-                ",",
+                "\0",
                 asset.FontName,
                 asset.FontSize.ToString(),
                 asset.Spacing.ToString(),

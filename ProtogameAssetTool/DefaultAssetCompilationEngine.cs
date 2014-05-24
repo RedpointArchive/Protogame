@@ -93,8 +93,6 @@
 
                 foreach (var asset in assetNames.Select(assetManager.GetUnresolved))
                 {
-                    Console.Write("Compiling " + asset.Name + " for " + platform + "... ");
-
                     assetCompiler.HandlePlatform(asset, platform, true);
 
                     foreach (var saver in savers)
@@ -118,12 +116,11 @@
                                     asset.Name,
                                     result,
                                     result is CompiledAsset);
-                                Console.WriteLine("done.");
+                                Console.WriteLine("Compiled " + asset.Name + " for " + platform);
                                 break;
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("error!");
                                 Console.WriteLine("ERROR: Unable to compile " + asset.Name + " for " + platform);
                                 Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
                                 break;
