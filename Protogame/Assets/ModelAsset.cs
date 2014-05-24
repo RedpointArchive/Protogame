@@ -267,12 +267,19 @@
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
-            this.m_Model.AvailableAnimations[animationName].Draw(
-                renderContext,
-                transform,
-                this.m_Model,
-                secondFraction,
-                multiply);
+            if (animationName != null)
+            {
+                this.m_Model.AvailableAnimations[animationName].Draw(
+                    renderContext,
+                    transform,
+                    this.m_Model,
+                    secondFraction,
+                    multiply);
+            }
+            else
+            {
+                this.m_Model.Draw(renderContext, transform);
+            }
         }
 
         /// <summary>
@@ -286,11 +293,18 @@
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
-            this.m_Model.AvailableAnimations[animationName].Draw(
-                renderContext,
-                transform,
-                this.m_Model,
-                frame);
+            if (animationName != null)
+            {
+                this.m_Model.AvailableAnimations[animationName].Draw(
+                    renderContext,
+                    transform,
+                    this.m_Model,
+                    frame);
+            }
+            else
+            {
+                this.m_Model.Draw(renderContext, transform);
+            }
         }
 
         /// <summary>

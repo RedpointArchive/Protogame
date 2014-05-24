@@ -371,6 +371,46 @@
                         response.Close();
                         break;
                     }
+                    case "/compilefont":
+                    {
+                        var platform = (TargetPlatform) Convert.ToInt32(request.QueryString["platform"]);
+
+                        var content = input.Split(",");
+                        var fontName = content[0];
+                        var fontSize = int.Parse(content[1]);
+                        var spacing = int.Parse(content[2]);
+                        var useKerning = bool.Parse(content[3]);
+
+                        var font = new FontAsset(
+                            null,
+                            "font",
+                            fontName,
+                            fontSize,
+                            useKerning,
+                            spacing,
+                            null,
+                            true);
+
+                        var compiler = new FontAssetCompiler();
+                        try
+                        {
+                            compiler.Compile(font, platform);
+                        }
+                        catch (Exception ex)
+                        {
+                            response.StatusCode = 500;
+                            var result = Encoding.ASCII.GetBytes(ex.Message);
+                            response.ContentLength64 = result.Length;
+                            response.OutputStream.Write(result, 0, result.Length);
+                            response.Close();
+                            break;
+                        }
+
+                        response.ContentLength64 = font.PlatformData.Data.Length;
+                        response.OutputStream.Write(font.PlatformData.Data, 0, font.PlatformData.Data.Length);
+                        response.Close();
+                        break;
+                    }
                     default:
                     {
                         response.StatusCode = 404;

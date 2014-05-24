@@ -71,6 +71,7 @@
     <Compile Include="Assets\FontAsset.cs" />
     <Compile Include="Assets\FontAssetCompiler.cs" />
     <Compile Include="Assets\FontAssetLoader.cs" />
+    <Compile Include="Assets\FontAssetRemoteCompiler.cs" />
     <Compile Include="Assets\FontAssetSaver.cs" />
     <Compile Include="Assets\IAsset.cs" />
     <Compile Include="Assets\IAssetCompiler.cs" />
