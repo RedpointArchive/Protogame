@@ -32,15 +32,18 @@
         /// The name of the animation.
         /// </param>
         /// <returns>
-        /// The <see cref="IAnimation"/>, or null if there's no animation with this name.
+        /// The <see cref="IAnimation"/>.
         /// </returns>
+        /// <exception cref="KeyNotFoundException">
+        /// Thrown if there is no such animation.
+        /// </exception>
         public IAnimation this[string name]
         {
             get
             {
                 if (!this.m_Dictionary.ContainsKey(name))
                 {
-                    return null;
+                    throw new KeyNotFoundException(name + " is not an animation");
                 }
 
                 return this.m_Dictionary[name];

@@ -256,6 +256,32 @@
         public bool SourcedFromRaw { get; private set; }
 
         /// <summary>
+        /// Modifies the specified model to align to this animation at the specified frame.
+        /// </summary>
+        /// <param name="animationName">The animation to play.</param>
+        /// <param name="secondFraction">The time elapsed.</param>
+        /// <param name="multiply">The multiplication factor to apply to the animation speed.</param>
+        public void Apply(string animationName, TimeSpan secondFraction, float multiply = 1)
+        {
+            this.m_Model.AvailableAnimations[animationName].Apply(
+                this.m_Model,
+                (float)secondFraction.TotalSeconds,
+                multiply);
+        }
+
+        /// <summary>
+        /// Modifies the specified model to align to this animation at the specified frame.
+        /// </summary>
+        /// <param name="animationName">The animation to play.</param>
+        /// <param name="frame">The frame to draw at.</param>
+        public void Apply(string animationName, double frame)
+        {
+            this.m_Model.AvailableAnimations[animationName].Apply(
+                this.m_Model,
+                frame);
+        }
+
+        /// <summary>
         /// Modifies the specified model to align to this animation at the specified frame and then renders it.
         /// </summary>
         /// <param name="renderContext">The current render context.</param>
