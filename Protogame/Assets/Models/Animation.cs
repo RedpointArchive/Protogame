@@ -195,14 +195,14 @@ namespace Protogame
         /// <param name="multiply">
         /// The multiplication factor to apply to the animation speed.
         /// </param>
-        public void Draw(
+        public void Render(
             IRenderContext renderContext, 
             Matrix transform, 
             Model model, 
             TimeSpan secondFraction, 
             float multiply)
         {
-            this.Draw(renderContext, transform, model, (float)secondFraction.TotalSeconds, multiply);
+            this.Render(renderContext, transform, model, (float)secondFraction.TotalSeconds, multiply);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Protogame
         /// <param name="multiply">
         /// The multiplication factor to apply to the animation speed.
         /// </param>
-        public void Draw(
+        public void Render(
             IRenderContext renderContext, 
             Matrix transform, 
             Model model, 
@@ -360,8 +360,8 @@ namespace Protogame
                 }
             }
 
-            // Draw the model.
-            model.Draw(renderContext, transform);
+            // Render the model.
+            model.Render(renderContext, transform);
         }
 
         /// <summary>
@@ -379,11 +379,11 @@ namespace Protogame
         /// <param name="frame">
         /// The frame to draw at.
         /// </param>
-        public void Draw(IRenderContext renderContext, Matrix transform, Model model, double frame)
+        public void Render(IRenderContext renderContext, Matrix transform, Model model, double frame)
         {
             var calculatedSeconds = (float)(frame / this.TicksPerSecond);
 
-            this.Draw(renderContext, transform, model, calculatedSeconds, 1);
+            this.Render(renderContext, transform, model, calculatedSeconds, 1);
         }
 
         /// <summary>

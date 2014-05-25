@@ -269,7 +269,7 @@
 
             if (animationName != null)
             {
-                this.m_Model.AvailableAnimations[animationName].Draw(
+                this.m_Model.AvailableAnimations[animationName].Render(
                     renderContext,
                     transform,
                     this.m_Model,
@@ -278,7 +278,7 @@
             }
             else
             {
-                this.m_Model.Draw(renderContext, transform);
+                this.m_Model.Render(renderContext, transform);
             }
         }
 
@@ -295,7 +295,7 @@
 
             if (animationName != null)
             {
-                this.m_Model.AvailableAnimations[animationName].Draw(
+                this.m_Model.AvailableAnimations[animationName].Render(
                     renderContext,
                     transform,
                     this.m_Model,
@@ -303,7 +303,7 @@
             }
             else
             {
-                this.m_Model.Draw(renderContext, transform);
+                this.m_Model.Render(renderContext, transform);
             }
         }
 
@@ -312,11 +312,11 @@
         /// </summary>
         /// <param name="renderContext">The current render context.</param>
         /// <param name="transform">The world transformation to apply.</param>
-        public void Draw(IRenderContext renderContext, Matrix transform)
+        public void Render(IRenderContext renderContext, Matrix transform)
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
-            this.m_Model.Draw(renderContext, transform);
+            this.m_Model.Render(renderContext, transform);
         }
 
         /// <summary>

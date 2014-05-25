@@ -79,7 +79,7 @@
         VertexPositionNormalTextureBlendable[] Vertexes { get; }
 
         /// <summary>
-        /// Draws the model using the specified animation, calculating the appropriate frame to play
+        /// Renders the model using the specified animation, calculating the appropriate frame to play
         /// based on how much time has elapsed.
         /// </summary>
         /// <param name="renderContext">
@@ -88,7 +88,7 @@
         /// <param name="transform">
         /// The transform.
         /// </param>
-        void Draw(IRenderContext renderContext, Matrix transform);
+        void Render(IRenderContext renderContext, Matrix transform);
 
         /// <summary>
         /// Loads vertex and index buffers for all of animations in this model.

@@ -160,7 +160,7 @@
         /// <param name="transform">
         /// The transform.
         /// </param>
-        public void Draw(IRenderContext renderContext, Matrix transform)
+        public void Render(IRenderContext renderContext, Matrix transform)
         {
             if (this.Vertexes.Length == 0 && this.Indices.Length == 0)
             {

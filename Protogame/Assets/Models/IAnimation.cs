@@ -78,7 +78,7 @@
         /// <param name="model">The model to update.</param>
         /// <param name="secondFraction">The time elapsed.</param>
         /// <param name="multiply">The multiplication factor to apply to the animation speed.</param>
-        void Draw(IRenderContext renderContext, Matrix transform, Model model, TimeSpan secondFraction, float multiply);
+        void Render(IRenderContext renderContext, Matrix transform, Model model, TimeSpan secondFraction, float multiply);
 
         /// <summary>
         /// Modifies the specified model to align to this animation at the specified frame and then renders it.
@@ -88,7 +88,7 @@
         /// <param name="model">The model to update.</param>
         /// <param name="totalSeconds">The time elapsed.</param>
         /// <param name="multiply">The multiplication factor to apply to the animation speed.</param>
-        void Draw(IRenderContext renderContext, Matrix transform, Model model, float totalSeconds, float multiply);
+        void Render(IRenderContext renderContext, Matrix transform, Model model, float totalSeconds, float multiply);
 
         /// <summary>
         /// Modifies the specified model to align to this animation at the specified frame and then renders it.
@@ -97,6 +97,6 @@
         /// <param name="transform">The world transformation to apply.</param>
         /// <param name="model">The model to update.</param>
         /// <param name="frame">The frame to draw at.</param>
-        void Draw(IRenderContext renderContext, Matrix transform, Model model, double frame);
+        void Render(IRenderContext renderContext, Matrix transform, Model model, double frame);
     }
 }
