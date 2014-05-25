@@ -263,7 +263,7 @@
         /// <param name="animationName">The animation to play.</param>
         /// <param name="secondFraction">The time elapsed.</param>
         /// <param name="multiply">The multiplication factor to apply to the animation speed.</param>
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
+        public void Render(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
@@ -289,7 +289,7 @@
         /// <param name="transform">The world transformation to apply.</param>
         /// <param name="animationName">The animation to play.</param>
         /// <param name="frame">The frame to draw at.</param>
-        public void Draw(IRenderContext renderContext, Matrix transform, string animationName, double frame)
+        public void Render(IRenderContext renderContext, Matrix transform, string animationName, double frame)
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
