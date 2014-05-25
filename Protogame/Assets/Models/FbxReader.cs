@@ -97,9 +97,25 @@ namespace Protogame
                 | PostProcessSteps.FlipWindingOrder;
             var scene = importer.ImportFile(filename, ProcessFlags);
 
-            var boneWeightingMap = this.BuildBoneWeightingMap(scene);
+            VertexPositionNormalTextureBlendable[] vertexes;
+            int[] indices;
+            IModelBone boneHierarchy;
 
-            var boneHierarchy = this.ImportBoneHierarchy(scene.RootNode, scene.Meshes[0]);
+            if (scene.MeshCount >= 1)
+            {
+                var boneWeightingMap = this.BuildBoneWeightingMap(scene);
+
+                boneHierarchy = this.ImportBoneHierarchy(scene.RootNode, scene.Meshes[0]);
+
+                vertexes = this.ImportVertexes(scene, boneWeightingMap);
+                indices = this.ImportIndices(scene);
+            }
+            else
+            {
+                boneHierarchy = this.ImportBoneHierarchy(scene.RootNode, null);
+                vertexes = new VertexPositionNormalTextureBlendable[0];
+                indices = new int[0];
+            }
 
             // Create the list of animations, including the null animation.
             var animations = new List<IAnimation>();
@@ -124,8 +140,8 @@ namespace Protogame
             return new Model(
                 new AnimationCollection(animations), 
                 boneHierarchy, 
-                this.ImportVertexes(scene, boneWeightingMap), 
-                this.ImportIndices(scene));
+                vertexes,
+                indices);
         }
 
         /// <summary>
@@ -150,20 +166,24 @@ namespace Protogame
             var childBones =
                 node.Children.Select(child => this.ImportBoneHierarchy(child, mesh)).ToDictionary(k => k.Name, v => v);
 
-            if (mesh.Bones.Count > 48)
-            {
-                throw new InvalidOperationException("This model contains more bones than the supported maximum (48).");
-            }
-
             var boneIndex = -1;
             var offsetMatrix = Matrix.Identity;
-            for (var i = 0; i < mesh.Bones.Count; i++)
+            if (mesh != null)
             {
-                if (mesh.Bones[i].Name == node.Name)
+                if (mesh.Bones.Count > 48)
                 {
-                    boneIndex = i;
-                    offsetMatrix = this.MatrixFromAssImpMatrix(mesh.Bones[i].OffsetMatrix);
-                    break;
+                    throw new InvalidOperationException(
+                        "This model contains more bones than the supported maximum (48).");
+                }
+
+                for (var i = 0; i < mesh.Bones.Count; i++)
+                {
+                    if (mesh.Bones[i].Name == node.Name)
+                    {
+                        boneIndex = i;
+                        offsetMatrix = this.MatrixFromAssImpMatrix(mesh.Bones[i].OffsetMatrix);
+                        break;
+                    }
                 }
             }
 

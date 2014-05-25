@@ -162,6 +162,14 @@
         /// </param>
         public void Draw(IRenderContext renderContext, Matrix transform)
         {
+            if (this.Vertexes.Length == 0 && this.Indices.Length == 0)
+            {
+                throw new InvalidOperationException(
+                    "This model does not have any vertexes or indices.  It's most " +
+                    "likely been imported from an FBX file that only contains hierarchy, " +
+                    "in which case there isn't anything to render.");
+            }
+
             this.LoadBuffers(renderContext.GraphicsDevice);
 
             var effectBones = renderContext.Effect as IEffectBones;
