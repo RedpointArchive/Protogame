@@ -1,9 +1,4 @@
-﻿// ====================================================================== //
-// This source code is licensed in accordance with the licensing outlined //
-// on the main Tychaia website (www.tychaia.com).  Changes to the         //
-// license on the website apply retroactively.                            //
-// ====================================================================== //
-namespace Protogame
+﻿namespace Protogame
 {
     using System;
     using System.Collections.Generic;
@@ -230,6 +225,26 @@ namespace Protogame
             float totalSeconds, 
             float multiply)
         {
+            this.Apply(model, totalSeconds, multiply);
+
+            // Render the model.
+            model.Render(renderContext, transform);
+        }
+
+        /// <summary>
+        /// Applies the animation at a specified time to the model.
+        /// </summary>
+        /// <param name="model">
+        /// The model to apply the animation to.
+        /// </param>
+        /// <param name="totalSeconds">
+        /// The time elapsed.
+        /// </param>
+        /// <param name="multiply">
+        /// The multiplication factor to apply to the animation speed.
+        /// </param>
+        public void Apply(Model model, float totalSeconds, float multiply)
+        {
             totalSeconds = (float)(totalSeconds * this.TicksPerSecond * multiply);
 
             foreach (var bone in model.Bones.Keys)
@@ -241,13 +256,12 @@ namespace Protogame
                     double translationKeyPrevious, translationKeyNext;
 
                     this.FindSurroundingTickValues(
-                        this.m_TranslationKeys[bone], 
-                        totalSeconds, 
-                        out translationKeyPrevious, 
+                        this.m_TranslationKeys[bone],
+                        totalSeconds,
+                        out translationKeyPrevious,
                         out translationKeyNext);
 
-                    if (Math.Abs(translationKeyPrevious - (-1)) < 0.0001f
-                        || Math.Abs(translationKeyNext - (-1)) < 0.0001f)
+                    if (Math.Abs(translationKeyPrevious - (-1)) < 0.0001f || Math.Abs(translationKeyNext - (-1)) < 0.0001f)
                     {
                         if (Math.Abs(translationKeyPrevious - (-1)) >= 0.0001f)
                         {
@@ -269,8 +283,7 @@ namespace Protogame
                         {
                             var amount =
                                 (float)
-                                -((translationKeyPrevious - totalSeconds)
-                                  / (translationKeyNext - translationKeyPrevious));
+                                -((translationKeyPrevious - totalSeconds) / (translationKeyNext - translationKeyPrevious));
 
                             actualTranslation = Vector3.Lerp(previousTranslation, nextTranslation, amount);
                         }
@@ -284,9 +297,9 @@ namespace Protogame
                     double rotationKeyPrevious, rotationKeyNext;
 
                     this.FindSurroundingTickValues(
-                        this.m_RotationKeys[bone], 
-                        totalSeconds, 
-                        out rotationKeyPrevious, 
+                        this.m_RotationKeys[bone],
+                        totalSeconds,
+                        out rotationKeyPrevious,
                         out rotationKeyNext);
 
                     if (Math.Abs(rotationKeyPrevious - (-1)) < 0.0001f || Math.Abs(rotationKeyNext - (-1)) < 0.0001f)
@@ -310,8 +323,8 @@ namespace Protogame
                         if (Math.Abs(rotationKeyPrevious - rotationKeyNext) > 0.0001f)
                         {
                             actualRotation = Quaternion.Lerp(
-                                previousRotation, 
-                                nextRotation, 
+                                previousRotation,
+                                nextRotation,
                                 (float)-((rotationKeyPrevious - totalSeconds) / (rotationKeyNext - rotationKeyPrevious)));
                         }
 
@@ -323,11 +336,7 @@ namespace Protogame
                 {
                     double scaleKeyPrevious, scaleKeyNext;
 
-                    this.FindSurroundingTickValues(
-                        this.m_ScaleKeys[bone], 
-                        totalSeconds, 
-                        out scaleKeyPrevious, 
-                        out scaleKeyNext);
+                    this.FindSurroundingTickValues(this.m_ScaleKeys[bone], totalSeconds, out scaleKeyPrevious, out scaleKeyNext);
 
                     if (Math.Abs(scaleKeyPrevious - (-1)) < 0.0001f || Math.Abs(scaleKeyNext - (-1)) < 0.0001f)
                     {
@@ -350,8 +359,8 @@ namespace Protogame
                         if (Math.Abs(scaleKeyPrevious - scaleKeyNext) > 0.0001f)
                         {
                             actualScale = Vector3.Lerp(
-                                previousScale, 
-                                nextScale, 
+                                previousScale,
+                                nextScale,
                                 (float)-((scaleKeyPrevious - totalSeconds) / (scaleKeyNext - scaleKeyPrevious)));
                         }
 
@@ -359,9 +368,22 @@ namespace Protogame
                     }
                 }
             }
+        }
 
-            // Render the model.
-            model.Render(renderContext, transform);
+        /// <summary>
+        /// Applies the animation at a specified time to the model.
+        /// </summary>
+        /// <param name="model">
+        /// The model to apply the animation to.
+        /// </param>
+        /// <param name="frame">
+        /// The frame to draw at.
+        /// </param>
+        public void Apply(Model model, double frame)
+        {
+            var calculatedSeconds = (float)(frame / this.TicksPerSecond);
+
+            this.Apply(model, calculatedSeconds, 1);
         }
 
         /// <summary>
