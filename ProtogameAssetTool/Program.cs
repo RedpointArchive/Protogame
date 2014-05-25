@@ -118,15 +118,11 @@
                     "iOS",
                     "Linux",
                     "MacOSX",
-                    "NativeClient",
                     "Ouya",
-                    "PlayStationMobile",
                     "RaspberryPi",
                     "Windows",
-                    "WindowsPhone",
                     "WindowsPhone8",
-                    "WindowsStoreApp",
-                    "Xbox360"
+                    "WindowsStoreApp"
                 })
             {
                 Console.WriteLine("Starting compilation for " + platformName);

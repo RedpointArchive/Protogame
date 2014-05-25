@@ -55,17 +55,25 @@ VertexShaderOutput DefaultVertexShader(VertexShaderInput input)
     float boneWeight3 = input.BoneWeights.z;
     float boneWeight4 = input.BoneWeights.w;
 
-    float4 computedPosition = 
-        (mul(correctedPosition, boneMatrix1) * boneWeight1) +
-        (mul(correctedPosition, boneMatrix2) * boneWeight2) +
-        (mul(correctedPosition, boneMatrix3) * boneWeight3) +
-        (mul(correctedPosition, boneMatrix4) * boneWeight4);
+    float4 computedPosition = correctedPosition;
+    float4 computedNormal = correctedNormal;
+
+    // Don't perform bone weighting if all weights are 0 (because that means
+    // there's no bones that impact this at all).
+    if (boneWeight1 + boneWeight2 + boneWeight3 + boneWeight4 > 0.001)
+    {
+        computedPosition = 
+            (mul(correctedPosition, boneMatrix1) * boneWeight1) +
+            (mul(correctedPosition, boneMatrix2) * boneWeight2) +
+            (mul(correctedPosition, boneMatrix3) * boneWeight3) +
+            (mul(correctedPosition, boneMatrix4) * boneWeight4);
     
-    float4 computedNormal = 
-        (mul(correctedNormal, boneMatrix1) * boneWeight1) +
-        (mul(correctedNormal, boneMatrix2) * boneWeight2) +
-        (mul(correctedNormal, boneMatrix3) * boneWeight3) +
-        (mul(correctedNormal, boneMatrix4) * boneWeight4);
+        computedNormal = 
+            (mul(correctedNormal, boneMatrix1) * boneWeight1) +
+            (mul(correctedNormal, boneMatrix2) * boneWeight2) +
+            (mul(correctedNormal, boneMatrix3) * boneWeight3) +
+            (mul(correctedNormal, boneMatrix4) * boneWeight4);
+    }
 
     float4 worldPosition = mul(computedPosition, World);
     float4 viewPosition = mul(worldPosition, View);

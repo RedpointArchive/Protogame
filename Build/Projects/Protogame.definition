@@ -531,14 +531,8 @@
     <EmbeddedResource Include="effect.Basic-MacOSX.bin">
       <Platforms>MacOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-NativeClient.bin">
-      <Platforms>NativeClient</Platforms>
-    </EmbeddedResource>
     <EmbeddedResource Include="effect.Basic-Ouya.bin">
       <Platforms>Ouya</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-PlayStationMobile.bin">
-      <Platforms>PSMobile</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="effect.Basic-RaspberryPi.bin">
       <Platforms>Linux</Platforms>
@@ -546,17 +540,11 @@
     <EmbeddedResource Include="effect.Basic-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-WindowsPhone.bin">
-      <Platforms>WindowsPhone</Platforms>
-    </EmbeddedResource>
     <EmbeddedResource Include="effect.Basic-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="effect.Basic-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-Xbox360.bin">
-      <Platforms>Xbox360</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="effect.Skinned-Android.bin">
       <Platforms>Android</Platforms>
@@ -570,14 +558,8 @@
     <EmbeddedResource Include="effect.Skinned-MacOSX.bin">
       <Platforms>MacOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-NativeClient.bin">
-      <Platforms>NativeClient</Platforms>
-    </EmbeddedResource>
     <EmbeddedResource Include="effect.Skinned-Ouya.bin">
       <Platforms>Ouya</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-PlayStationMobile.bin">
-      <Platforms>PSMobile</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="effect.Skinned-RaspberryPi.bin">
       <Platforms>Linux</Platforms>
@@ -585,17 +567,11 @@
     <EmbeddedResource Include="effect.Skinned-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-WindowsPhone.bin">
-      <Platforms>WindowsPhone</Platforms>
-    </EmbeddedResource>
     <EmbeddedResource Include="effect.Skinned-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="effect.Skinned-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-Xbox360.bin">
-      <Platforms>Xbox360</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="font.Default-Android.bin">
       <Platforms>Android</Platforms>
