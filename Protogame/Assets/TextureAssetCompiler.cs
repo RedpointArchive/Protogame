@@ -53,12 +53,8 @@ namespace Protogame
                 bitmap = newBitmap;
             }
 
-            var imageData = bitmap.GetData();
-            var flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            output.GetType().GetField("_bitmap", flags).SetValue(output, bitmap);
-            var bitmapContent = new PixelBitmapContent<Color>(width, height);
-            bitmapContent.SetPixelData(imageData);
-            output.Faces.Add(new MipmapChain(bitmapContent));
+            output.Faces.Add(new MipmapChain(bitmap.ToXnaBitmap()));
+            bitmap.Dispose();
 
             var manager = new PipelineManager(
                 Environment.CurrentDirectory, 

@@ -73,8 +73,8 @@ namespace Protogame
                 this.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>();
                 this.Bind<IAssetCompiler<FontAsset>>().To<FontAssetRemoteCompiler>();
 #endif
-            }
 #endif
+            }
         }
     }
 }

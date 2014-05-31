@@ -17,9 +17,20 @@
     <Reference Include="AssImp" />
     <Reference Include="Protogame.ThirdParty" />
     <Reference Include="Newtonsoft.Json" />
-    <Reference Include="Jitter" />
-    <Reference Include="Cloo" />
   </References>
+  <Services>
+    <Service Name="Default">
+      <Requires>Physics,OpenCL</Requires>
+      <DefaultForRoot>True</DefaultForRoot>
+    </Service>
+    <Service Name="Core" />
+    <Service Name="Physics">
+      <Requires>Jitter/Default</Requires>
+    </Service>
+    <Service Name="OpenCL">
+      <Requires>OpenCL/Default</Requires>
+    </Service>
+  </Services>
   <Files>
     <Compile Include="Analytics\AnalyticsErrorSeverity.cs" />
     <Compile Include="Analytics\GameAnalyticsAnalyticsEngine.cs" />
@@ -308,12 +319,24 @@
     <Compile Include="Performance\NullProfiler.cs" />
     <Compile Include="Performance\NullProfilerHandle.cs" />
     <Compile Include="Performance\ProtogamePerformanceIoCModule.cs" />
-    <Compile Include="Physics\ConversionExtensions.cs" />
-    <Compile Include="Physics\DefaultPhysicsEngine.cs" />
-    <Compile Include="Physics\IPhysicsEngine.cs" />
-    <Compile Include="Physics\IPhysicsEntity.cs" />
-    <Compile Include="Physics\PhysicsCharacterController.cs" />
-    <Compile Include="Physics\ProtogamePhysicsIoCModule.cs" />
+    <Compile Include="Physics\ConversionExtensions.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\DefaultPhysicsEngine.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\IPhysicsEngine.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\IPhysicsEntity.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\PhysicsCharacterController.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\ProtogamePhysicsIoCModule.cs">
+      <Services>Physics</Services>
+    </Compile>
     <Compile Include="Platform\AndroidGameWindow.cs" />
     <Compile Include="Platform\DefaultGameWindow.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />
