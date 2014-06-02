@@ -197,7 +197,7 @@
             TimeSpan secondFraction, 
             float multiply)
         {
-            this.Render(renderContext, transform, model, (float)secondFraction.TotalSeconds, multiply);
+            this.Render(renderContext, transform, model, (float)(secondFraction.TotalSeconds % (this.DurationInTicks / this.TicksPerSecond)), multiply);
         }
 
         /// <summary>
