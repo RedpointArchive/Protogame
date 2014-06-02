@@ -839,6 +839,20 @@
                     break;
                 }
 
+                // Handle probe packets. Send a UDP packet to either port with the following
+                // hexadecimal values to get a response:
+                // 
+                // 0x12, 0x34
+                //
+                // This is smaller than the possible MxMessage, so we know that if it's exactly
+                // this size with these character, it's a probe packet.
+                if (packet.Length == 2 && packet[0] == 0x12 && packet[1] == 0x34) 
+                {
+                    // This sends back 0x56, 0x78.
+                    udpClient.Send(new byte[] { 0x56, 0x78 }, 2, receive);
+                    continue;
+                }
+
                 var dualEndPoint = this.ResolveDualIPEndPoint(receive, reliable);
                 if (dualEndPoint == null)
                 {
