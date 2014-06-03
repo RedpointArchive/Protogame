@@ -5,7 +5,7 @@ namespace Protogame
     /// <summary>
     /// A time machine for the Vector3 structure.
     /// </summary>
-    public class Vector3TimeMachine : TimeMachine<Vector3>
+    public class Vector3TimeMachine : InterpolatedTimeMachine<Vector3>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector3TimeMachine"/> class.

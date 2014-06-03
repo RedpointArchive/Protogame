@@ -1,11 +1,9 @@
 namespace Protogame
 {
-    using System;
-
     /// <summary>
     /// The double time machine.
     /// </summary>
-    public class DoubleTimeMachine : TimeMachine<double>
+    public class DoubleTimeMachine : InterpolatedTimeMachine<double>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DoubleTimeMachine"/> class.

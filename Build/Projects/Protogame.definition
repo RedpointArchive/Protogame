@@ -283,6 +283,7 @@
     <Compile Include="Network\Fragment.cs" />
     <Compile Include="Network\FragmentStatus.cs" />
     <Compile Include="Network\InputPrediction.cs" />
+    <Compile Include="Network\InterpolatedTimeMachine.cs" />
     <Compile Include="Network\MxClient.cs" />
     <Compile Include="Network\MxClientEventArgs.cs" />
     <Compile Include="Network\MxClientEventHandler.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="Network\TimeMachines\Int16TimeMachine.cs" />
     <Compile Include="Network\TimeMachines\Int32TimeMachine.cs" />
     <Compile Include="Network\TimeMachines\SingleTimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\StringTimeMachine.cs" />
     <Compile Include="Network\TimeMachines\Vector3TimeMachine.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />
     <Compile Include="Noise\PerlinNoise.cs" />

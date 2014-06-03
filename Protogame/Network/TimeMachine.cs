@@ -5,29 +5,29 @@ namespace Protogame
     using System.Linq;
 
     /// <summary>
-    /// This class facilitates lag compensation, value prediction, interpolation and extrapolation
-    /// for data that is being synchronised over a latent stream (such as a network connection).
+    /// This class facilitates lag compensation and value prediction for data that is 
+    /// being synchronized over a latent stream (such as a network connection).  For interpolation
+    /// and extrapolation, use <see cref="InterpolatedTimeMachine{T}"/>.
     /// </summary>
     /// <typeparam name="T">
     /// The type of data that will be tracked by the time machine.
     /// </typeparam>
     public abstract class TimeMachine<T>
-        where T : struct
     {
-        /// <summary>
-        /// The amount of history to keep in ticks.
-        /// </summary>
-        private readonly int m_History;
-
         /// <summary>
         /// Storage of the known values provided by the <see cref="Set"/> method.
         /// </summary>
-        private readonly Dictionary<int, T> m_KnownValues;
+        protected readonly Dictionary<int, T> KnownValues;
 
         /// <summary>
         /// Storage of the known keys provided by the <see cref="Set"/> method.
         /// </summary>
-        private readonly List<int> m_KnownKeys; 
+        protected readonly List<int> KnownKeys;
+
+        /// <summary>
+        /// The amount of history to keep in ticks.
+        /// </summary>
+        private readonly int m_History;
 
         /// <summary>
         /// The latest tick that was last set with <see cref="Set"/>.
@@ -42,8 +42,8 @@ namespace Protogame
         /// </param>
         protected TimeMachine(int history)
         {
-            this.m_KnownValues = new Dictionary<int, T>();
-            this.m_KnownKeys = new List<int>();
+            this.KnownValues = new Dictionary<int, T>();
+            this.KnownKeys = new List<int>();
             this.m_LatestTick = 0;
             this.m_History = history;
         }
@@ -155,69 +155,48 @@ namespace Protogame
         /// <returns>
         /// The <typeparamref name="T"/>.
         /// </returns>
-        public T Get(int tick)
+        public virtual T Get(int tick)
         {
             int previousTick, nextTick;
 
             this.FindSurroundingTickValues(
-                this.m_KnownKeys,
+                this.KnownKeys,
                 tick,
                 out previousTick,
                 out nextTick);
 
             if (previousTick != -1)
             {
-                previousTick = this.m_KnownKeys[previousTick];
+                previousTick = this.KnownKeys[previousTick];
             }
 
             if (nextTick != -1)
             {
-                nextTick = this.m_KnownKeys[nextTick];
+                nextTick = this.KnownKeys[nextTick];
             }
 
-            if (previousTick != -1 && nextTick != -1)
+            if (nextTick == -1 && previousTick == -1)
             {
-                // If they are the same, skip and return the value.
-                if (previousTick == nextTick)
-                {
-                    return this.m_KnownValues[previousTick];
-                }
-
-                // We can interpolate the values.
-                var previousValue = this.m_KnownValues[previousTick];
-                var nextValue = this.m_KnownValues[nextTick];
-
-                var tickDifference = nextTick - previousTick;
-                var valueDifference = this.SubtractType(nextValue, previousValue);
-
-                // If there's no difference between the two values, return either of them.
-                if (this.ValueIsZeroType(valueDifference))
-                {
-                    return previousValue;
-                }
-
-                var rate = this.DivideType(valueDifference, tickDifference);
-
-                var additionDifference = tick - previousTick;
-                var additionValue = this.MultiplyType(rate, additionDifference);
-
-                return this.AddType(previousValue, additionValue);
+                return default(T);
             }
 
-            if (previousTick != -1 && nextTick == -1)
+            if (nextTick == -1)
             {
-                // Return the previous value and don't attempt to predict the future.
-                return this.m_KnownValues[previousTick];
+                return this.KnownValues[previousTick];
             }
 
-            if (nextTick == -1 && previousTick != -1)
+            if (previousTick == -1)
             {
-                // TODO: Extrapolation
-                return this.m_KnownValues[previousTick];
+                return this.KnownValues[nextTick];
             }
 
-            // TODO: something better
-            return this.DefaultType();
+            // Return the nearest value.
+            if (Math.Abs(tick - previousTick) < Math.Abs(nextTick - tick))
+            {
+                return this.KnownValues[previousTick];
+            }
+            
+            return this.KnownValues[nextTick];
         }
 
         /// <summary>
@@ -234,18 +213,18 @@ namespace Protogame
         /// </param>
         public void Purge(int tick)
         {
-            if (this.m_KnownKeys.Count <= 2)
+            if (this.KnownKeys.Count <= 2)
             {
                 // Never allow less than 2 values in the list as this prevents extrapolation.
                 return;
             }
 
-            var keys = this.m_KnownKeys.Where(k => k <= tick - this.m_History).OrderBy(k => k).ToArray();
+            var keys = this.KnownKeys.Where(k => k <= tick - this.m_History).OrderBy(k => k).ToArray();
 
             foreach (var k in keys)
             {
-                this.m_KnownKeys.Remove(k);
-                this.m_KnownValues.Remove(k);
+                this.KnownKeys.Remove(k);
+                this.KnownValues.Remove(k);
             }
         }
 
@@ -266,90 +245,13 @@ namespace Protogame
                 return;
             }
 
-            this.m_KnownValues[tick] = value;
+            this.KnownValues[tick] = value;
 
             if (tick > this.m_LatestTick)
             {
-                this.m_KnownKeys.Add(tick);
+                this.KnownKeys.Add(tick);
                 this.m_LatestTick = tick;
             }
         }
-
-        /// <summary>
-        /// Add an instance of <see cref="T"/> to another instance of <see cref="T"/>.
-        /// </summary>
-        /// <returns>
-        /// The resulting value.
-        /// </returns>
-        /// <param name="a">
-        /// The first value for .
-        /// </param>
-        /// <param name="b">
-        /// The second value for multiplication.
-        /// </param>
-        protected abstract T AddType(T a, T b);
-
-        /// <summary>
-        /// Return the default value of <typeparamref cref="T"/> when neither interpolation or extrapolation can be performed.
-        /// </summary>
-        /// <returns>
-        /// The default value.
-        /// </returns>
-        protected abstract T DefaultType();
-
-        /// <summary>
-        /// Divides an instance of <typeparamref cref="T"/> by a numeric value.  Effectively this is
-        /// used to calculate the rate at which something is being changed.
-        /// </summary>
-        /// <returns>
-        /// The resulting value.
-        /// </returns>
-        /// <param name="b">
-        /// The value to divide by.
-        /// </param>
-        /// <param name="a">
-        /// The value to divide.
-        /// </param>
-        protected abstract T DivideType(T b, int a);
-
-        /// <summary>
-        /// Multiply an instance of <typeparamref cref="T"/> by a numeric value.
-        /// </summary>
-        /// <returns>
-        /// The resulting value.
-        /// </returns>
-        /// <param name="a">
-        /// The first value for multiplication.
-        /// </param>
-        /// <param name="b">
-        /// The second value for multiplication.
-        /// </param>
-        protected abstract T MultiplyType(T a, int b);
-
-        /// <summary>
-        /// Subtract an instance of <typeparamref cref="T"/> from another instance of <see cref="T"/>.
-        /// </summary>
-        /// <returns>
-        /// The resulting value.
-        /// </returns>
-        /// <param name="a">
-        /// The value to subtract from.
-        /// </param>
-        /// <param name="b">
-        /// The value to subtract by.
-        /// </param>
-        protected abstract T SubtractType(T a, T b);
-
-        /// <summary>
-        /// Return whether the specified value represents zero, in which case it would not be safe to call
-        /// <see cref="DivideType"/>.
-        /// </summary>
-        /// <param name="value">
-        /// The value to check.
-        /// </param>
-        /// <returns>
-        /// Whether the value represents zero.
-        /// </returns>
-        protected abstract bool ValueIsZeroType(T value);
     }
 }

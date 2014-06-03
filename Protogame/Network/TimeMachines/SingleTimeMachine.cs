@@ -1,11 +1,9 @@
 namespace Protogame
 {
-    using System;
-
     /// <summary>
     /// The single time machine.
     /// </summary>
-    public class SingleTimeMachine : TimeMachine<float>
+    public class SingleTimeMachine : InterpolatedTimeMachine<float>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleTimeMachine"/> class.

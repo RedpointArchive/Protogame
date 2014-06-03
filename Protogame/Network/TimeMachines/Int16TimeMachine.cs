@@ -5,7 +5,7 @@ namespace Protogame
     /// <summary>
     /// The int 16 time machine.
     /// </summary>
-    public class Int16TimeMachine : TimeMachine<short>
+    public class Int16TimeMachine : InterpolatedTimeMachine<short>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Int16TimeMachine"/> class.

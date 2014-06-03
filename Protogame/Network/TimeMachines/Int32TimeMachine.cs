@@ -1,11 +1,9 @@
 namespace Protogame
 {
-    using System;
-
     /// <summary>
     /// The int 32 time machine.
     /// </summary>
-    public class Int32TimeMachine : TimeMachine<int>
+    public class Int32TimeMachine : InterpolatedTimeMachine<int>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Int32TimeMachine"/> class.
