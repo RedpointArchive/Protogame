@@ -176,8 +176,8 @@
         /// </returns>
         public Matrix GetBoneMatrix()
         {
-            return Matrix.CreateTranslation(this.CurrentTranslation) * Matrix.CreateFromQuaternion(this.CurrentRotation)
-                   * Matrix.CreateScale(this.CurrentScale);
+            return Matrix.CreateScale(this.CurrentScale) * Matrix.CreateFromQuaternion(this.CurrentRotation)
+                   * Matrix.CreateTranslation(this.CurrentTranslation);
         }
 
         /// <summary>
