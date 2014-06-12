@@ -304,6 +304,7 @@
     <Compile Include="Network\MxReliabilityTransmitEventHandler.cs" />
     <Compile Include="Network\MxUtility.cs" />
     <Compile Include="Network\TimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\BooleanTimeMachine.cs" />
     <Compile Include="Network\TimeMachines\DoubleTimeMachine.cs" />
     <Compile Include="Network\TimeMachines\Int16TimeMachine.cs" />
     <Compile Include="Network\TimeMachines\Int32TimeMachine.cs" />
