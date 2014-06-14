@@ -241,6 +241,7 @@
     <Compile Include="Extensions\MouseStateExtensions.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\UtilityExtensions.cs" />
+    <Compile Include="Extensions\VectorExtensions.cs" />
     <Compile Include="FadingWorld.cs" />
     <Compile Include="GameAssetManagerProvider.cs" />
     <Compile Include="HorizontalAlignment.cs" />
