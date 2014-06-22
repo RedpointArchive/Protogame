@@ -1,5 +1,6 @@
 namespace Protogame
 {
+    using System;
     using System.Linq;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
@@ -24,16 +25,6 @@ namespace Protogame
         private readonly IKernel m_Kernel;
 
         /// <summary>
-        /// The total number of frames that have elapsed since the last second interval.
-        /// </summary>
-        private int m_TotalFrames;
-
-        /// <summary>
-        /// The total amount of time that has elapsed since the last second interval.
-        /// </summary>
-        private float m_ElapsedTime;
-
-        /// <summary>
         /// The graphics device manager instance.
         /// </summary>
         private readonly GraphicsDeviceManager m_GraphicsDeviceManager;
@@ -52,6 +43,16 @@ namespace Protogame
         /// The current analytics initializer instance.
         /// </summary>
         private readonly IAnalyticsInitializer m_AnalyticsInitializer;
+
+        /// <summary>
+        /// The total number of frames that have elapsed since the last second interval.
+        /// </summary>
+        private int m_TotalFrames;
+
+        /// <summary>
+        /// The total amount of time that has elapsed since the last second interval.
+        /// </summary>
+        private float m_ElapsedTime;
 
         /// <summary>
         /// An array of the engine hooks that are loaded.
@@ -212,6 +213,23 @@ namespace Protogame
                 this.GameContext.Graphics.ApplyChanges();
                 shouldHandleResize = true;
             };
+
+            // Register for the window close event so we can dispatch
+            // it correctly.
+            var form = System.Windows.Forms.Control.FromHandle(base.Window.Handle) as System.Windows.Forms.Form;
+            if (form != null)
+            {
+                form.FormClosing += (sender, args) =>
+                {
+                    bool cancel;
+                    this.CloseRequested(out cancel);
+
+                    if (cancel)
+                    {
+                        args.Cancel = true;
+                    }
+                };
+            }
 #endif
 
             // Create the game context.
@@ -237,8 +255,14 @@ namespace Protogame
             this.m_AnalyticsEngine.LogGameplayEvent("Game:Start");
         }
 
+        /// <summary>
+        /// Cleans up and disposes resources used by the game.
+        /// </summary>
+        /// <param name="disposing">No documentation.</param>
         protected override void Dispose(bool disposing)
         {
+            this.GameContext.World.Dispose();
+
             this.m_AnalyticsEngine.LogGameplayEvent("Game:Stop");
 
             this.m_AnalyticsEngine.FlushAndStop();
@@ -324,6 +348,16 @@ namespace Protogame
 
                 base.Draw(gameTime);
             }
+        }
+
+        /// <summary>
+        /// Handles a close requested event, usually occurring when the user clicks the close button
+        /// on the game window or presses Alt-F4.
+        /// </summary>
+        /// <param name="cancel">Whether or not to cancel the form closure.</param>
+        protected virtual void CloseRequested(out bool cancel)
+        {
+            cancel = false;
         }
 
         /// <summary>
