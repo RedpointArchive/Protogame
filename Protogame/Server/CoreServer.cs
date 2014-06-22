@@ -79,7 +79,8 @@ namespace Protogame
 
         public void Dispose()
         {
-            // TODO: Call dispose on the current world.
+            this.ServerContext.World.Dispose();
+            
             this.m_AnalyticsEngine.LogGameplayEvent("Server:Stop");
 
             this.m_AnalyticsEngine.FlushAndStop();
