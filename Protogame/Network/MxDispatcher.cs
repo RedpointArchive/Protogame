@@ -754,6 +754,10 @@
 
                 throw;
             }
+            catch (ObjectDisposedException)
+            {
+                return null;
+            }
         }
 
         /// <summary>
