@@ -235,7 +235,7 @@
             // Byte 7: total packets
             // Remaining bytes are the fragment data
             var messageID = BitConverter.ToInt32(data, 0);
-            var length = BitConverter.ToInt16(data, 4);
+            var length = BitConverter.ToUInt16(data, 4);
             var currentIndex = (int)data[6];
             var totalPackets = (int)data[7];
 
@@ -347,7 +347,7 @@
                 var length = Math.Min(SafeFragmentSize - DataOffset, packet.Length - i);
                 var fragment = new byte[length + DataOffset];
                 var messageIDBytes = BitConverter.GetBytes(sendState.CurrentSendMessageID);
-                var lengthBytes = BitConverter.GetBytes((ushort)length);
+                var lengthBytes = BitConverter.GetBytes((UInt16)length);
 
                 fragment[0] = messageIDBytes[0];
                 fragment[1] = messageIDBytes[1];
