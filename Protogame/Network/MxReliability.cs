@@ -255,6 +255,7 @@
                     "data that was present. ";
                 errorMessage += "\r\n";
                 errorMessage += "\r\n";
+                errorMessage += "Client IP Address: " + mxMessageEventArgs.Client.Endpoint.ToString() + "\r\n";
                 errorMessage += "Message ID: " + messageID + "\r\n";
                 errorMessage += "Length: " + length + "\r\n";
                 errorMessage += "Current Index: " + currentIndex + "\r\n";
@@ -262,7 +263,10 @@
                 errorMessage += "Payload Length: " + data.Length + "\r\n";
                 errorMessage += "Payload Length minus Offset: " + (data.Length - DataOffset) + "\r\n";
 
-                throw new InvalidDataException(errorMessage);
+                var exception = new InvalidDataException(errorMessage);
+                exception.Data.Add("Payload", data);
+
+                throw exception;
             }
 
             // Extract the fragment data.
