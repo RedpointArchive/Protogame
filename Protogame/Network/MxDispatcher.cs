@@ -375,6 +375,8 @@
         {
             this.AssertNotClosed();
 
+            this.ValidateDualEndpoints();
+
             this.UpdateFor(this.m_RealtimeUdpClient, this.m_RealtimeMxClients, false);
             this.UpdateFor(this.m_ReliableUdpClient, this.m_ReliableMxClients, true);
         }
@@ -542,38 +544,7 @@
                 .Union(this.m_ReliableMxClients.Select(x => x.Key))
                 .ToList();
 
-            Func<List<int>, bool> getIsUnique = values =>
-            {
-                var set = new HashSet<int>();
-
-                return values.All(set.Add);
-            };
-
-            // Verify that each endpoint is unique and there are no conflict ports and addresses.  This should
-            // never occur, but this code is here to ensure that we pick up any bugs in this area.
-            foreach (
-                var identicalAddresses in
-                    this.Endpoints.GroupBy(
-                        x => x.RealtimeEndPoint != null ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address)
-                        .Where(x => x.Count() >= 2))
-            {
-                var realtimePorts =
-                    identicalAddresses.Where(x => x.RealtimeEndPoint != null).Select(x => x.RealtimeEndPoint.Port).ToList();
-                var reliablePorts =
-                    identicalAddresses.Where(x => x.ReliableEndPoint != null).Select(x => x.ReliableEndPoint.Port).ToList();
-
-                if (!getIsUnique(realtimePorts))
-                {
-                    throw new InvalidOperationException(
-                        "More than one realtime endpoint shares the same address and port.");
-                }
-
-                if (!getIsUnique(reliablePorts))
-                {
-                    throw new InvalidOperationException(
-                        "More than one reliable endpoint shares the same address and port.");
-                }
-            }
+            this.ValidateDualEndpoints();
         }
 
         /// <summary>
@@ -816,6 +787,87 @@
             reliability.MessageAcknowledged -= this.OnReliabilityMessageReceived;
             reliability.FragmentReceived -= this.OnReliabilityFragmentReceived;
             reliability.FragmentSent -= this.OnReliabilityFragmentSent;
+        }
+
+        private void ValidateDualEndpoints()
+        {
+            // Validation part 1.
+            Func<List<int>, bool> getIsUnique = values =>
+            {
+                var set = new HashSet<int>();
+
+                return values.All(set.Add);
+            };
+
+            // Verify that each endpoint is unique and there are no conflict ports and addresses.  This should
+            // never occur, but this code is here to ensure that we pick up any bugs in this area.
+            foreach (
+                var identicalAddresses in
+                this.Endpoints.GroupBy(
+                    x => x.RealtimeEndPoint != null ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address)
+                .Where(x => x.Count() >= 2))
+            {
+                var realtimePorts =
+                    identicalAddresses.Where(x => x.RealtimeEndPoint != null).Select(x => x.RealtimeEndPoint.Port).ToList();
+                var reliablePorts =
+                    identicalAddresses.Where(x => x.ReliableEndPoint != null).Select(x => x.ReliableEndPoint.Port).ToList();
+
+                if (!getIsUnique(realtimePorts))
+                {
+                    throw new InvalidOperationException(
+                        "More than one realtime endpoint shares the same address and port.");
+                }
+
+                if (!getIsUnique(reliablePorts))
+                {
+                    throw new InvalidOperationException(
+                        "More than one reliable endpoint shares the same address and port.");
+                }
+            }
+
+            // Validation part 2.
+            var dicts = new[]
+            {
+                this.m_ReliableMxClients,
+                this.m_RealtimeMxClients
+            };
+
+            foreach (var dict in dicts)
+            {
+                // Check for invalid endpoint configuration.
+                foreach (var endpointA in dict.Keys)
+                {
+                    var addressA = endpointA.ReliableEndPoint != null ?
+                        endpointA.ReliableEndPoint.Address :
+                        endpointA.RealtimeEndPoint.Address;
+
+                    foreach (var endpointB in dict.Keys.Where(x => x != endpointA))
+                    {
+                        var addressB = endpointB.ReliableEndPoint != null ?
+                            endpointB.ReliableEndPoint.Address :
+                            endpointB.RealtimeEndPoint.Address;
+
+                        if (addressA == addressB)
+                        {
+                            var portsA = new List<int>();
+                            var portsB = new List<int>();
+                            if (endpointA.RealtimeEndPoint != null) { portsA.Add(endpointA.RealtimeEndPoint.Port); }
+                            if (endpointA.ReliableEndPoint != null) { portsA.Add(endpointA.ReliableEndPoint.Port); }
+                            if (endpointB.RealtimeEndPoint != null) { portsB.Add(endpointB.RealtimeEndPoint.Port); }
+                            if (endpointB.ReliableEndPoint != null) { portsB.Add(endpointB.ReliableEndPoint.Port); }
+
+                            foreach (var port in portsA)
+                            {
+                                if (portsB.Contains(port))
+                                {
+                                    throw new InvalidOperationException(
+                                        "Mx client configuration is invalid.");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
