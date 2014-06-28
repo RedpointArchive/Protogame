@@ -247,6 +247,24 @@
                     new MxReliabilityReceiveState(messageID, totalPackets));
             }
 
+            // Check for invalid payload.
+            if ((length - 1) + DataOffset >= data.Length)
+            {
+                var errorMessage = 
+                    "The payload data received had an invalid length for the " +
+                    "data that was present. ";
+                errorMessage += "\r\n";
+                errorMessage += "\r\n";
+                errorMessage += "Message ID: " + messageID + "\r\n";
+                errorMessage += "Length: " + length + "\r\n";
+                errorMessage += "Current Index: " + currentIndex + "\r\n";
+                errorMessage += "Total Packets: " + totalPackets + "\r\n";
+                errorMessage += "Payload Length: " + data.Length + "\r\n";
+                errorMessage += "Payload Length minus Offset: " + (data.Length - DataOffset) + "\r\n";
+
+                throw new InvalidDataException(errorMessage);
+            }
+
             // Extract the fragment data.
             var fragmentData = new byte[length];
             for (var i = 0; i < length; i++)
