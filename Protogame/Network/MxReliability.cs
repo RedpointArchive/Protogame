@@ -255,7 +255,10 @@
                     "data that was present. ";
                 errorMessage += "\r\n";
                 errorMessage += "\r\n";
-                errorMessage += "Client IP Address: " + mxMessageEventArgs.Client.Endpoint.ToString() + "\r\n";
+                errorMessage += "Client IP Address: " + mxMessageEventArgs.Client.Endpoint.Address.ToString() + "\r\n";
+                errorMessage += "Client Realtime Port: " + mxMessageEventArgs.Client.DualEndpoint.RealtimeEndPoint.Port + "\r\n";
+                errorMessage += "Client Reliable Port: " + mxMessageEventArgs.Client.DualEndpoint.ReliableEndPoint.Port + "\r\n";
+                errorMessage += "Client Is Reliable: " + mxMessageEventArgs.Client.IsReliable + "\r\n";
                 errorMessage += "Message ID: " + messageID + "\r\n";
                 errorMessage += "Length: " + length + "\r\n";
                 errorMessage += "Current Index: " + currentIndex + "\r\n";
