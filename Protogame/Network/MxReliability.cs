@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Runtime.InteropServices;
 
     /// <summary>
     /// The class that provides reliability and fragmentation infrastructure for Mx clients.
@@ -182,6 +181,11 @@
         /// </param>
         private void ClientOnMessageAcknowledged(object sender, MxMessageEventArgs mxMessageEventArgs)
         {
+            if (mxMessageEventArgs.ProtocolID != MxMessage.ReliableProtocol)
+            {
+                return;
+            }
+
             var data = mxMessageEventArgs.Payload;
 
             foreach (var message in this.m_ActiveMessages)
@@ -204,6 +208,11 @@
         /// </param>
         private void ClientOnMessageLost(object sender, MxMessageEventArgs mxMessageEventArgs)
         {
+            if (mxMessageEventArgs.ProtocolID != MxMessage.ReliableProtocol)
+            {
+                return;
+            }
+
             var data = mxMessageEventArgs.Payload;
 
             foreach (var message in this.m_ActiveMessages)
@@ -226,6 +235,11 @@
         /// </param>
         private void ClientOnMessageReceived(object sender, MxMessageReceiveEventArgs mxMessageEventArgs)
         {
+            if (mxMessageEventArgs.ProtocolID != MxMessage.ReliableProtocol)
+            {
+                return;
+            }
+
             var data = mxMessageEventArgs.Payload;
 
             // Format of a packet is:
@@ -255,11 +269,9 @@
                     "data that was present. ";
                 errorMessage += "\r\n";
                 errorMessage += "\r\n";
-                errorMessage += "Client IP Address: " + mxMessageEventArgs.Client.Endpoint.Address.ToString() + "\r\n";
-                errorMessage += "Client Realtime Port: " + mxMessageEventArgs.Client.DualEndpoint.RealtimeEndPoint.Port + "\r\n";
-                errorMessage += "Client Reliable Port: " + mxMessageEventArgs.Client.DualEndpoint.ReliableEndPoint.Port + "\r\n";
-                errorMessage += "Client Is Reliable: " + mxMessageEventArgs.Client.IsReliable + "\r\n";
+                errorMessage += "Client Endpoint: " + mxMessageEventArgs.Client.Endpoint + "\r\n";
                 errorMessage += "Message ID: " + messageID + "\r\n";
+                errorMessage += "Message Protocol: " + mxMessageEventArgs.ProtocolID + "\r\n";
                 errorMessage += "Length: " + length + "\r\n";
                 errorMessage += "Current Index: " + currentIndex + "\r\n";
                 errorMessage += "Total Packets: " + totalPackets + "\r\n";
@@ -297,7 +309,13 @@
             {
                 if (activeReceive.Value.IsComplete())
                 {
-                    this.OnMessageReceived(new MxMessageEventArgs { Client = this.m_Client, Payload = activeReceive.Value.Reconstruct() });
+                    this.OnMessageReceived(
+                        new MxMessageEventArgs
+                        {
+                            Client = this.m_Client, 
+                            Payload = activeReceive.Value.Reconstruct(),
+                            ProtocolID = MxMessage.ReliableProtocol
+                        });
 
                     pendingRemove.Add(activeReceive.Key);
                 }
@@ -432,7 +450,7 @@
                     {
                         if (fragment.Status == FragmentStatus.WaitingOnSend)
                         {
-                            this.m_Client.EnqueueSend(fragment.Data);
+                            this.m_Client.EnqueueSend(fragment.Data, MxMessage.ReliableProtocol);
                             fragment.Status = FragmentStatus.WaitingOnAcknowledgement;
                         }
                     }
@@ -463,7 +481,12 @@
                 if (message.CurrentSendFragments.All(x => x.Status == FragmentStatus.Acknowledged))
                 {
                     this.OnMessageAcknowledged(
-                        new MxMessageEventArgs { Client = this.m_Client, Payload = message.CurrentSendMessage });
+                        new MxMessageEventArgs
+                        {
+                            Client = this.m_Client, 
+                            Payload = message.CurrentSendMessage,
+                            ProtocolID = MxMessage.ReliableProtocol
+                        });
 
                     this.m_ActiveMessages.Remove(message);
                 }

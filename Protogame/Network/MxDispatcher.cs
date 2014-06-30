@@ -13,29 +13,19 @@
     public class MxDispatcher
     {
         /// <summary>
-        /// A list of currently connected real time Mx clients.
+        /// A list of currently connected Mx clients.
         /// </summary>
-        private readonly Dictionary<DualIPEndPoint, MxClient> m_RealtimeMxClients;
-
-        /// <summary>
-        /// The UDP client that real time messages will be received on.
-        /// </summary>
-        private readonly UdpClient m_RealtimeUdpClient;
+        private readonly Dictionary<IPEndPoint, MxClient> m_MxClients;
 
         /// <summary>
         /// A list of reliability objects that provide reliability for Mx clients.
         /// </summary>
-        private readonly Dictionary<DualIPEndPoint, MxReliability> m_Reliabilities;
+        private readonly Dictionary<IPEndPoint, MxReliability> m_Reliabilities;
 
         /// <summary>
-        /// A list of currently connected reliable Mx clients.
+        /// The UDP client that messages will be received on.
         /// </summary>
-        private readonly Dictionary<DualIPEndPoint, MxClient> m_ReliableMxClients;
-
-        /// <summary>
-        /// The UDP client that reliable messages will be received on.
-        /// </summary>
-        private readonly UdpClient m_ReliableUdpClient;
+        private readonly UdpClient m_UdpClient;
 
         /// <summary>
         /// The total number of unreliable bytes received during the last frame.
@@ -55,22 +45,15 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="MxDispatcher"/> class.
         /// </summary>
-        /// <param name="realtimePort">
-        /// The real time port of the UDP client.
+        /// <param name="port">
+        /// The port of the UDP client.
         /// </param>
-        /// <param name="reliablePort">
-        /// The reliable port of the UDP client.
-        /// </param>
-        public MxDispatcher(int realtimePort, int reliablePort)
+        public MxDispatcher(int port)
         {
-            this.m_RealtimeUdpClient = new UdpClient(realtimePort) { Client = { Blocking = false } };
-            this.m_RealtimeMxClients = new Dictionary<DualIPEndPoint, MxClient>();
-            this.m_ReliableUdpClient = new UdpClient(reliablePort) { Client = { Blocking = false } };
-            this.m_ReliableMxClients = new Dictionary<DualIPEndPoint, MxClient>();
-            this.m_Reliabilities = new Dictionary<DualIPEndPoint, MxReliability>();
+            this.m_UdpClient = new UdpClient(port) { Client = { Blocking = false } };
+            this.m_MxClients = new Dictionary<IPEndPoint, MxClient>();
+            this.m_Reliabilities = new Dictionary<IPEndPoint, MxReliability>();
             this.m_Closed = false;
-
-            this.CalculateEndpoints();
         }
 
         /// <summary>
@@ -138,10 +121,12 @@
         /// <value>
         /// An enumeration of the endpoints of all connected clients.
         /// </value>
-        public IEnumerable<DualIPEndPoint> Endpoints
+        public IEnumerable<IPEndPoint> Endpoints
         {
-            get; 
-            private set;
+            get
+            {
+                return this.m_MxClients.Keys.ToList();
+            }
         }
 
         /// <summary>
@@ -150,13 +135,13 @@
         /// <value>
         /// An enumeration of the latencies for all connected endpoints.
         /// </value>
-        public IEnumerable<KeyValuePair<DualIPEndPoint, float>> Latencies
+        public IEnumerable<KeyValuePair<IPEndPoint, float>> Latencies
         {
             get
             {
                 return
-                    this.m_RealtimeMxClients.Select(
-                        x => new KeyValuePair<DualIPEndPoint, float>(x.Key, x.Value.Latency)).ToArray();
+                    this.m_MxClients.Select(
+                        x => new KeyValuePair<IPEndPoint, float>(x.Key, x.Value.Latency)).ToArray();
             }
         }
 
@@ -165,18 +150,15 @@
         /// </summary>
         public void Close()
         {
-            this.m_RealtimeUdpClient.Close();
-            this.m_ReliableUdpClient.Close();
+            this.m_UdpClient.Close();
 
             foreach (var endpoint in this.Endpoints)
             {
                 this.Disconnect(endpoint);
             }
 
-            this.m_RealtimeMxClients.Clear();
-            this.m_ReliableMxClients.Clear();
+            this.m_MxClients.Clear();
             this.m_Reliabilities.Clear();
-            this.CalculateEndpoints();
 
             this.m_Closed = true;
         }
@@ -192,30 +174,19 @@
         /// <param name="endpoint">
         /// The endpoint to connect to.
         /// </param>
-        public void Connect(DualIPEndPoint endpoint)
+        public void Connect(IPEndPoint endpoint)
         {
             this.AssertNotClosed();
 
-            this.m_RealtimeMxClients[endpoint] = new MxClient(
+            this.m_MxClients[endpoint] = new MxClient(
                 this, 
-                endpoint.RealtimeEndPoint, 
                 endpoint, 
-                this.m_RealtimeUdpClient, 
-                false);
-            this.OnClientConnected(this.m_RealtimeMxClients[endpoint]);
-            this.RegisterForEvents(this.m_RealtimeMxClients[endpoint]);
+                this.m_UdpClient);
+            this.OnClientConnected(this.m_MxClients[endpoint]);
+            this.RegisterForEvents(this.m_MxClients[endpoint]);
 
-            this.m_ReliableMxClients[endpoint] = new MxClient(
-                this, 
-                endpoint.ReliableEndPoint, 
-                endpoint, 
-                this.m_ReliableUdpClient, 
-                true);
-            this.m_Reliabilities[endpoint] = new MxReliability(this.m_ReliableMxClients[endpoint]);
-            this.OnClientConnected(this.m_ReliableMxClients[endpoint]);
+            this.m_Reliabilities[endpoint] = new MxReliability(this.m_MxClients[endpoint]);
             this.RegisterForEvents(this.m_Reliabilities[endpoint]);
-
-            this.CalculateEndpoints();
         }
 
         /// <summary>
@@ -230,23 +201,16 @@
         /// <param name="endpoint">
         /// The endpoint to disconnect from.
         /// </param>
-        public void Disconnect(DualIPEndPoint endpoint)
+        public void Disconnect(IPEndPoint endpoint)
         {
             this.AssertNotClosed();
 
-            if (this.m_RealtimeMxClients.ContainsKey(endpoint))
+            if (this.m_MxClients.ContainsKey(endpoint))
             {
-                var realtimeClient = this.m_RealtimeMxClients[endpoint];
+                var realtimeClient = this.m_MxClients[endpoint];
                 this.UnregisterFromEvents(realtimeClient);
-                this.m_RealtimeMxClients.Remove(endpoint);
+                this.m_MxClients.Remove(endpoint);
                 this.OnClientDisconnected(realtimeClient);
-            }
-
-            if (this.m_ReliableMxClients.ContainsKey(endpoint))
-            {
-                var reliableClient = this.m_ReliableMxClients[endpoint];
-                this.m_ReliableMxClients.Remove(endpoint);
-                this.OnClientDisconnected(reliableClient);
             }
 
             if (this.m_Reliabilities.ContainsKey(endpoint))
@@ -255,8 +219,6 @@
                 this.UnregisterFromEvents(reliability);
                 this.m_Reliabilities.Remove(endpoint);
             }
-
-            this.CalculateEndpoints();
         }
 
         /// <summary>
@@ -286,51 +248,13 @@
         }
 
         /// <summary>
-        /// Returns the realtime Mx client for the given endpoint.
+        /// Returns the Mx client for the given endpoint.
         /// </summary>
-        /// <param name="endpoint">The dual IP endpoint.</param>
-        /// <returns>The realtime Mx client.</returns>
-        public MxClient GetRealtimeClient(DualIPEndPoint endpoint)
+        /// <param name="endpoint">The IP endpoint.</param>
+        /// <returns>The Mx client.</returns>
+        public MxClient GetRealtimeClient(IPEndPoint endpoint)
         {
-            return this.m_RealtimeMxClients[endpoint];
-        }
-
-        /// <summary>
-        /// Returns the reliable Mx client for the given endpoint.
-        /// </summary>
-        /// <param name="endpoint">The dual IP endpoint.</param>
-        /// <returns>The reliable Mx client.</returns>
-        public MxClient GetReliableClient(DualIPEndPoint endpoint)
-        {
-            return this.m_ReliableMxClients[endpoint];
-        }
-
-        /// <summary>
-        /// Resolves an IP endpoint and reliability information to a dual IP endpoint.
-        /// </summary>
-        /// <param name="endpoint">
-        /// The IP endpoint.
-        /// </param>
-        /// <param name="reliable">
-        /// Whether this endpoint is a reliable endpoint.
-        /// </param>
-        /// <returns>
-        /// The <see cref="DualIPEndPoint"/>, or null if no dual endpoint matched.
-        /// </returns>
-        public DualIPEndPoint ResolveDualIPEndPoint(IPEndPoint endpoint, bool reliable)
-        {
-            var mxClients = !reliable ? this.m_RealtimeMxClients : this.m_ReliableMxClients;
-
-            return
-                mxClients.Select(x => x.Key)
-                    .FirstOrDefault(
-                        x =>
-                        Equals(
-                            x.RealtimeEndPoint != null ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address, 
-                            endpoint.Address)
-                        && (!reliable
-                                ? (x.RealtimeEndPoint.Port == endpoint.Port)
-                                : (x.ReliableEndPoint.Port == endpoint.Port)));
+            return this.m_MxClients[endpoint];
         }
 
         /// <summary>
@@ -346,16 +270,16 @@
         /// Whether or not this message should be sent reliably and intact.  This also
         /// permits messages larger than 512 bytes to be sent.
         /// </param>
-        public void Send(DualIPEndPoint endpoint, byte[] packet, bool reliable = false)
+        public void Send(IPEndPoint endpoint, byte[] packet, bool reliable = false)
         {
             this.AssertNotClosed();
 
             if (!reliable)
             {
-                if (this.m_RealtimeMxClients.ContainsKey(endpoint))
+                if (this.m_MxClients.ContainsKey(endpoint))
                 {
-                    var client = this.m_RealtimeMxClients[endpoint];
-                    client.EnqueueSend(packet);
+                    var client = this.m_MxClients[endpoint];
+                    client.EnqueueSend(packet, MxMessage.RealtimeProtocol);
                 }
             }
             else
@@ -375,10 +299,62 @@
         {
             this.AssertNotClosed();
 
-            this.ValidateDualEndpoints();
+            // Receive as many messages from the connection as we possibly
+            // can, and dispatch them to the correct MxClient.
+            while (true)
+            {
+                var receive = (IPEndPoint)null;
+                var packet = this.ReceiveNonBlocking(this.m_UdpClient, ref receive);
+                if (packet == null)
+                {
+                    break;
+                }
 
-            this.UpdateFor(this.m_RealtimeUdpClient, this.m_RealtimeMxClients, false);
-            this.UpdateFor(this.m_ReliableUdpClient, this.m_ReliableMxClients, true);
+                // Handle probe packets. Send a UDP packet to either port with the following
+                // hexadecimal values to get a response:
+                // 
+                // 0x12, 0x34
+                //
+                // This is smaller than the possible MxMessage, so we know that if it's exactly
+                // this size with these character, it's a probe packet.
+                if (packet.Length == 2 && packet[0] == 0x12 && packet[1] == 0x34)
+                {
+                    // This sends back 0x56, 0x78.
+                    this.m_UdpClient.Send(new byte[] { 0x56, 0x78 }, 2, receive);
+                    continue;
+                }
+
+                if (this.m_MxClients.ContainsKey(receive))
+                {
+                    // Dispatch to an existing client.
+                    this.m_MxClients[receive].EnqueueReceive(packet);
+                }
+                else
+                {
+                    // Create a new client for this address.
+                    this.m_MxClients.Add(receive, new MxClient(this, receive, this.m_UdpClient));
+                    
+                    this.RegisterForEvents(this.m_MxClients[receive]);
+
+                    this.m_Reliabilities.Add(receive, new MxReliability(this.m_MxClients[receive]));
+                    this.RegisterForEvents(this.m_Reliabilities[receive]);
+
+                    this.m_MxClients[receive].EnqueueReceive(packet);
+                    this.OnClientConnected(this.m_MxClients[receive]);
+                }
+            }
+
+            // Update all of the clients.
+            foreach (var client in this.m_MxClients.Values.ToArray())
+            {
+                client.Update();
+            }
+
+            // Update all of the reliabilities if needed.
+            foreach (var reliability in this.m_Reliabilities.Select(x => x.Value).ToArray())
+            {
+                reliability.Update();
+            }
         }
 
         /// <summary>
@@ -535,19 +511,6 @@
         }
 
         /// <summary>
-        /// Calculates the current endpoints after the realtime or reliable
-        /// client lists changed.
-        /// </summary>
-        private void CalculateEndpoints()
-        {
-            this.Endpoints = this.m_RealtimeMxClients.Select(x => x.Key)
-                .Union(this.m_ReliableMxClients.Select(x => x.Key))
-                .ToList();
-
-            this.ValidateDualEndpoints();
-        }
-
-        /// <summary>
         /// Handle receiving a DisconnectWarning event from a client.
         /// </summary>
         /// <param name="sender">
@@ -572,7 +535,12 @@
         /// </param>
         private void OnClientMessageAcknowledged(object sender, MxMessageEventArgs e)
         {
-            this.OnMessageAcknowledged(e);
+            // Exclude reliable protocol messages as they are handled by the
+            // reliability layer.
+            if (e.ProtocolID == MxMessage.RealtimeProtocol)
+            {
+                this.OnMessageAcknowledged(e);
+            }
         }
 
         /// <summary>
@@ -586,7 +554,12 @@
         /// </param>
         private void OnClientMessageLost(object sender, MxMessageEventArgs e)
         {
-            this.OnMessageLost(e);
+            // Exclude reliable protocol messages as they are handled by the
+            // reliability layer.
+            if (e.ProtocolID == MxMessage.RealtimeProtocol)
+            {
+                this.OnMessageLost(e);
+            }
         }
 
         /// <summary>
@@ -600,7 +573,12 @@
         /// </param>
         private void OnClientMessageReceived(object sender, MxMessageEventArgs e)
         {
-            this.OnMessageReceived(e);
+            // Exclude reliable protocol messages as they are handled by the
+            // reliability layer.
+            if (e.ProtocolID == MxMessage.RealtimeProtocol)
+            {
+                this.OnMessageReceived(e);
+            }
         }
 
         /// <summary>
@@ -614,7 +592,12 @@
         /// </param>
         private void OnClientMessageSent(object sender, MxMessageEventArgs e)
         {
-            this.OnMessageSent(e);
+            // Exclude reliable protocol messages as they are handled by the
+            // reliability layer.
+            if (e.ProtocolID == MxMessage.RealtimeProtocol)
+            {
+                this.OnMessageSent(e);
+            }
         }
 
         /// <summary>
@@ -787,247 +770,6 @@
             reliability.MessageAcknowledged -= this.OnReliabilityMessageReceived;
             reliability.FragmentReceived -= this.OnReliabilityFragmentReceived;
             reliability.FragmentSent -= this.OnReliabilityFragmentSent;
-        }
-
-        private void ValidateDualEndpoints()
-        {
-            // Validation part 1.
-            Func<List<int>, bool> getIsUnique = values =>
-            {
-                var set = new HashSet<int>();
-
-                return values.All(set.Add);
-            };
-
-            // Verify that each endpoint is unique and there are no conflict ports and addresses.  This should
-            // never occur, but this code is here to ensure that we pick up any bugs in this area.
-            foreach (
-                var identicalAddresses in
-                this.Endpoints.GroupBy(
-                    x => x.RealtimeEndPoint != null ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address)
-                .Where(x => x.Count() >= 2))
-            {
-                var realtimePorts =
-                    identicalAddresses.Where(x => x.RealtimeEndPoint != null).Select(x => x.RealtimeEndPoint.Port).ToList();
-                var reliablePorts =
-                    identicalAddresses.Where(x => x.ReliableEndPoint != null).Select(x => x.ReliableEndPoint.Port).ToList();
-
-                if (!getIsUnique(realtimePorts))
-                {
-                    throw new InvalidOperationException(
-                        "More than one realtime endpoint shares the same address and port.");
-                }
-
-                if (!getIsUnique(reliablePorts))
-                {
-                    throw new InvalidOperationException(
-                        "More than one reliable endpoint shares the same address and port.");
-                }
-            }
-
-            // Validation part 2.
-            var dicts = new[]
-            {
-                this.m_ReliableMxClients,
-                this.m_RealtimeMxClients
-            };
-
-            foreach (var dict in dicts)
-            {
-                // Check for invalid endpoint configuration.
-                foreach (var endpointA in dict.Keys)
-                {
-                    var addressA = endpointA.ReliableEndPoint != null ?
-                        endpointA.ReliableEndPoint.Address :
-                        endpointA.RealtimeEndPoint.Address;
-
-                    foreach (var endpointB in dict.Keys.Where(x => x != endpointA))
-                    {
-                        var addressB = endpointB.ReliableEndPoint != null ?
-                            endpointB.ReliableEndPoint.Address :
-                            endpointB.RealtimeEndPoint.Address;
-
-                        if (addressA == addressB)
-                        {
-                            var portsA = new List<int>();
-                            var portsB = new List<int>();
-                            if (endpointA.RealtimeEndPoint != null) { portsA.Add(endpointA.RealtimeEndPoint.Port); }
-                            if (endpointA.ReliableEndPoint != null) { portsA.Add(endpointA.ReliableEndPoint.Port); }
-                            if (endpointB.RealtimeEndPoint != null) { portsB.Add(endpointB.RealtimeEndPoint.Port); }
-                            if (endpointB.ReliableEndPoint != null) { portsB.Add(endpointB.ReliableEndPoint.Port); }
-
-                            foreach (var port in portsA)
-                            {
-                                if (portsB.Contains(port))
-                                {
-                                    throw new InvalidOperationException(
-                                        "Mx client configuration is invalid.");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Updates the dispatcher for a particular type of endpoint (real time or reliable).
-        /// </summary>
-        /// <param name="udpClient">
-        /// The UDP client.
-        /// </param>
-        /// <param name="mxClients">
-        /// The associated Mx clients.
-        /// </param>
-        /// <param name="reliable">
-        /// Whether or not the update is the for the reliable clients.
-        /// </param>
-        private void UpdateFor(UdpClient udpClient, Dictionary<DualIPEndPoint, MxClient> mxClients, bool reliable)
-        {
-            // Receive as many messages from the connection as we possibly
-            // can, and dispatch them to the correct MxClient.
-            while (true)
-            {
-                var receive = (IPEndPoint)null;
-                var packet = this.ReceiveNonBlocking(udpClient, ref receive);
-                if (packet == null)
-                {
-                    break;
-                }
-
-                // Handle probe packets. Send a UDP packet to either port with the following
-                // hexadecimal values to get a response:
-                // 
-                // 0x12, 0x34
-                //
-                // This is smaller than the possible MxMessage, so we know that if it's exactly
-                // this size with these character, it's a probe packet.
-                if (packet.Length == 2 && packet[0] == 0x12 && packet[1] == 0x34) 
-                {
-                    // This sends back 0x56, 0x78.
-                    udpClient.Send(new byte[] { 0x56, 0x78 }, 2, receive);
-                    continue;
-                }
-
-                var dualEndPoint = this.ResolveDualIPEndPoint(receive, reliable);
-                if (dualEndPoint == null)
-                {
-                    // Do some heuristics to guess what the best policy is here.  There's no way to infer
-                    // what the reliable port is from a real time message, so we do our best and try to pair
-                    // up the missing component of a dual endpoint if it's available.  This will obviously 
-                    // have incorrect results if two clients from the same IP address on different ports connect
-                    // at the exact same time, but the chance of this happening is extremely improbable.
-
-                    // We want to pick the opposite Mx client list, since if there's an existing connection
-                    // on the opposing connection type, that's where we'll find it.
-                    var opposingMxClients = reliable ? this.m_RealtimeMxClients : this.m_ReliableMxClients;
-
-                    var candidates =
-                        opposingMxClients.Select(x => x.Key)
-                            .Where(
-                                x =>
-                                Equals(
-                                    reliable ? x.RealtimeEndPoint.Address : x.ReliableEndPoint.Address, 
-                                    receive.Address))
-                            .ToList();
-
-                    // Find the first candidate that has one of the endpoints omitted.
-                    var firstAvailable =
-                        candidates.FirstOrDefault(x => (reliable ? x.ReliableEndPoint : x.RealtimeEndPoint) == null);
-
-                    if (firstAvailable != null)
-                    {
-                        // We have an existing endpoint on the same address for the opposite connection type,
-                        // and it is missing an endpoint for this connection type.
-
-                        // Before we change the dual IP endpoint, we have to temporarily remove it out of the
-                        // opposing client list.  This is because by changing the dual endpoint's properties,
-                        // we are also changing it's hash code, so it will not resolve in future lookups in
-                        // the dictionary even though it's there.
-                        var tempClient = opposingMxClients[firstAvailable];
-                        opposingMxClients.Remove(firstAvailable);
-
-                        // If the opposing client is a reliable client, we also need to remove the reliability.
-                        MxReliability tempReliability = null;
-                        if (!reliable)
-                        {
-                            tempReliability = this.m_Reliabilities[firstAvailable];
-                            this.m_Reliabilities.Remove(firstAvailable);
-                        }
-
-                        // Backfill the current endpoint into that dual endpoint.
-                        if (reliable)
-                        {
-                            firstAvailable.ReliableEndPoint = receive;
-                        }
-                        else
-                        {
-                            firstAvailable.RealtimeEndPoint = receive;
-                        }
-
-                        // Now add the key back into the opposing dictionary.
-                        opposingMxClients.Add(firstAvailable, tempClient);
-                        if (!reliable)
-                        {
-                            this.m_Reliabilities.Add(firstAvailable, tempReliability);
-                        }
-
-                        // And assign the endpoint so we use it.
-                        dualEndPoint = firstAvailable;
-
-                        // Our endpoints have changed; calculate again.
-                        this.CalculateEndpoints();
-                    }
-                    else
-                    {
-                        // We do not have any preexisting connections that are from the same address and missing
-                        // an endpoint for this connection type.  Create a new dual endpoint with the opposing side
-                        // missing and use that as our endpoint.
-                        dualEndPoint = reliable ? new DualIPEndPoint(null, receive) : new DualIPEndPoint(receive, null);
-                    }
-                }
-
-                if (mxClients.ContainsKey(dualEndPoint))
-                {
-                    // Dispatch to an existing client.
-                    mxClients[dualEndPoint].EnqueueReceive(packet);
-                }
-                else
-                {
-                    // Create a new client for this address.
-                    mxClients.Add(dualEndPoint, new MxClient(this, receive, dualEndPoint, udpClient, reliable));
-                    if (!reliable)
-                    {
-                        this.RegisterForEvents(mxClients[dualEndPoint]);
-                    }
-                    else
-                    {
-                        this.m_Reliabilities.Add(dualEndPoint, new MxReliability(mxClients[dualEndPoint]));
-                        this.RegisterForEvents(this.m_Reliabilities[dualEndPoint]);
-                    }
-
-                    mxClients[dualEndPoint].EnqueueReceive(packet);
-                    this.OnClientConnected(mxClients[dualEndPoint]);
-
-                    // Our endpoints have changed; calculate again.
-                    this.CalculateEndpoints();
-                }
-            }
-
-            // Update all of the clients.
-            foreach (var client in mxClients.Values.ToArray())
-            {
-                client.Update();
-            }
-
-            // Update all of the reliabilities if needed.
-            if (reliable)
-            {
-                foreach (var reliability in this.m_Reliabilities.Select(x => x.Value).ToArray())
-                {
-                    reliability.Update();
-                }
-            }
         }
     }
 }

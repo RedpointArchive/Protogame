@@ -29,19 +29,14 @@
         private readonly MxDispatcher m_Dispatcher;
 
         /// <summary>
-        /// The dual IP endpoint that we belong to.
+        /// The packets real time that are currently waiting to be sent by this client.
         /// </summary>
-        private readonly DualIPEndPoint m_DualEndPoint;
+        private readonly Queue<byte[]> m_PendingRealtimeSendPackets;
 
         /// <summary>
-        /// Whether or not this Mx client is a reliable client.
+        /// The packets reliable that are currently waiting to be sent by this client.
         /// </summary>
-        private readonly bool m_IsReliable;
-
-        /// <summary>
-        /// The packets that are currently waiting to be sent by this client.
-        /// </summary>
-        private readonly Queue<byte[]> m_PendingSendPackets;
+        private readonly Queue<byte[]> m_PendingReliableSendPackets;
 
         /// <summary>
         /// The round trip time queue, which is used to calculate a moving average
@@ -68,10 +63,10 @@
         private readonly Queue<byte[]> m_ReceivedPackets;
 
         /// <summary>
-        /// The same as m_SendQueue, except that it stores the payload as the value.  This
+        /// The same as m_SendQueue, except that it stores the protocol and payload as the value.  This
         /// is used to construct MessageLost events as required.
         /// </summary>
-        private readonly Dictionary<uint, byte[][]> m_SendMessageQueue;
+        private readonly Dictionary<uint, KeyValuePair<uint, byte[][]>> m_SendMessageQueue;
 
         /// <summary>
         /// The send queue that has messages added to it when we send a message; it is a
@@ -155,31 +150,22 @@
         /// <param name="target">
         /// The target endpoint for the Mx client.
         /// </param>
-        /// <param name="dualEndpoint">
-        /// The dual IP endpoint for this Mx client.
-        /// </param>
         /// <param name="sharedUdpClient">
         /// The shared UDP client with which to send messages.
-        /// </param>
-        /// <param name="reliable">
-        /// Whether or not this is a reliable Mx client.
         /// </param>
         public MxClient(
             MxDispatcher dispatcher, 
             IPEndPoint target, 
-            DualIPEndPoint dualEndpoint, 
-            UdpClient sharedUdpClient, 
-            bool reliable)
+            UdpClient sharedUdpClient)
         {
             this.m_Dispatcher = dispatcher;
             this.m_TargetEndPoint = target;
-            this.m_DualEndPoint = dualEndpoint;
             this.m_SharedUdpClient = sharedUdpClient;
             this.m_ReceivedPackets = new Queue<byte[]>();
-            this.m_PendingSendPackets = new Queue<byte[]>();
+            this.m_PendingRealtimeSendPackets = new Queue<byte[]>();
+            this.m_PendingReliableSendPackets = new Queue<byte[]>();
             this.m_LastCall = DateTime.Now;
             this.m_DeltaTime = 1000.0 / 30.0;
-            this.m_IsReliable = reliable;
 
             // Initialize connection information.
             this.m_DisconnectAccumulator = 0;
@@ -193,7 +179,7 @@
 
             this.m_RTTQueue = new List<ulong>();
             this.m_SendQueue = new Dictionary<uint, ulong>();
-            this.m_SendMessageQueue = new Dictionary<uint, byte[][]>();
+            this.m_SendMessageQueue = new Dictionary<uint, KeyValuePair<uint, byte[][]>>();
             this.m_LocalSequenceNumber = 0;
             this.m_RemoteSequenceNumber = uint.MaxValue;
             this.m_SendAccumulator = 0;
@@ -235,20 +221,6 @@
         public event MxMessageEventHandler MessageSent;
 
         /// <summary>
-        /// Gets the dual endpoint that this client belongs to.
-        /// </summary>
-        /// <value>
-        /// The dual endpoint that this client belongs to.
-        /// </value>
-        public DualIPEndPoint DualEndpoint
-        {
-            get
-            {
-                return new DualIPEndPoint(this.m_DualEndPoint.RealtimeEndPoint, this.m_DualEndPoint.ReliableEndPoint);
-            }
-        }
-
-        /// <summary>
         /// Gets the endpoint that this client is responsible for.
         /// </summary>
         /// <value>
@@ -263,21 +235,7 @@
         }
 
         /// <summary>
-        /// Gets a value indicating whether this client is reliable.
-        /// </summary>
-        /// <value>
-        /// Whether this client is reliable.
-        /// </value>
-        public bool IsReliable
-        {
-            get
-            {
-                return this.m_IsReliable;
-            }
-        }
-
-        /// <summary>
-        /// The amount of network latency (lag) in milliseconds.
+        /// Gets the amount of network latency (lag) in milliseconds.
         /// </summary>
         /// <value>
         /// The network latency.
@@ -301,9 +259,23 @@
         /// <param name="packet">
         /// The packet's byte data.
         /// </param>
-        public void EnqueueSend(byte[] packet)
+        /// <param name="protocol">
+        /// The packet's protocol type.
+        /// </param>
+        public void EnqueueSend(byte[] packet, uint protocol)
         {
-            this.m_PendingSendPackets.Enqueue(packet);
+            if (protocol == MxMessage.RealtimeProtocol)
+            {
+                this.m_PendingRealtimeSendPackets.Enqueue(packet);
+            }
+            else if (protocol == MxMessage.ReliableProtocol)
+            {
+                this.m_PendingReliableSendPackets.Enqueue(packet);
+            }
+            else
+            {
+                throw new InvalidOperationException("Protocol not supported.");
+            }
         }
 
         /// <summary>
@@ -328,8 +300,7 @@
 
             if (this.m_DisconnectAccumulator > this.m_DisconnectLimit)
             {
-                var dualEndPoint = this.m_Dispatcher.ResolveDualIPEndPoint(this.m_TargetEndPoint, this.m_IsReliable);
-                this.m_Dispatcher.Disconnect(dualEndPoint);
+                this.m_Dispatcher.Disconnect(this.m_TargetEndPoint);
                 return;
             }
 
@@ -358,7 +329,7 @@
         /// </param>
         protected virtual void OnDisconnectWarning(MxDisconnectEventArgs e)
         {
-            MxDisconnectEventHandler handler = this.DisconnectWarning;
+            var handler = this.DisconnectWarning;
             if (handler != null)
             {
                 handler(this, e);
@@ -479,9 +450,9 @@
             this.m_SendQueue.Remove(idx);
             this.m_SendMessageQueue.Remove(idx);
 
-            foreach (var payload in payloads)
+            foreach (var payload in payloads.Value)
             {
-                this.OnMessageLost(new MxMessageEventArgs { Client = this, Payload = payload });
+                this.OnMessageLost(new MxMessageEventArgs { Client = this, Payload = payload, ProtocolID = payloads.Key });
             }
         }
 
@@ -576,10 +547,10 @@
 
                                 this.Latency = rtt;
 
-                                foreach (var payload in payloads)
+                                foreach (var payload in payloads.Value)
                                 {
                                     this.OnMessageAcknowledged(
-                                        new MxMessageEventArgs { Client = this, Payload = payload });
+                                        new MxMessageEventArgs { Client = this, Payload = payload, ProtocolID = payloads.Key });
                                 }
                             }
                             else
@@ -604,7 +575,7 @@
 
                         foreach (var payload in message.Payloads)
                         {
-                            var eventArgs = new MxMessageReceiveEventArgs { Client = this, Payload = payload.Data, DoNotAcknowledge = doNotAcknowledge };
+                            var eventArgs = new MxMessageReceiveEventArgs { Client = this, Payload = payload.Data, DoNotAcknowledge = doNotAcknowledge, ProtocolID = message.ProtocolID };
                             this.OnMessageReceived(eventArgs);
                             doNotAcknowledge = eventArgs.DoNotAcknowledge;
                         }
@@ -629,85 +600,98 @@
 
             while (this.m_SendAccumulator >= this.GetSendTime())
             {
-                byte[][] packets;
-                if (this.m_IsReliable)
+                var queues = new[]
                 {
-                    // In reliable mode, we know the sender is MxReliability and that it's optimized it's
-                    // send calls for ~512 bytes.  Thus we just take one packet and use that.
-                    packets = this.m_PendingSendPackets.Count > 0
-                                  ? new[] { this.m_PendingSendPackets.Peek() }
-                                  : new byte[0][];
-                }
-                else
-                {
-                    // In real time mode, we use all of the currently queued packets and hope that the resulting
-                    // size is not larger than 512 bytes (or is otherwise fragmented and dropped along the way).
-                    packets = this.m_PendingSendPackets.ToArray();
-                }
+                    new KeyValuePair<uint, Queue<byte[]>>(MxMessage.RealtimeProtocol, this.m_PendingRealtimeSendPackets),
+                    new KeyValuePair<uint, Queue<byte[]>>(MxMessage.ReliableProtocol, this.m_PendingReliableSendPackets)
+                };
 
-                using (var memory = new MemoryStream())
+                foreach (var item in queues)
                 {
-                    var message = new MxMessage
+                    var protocol = item.Key;
+                    var queue = item.Value;
+
+                    byte[][] packets;
+                    if (protocol == MxMessage.ReliableProtocol)
                     {
-                        Payloads = packets.Select(x => new MxPayload { Data = x }).ToArray(),
-                        Sequence = this.m_LocalSequenceNumber,
-                        Ack = this.m_RemoteSequenceNumber
-                    };
-                    message.SetAckBitfield(this.m_ReceiveQueue.ToArray());
-
-                    var serializer = new MxMessageSerializer();
-                    serializer.Serialize(memory, message);
-                    var len = (int)memory.Position;
-                    memory.Seek(0, SeekOrigin.Begin);
-                    var bytes = new byte[len];
-                    memory.Read(bytes, 0, len);
-
-                    if (len > 512 && !this.m_IsReliable)
+                        // In reliable mode, we know the sender is MxReliability and that it's optimized it's
+                        // send calls for ~512 bytes.  Thus we just take one packet and use that.
+                        packets = queue.Count > 0
+                                      ? new[] { queue.Peek() }
+                                      : new byte[0][];
+                    }
+                    else
                     {
-                        // TODO: Probably fire an event here to warn that the queued messages exceeds the safe packet size.
+                        // In real time mode, we use all of the currently queued packets and hope that the resulting
+                        // size is not larger than 512 bytes (or is otherwise fragmented and dropped along the way).
+                        packets = queue.ToArray();
                     }
 
-                    try
+                    using (var memory = new MemoryStream())
                     {
+                        var message = new MxMessage
+                        {
+                            ProtocolID = protocol,
+                            Payloads = packets.Select(x => new MxPayload { Data = x }).ToArray(),
+                            Sequence = this.m_LocalSequenceNumber,
+                            Ack = this.m_RemoteSequenceNumber
+                        };
+                        message.SetAckBitfield(this.m_ReceiveQueue.ToArray());
+
+                        var serializer = new MxMessageSerializer();
+                        serializer.Serialize(memory, message);
+                        var len = (int)memory.Position;
+                        memory.Seek(0, SeekOrigin.Begin);
+                        var bytes = new byte[len];
+                        memory.Read(bytes, 0, len);
+
+                        if (len > 512 && protocol != MxMessage.ReliableProtocol)
+                        {
+                            // TODO: Probably fire an event here to warn that the queued messages exceeds the safe packet size.
+                        }
+
                         try
                         {
-                            this.m_SharedUdpClient.Send(bytes, bytes.Length, this.m_TargetEndPoint);
-                            this.m_SendQueue.Add(this.m_LocalSequenceNumber, this.GetUnixTimestamp());
-                            this.m_SendMessageQueue.Add(this.m_LocalSequenceNumber, packets);
-                            this.m_LocalSequenceNumber++;
-
-                            if (this.m_IsReliable)
+                            try
                             {
-                                // Only dequeue the pending send packet once we know that it's at least
-                                // left this machine successfully (otherwise there'd be no message lost
-                                // event if they got consumed by a SocketException).
-                                if (this.m_PendingSendPackets.Count > 0)
+                                this.m_SharedUdpClient.Send(bytes, bytes.Length, this.m_TargetEndPoint);
+                                this.m_SendQueue.Add(this.m_LocalSequenceNumber, this.GetUnixTimestamp());
+                                this.m_SendMessageQueue.Add(this.m_LocalSequenceNumber, new KeyValuePair<uint, byte[][]>(protocol, packets));
+                                this.m_LocalSequenceNumber++;
+
+                                if (protocol == MxMessage.ReliableProtocol)
                                 {
-                                    this.m_PendingSendPackets.Dequeue();
+                                    // Only dequeue the pending send packet once we know that it's at least
+                                    // left this machine successfully (otherwise there'd be no message lost
+                                    // event if they got consumed by a SocketException).
+                                    if (queue.Count > 0)
+                                    {
+                                        queue.Dequeue();
+                                    }
+                                }
+                                else
+                                {
+                                    // Only clear the pending send packets once we know that they've at least
+                                    // left this machine successfully (otherwise there'd be no message lost
+                                    // event if they got consumed by a SocketException).
+                                    queue.Clear();
+                                }
+
+                                // Raise the OnMessageSent event.
+                                foreach (var packet in packets)
+                                {
+                                    this.OnMessageSent(new MxMessageEventArgs { Client = this, Payload = packet });
                                 }
                             }
-                            else
+                            catch (SocketException)
                             {
-                                // Only clear the pending send packets once we know that they've at least
-                                // left this machine successfully (otherwise there'd be no message lost
-                                // event if they got consumed by a SocketException).
-                                this.m_PendingSendPackets.Clear();
-                            }
-
-                            // Raise the OnMessageSent event.
-                            foreach (var packet in packets)
-                            {
-                                this.OnMessageSent(new MxMessageEventArgs { Client = this, Payload = packet });
+                                // We don't care.
                             }
                         }
-                        catch (SocketException)
+                        catch (ObjectDisposedException)
                         {
                             // We don't care.
                         }
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        // We don't care.
                     }
                 }
 

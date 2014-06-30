@@ -10,6 +10,16 @@
     public class MxMessage
     {
         /// <summary>
+        /// Indicates the message is for the real time protocol.
+        /// </summary>
+        public const uint RealtimeProtocol = 0;
+
+        /// <summary>
+        /// Indicates the message is for the reliable protocol.
+        /// </summary>
+        public const uint ReliableProtocol = 1;
+
+        /// <summary>
         /// Gets or sets the latest sequence number this packet is acknowledging.
         /// </summary>
         /// <value>

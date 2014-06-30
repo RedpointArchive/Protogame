@@ -16,12 +16,12 @@
         [Fact]
         public void TestConnectionWithUpdate()
         {
-            var dispatcher1 = new MxDispatcher(9001, 9002);
-            var dispatcher2 = new MxDispatcher(9003, 9004);
+            var dispatcher1 = new MxDispatcher(9001);
+            var dispatcher2 = new MxDispatcher(9003);
 
             try
             {
-                dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9001, 9002));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9001));
 
                 this.SimulateNetworkCycles(8, dispatcher1, dispatcher2);
             }
@@ -38,12 +38,12 @@
         [Fact]
         public void TestConnectionWithoutUpdate()
         {
-            var dispatcher1 = new MxDispatcher(9005, 9006);
-            var dispatcher2 = new MxDispatcher(9007, 9008);
+            var dispatcher1 = new MxDispatcher(9005);
+            var dispatcher2 = new MxDispatcher(9007);
 
             try
             {
-                dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9005, 9006));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9005));
             }
             finally
             {
@@ -58,8 +58,8 @@
         [Fact]
         public void TestConstruction()
         {
-            var dispatcher1 = new MxDispatcher(9009, 9010);
-            var dispatcher2 = new MxDispatcher(9011, 9012);
+            var dispatcher1 = new MxDispatcher(9009);
+            var dispatcher2 = new MxDispatcher(9011);
 
             dispatcher1.Close();
             dispatcher2.Close();
@@ -88,8 +88,8 @@ Proin id neque varius, porta eros eget, pellentesque massa. Suspendisse viverra
 ligula at lorem dignissim fringilla. Proin viverra nunc neque, nec dignissim 
 velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
 
-            var dispatcher1 = new MxDispatcher(9013, 9014);
-            var dispatcher2 = new MxDispatcher(9015, 9016);
+            var dispatcher1 = new MxDispatcher(9013);
+            var dispatcher2 = new MxDispatcher(9015);
 
             try
             {
@@ -98,12 +98,12 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
                 dispatcher1.MessageReceived +=
                     (sender, args) => { receivedText = Encoding.ASCII.GetString(args.Payload); };
 
-                dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9013, 9014));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9013));
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(
-                    new DualIPEndPoint(IPAddress.Loopback, 9013, 9014), 
+                    new IPEndPoint(IPAddress.Loopback, 9013), 
                     Encoding.ASCII.GetBytes(Text), 
                     true);
 
@@ -150,8 +150,8 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                 text += Content;
             }
 
-            var dispatcher1 = new MxDispatcher(9017, 9018);
-            var dispatcher2 = new MxDispatcher(9019, 9020);
+            var dispatcher1 = new MxDispatcher(9017);
+            var dispatcher2 = new MxDispatcher(9019);
 
             try
             {
@@ -163,12 +163,12 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                         receivedText = Encoding.ASCII.GetString(args.Payload);
                     };
 
-                dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9017, 9018));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9017));
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(
-                    new DualIPEndPoint(IPAddress.Loopback, 9017, 9018),
+                    new IPEndPoint(IPAddress.Loopback, 9017),
                     Encoding.ASCII.GetBytes(text),
                     true);
 
@@ -196,8 +196,8 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         {
             const string Text = @"hello";
 
-            var dispatcher1 = new MxDispatcher(9021, 9022);
-            var dispatcher2 = new MxDispatcher(9023, 9024);
+            var dispatcher1 = new MxDispatcher(9021);
+            var dispatcher2 = new MxDispatcher(9023);
 
             try
             {
@@ -206,11 +206,11 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                 dispatcher1.MessageReceived +=
                     (sender, args) => { receivedText = Encoding.ASCII.GetString(args.Payload); };
 
-                dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9021, 9022));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9021));
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
-                dispatcher2.Send(new DualIPEndPoint(IPAddress.Loopback, 9021, 9022), Encoding.ASCII.GetBytes(Text));
+                dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9021), Encoding.ASCII.GetBytes(Text));
 
                 Assert.Null(receivedText);
 
@@ -233,8 +233,8 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         {
             const string Text = @"hello";
 
-            var dispatcher1 = new MxDispatcher(9023, 9024);
-            var dispatcher2 = new MxDispatcher(9025, 9026);
+            var dispatcher1 = new MxDispatcher(9023);
+            var dispatcher2 = new MxDispatcher(9025);
 
             try
             {
@@ -252,11 +252,11 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                     acknowledged = true; 
                 };
 
-                dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9023, 9024));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9023));
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
-                dispatcher2.Send(new DualIPEndPoint(IPAddress.Loopback, 9023, 9024), Encoding.ASCII.GetBytes(Text));
+                dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9023), Encoding.ASCII.GetBytes(Text));
 
                 Assert.Null(receivedText);
 
@@ -280,8 +280,8 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         {
             const string Text = @"hello";
 
-            var dispatcher1 = new MxDispatcher(9027, 9028);
-            var dispatcher2 = new MxDispatcher(9029, 9030);
+            var dispatcher1 = new MxDispatcher(9027);
+            var dispatcher2 = new MxDispatcher(9029);
 
             try
             {
@@ -303,11 +303,11 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                     }
                 };
 
-                dispatcher2.Connect(new DualIPEndPoint(IPAddress.Loopback, 9027, 9028));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9027));
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
-                dispatcher2.Send(new DualIPEndPoint(IPAddress.Loopback, 9027, 9028), bytes);
+                dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9027), bytes);
 
                 Assert.Null(receivedText);
 
