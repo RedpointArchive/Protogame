@@ -50,13 +50,13 @@ namespace Protogame
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
             try
             {
                 var stream1 = global::Android.App.Application.Context.Assets.Open(
     				TargetPlatformUtility.GetExecutingPlatform().ToString() + Path.DirectorySeparatorChar +
-    				name.Replace('.', Path.DirectorySeparatorChar) + ".bin");
+                    (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin");
                 return this.AttemptLoadOfStream(stream1, name);
             }
             catch (Java.IO.FileNotFoundException)
@@ -64,7 +64,7 @@ namespace Protogame
                 try
                 {
                     var stream2 = global::Android.App.Application.Context.Assets.Open(
-                        name.Replace('.', Path.DirectorySeparatorChar) + ".bin");
+                        (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin");
                     return this.AttemptLoadOfStream(stream2, name);
                 }
                 catch (Java.IO.FileNotFoundException)
@@ -88,7 +88,7 @@ namespace Protogame
         /// </returns>
         /// <exception cref="InvalidDataException">
         /// </exception>
-        private object AttemptLoadOfStream(Stream stream, string name)
+        private IRawAsset AttemptLoadOfStream(Stream stream, string name)
         {
             if (stream == null)
             {

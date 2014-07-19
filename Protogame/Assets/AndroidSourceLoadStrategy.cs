@@ -2,6 +2,7 @@
 namespace Protogame
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
     using Newtonsoft.Json;
@@ -51,16 +52,18 @@ namespace Protogame
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        public object AttemptLoad(string path, string name, ref DateTime? lastModified)
+        public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
             try
             {
                 var stream = global::Android.App.Application.Context.Assets.Open(
                     TargetPlatformUtility.GetExecutingPlatform().ToString() + Path.DirectorySeparatorChar +
-                    name.Replace('.', Path.DirectorySeparatorChar) + ".asset");
+                    (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset");
                 using (var reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    return JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
+                    return
+                        new DictionaryBasedRawAsset(
+                            JsonConvert.DeserializeObject<Dictionary<string, object>>(reader.ReadToEnd()));
                 }
             }
             catch (Java.IO.FileNotFoundException)
@@ -68,10 +71,12 @@ namespace Protogame
                 try
                 {
                     var stream = global::Android.App.Application.Context.Assets.Open(
-                        name.Replace('.', Path.DirectorySeparatorChar) + ".asset");
+                        (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset");
                     using (var reader = new StreamReader(stream, Encoding.UTF8))
                     {
-                        return JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd());
+                        return
+                            new DictionaryBasedRawAsset(
+                                JsonConvert.DeserializeObject<Dictionary<string, object>>(reader.ReadToEnd()));
                     }
                 }
                 catch (Java.IO.FileNotFoundException)

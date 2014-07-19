@@ -261,11 +261,17 @@ namespace Protogame
         /// <param name="disposing">No documentation.</param>
         protected override void Dispose(bool disposing)
         {
-            this.GameContext.World.Dispose();
+            if (this.GameContext != null && this.GameContext.World != null)
+            {
+                this.GameContext.World.Dispose();
+            }
 
-            this.m_AnalyticsEngine.LogGameplayEvent("Game:Stop");
+            if (this.m_AnalyticsEngine != null)
+            {
+                this.m_AnalyticsEngine.LogGameplayEvent("Game:Stop");
 
-            this.m_AnalyticsEngine.FlushAndStop();
+                this.m_AnalyticsEngine.FlushAndStop();
+            }
 
             base.Dispose(disposing);
         }
@@ -393,16 +399,16 @@ namespace Protogame
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB
             return new DefaultGameWindow(base.Window);
 #elif PLATFORM_ANDROID || PLATFORM_OUYA
-            return new AndroidGameWindow(base.Window);
+            return new AndroidGameWindow((Microsoft.Xna.Framework.AndroidGameWindow)base.Window);
 #endif
         }
 
 #if PLATFORM_ANDROID || PLATFORM_OUYA
-        public Microsoft.Xna.Framework.AndroidGameWindow AndroidGameWindow
+        public Android.Views.View AndroidGameView
         {
             get
             {
-                return base.Window;
+                return (Android.Views.View)this.Services.GetService(typeof(Android.Views.View));
             }
         }
 #endif
