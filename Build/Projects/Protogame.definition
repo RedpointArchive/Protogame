@@ -345,6 +345,11 @@
     <Compile Include="Platforming\DefaultPlatforming.cs" />
     <Compile Include="Platforming\IPlatforming.cs" />
     <Compile Include="Platforming\ProtogamePlatformingIoCModule.cs" />
+    <Compile Include="Pooling\DefaultPoolManager.cs" />
+    <Compile Include="Pooling\IPool.cs" />
+    <Compile Include="Pooling\IPoolManager.cs" />
+    <Compile Include="Pooling\Pool.cs" />
+    <Compile Include="Pooling\ScalingPool.cs" />
     <Compile Include="Protogame2DIoCModule.cs" />
     <Compile Include="Protogame3DIoCModule.cs" />
     <Compile Include="Scripting\GOLD\DataIndex.cs" />

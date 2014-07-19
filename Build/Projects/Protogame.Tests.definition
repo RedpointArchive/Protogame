@@ -15,6 +15,7 @@
     <Compile Include="EventEngineTests.cs" />
     <Compile Include="MxTests.cs" />
     <Compile Include="PlatformingModuleTests.cs" />
+    <Compile Include="PoolTests.cs" />
     <Compile Include="PositionOctreeTests.cs" />
     <Compile Include="TimeMachineTests.cs" />
     <None Include="packages.config" />
