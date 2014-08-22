@@ -5,6 +5,11 @@ namespace Protogame
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Input;
 
+    #if PLATFORM_ANDROID
+    using Android.Content;
+    using Android.Views.InputMethods;
+    #endif
+
     /// <summary>
     /// The text box.
     /// </summary>
@@ -170,6 +175,7 @@ namespace Protogame
         public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
         {
             var mousePressEvent = @event as MousePressEvent;
+            var touchPressEvent = @event as TouchPressEvent;
 
             if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
             {
@@ -178,6 +184,28 @@ namespace Protogame
                     this.Focus();
 
                     return true;
+                }
+            }
+
+            if (touchPressEvent != null)
+            {
+                if (layout.Contains((int)touchPressEvent.X, (int)touchPressEvent.Y))
+                {
+                    this.Focus();
+
+                    #if PLATFORM_ANDROID
+                    var manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
+                    manager.ShowSoftInput(((Microsoft.Xna.Framework.AndroidGameWindow)context.Game.Window).GameViewAsView, ShowFlags.Forced);
+                    #endif
+
+                    return true;
+                }
+                else
+                {
+                    #if PLATFORM_ANDROID
+                    var manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
+                    manager.HideSoftInputFromWindow(((Microsoft.Xna.Framework.AndroidGameWindow)context.Game.Window).GameViewAsView.WindowToken, HideSoftInputFlags.None);
+                    #endif
                 }
             }
 

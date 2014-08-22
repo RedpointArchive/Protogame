@@ -136,19 +136,36 @@ namespace Protogame
             var mousePressEvent = @event as MousePressEvent;
             var mouseReleaseEvent = @event as MouseReleaseEvent;
             var mouseMoveEvent = @event as MouseMoveEvent;
+            var touchEvent = @event as TouchEvent;
+            var touchPressEvent = @event as TouchPressEvent;
 
-            if (mouseEvent == null)
+            if (mouseEvent == null && touchEvent == null)
             {
                 return false;
             }
 
-            if (layout.Contains(mouseEvent.MouseState.X, mouseEvent.MouseState.Y))
+            var x = 0;
+            var y = 0;
+
+            if (mouseEvent != null)
+            {
+                x = mouseEvent.MouseState.X;
+                y = mouseEvent.MouseState.Y;
+            }
+
+            if (touchPressEvent != null)
+            {
+                x = (int)touchPressEvent.X;
+                y = (int)touchPressEvent.Y;
+            }
+
+            if (layout.Contains(x, y))
             {
                 if (mouseMoveEvent != null)
                 {
                     this.State = ButtonUIState.Hover;
                 }
-                else if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
+                else if ((mousePressEvent != null && mousePressEvent.Button == MouseButton.Left) || touchPressEvent != null)
                 {
                     if (this.Click != null && this.State != ButtonUIState.Clicked)
                     {
