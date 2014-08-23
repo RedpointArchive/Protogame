@@ -232,6 +232,16 @@
                                 Console.WriteLine("Binding IAssetSaver: " + type.Name);
                                 kernel.Bind<IAssetSaver>().To(type);
                             }
+                            if (type.GetInterfaces().Any(x => x.Name == "IAssetCompiler`1"))
+                            {
+                                Console.WriteLine("Binding IAssetCompiler<>: " + type.Name);
+                                kernel.Bind(type.GetInterfaces().First(x => x.Name == "IAssetCompiler`1")).To(type);
+                            }
+                            if (typeof(ILoadStrategy).IsAssignableFrom(type))
+                            {
+                                Console.WriteLine("Binding ILoadStrategy: " + type.Name);
+                                kernel.Bind<ILoadStrategy>().To(type);
+                            }
                         }
                         catch
                         {
