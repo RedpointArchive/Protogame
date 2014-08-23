@@ -97,8 +97,6 @@ namespace Protogame
         /// </returns>
         private IEnumerable<FontDescription> GetDescriptionsForAsset(FontAsset asset)
         {
-            var chars = new List<CharacterRegion>();
-            chars.Add(new CharacterRegion(' ', '~'));
             var fontNames = string.IsNullOrEmpty(asset.FontName) ? "Arial" : asset.FontName;
 
             foreach (var fontName in fontNames.Split(','))
@@ -108,8 +106,7 @@ namespace Protogame
                     asset.FontSize,
                     asset.Spacing,
                     FontDescriptionStyle.Regular,
-                    asset.UseKerning,
-                    chars);
+                    asset.UseKerning);
 #if PLATFORM_LINUX
                 fontDesc.Identity = new ContentIdentity
                 {

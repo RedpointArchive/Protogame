@@ -599,6 +599,9 @@
     <EmbeddedResource Include="effect.Color-RaspberryPi.bin">
       <Platforms>Linux</Platforms>
     </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
     <EmbeddedResource Include="effect.Color-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
