@@ -70,7 +70,7 @@ namespace ProtogameAssetTool
         /// </returns>
         public IEnumerable<string> ScanRawAssets()
         {
-            return new[] { "font.Default", "effect.Basic", "effect.Skinned" };
+            return new[] { "font.Default", "effect.Basic", "effect.Color", "effect.Skinned" };
         }
     }
 }

@@ -151,6 +151,31 @@ namespace Protogame
             Rectangle? sourceArea = null);
 
         /// <summary>
+        /// Renders a circle.
+        /// </summary>
+        /// <param name="context">
+        /// The rendering context.
+        /// </param>
+        /// <param name="center">
+        /// The center of the circle.
+        /// </param>
+        /// <param name="radius">
+        /// The radius of the circle.
+        /// </param>
+        /// <param name="color">
+        /// The color of the circle.
+        /// </param>
+        /// <param name="filled">
+        /// If set to <c>true</c>, the circle is rendered filled.
+        /// </param>
+        void RenderCircle(
+            IRenderContext context,
+            Vector2 center, 
+            int radius, 
+            Color color, 
+            bool filled = false);
+
+        /// <summary>
         /// Suspends usage of the sprite batch so that direct rendering can occur during a 2D context.
         /// </summary>
         /// <param name="renderContext">

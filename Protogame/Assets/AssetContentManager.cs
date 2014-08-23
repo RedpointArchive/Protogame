@@ -109,7 +109,9 @@ namespace Protogame
         /// </param>
         public void UnsetStream(string assetName)
         {
+            #if !PLATFORM_ANDROID
             this.m_MemoryStreams[assetName] = null;
+            #endif
         }
 
         /// <summary>
@@ -123,7 +125,16 @@ namespace Protogame
         /// </returns>
         protected override Stream OpenStream(string assetName)
         {
+            #if PLATFORM_ANDROID
+            // We have to make a copy on Android so we can reload assets.
+            var copy = new MemoryStream();
+            this.m_MemoryStreams[assetName].Seek(0, SeekOrigin.Begin);
+            this.m_MemoryStreams[assetName].CopyTo(copy);
+            copy.Seek(0, SeekOrigin.Begin);
+            return copy;
+            #else
             return this.m_MemoryStreams[assetName];
+            #endif
         }
     }
 }

@@ -579,6 +579,30 @@
     <EmbeddedResource Include="effect.Basic-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-RaspberryPi.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
     <EmbeddedResource Include="effect.Skinned-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
@@ -647,6 +671,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
     <None Include="effect.Basic.fx" />
+    <None Include="effect.Color.fx" />
     <None Include="effect.Skinned.fx" />
     <None Include="font.Default.asset" />
     <None Include="packages.config" />

@@ -193,6 +193,14 @@ namespace Protogame
             // Construct a platform-independent game window.
             this.Window = this.ConstructGameWindow();
 
+#if PLATFORM_ANDROID
+            // On Android, disable viewport / backbuffer scaling because we expect games
+            // to make use of the full display area.
+            this.GraphicsDeviceManager.IsFullScreen = true;
+            this.GraphicsDeviceManager.PreferredBackBufferHeight = this.Window.ClientBounds.Height;
+            this.GraphicsDeviceManager.PreferredBackBufferWidth = this.Window.ClientBounds.Width;
+#endif
+
 #if PLATFORM_WINDOWS
             // Register for the window resize event so we can scale
             // the window correctly.
@@ -353,6 +361,15 @@ namespace Protogame
                 }
 
                 base.Draw(gameTime);
+
+#if PLATFORM_ANDROID
+                // Recorrect the viewport on Android, which seems to be completely bogus by default.
+                this.GameContext.Graphics.GraphicsDevice.Viewport = new Viewport(
+                    this.Window.ClientBounds.Left,
+                    this.Window.ClientBounds.Top,
+                    this.Window.ClientBounds.Width,
+                    this.Window.ClientBounds.Height);
+#endif
             }
         }
 
