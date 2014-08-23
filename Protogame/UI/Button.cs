@@ -88,7 +88,7 @@ namespace Protogame
         /// <param name="layout">
         /// The layout.
         /// </param>
-        public void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        public virtual void Draw(IRenderContext context, ISkin skin, Rectangle layout)
         {
             skin.DrawButton(context, layout, this);
         }
