@@ -16,11 +16,5 @@ namespace Protogame
         /// </summary>
         /// <value>The Y position of the touch press.</value>
         public float Y { get; set; }
-
-        /// <summary>
-        /// Gets or sets the pressure of the touch event.
-        /// </summary>
-        /// <value>The touch pressure.</value>
-        public float Pressure { get; set; }
     }
 }

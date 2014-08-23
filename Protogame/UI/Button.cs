@@ -138,6 +138,8 @@ namespace Protogame
             var mouseMoveEvent = @event as MouseMoveEvent;
             var touchEvent = @event as TouchEvent;
             var touchPressEvent = @event as TouchPressEvent;
+            var touchHeldEvent = @event as TouchHeldEvent;
+            var touchReleaseEvent = @event as TouchReleaseEvent;
 
             if (mouseEvent == null && touchEvent == null)
             {
@@ -159,6 +161,18 @@ namespace Protogame
                 y = (int)touchPressEvent.Y;
             }
 
+            if (touchReleaseEvent != null)
+            {
+                x = (int)touchReleaseEvent.X;
+                y = (int)touchReleaseEvent.Y;
+            }
+
+            if (touchHeldEvent != null)
+            {
+                x = (int)touchHeldEvent.X;
+                y = (int)touchHeldEvent.Y;
+            }
+
             if (layout.Contains(x, y))
             {
                 if (mouseMoveEvent != null)
@@ -178,12 +192,20 @@ namespace Protogame
                     return true;
                 }
             }
-            else
+            else if (mouseMoveEvent != null)
             {
                 this.State = ButtonUIState.None;
             }
 
             if (mouseReleaseEvent != null && mouseReleaseEvent.Button == MouseButton.Left)
+            {
+                if (touchHeldEvent == null || !layout.Contains(x, y))
+                {
+                    this.State = ButtonUIState.None;
+                }
+            }
+
+            if (touchReleaseEvent != null && layout.Contains(x, y))
             {
                 this.State = ButtonUIState.None;
             }

@@ -35,6 +35,13 @@ namespace Protogame
         /// </summary>
         private bool m_GamepadEnabled = true;
 
+#if PLATFORM_ANDROID
+        /// <summary>
+        /// The previous state of the touch panel.
+        /// </summary>
+        private TouchCollection? m_LastTouchPanelState;
+#endif
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EventEngineHook"/> class.
         /// </summary>
@@ -308,14 +315,77 @@ namespace Protogame
 		/// The game context.
 		/// </param>
 		private void UpdateTouch(IGameContext gameContext)
-		{
-			var touchState = TouchPanel.GetState();
+        {
+            var touchState = TouchPanel.GetState();
+
+            if (this.m_LastTouchPanelState != null)
+            {
+                // Detect press events.
+                foreach (var touch in touchState)
+                {
+                    var hasPrevious = false;
+
+                    // Is there any previous touch event within 100 pixels?
+                    foreach (var previousTouch in this.m_LastTouchPanelState.Value)
+                    {
+                        if ((previousTouch.Position - touch.Position).Length() < 100)
+                        {
+                            hasPrevious = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasPrevious)
+                    {
+                        // There is no previous touch near this location, therefore
+                        // it's a press event.
+                        this.m_EventEngine.Fire(
+                            gameContext, 
+                            new TouchPressEvent
+                            {
+                                X = touch.Position.X, 
+                                Y = touch.Position.Y, 
+                                TouchLocationState = touch.State
+                            });
+                    }
+                }
+
+                // Detect release events.
+                foreach (var previousTouch in this.m_LastTouchPanelState.Value)
+                {
+                    var hasCurrent = false;
+
+                    // Is there any current touch event within 100 pixels?
+                    foreach (var touch in touchState)
+                    {
+                        if ((previousTouch.Position - touch.Position).Length() < 100)
+                        {
+                            hasCurrent = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasCurrent)
+                    {
+                        // There is no longer any touch events in this location, so
+                        // raise a release event.
+                        this.m_EventEngine.Fire(
+                            gameContext, 
+                            new TouchReleaseEvent
+                            {
+                                X = previousTouch.Position.X, 
+                                Y = previousTouch.Position.Y, 
+                                TouchLocationState = previousTouch.State
+                            });
+                    }
+                }
+            }
 
             foreach (var touch in touchState)
             {
                 this.m_EventEngine.Fire(
                     gameContext, 
-                    new TouchPressEvent
+                    new TouchHeldEvent
                     {
                         X = touch.Position.X, 
                         Y = touch.Position.Y, 
@@ -323,6 +393,8 @@ namespace Protogame
                         TouchLocationState = touch.State
                     });
             }
+
+            this.m_LastTouchPanelState = touchState;
 		}
 
 #endif
