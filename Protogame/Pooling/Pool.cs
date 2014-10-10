@@ -66,7 +66,10 @@
         {
             if (this.m_NextAvailable == -1)
             {
-                throw new OutOfMemoryException("Pool '" + this.m_Name + "' has exceeded number of available instances");
+                // FIXME: I have observed this failing on the main menu, even though it was in a scalable pool.  My guess
+                // is there's a race condition where two threads run through this logic at once.  Potentially we can use locks
+                // around this logic to make sure that threads don't collide.
+                throw new OutOfMemoryException("Pool '" + this.m_Name + "' has exceeded number of available instances.  Potential race condition causes this issue.");
             }
 
             this.Free--;
