@@ -13,6 +13,8 @@
 
         private readonly Action<T> m_NewAction;
 
+        private readonly object m_PoolLock;
+
         private int m_NextAvailable;
 
         private int m_NextReturn;
@@ -25,6 +27,7 @@
             }
 
             this.m_Name = name;
+            this.m_PoolLock = new object();
             this.m_PooledInstances = pooledInstances;
             this.m_ResetAction = resetAction;
             this.m_NewAction = newAction;
@@ -64,107 +67,115 @@
 
         public T Get()
         {
-            if (this.m_NextAvailable == -1)
+            lock (this.m_PoolLock)
             {
-                // FIXME: I have observed this failing on the main menu, even though it was in a scalable pool.  My guess
-                // is there's a race condition where two threads run through this logic at once.  Potentially we can use locks
-                // around this logic to make sure that threads don't collide.
-                throw new OutOfMemoryException("Pool '" + this.m_Name + "' has exceeded number of available instances.  Potential race condition causes this issue.");
-            }
-
-            this.Free--;
-
-            // Get the instance and remove it from the pool.
-            var value = this.m_PooledInstances[this.m_NextAvailable];
-
-            // If we don't yet have a position to release values to, tell it the next
-            // release position is where we just allocated from.
-            if (this.m_NextReturn == -1)
-            {
-                this.m_NextReturn = this.m_NextAvailable;
-            }
-
-            // Increment the available counter.
-            this.m_NextAvailable++;
-            if (this.m_NextAvailable == this.m_NextReturn)
-            {
-                // No more available until next release.
-                this.m_NextAvailable = -1;
-            }
-            else if (this.m_NextAvailable >= this.m_PooledInstances.Length)
-            {
-                if (this.m_NextReturn > 0)
+                if (this.m_NextAvailable == -1)
                 {
-                    // The return location is greater than the 0th position,
-                    // so we've previously returned instances to 0.
-                    this.m_NextAvailable = 0;
+                    throw new OutOfMemoryException(
+                        "Pool '" + this.m_Name
+                        + "' has exceeded number of available instances.");
                 }
-                else
+
+                this.Free--;
+
+                // Get the instance and remove it from the pool.
+                var value = this.m_PooledInstances[this.m_NextAvailable];
+
+                // If we don't yet have a position to release values to, tell it the next
+                // release position is where we just allocated from.
+                if (this.m_NextReturn == -1)
+                {
+                    this.m_NextReturn = this.m_NextAvailable;
+                }
+
+                // Increment the available counter.
+                this.m_NextAvailable++;
+                if (this.m_NextAvailable == this.m_NextReturn)
                 {
                     // No more available until next release.
                     this.m_NextAvailable = -1;
                 }
-            }
+                else if (this.m_NextAvailable >= this.m_PooledInstances.Length)
+                {
+                    if (this.m_NextReturn > 0)
+                    {
+                        // The return location is greater than the 0th position,
+                        // so we've previously returned instances to 0.
+                        this.m_NextAvailable = 0;
+                    }
+                    else
+                    {
+                        // No more available until next release.
+                        this.m_NextAvailable = -1;
+                    }
+                }
 
-            // Fire the new action if it is set.
-            if (this.m_NewAction != null)
-            {
-                this.m_NewAction(value);
-            }
+                // Fire the new action if it is set.
+                if (this.m_NewAction != null)
+                {
+                    this.m_NewAction(value);
+                }
 
-            return value;
+                return value;
+            }
         }
 
         public void Release(T instance)
         {
-            if (instance == null)
+            lock (this.m_PoolLock)
             {
-                throw new ArgumentNullException("instance");
-            }
+                if (instance == null)
+                {
+                    throw new ArgumentNullException("instance");
+                }
 
-            if (this.m_NextReturn == -1)
-            {
-                throw new OutOfMemoryException("Pool '" + this.m_Name + "' can not release any more objects");
-            }
+                if (this.m_NextReturn == -1)
+                {
+                    throw new OutOfMemoryException("Pool '" + this.m_Name + "' can not release any more objects");
+                }
 
-            this.Free++;
+                this.Free++;
 
-            // Reset instance state.
-            this.m_ResetAction(instance);
+                // Reset instance state.
+                this.m_ResetAction(instance);
 
-            // Return the value to the return location.
-            this.m_PooledInstances[this.m_NextReturn] = instance;
+                // Return the value to the return location.
+                this.m_PooledInstances[this.m_NextReturn] = instance;
 
-            // If we can't allocate out, then we can now.
-            if (this.m_NextAvailable == -1)
-            {
-                this.m_NextAvailable = this.m_NextReturn;
-            }
+                // If we can't allocate out, then we can now.
+                if (this.m_NextAvailable == -1)
+                {
+                    this.m_NextAvailable = this.m_NextReturn;
+                }
 
-            // Increment the return counter.
-            this.m_NextReturn++;
-            if (this.m_NextReturn >= this.m_PooledInstances.Length)
-            {
-                this.m_NextReturn = 0;
-            }
+                // Increment the return counter.
+                this.m_NextReturn++;
+                if (this.m_NextReturn >= this.m_PooledInstances.Length)
+                {
+                    this.m_NextReturn = 0;
+                }
 
-            if (this.m_NextReturn == this.m_NextAvailable)
-            {
-                // We've filled up the last available spot, there's no more return
-                // locations until we allocate more out.
-                this.m_NextReturn = -1;
+                if (this.m_NextReturn == this.m_NextAvailable)
+                {
+                    // We've filled up the last available spot, there's no more return
+                    // locations until we allocate more out.
+                    this.m_NextReturn = -1;
+                }
             }
         }
 
         public void ReleaseAll()
         {
-            this.m_NextAvailable = 0;
-            this.m_NextReturn = -1;
-            this.Free = this.m_PooledInstances.Length;
-
-            foreach (var x in this.m_PooledInstances)
+            lock (this.m_PoolLock)
             {
-                this.m_ResetAction(x);
+                this.m_NextAvailable = 0;
+                this.m_NextReturn = -1;
+                this.Free = this.m_PooledInstances.Length;
+
+                foreach (var x in this.m_PooledInstances)
+                {
+                    this.m_ResetAction(x);
+                }
             }
         }
     }
