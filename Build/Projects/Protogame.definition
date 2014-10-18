@@ -28,7 +28,7 @@
       <Requires>Jitter/Default</Requires>
     </Service>
     <Service Name="OpenCL">
-      <Requires>OpenCL/Default</Requires>
+      <Requires>Cloo/Default</Requires>
     </Service>
   </Services>
   <Files>
