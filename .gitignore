@@ -13,3 +13,6 @@ StyleCop.Cache
 *.csproj.user
 *.suo
 *.speccache
+
+# Ignore publishing files
+*.tar.lzma

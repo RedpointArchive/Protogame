@@ -1,0 +1,16 @@
+# Include definitions for Linux
+include ^Build/Publish/(.*)\.definition$
+include ^Build/Module.xml$
+
+# Include binary files for Linux
+include ^Protogame/bin/Linux/AnyCPU/Debug/(.*)\.(dll|dll\.config|so|so\.3\.0\.1)$
+include ^Protogame/bin/Linux/AnyCPU/Debug/ffmpeg$
+include ^Protogame/bin/Linux/AnyCPU/Debug/ffprobe$
+include ^ProtogameAssetTool/bin/Linux/AnyCPU/Debug/ProtogameAssetTool\.exe$
+include ^ProtogameAssetManager/bin/Linux/AnyCPU/Debug/ProtogameAssetManager\.exe$
+
+# Rewrite file locations
+rewrite ^Build/Publish/(.*)$ Build/Projects/$1
+rewrite ^Protogame/bin/Linux/AnyCPU/Debug/(.*)$ Protogame/$1
+rewrite ^ProtogameAssetTool/bin/Linux/AnyCPU/Debug/(.*)$ Protogame/$1
+rewrite ^ProtogameAssetManager/bin/Linux/AnyCPU/Debug/(.*)$ Protogame/$1

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExternalProject Name="Protogame">
+
+  <Binary Path="Protogame\AssimpNet.dll" />
+  <Binary Path="Protogame\Castle.Core.dll" />
+  <Binary Path="Protogame\Cloo.dll" />
+  <Binary Path="Protogame\Jitter.dll" />
+  <Binary Path="Protogame\ManagedPVRTC.dll" />
+  <Binary Path="Protogame\MonoGame.Framework.Content.Pipeline.dll" />
+  <Binary Path="Protogame\MonoGame.Framework.dll" />
+  <Binary Path="Protogame\NDesk.Options.dll" />
+  <Binary Path="Protogame\Newtonsoft.Json.dll" />
+  <Binary Path="Protogame\Ninject.dll" />
+  <Binary Path="Protogame\Ninject.Extensions.Factory.dll" />
+  <Binary Path="Protogame\Ninject.Extensions.Interception.dll" />
+  <Binary Path="Protogame\Ninject.Extensions.Interception.DynamicProxy.dll" />
+  <Binary Path="Protogame\Nvidia.TextureTools.dll" />
+  <Binary Path="Protogame\OpenTK.dll" />
+  <Binary Path="Protogame\protobuf-net.dll" />
+  <Binary Path="Protogame\Protogame.dll" />
+  <Binary Path="Protogame\SharpFont.dll" />
+  <Binary Path="Protogame\Tao.Sdl.dll" />
+
+  <NativeBinary Path="Protogame\AssimpNet.dll.config" />
+  <NativeBinary Path="Protogame\Cloo.dll.config" />
+  <NativeBinary Path="Protogame\Nvidia.TextureTools.dll.config" />
+  <NativeBinary Path="Protogame\OpenTK.dll.config" />
+  <NativeBinary Path="Protogame\Tao.Sdl.dll.config" />
+
+  <NativeBinary Path="Protogame\ffmpeg" />
+  <NativeBinary Path="Protogame\ffprobe" />
+  <NativeBinary Path="Protogame\libassimp_32.so.3.0.1" />
+  <NativeBinary Path="Protogame\libassimp_64.so.3.0.1" />
+  <NativeBinary Path="Protogame\libfreetype.6.so" />
+  <NativeBinary Path="Protogame\libnvcore.so" />
+  <NativeBinary Path="Protogame\libnvimage.so" />
+  <NativeBinary Path="Protogame\libnvmath.so" />
+  <NativeBinary Path="Protogame\libnvtt.so" />
+  <NativeBinary Path="Protogame\libpng12.so" />
+  
+</Project>
