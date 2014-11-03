@@ -38,4 +38,4 @@
   <NativeBinary Path="Protogame\libnvtt.so" />
   <NativeBinary Path="Protogame\libpng12.so" />
   
-</Project>
+</ExternalProject>
