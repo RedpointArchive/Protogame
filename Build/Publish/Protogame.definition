@@ -17,26 +17,20 @@
 
   <Binary Name="AssimpNet" Path="Protogame\AssimpNet.dll" />
   <Binary Name="Castle.Core" Path="Protogame\Castle.Core.dll" />
-  <Binary Name="Cloo" Path="Protogame\Cloo.dll" />
-  <Binary Name="Jitter" Path="Protogame\Jitter.dll" />
   <Binary Name="ManagedPVRTC" Path="Protogame\ManagedPVRTC.dll" />
   <Binary Name="MonoGame.Framework.Content.Pipeline" Path="Protogame\MonoGame.Framework.Content.Pipeline.dll" />
   <Binary Name="MonoGame.Framework" Path="Protogame\MonoGame.Framework.dll" />
   <Binary Name="NDesk.Options" Path="Protogame\NDesk.Options.dll" />
-  <Binary Name="Newtonsoft.Json" Path="Protogame\Newtonsoft.Json.dll" />
-  <Binary Name="Ninject" Path="Protogame\Ninject.dll" />
   <Binary Name="Ninject.Extensions.Factory" Path="Protogame\Ninject.Extensions.Factory.dll" />
   <Binary Name="Ninject.Extensions.Interception" Path="Protogame\Ninject.Extensions.Interception.dll" />
   <Binary Name="Ninject.Extensions.Interception.DynamicProxy" Path="Protogame\Ninject.Extensions.Interception.DynamicProxy.dll" />
   <Binary Name="Nvidia.TextureTools" Path="Protogame\Nvidia.TextureTools.dll" />
   <Binary Name="OpenTK" Path="Protogame\OpenTK.dll" />
-  <Binary Name="protobuf-net" Path="Protogame\protobuf-net.dll" />
   <Binary Name="Protogame" Path="Protogame\Protogame.dll" />
   <Binary Name="SharpFont" Path="Protogame\SharpFont.dll" />
   <Binary Name="Tao.Sdl" Path="Protogame\Tao.Sdl.dll" />
 
   <NativeBinary Path="Protogame\AssimpNet.dll.config" />
-  <NativeBinary Path="Protogame\Cloo.dll.config" />
   <NativeBinary Path="Protogame\Nvidia.TextureTools.dll.config" />
   <NativeBinary Path="Protogame\OpenTK.dll.config" />
   <NativeBinary Path="Protogame\Tao.Sdl.dll.config" />

@@ -7,6 +7,6 @@
     </Service>
   </Services>
 
-  <!-- Provided by Protogame reference -->
+  <Binary Name="Jitter" Path="Protogame\Jitter.dll" />
 
 </ExternalProject>

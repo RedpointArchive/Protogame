@@ -7,6 +7,8 @@
     </Service>
   </Services>
 
-  <!-- Provided by Protogame reference -->
+  <Binary Name="Cloo" Path="Protogame\Cloo.dll" />
+
+  <NativeBinary Path="Protogame\Cloo.dll.config" />
 
 </ExternalProject>
