@@ -16,3 +16,9 @@ StyleCop.Cache
 
 # Ignore publishing files
 *.tar.lzma
+
+# Ignore ThirdParty
+/ThirdParty/Jitter
+/ThirdParty/Cloo
+/ThirdParty/Newtonsoft.Json
+/ThirdParty/protobuf-net
