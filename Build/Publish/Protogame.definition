@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ExternalProject Name="Protogame">
 
+  <!--
+    Declare services; the binary version of Protogame ships with
+    everything enabled, so these services are effectively a no-op.
+  -->
+  <Services>
+    <Service Name="Default">
+      <Requires>Physics,OpenCL</Requires>
+      <DefaultForRoot>True</DefaultForRoot>
+    </Service>
+    <Service Name="Core" />
+    <Service Name="Physics" />
+    <Service Name="OpenCL" />
+  </Services>
+
   <Binary Name="AssimpNet" Path="Protogame\AssimpNet.dll" />
   <Binary Name="Castle.Core" Path="Protogame\Castle.Core.dll" />
   <Binary Name="Cloo" Path="Protogame\Cloo.dll" />
@@ -37,5 +51,5 @@
   <NativeBinary Path="Protogame\libnvmath.so" />
   <NativeBinary Path="Protogame\libnvtt.so" />
   <NativeBinary Path="Protogame\libpng12.so" />
-  
+
 </ExternalProject>
