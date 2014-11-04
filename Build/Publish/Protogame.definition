@@ -16,14 +16,8 @@
   </Services>
 
   <Binary Name="AssimpNet" Path="Protogame\AssimpNet.dll" />
-  <Binary Name="Castle.Core" Path="Protogame\Castle.Core.dll" />
   <Binary Name="ManagedPVRTC" Path="Protogame\ManagedPVRTC.dll" />
-  <Binary Name="MonoGame.Framework.Content.Pipeline" Path="Protogame\MonoGame.Framework.Content.Pipeline.dll" />
-  <Binary Name="MonoGame.Framework" Path="Protogame\MonoGame.Framework.dll" />
   <Binary Name="NDesk.Options" Path="Protogame\NDesk.Options.dll" />
-  <Binary Name="Ninject.Extensions.Factory" Path="Protogame\Ninject.Extensions.Factory.dll" />
-  <Binary Name="Ninject.Extensions.Interception" Path="Protogame\Ninject.Extensions.Interception.dll" />
-  <Binary Name="Ninject.Extensions.Interception.DynamicProxy" Path="Protogame\Ninject.Extensions.Interception.DynamicProxy.dll" />
   <Binary Name="Nvidia.TextureTools" Path="Protogame\Nvidia.TextureTools.dll" />
   <Binary Name="OpenTK" Path="Protogame\OpenTK.dll" />
   <Binary Name="Protogame" Path="Protogame\Protogame.dll" />

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExternalProject Name="MonoGame.Framework">
+
+  <Binary Name="MonoGame.Framework" Path="Protogame\MonoGame.Framework.dll" />
+
+</ExternalProject>
