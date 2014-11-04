@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExternalProject Name="Cloo">
+
+  <Services>
+    <Service Name="Default">
+      <DefaultForRoot>True</DefaultForRoot>
+    </Service>
+  </Services>
+
+  <!-- Provided by Protogame reference -->
+
+</ExternalProject>
