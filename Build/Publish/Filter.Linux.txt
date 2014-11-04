@@ -9,6 +9,7 @@ include ^Protogame/bin/Linux/AnyCPU/Debug/ffprobe$
 include ^ProtogameAssetTool/bin/Linux/AnyCPU/Debug/ProtogameAssetTool\.exe$
 include ^ProtogameAssetManager/bin/Linux/AnyCPU/Debug/ProtogameAssetManager\.exe$
 include ^ThirdParty/protobuf-precompile/(.*)$
+include ^ThirdParty/Ninject.MockingKernel/(.*)$
 
 # Rewrite file locations
 rewrite ^Build/Publish/(.*)$ Build/Projects/$1
@@ -16,3 +17,4 @@ rewrite ^Protogame/bin/Linux/AnyCPU/Debug/(.*)$ Protogame/$1
 rewrite ^ProtogameAssetTool/bin/Linux/AnyCPU/Debug/(.*)$ Protogame/$1
 rewrite ^ProtogameAssetManager/bin/Linux/AnyCPU/Debug/(.*)$ Protogame/$1
 rewrite ^ThirdParty/protobuf-precompile/(.*)$ protobuf-precompile/$1
+rewrite ^ThirdParty/Ninject.MockingKernel/(.*)$ Protogame/$1
