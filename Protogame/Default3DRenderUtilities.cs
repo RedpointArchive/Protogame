@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Protogame
 {
     using System;
@@ -647,6 +649,79 @@ namespace Protogame
 
                 context.GraphicsDevice.DrawUserIndexedPrimitives(
                     PrimitiveType.TriangleList,
+                    vertexes,
+                    0,
+                    vertexes.Length,
+                    indicies,
+                    0,
+                    indicies.Length / 3);
+            }
+
+            context.World = world;
+        }
+
+        public void RenderCircle(IRenderContext context,
+            Matrix transform, Vector2 center, int radius, Color color, bool filled = false)
+        {
+            if (!context.Is3DContext)
+            {
+                throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
+            }
+
+            var points = 8;
+
+            double angle = MathHelper.TwoPi / points;
+
+            var vertexesList = new List<VertexPositionColor>();
+            var indicesList = new List<short>();
+
+            vertexesList.Add(new VertexPositionColor(new Vector3(center, 0), color));
+
+            for (int i = 1; i <= points; i++)
+            {
+                var pos = new Vector2(
+                    (float)Math.Round(Math.Sin(angle * i), 4) * radius,
+                    (float)Math.Round(Math.Cos(angle * i), 4) * radius);
+                
+                vertexesList.Add(new VertexPositionColor(new Vector3(center + pos, 0), color));
+            }
+
+            if (filled)
+            {
+                for (int i = 1; i < points; i++)
+                {
+                    indicesList.Add(0);
+                    indicesList.Add((short)(i + 1));
+                    indicesList.Add((short) i);
+                }
+                indicesList.Add(0);
+                indicesList.Add(1);
+                indicesList.Add((short) points);
+            }
+            else
+            {
+                for (int i = 1; i <= points; i++)
+                {
+                    indicesList.Add((short) i);
+                }
+                indicesList.Add((short)1);
+            }
+
+            var vertexes = vertexesList.ToArray();
+            var indicies = indicesList.ToArray();
+
+            context.EnableVertexColors();
+
+            var world = context.World;
+
+            context.World = transform;
+
+            foreach (var pass in context.Effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                context.GraphicsDevice.DrawUserIndexedPrimitives(
+                    filled ? PrimitiveType.TriangleList : PrimitiveType.LineStrip,
                     vertexes,
                     0,
                     vertexes.Length,
