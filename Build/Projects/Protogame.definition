@@ -32,6 +32,10 @@
     </Service>
   </Services>
   <Files>
+    <Compile Include="AI\Agent.cs" />
+    <Compile Include="AI\IAI.cs" />
+    <Compile Include="AI\Wall.cs" />
+    <Compile Include="AI\WanderAI.cs" />
     <Compile Include="Analytics\AnalyticsErrorSeverity.cs" />
     <Compile Include="Analytics\GameAnalyticsAnalyticsEngine.cs" />
     <Compile Include="Analytics\IAnalyticsEngine.cs" />
