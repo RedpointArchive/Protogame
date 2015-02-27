@@ -691,7 +691,7 @@ namespace Protogame
             /// The filter.
             /// </param>
             public DefaultBindableOnTogglable(StaticEventBinder<TContext> staticEventBinder, Func<TEvent, bool> filter)
-                : base(staticEventBinder, filter)
+                : base(staticEventBinder, filter, t => true)
             {
             }
 
