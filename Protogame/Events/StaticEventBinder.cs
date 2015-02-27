@@ -55,6 +55,16 @@ namespace Protogame
             IBindableOn<TEvent, TEntity> On<TEntity>() where TEntity : IEntity;
 
             /// <summary>
+            /// The on.
+            /// </summary>
+            /// <typeparam name="TEntity">
+            /// </typeparam>
+            /// <returns>
+            /// The <see cref="StaticEventBinder"/>.
+            /// </returns>
+            IBindableOn<TEvent, TEntity> On<TEntity>(Func<TEntity, bool> filter) where TEntity : IEntity;
+
+            /// <summary>
             /// The on togglable.
             /// </summary>
             /// <typeparam name="TEntity">
@@ -323,7 +333,20 @@ namespace Protogame
             /// </returns>
             public IBindableOn<T, TEntity> On<TEntity>() where TEntity : IEntity
             {
-                return new DefaultBindableOn<T, TEntity>(this.m_StaticEventBinder, this.m_Filter);
+                return new DefaultBindableOn<T, TEntity>(this.m_StaticEventBinder, this.m_Filter, t => true);
+            }
+
+            /// <summary>
+            /// The on.
+            /// </summary>
+            /// <typeparam name="TEntity">
+            /// </typeparam>
+            /// <returns>
+            /// The <see cref="StaticEventBinder"/>.
+            /// </returns>
+            public IBindableOn<T, TEntity> On<TEntity>(Func<TEntity, bool> filter) where TEntity : IEntity
+            {
+                return new DefaultBindableOn<T, TEntity>(this.m_StaticEventBinder, this.m_Filter, filter);
             }
 
             /// <summary>
@@ -404,6 +427,11 @@ namespace Protogame
             protected readonly Func<TEvent, bool> m_Filter;
 
             /// <summary>
+            /// The m_ filter.
+            /// </summary>
+            protected readonly Func<TEntity, bool> m_EntityFilter;
+
+            /// <summary>
             /// The m_ static event binder.
             /// </summary>
             protected readonly StaticEventBinder<TContext> m_StaticEventBinder;
@@ -417,10 +445,11 @@ namespace Protogame
             /// <param name="filter">
             /// The filter.
             /// </param>
-            public DefaultBindableOn(StaticEventBinder<TContext> staticEventBinder, Func<TEvent, bool> filter)
+            public DefaultBindableOn(StaticEventBinder<TContext> staticEventBinder, Func<TEvent, bool> filter, Func<TEntity, bool> entityFilter)
             {
                 this.m_StaticEventBinder = staticEventBinder;
                 this.m_Filter = filter;
+                this.m_EntityFilter = entityFilter;
             }
 
             /// <summary>
@@ -436,7 +465,8 @@ namespace Protogame
             {
                 var bindable = new DefaultBindableOnTo<TEvent, TEntity, TEntityAction>(
                     this.m_StaticEventBinder, 
-                    this.m_Filter);
+                    this.m_Filter,
+                    this.m_EntityFilter);
                 bindable.Bind();
                 return bindable;
             }
@@ -461,6 +491,11 @@ namespace Protogame
             private readonly Func<TEvent, bool> m_Filter;
 
             /// <summary>
+            /// The m_ filter.
+            /// </summary>
+            private readonly Func<TEntity, bool> m_EntityFilter;
+
+            /// <summary>
             /// The m_ static event binder.
             /// </summary>
             private readonly StaticEventBinder<TContext> m_StaticEventBinder;
@@ -474,10 +509,11 @@ namespace Protogame
             /// <param name="filter">
             /// The filter.
             /// </param>
-            public DefaultBindableOnTo(StaticEventBinder<TContext> staticEventBinder, Func<TEvent, bool> filter)
+            public DefaultBindableOnTo(StaticEventBinder<TContext> staticEventBinder, Func<TEvent, bool> filter, Func<TEntity, bool> entityFilter)
             {
                 this.m_StaticEventBinder = staticEventBinder;
                 this.m_Filter = filter;
+                this.m_EntityFilter = entityFilter;
             }
 
             /// <summary>
@@ -518,8 +554,9 @@ namespace Protogame
                             return false;
                         }
 
-                        var exactMatch = gameContext.World.Entities.FirstOrDefault(x => x.GetType() == typeof(TEntity));
-                        var exactOrDerivedMatch = gameContext.World.Entities.FirstOrDefault(x => x is TEntity);
+                        var entities = gameContext.World.Entities.OfType<TEntity>().Where(this.m_EntityFilter).ToList();
+                        var exactMatch = entities.FirstOrDefault(x => x.GetType() == typeof(TEntity));
+                        var exactOrDerivedMatch = entities.FirstOrDefault(x => x is TEntity);
                         if (exactMatch != null)
                         {
                             action.Handle(gameContext, (TEntity)exactMatch, @event);
