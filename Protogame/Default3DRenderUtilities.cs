@@ -660,6 +660,52 @@ namespace Protogame
             context.World = world;
         }
 
+        public void RenderPlane(IRenderContext context, Matrix transform, TextureAsset texture, Vector2 topLeftUV,
+            Vector2 bottomRightUV)
+        {
+            if (!context.Is3DContext)
+            {
+                throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
+            }
+
+            var vertexes = new[]
+            {
+                new VertexPositionNormalTexture(new Vector3(0, 0, 0), new Vector3(0, -1, 0), new Vector2(topLeftUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(0, 0, 1), new Vector3(0, -1, 0), new Vector2(topLeftUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 0, 0), new Vector3(0, -1, 0), new Vector2(bottomRightUV.X, topLeftUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 0, 1), new Vector3(0, -1, 0), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+            };
+
+            var indicies = new short[]
+            {
+                0, 2, 1,
+                3, 1, 2,
+            };
+
+            context.EnableTextures();
+            context.SetActiveTexture(texture.Texture);
+
+            var world = context.World;
+
+            context.World = transform;
+
+            foreach (var pass in context.Effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                context.GraphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.TriangleList,
+                    vertexes,
+                    0,
+                    vertexes.Length,
+                    indicies,
+                    0,
+                    indicies.Length / 3);
+            }
+
+            context.World = world;
+        }
+
         public void RenderCircle(IRenderContext context,
             Matrix transform, Vector2 center, int radius, Color color, bool filled = false)
         {
