@@ -91,8 +91,8 @@ namespace Protogame
                 Y = entity.Y - 1,
                 Width = entity.Width,
                 Height = entity.Height,
-                XSpeed = entity.XSpeed,
-                YSpeed = entity.YSpeed
+                XSpeed = 0,
+                YSpeed = 0
             };
             var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
             foreach (var collidableEntity in collidableEntities)
@@ -112,7 +112,7 @@ namespace Protogame
                     }
                     else
                     {
-                        entity.YSpeed = 0;
+                        entity.YSpeed = 1;
                     }
                     return true;
                 }
@@ -125,36 +125,36 @@ namespace Protogame
         /// The apply movement.
         /// </summary>
         /// <param name="entity">
-        /// The entity.
+        ///     The entity.
         /// </param>
         /// <param name="xAmount">
-        /// The x amount.
+        ///     The x amount.
         /// </param>
         /// <param name="yAmount">
-        /// The y amount.
+        ///     The y amount.
         /// </param>
         /// <param name="entities">
-        /// The entities.
+        ///     The entities.
         /// </param>
         /// <param name="ground">
-        /// The ground.
+        ///     The ground.
         /// </param>
-        public void ApplyMovement(
-            IBoundingBox entity, 
-            int xAmount, 
-            int yAmount, 
-            IEnumerable<IBoundingBox> entities, 
-            Func<IBoundingBox, bool> ground)
+        public bool ApplyMovement(IBoundingBox entity, int xAmount, int yAmount, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground)
         {
+            var movedX = false;
+            var movedY = false;
+
             var collidableEntities = entities.Where(ground).ToArray();
             for (var x = 0; x < Math.Abs(xAmount); x++)
             {
                 entity.X += Math.Sign(xAmount);
+                movedX = true;
                 foreach (var other in collidableEntities)
                 {
                     if (this.m_BoundingBoxUtilities.Overlaps(entity, other))
                     {
                         entity.X -= Math.Sign(xAmount);
+                        movedX = false;
                         goto endX;
                     }
                 }
@@ -164,18 +164,20 @@ namespace Protogame
             for (var y = 0; y < Math.Abs(yAmount); y++)
             {
                 entity.Y += Math.Sign(yAmount);
+                movedY = true;
                 foreach (var other in collidableEntities)
                 {
                     if (this.m_BoundingBoxUtilities.Overlaps(entity, other))
                     {
                         entity.Y -= Math.Sign(yAmount);
+                        movedY = false;
                         goto endY;
                     }
                 }
             }
 
             endY:
-            ;
+            return movedX || movedY;
         }
 
         /// <summary>

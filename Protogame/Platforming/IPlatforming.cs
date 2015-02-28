@@ -69,26 +69,21 @@ namespace Protogame
         /// one of the entities classified by the ground check is hit.
         /// </summary>
         /// <param name="entity">
-        /// The entity to move.
+        ///     The entity to move.
         /// </param>
         /// <param name="xAmount">
-        /// The maximum X amount to move.
+        ///     The maximum X amount to move.
         /// </param>
         /// <param name="yAmount">
-        /// The maximum Y amount to move.
+        ///     The maximum Y amount to move.
         /// </param>
         /// <param name="entities">
-        /// All of the entities to consider (usually the World.Entities property).
+        ///     All of the entities to consider (usually the World.Entities property).
         /// </param>
         /// <param name="ground">
-        /// The ground.
+        ///     The ground.
         /// </param>
-        void ApplyMovement(
-            IBoundingBox entity, 
-            int xAmount, 
-            int yAmount, 
-            IEnumerable<IBoundingBox> entities, 
-            Func<IBoundingBox, bool> ground);
+        bool ApplyMovement(IBoundingBox entity, int xAmount, int yAmount, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground);
 
         /// <summary>
         /// Clamps the speed of an entity to the specified values.
