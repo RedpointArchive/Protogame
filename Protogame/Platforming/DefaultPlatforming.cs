@@ -83,6 +83,44 @@ namespace Protogame
             entity.YSpeed += yGravity;
         }
 
+        public bool ApplyOverheadCheck(IBoundingBox entity, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground, float yGravity, bool bounce)
+        {
+            var entityExtended = new BoundingBox
+            {
+                X = entity.X,
+                Y = entity.Y - 1,
+                Width = entity.Width,
+                Height = entity.Height,
+                XSpeed = entity.XSpeed,
+                YSpeed = entity.YSpeed
+            };
+            var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
+            foreach (var collidableEntity in collidableEntities)
+            {
+                if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
+                {
+                    if (bounce)
+                    {
+                        if (yGravity > 0)
+                        {
+                            entity.YSpeed = Math.Abs(entity.YSpeed);
+                        }
+                        else
+                        {
+                            entity.YSpeed = -Math.Abs(entity.YSpeed);
+                        }
+                    }
+                    else
+                    {
+                        entity.YSpeed = 0;
+                    }
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// The apply movement.
         /// </summary>
@@ -212,7 +250,51 @@ namespace Protogame
             {
                 if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
                 {
-                    return true;
+                    if (collidableEntity.Y > entity.Y)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// The is on ground.
+        /// </summary>
+        /// <param name="entity">
+        /// The entity.
+        /// </param>
+        /// <param name="entities">
+        /// The entities.
+        /// </param>
+        /// <param name="ground">
+        /// The ground.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        public bool IsAtCeiling(IBoundingBox entity, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground)
+        {
+            var entityExtended = new BoundingBox
+            {
+                X = entity.X,
+                Y = entity.Y - 1,
+                Width = entity.Width,
+                Height = entity.Height,
+                XSpeed = entity.XSpeed,
+                YSpeed = entity.YSpeed
+            };
+            var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
+            foreach (var collidableEntity in collidableEntities)
+            {
+                if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
+                {
+                    if (collidableEntity.Y < entity.Y)
+                    {
+                        return true;
+                    }
                 }
             }
 
