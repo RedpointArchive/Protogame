@@ -8,6 +8,7 @@
     <Reference Include="System" />
     <Reference Include="Ninject" />
     <Reference Include="Ninject.MockingKernel" />
+    <Reference Include="MonoGame.Framework" />
   </References>
   <Files>
     <Compile Include="AgentTests.cs" />
