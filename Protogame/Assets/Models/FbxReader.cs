@@ -91,10 +91,10 @@ namespace Protogame
 
             // Import the scene via AssImp.
             var importer = new AssimpContext();
-            const PostProcessSteps ProcessFlags =
-                PostProcessSteps.FlipUVs | PostProcessSteps.JoinIdenticalVertices | PostProcessSteps.Triangulate
-                | PostProcessSteps.SortByPrimitiveType | PostProcessSteps.FindInvalidData
-                | PostProcessSteps.FlipWindingOrder;
+            const PostProcessSteps ProcessFlags = 0
+                | PostProcessSteps.FlipUVs
+                | PostProcessSteps.FlipWindingOrder
+                ;
             var scene = importer.ImportFile(filename, ProcessFlags);
 
             VertexPositionNormalTextureBlendable[] vertexes;
@@ -321,7 +321,7 @@ namespace Protogame
             for (var i = 0; i < mesh.VertexCount; i++)
             {
                 var pos = mesh.Vertices[i];
-                var normal = mesh.Normals[i];
+                var normal = mesh.HasNormals ? mesh.Normals[i] : new Vector3D(0, 0, 0);
                 var uv = i < uvs.Count ? uvs[i] : new Vector3D(0, 0, 0);
 
                 var posVector = new Vector3(pos.X, pos.Y, pos.Z);
