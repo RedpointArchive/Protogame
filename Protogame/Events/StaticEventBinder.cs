@@ -106,6 +106,8 @@ namespace Protogame
             /// The <see cref="StaticEventBinder"/>.
             /// </returns>
             IBindableTo<TEvent, TListener> ToListener<TListener>() where TListener : IEventListener<TContext>;
+
+            void ToNothing();
         }
 
         /// <summary>
@@ -130,6 +132,20 @@ namespace Protogame
                 where TEntityAction : IEventEntityAction<TEntity>;
         }
 
+        protected interface IPropagate
+        {
+            /// <summary>
+            /// Allow the event to propagate to other bindings even if
+            /// handled by this bindings.
+            /// </summary>
+            /// <typeparam name="TEntityAction">
+            /// </typeparam>
+            /// <returns>
+            /// The <see cref="StaticEventBinder"/>.
+            /// </returns>
+            void Propagate();
+        }
+
         /// <summary>
         /// The BindableOnTo interface.
         /// </summary>
@@ -139,7 +155,7 @@ namespace Protogame
         /// </typeparam>
         /// <typeparam name="TEntityAction">
         /// </typeparam>
-        protected interface IBindableOnTo<TEvent, TEntity, TEntityAction>
+        protected interface IBindableOnTo<TEvent, TEntity, TEntityAction> : IPropagate
             where TEvent : Event where TEntity : IEntity where TEntityAction : IEventEntityAction<TEntity>
         {
         }
@@ -151,7 +167,7 @@ namespace Protogame
         /// </typeparam>
         /// <typeparam name="TEntity">
         /// </typeparam>
-        protected interface IBindableOnTo<TEvent, TEntity>
+        protected interface IBindableOnTo<TEvent, TEntity> : IPropagate
             where TEvent : Event where TEntity : IEntity, IEventTogglable
         {
         }
@@ -409,6 +425,25 @@ namespace Protogame
                 bindable.BindAsListener<TListener>();
                 return bindable;
             }
+
+            public void ToNothing()
+            {
+                this.m_StaticEventBinder.m_Bindings.Add(
+                    (gameContext, eventEngine, @event) =>
+                    {
+                        if (!(@event is T))
+                        {
+                            return false;
+                        }
+
+                        if (!this.m_Filter(@event as T))
+                        {
+                            return false;
+                        }
+
+                        return true;
+                    });
+            }
         }
 
         /// <summary>
@@ -485,6 +520,8 @@ namespace Protogame
             IBindableOnTo<TEvent, TEntity, TEntityAction>
             where TEvent : Event where TEntity : IEntity where TEntityAction : IEventEntityAction<TEntity>
         {
+            private bool m_Propagate = false;
+
             /// <summary>
             /// The m_ filter.
             /// </summary>
@@ -560,17 +597,22 @@ namespace Protogame
                         if (exactMatch != null)
                         {
                             action.Handle(gameContext, (TEntity)exactMatch, @event);
-                            return true;
+                            return !this.m_Propagate;
                         }
 
                         if (exactOrDerivedMatch != null)
                         {
                             action.Handle(gameContext, (TEntity)exactOrDerivedMatch, @event);
-                            return true;
+                            return !this.m_Propagate;
                         }
 
                         return false;
                     });
+            }
+
+            public void Propagate()
+            {
+                this.m_Propagate = true;
             }
         }
 
@@ -584,6 +626,8 @@ namespace Protogame
         private class DefaultBindableOnToTogglable<TEvent, TEntity> : IBindableOnTo<TEvent, TEntity>
             where TEvent : Event where TEntity : IEntity, IEventTogglable
         {
+            private bool m_Propagate = false;
+
             /// <summary>
             /// The m_ filter.
             /// </summary>
@@ -656,17 +700,22 @@ namespace Protogame
                         if (exactMatch != null)
                         {
                             ((TEntity)exactMatch).Toggle(id);
-                            return true;
+                            return !this.m_Propagate;
                         }
 
                         if (exactOrDerivedMatch != null)
                         {
                             ((TEntity)exactOrDerivedMatch).Toggle(id);
-                            return true;
+                            return !this.m_Propagate;
                         }
 
                         return false;
                     });
+            }
+
+            public void Propagate()
+            {
+                this.m_Propagate = true;
             }
         }
 
