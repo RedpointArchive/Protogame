@@ -22,3 +22,6 @@ StyleCop.Cache
 /ThirdParty/Cloo
 /ThirdParty/Newtonsoft.Json
 /ThirdParty/protobuf-net
+/ThirdParty/Binaries
+/ThirdParty/MonoGame
+/ThirdParty/Ninject

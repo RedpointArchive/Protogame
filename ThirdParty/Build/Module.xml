@@ -1,9 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModuleInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Path>/home/james/Projects/Redpoint/Protogame/ThirdParty</Path>
   <Name>ThirdParty</Name>
   <DefaultAction>resync</DefaultAction>
   <GenerateNuGetRepositories>true</GenerateNuGetRepositories>
   <DisableSynchronisation xsi:nil="true" />
   <ModuleAssemblies />
+  <Packages>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/Jitter</Uri>
+      <GitRef>cba4d9f61a4636208f63f25c74eb43d8ccb36426</GitRef>
+      <Folder>Jitter</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/Cloo</Uri>
+      <GitRef>0921d9a70979d81cf42efc9429c5687ae55ea92b</GitRef>
+      <Folder>Cloo</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/Newtonsoft.Json</Uri>
+      <GitRef>3ae5403275c1859ae1f39681eea1148306da5d5f</GitRef>
+      <Folder>Newtonsoft.Json</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/protobuf-net</Uri>
+      <GitRef>8a259ed75bbbde54ba525edf8b4317ac3519f549</GitRef>
+      <Folder>protobuf-net</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>https-git://github.com/hach-que/MonoGame</Uri>
+      <GitRef>3c6d69ae61c59623f90d170e313557a5c2a7ad11</GitRef>
+      <Folder>MonoGame</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>https-git://code.redpointsoftware.com.au/diffusion/PTPB/</Uri>
+      <GitRef>ee0e3ab65061317bb01329fdce4d26bae127b75c</GitRef>
+      <Folder>Binaries</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>https-git://github.com/hach-que/ninject.git</Uri>
+      <GitRef>445839c40c85149adc75965267b907951e610205</GitRef>
+      <Folder>Ninject</Folder>
+    </PackageRef>
+  </Packages>
 </ModuleInfo>
