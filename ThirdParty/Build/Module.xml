@@ -41,5 +41,10 @@
       <GitRef>445839c40c85149adc75965267b907951e610205</GitRef>
       <Folder>Ninject</Folder>
     </PackageRef>
+    <PackageRef>
+      <Uri>https-git://github.com/hach-que/NDesk.Options.git</Uri>
+      <GitRef>master</GitRef>
+      <Folder>NDesk.Options</Folder>
+    </PackageRef>
   </Packages>
 </ModuleInfo>

@@ -17,6 +17,7 @@
     <Reference Include="AssImp" />
     <Reference Include="Protogame.ThirdParty" />
     <Reference Include="Newtonsoft.Json" />
+    <Reference Include="NDesk.Options" />
   </References>
   <Services>
     <Service Name="Default">
