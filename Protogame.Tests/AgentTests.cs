@@ -8,9 +8,8 @@
         [Fact]
         public void Unproject()
         {
-            var agent = new Agent(null, null, Vector2.Zero, 0, null);
-            agent.X = 100;
-            agent.Y = 100;
+            var agent = new Agent(new TestEntity(), null, 0);
+            agent.Position = new Vector2(100, 100);
 
             agent.Heading = new Vector2(1, 0);
 
@@ -44,9 +43,8 @@
         [Fact]
         public void Project()
         {
-            var agent = new Agent(null, null, Vector2.Zero, 0, null);
-            agent.X = 100;
-            agent.Y = 100;
+            var agent = new Agent(new TestEntity(), null, 0);
+            agent.Position = new Vector2(100, 100);
 
             agent.Heading = new Vector2(1, 0);
 
@@ -75,6 +73,10 @@
             Assert.Equal(new Vector2(100, 90), agent.Project(new Vector2(-10, 0)));
             Assert.Equal(new Vector2(90, 100), agent.Project(new Vector2(0, 10)));
             Assert.Equal(new Vector2(110, 100), agent.Project(new Vector2(0, -10)));
+        }
+
+        private class TestEntity : Entity
+        {
         }
     }
 }
