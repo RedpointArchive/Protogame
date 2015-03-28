@@ -46,5 +46,10 @@
       <GitRef>master</GitRef>
       <Folder>NDesk.Options</Folder>
     </PackageRef>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/xunit</Uri>
+      <GitRef>master</GitRef>
+      <Folder>xunit</Folder>
+    </PackageRef>
   </Packages>
 </ModuleInfo>

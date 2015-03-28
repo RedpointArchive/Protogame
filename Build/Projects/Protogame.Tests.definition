@@ -9,6 +9,7 @@
     <Reference Include="Ninject" />
     <Reference Include="Ninject.MockingKernel" />
     <Reference Include="MonoGame.Framework" />
+    <Reference Include="xunit" />
   </References>
   <Files>
     <Compile Include="AgentTests.cs" />

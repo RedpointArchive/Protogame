@@ -25,3 +25,5 @@ StyleCop.Cache
 /ThirdParty/Binaries
 /ThirdParty/MonoGame
 /ThirdParty/Ninject
+/ThirdParty/NDesk.Options
+/ThirdParty/xunit
