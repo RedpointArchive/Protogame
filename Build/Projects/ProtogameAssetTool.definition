@@ -25,6 +25,5 @@
     <Compile Include="IAssetCompilationEngine.cs" />
     <Compile Include="IAssetOutOfDateCalculator.cs" />
     <Compile Include="Program.cs" />
-    <None Include="packages.config" />
   </Files>
 </Project>

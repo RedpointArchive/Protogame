@@ -32,6 +32,5 @@
     <Compile Include="Program.cs" />
     <Compile Include="TextureAssetEditor.cs" />
     <Compile Include="TilesetAssetEditor.cs" />
-    <None Include="packages.config" />
   </Files>
 </Project>
