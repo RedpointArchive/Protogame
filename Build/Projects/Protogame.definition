@@ -532,6 +532,10 @@
     <EmbeddedResource Include="font.Default-WindowsStoreApp.bin" />
     <EmbeddedResource Include="font.Default-Xbox360.bin" />
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
+    <None Include="..\ThirdParty\Cloo\Linux\Cloo\Cloo.dll.config">
+      <Link>Cloo.dll.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="effect.Basic.fx" />
     <None Include="effect.Color.fx" />
     <None Include="effect.Skinned.fx" />

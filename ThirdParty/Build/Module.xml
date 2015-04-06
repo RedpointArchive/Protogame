@@ -28,7 +28,7 @@
     </PackageRef>
     <PackageRef>
       <Uri>https-git://github.com/hach-que/MonoGame</Uri>
-      <GitRef>3c6d69ae61c59623f90d170e313557a5c2a7ad11</GitRef>
+      <GitRef>develop-20150406</GitRef>
       <Folder>MonoGame</Folder>
     </PackageRef>
     <PackageRef>

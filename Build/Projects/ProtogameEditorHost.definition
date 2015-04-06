@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Name="ProtogameEditor" Path="ProtogameEditor" Type="IDEEditor" Platforms="Linux,MacOS,Windows">
+<Project Name="ProtogameEditorHost" Path="ProtogameEditorHost" Type="App" Platforms="Linux,MacOS,Windows">
   <Properties>
     <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
   </Properties>
@@ -16,12 +16,18 @@
     <Reference Include="AssImp" />
     <Reference Include="NDesk.Options" />
     <Reference Include="FrameworkReferences" />
+    <Reference Include="ProtogameEditor" />
+    <Reference Include="ProtogameEditorHost.ThirdParty" />
   </References>
   <Files>
-    <Compile Include="EditorEmbedContext.cs" />
-    <Compile Include="EditorGame.cs" />
-    <Compile Include="EditorWorld.cs" />
-    <Compile Include="IDEEditor.cs" />
-    <None Include="Test.test" />
+    <Compile Include="EditorHostEmbedContext.cs" />
+    <Compile Include="GLWidget.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="gtk-gui\ProtogameEditorHost.HostWindow.cs" />
+    <Compile Include="HostWindow.cs" />
+    <Compile Include="Program.cs" />
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
   </Files>
 </Project>

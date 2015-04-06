@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExternalProject Name="ProtogameEditorHost.ThirdParty">
+
+  <Platform Type="Windows">
+    <Reference Include="gtk-sharp" />
+    <Reference Include="gdk-sharp" />
+    <Reference Include="atk-sharp" />
+    <Reference Include="glib-sharp" />
+  </Platform>
+
+  <Platform Type="Linux">
+    <Reference Include="gtk-sharp" />
+    <Reference Include="gdk-sharp" />
+    <Reference Include="atk-sharp" />
+    <Reference Include="glib-sharp" />
+  </Platform>
+
+  <Platform Type="MacOS">
+    <Reference Include="gtk-sharp" />
+    <Reference Include="gdk-sharp" />
+    <Reference Include="atk-sharp" />
+    <Reference Include="glib-sharp" />
+  </Platform>
+  
+</ExternalProject>

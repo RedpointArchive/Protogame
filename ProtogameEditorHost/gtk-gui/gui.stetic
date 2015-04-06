@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stetic-interface>
+  <configuration>
+    <images-root-path>..</images-root-path>
+    <target-gtk-version>2.12</target-gtk-version>
+  </configuration>
+  <import>
+    <widget-library name="../bin/Linux/AnyCPU/Debug/ProtogameEditorHost.exe" internal="true" />
+  </import>
+  <widget class="Gtk.Window" id="ProtogameEditorHost.HostWindow" design-size="400 300">
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">HostWindow</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <child>
+      <widget class="Gtk.GLWidget" id="glWidget">
+        <property name="MemberName" />
+        <property name="SingleBuffer">False</property>
+        <property name="ColorBPP">0</property>
+        <property name="AccumulatorBPP">0</property>
+        <property name="DepthBPP">0</property>
+        <property name="StencilBPP">0</property>
+        <property name="Samples">0</property>
+        <property name="Stereo">False</property>
+        <property name="GlVersionMajor">0</property>
+        <property name="GlVersionMinor">0</property>
+      </widget>
+    </child>
+  </widget>
+</stetic-interface>

@@ -53,7 +53,7 @@ namespace Protogame
                 bitmap = newBitmap;
             }
 
-            output.Faces.Add(new MipmapChain(bitmap.ToXnaBitmap()));
+            output.Faces.Add(new MipmapChain(bitmap.ToXnaBitmap(true)));
             bitmap.Dispose();
 
             var manager = new PipelineManager(
