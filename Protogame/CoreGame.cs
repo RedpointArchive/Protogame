@@ -95,7 +95,11 @@ namespace Protogame
         /// <param name="kernel">
         /// The dependency injection kernel.
         /// </param>
+#if PLATFORM_WINDOWSGL || PLATFORM_LINUX
         public CoreGame(IKernel kernel) : base(kernel.TryGet<IEmbedContext>())
+#else
+        public CoreGame(IKernel kernel) : base()
+#endif
         {
 #if PLATFORM_MACOS
             // On Mac, the MonoGame launcher changes the current working

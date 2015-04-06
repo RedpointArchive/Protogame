@@ -330,12 +330,24 @@
     <Compile Include="Performance\NullProfiler.cs" />
     <Compile Include="Performance\NullProfilerHandle.cs" />
     <Compile Include="Performance\ProtogamePerformanceIoCModule.cs" />
-    <Compile Include="Physics\ConversionExtensions.cs" />
-    <Compile Include="Physics\DefaultPhysicsEngine.cs" />
-    <Compile Include="Physics\IPhysicsEngine.cs" />
-    <Compile Include="Physics\IPhysicsEntity.cs" />
-    <Compile Include="Physics\PhysicsCharacterController.cs" />
-    <Compile Include="Physics\ProtogamePhysicsIoCModule.cs" />
+    <Compile Include="Physics\ConversionExtensions.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\DefaultPhysicsEngine.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\IPhysicsEngine.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\IPhysicsEntity.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\PhysicsCharacterController.cs">
+      <Services>Physics</Services>
+    </Compile>
+    <Compile Include="Physics\ProtogamePhysicsIoCModule.cs">
+      <Services>Physics</Services>
+    </Compile>
     <Compile Include="Platform\AndroidGameWindow.cs" />
     <Compile Include="Platform\DefaultGameWindow.cs" />
     <Compile Include="Platforming\DefaultPlatforming.cs" />
@@ -395,7 +407,11 @@
     <Compile Include="Scripting\LogicControl\IfElseLogicStatement.cs" />
     <Compile Include="Scripting\LogicControl\IfLogicStatement.cs" />
     <Compile Include="Scripting\LogicControl\LogicAssignmentTarget.cs" />
-    <Compile Include="Scripting\LogicControl\LogicBuiltins.cs" />
+    <Compile Include="Scripting\LogicControl\LogicBuiltins.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogicBuiltins.tt</DependentUpon>
+    </Compile>
     <Compile Include="Scripting\LogicControl\LogicExecutionState.cs" />
     <Compile Include="Scripting\LogicControl\LogicExpression.cs" />
     <Compile Include="Scripting\LogicControl\LogicField.cs" />
@@ -435,9 +451,15 @@
     <Compile Include="Server\IUniqueIdentifierAllocator.cs" />
     <Compile Include="Server\ProtogameServerIoCModule.cs" />
     <Compile Include="Server\Server.cs" />
-    <Compile Include="Structure\PositionOctree.cs" />
+    <Compile Include="Structure\PositionOctree.cs">
+      <DependentUpon>PositionOctreeNode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Structure\PositionOctreeNode.cs" />
-    <Compile Include="Structure\PositionOctreeUtil.cs" />
+    <Compile Include="Structure\PositionOctreeUtil.cs">
+      <DependentUpon>PositionOctreeUtil.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="UI\AudioPlayer.cs" />
     <Compile Include="UI\BaseContainer.cs" />
     <Compile Include="UI\BasicSkin.cs" />
@@ -478,71 +500,199 @@
     <Compile Include="UI\VerticalContainer.cs" />
     <Compile Include="UI\Window.cs" />
     <Compile Include="VerticalAlignment.cs" />
-    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_32.so.3.0.1" />
-    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_64.so.3.0.1" />
-    <Content Include="..\ThirdParty\Binaries\Windows\Assimp32.dll" />
-    <Content Include="..\ThirdParty\Binaries\Windows\Assimp64.dll" />
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\NVTT\Windows\x64\nvtt.dll" />
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\freetype6.dll" />
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.dylib" />
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.so" />
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng12.so" />
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng15.15.dylib" />
-    <Content Include="libmojoshader_src_32.dll" />
-    <Content Include="libmojoshader_src_64.dll" />
-    <EmbeddedResource Include="Assets\Effects\Macros.fx" />
-    <EmbeddedResource Include="effect.Basic-Android.bin" />
-    <EmbeddedResource Include="effect.Basic-iOS.bin" />
-    <EmbeddedResource Include="effect.Basic-Linux.bin" />
-    <EmbeddedResource Include="effect.Basic-MacOSX.bin" />
-    <EmbeddedResource Include="effect.Basic-Ouya.bin" />
-    <EmbeddedResource Include="effect.Basic-RaspberryPi.bin" />
-    <EmbeddedResource Include="effect.Basic-Windows.bin" />
-    <EmbeddedResource Include="effect.Basic-WindowsPhone8.bin" />
-    <EmbeddedResource Include="effect.Basic-WindowsStoreApp.bin" />
-    <EmbeddedResource Include="effect.Color-Android.bin" />
-    <EmbeddedResource Include="effect.Color-iOS.bin" />
-    <EmbeddedResource Include="effect.Color-Linux.bin" />
-    <EmbeddedResource Include="effect.Color-MacOSX.bin" />
-    <EmbeddedResource Include="effect.Color-Ouya.bin" />
-    <EmbeddedResource Include="effect.Color-RaspberryPi.bin" />
-    <EmbeddedResource Include="effect.Color-Windows.bin" />
-    <EmbeddedResource Include="effect.Color-WindowsPhone8.bin" />
-    <EmbeddedResource Include="effect.Color-WindowsStoreApp.bin" />
-    <EmbeddedResource Include="effect.Skinned-Android.bin" />
-    <EmbeddedResource Include="effect.Skinned-iOS.bin" />
-    <EmbeddedResource Include="effect.Skinned-Linux.bin" />
-    <EmbeddedResource Include="effect.Skinned-MacOSX.bin" />
-    <EmbeddedResource Include="effect.Skinned-Ouya.bin" />
-    <EmbeddedResource Include="effect.Skinned-RaspberryPi.bin" />
-    <EmbeddedResource Include="effect.Skinned-Windows.bin" />
-    <EmbeddedResource Include="effect.Skinned-WindowsPhone8.bin" />
-    <EmbeddedResource Include="effect.Skinned-WindowsStoreApp.bin" />
-    <EmbeddedResource Include="font.Default-Android.bin" />
-    <EmbeddedResource Include="font.Default-iOS.bin" />
-    <EmbeddedResource Include="font.Default-Linux.bin" />
-    <EmbeddedResource Include="font.Default-MacOSX.bin" />
-    <EmbeddedResource Include="font.Default-NativeClient.bin" />
-    <EmbeddedResource Include="font.Default-Ouya.bin" />
-    <EmbeddedResource Include="font.Default-PlayStationMobile.bin" />
-    <EmbeddedResource Include="font.Default-RaspberryPi.bin" />
-    <EmbeddedResource Include="font.Default-Windows.bin" />
-    <EmbeddedResource Include="font.Default-WindowsPhone.bin" />
-    <EmbeddedResource Include="font.Default-WindowsPhone8.bin" />
-    <EmbeddedResource Include="font.Default-WindowsStoreApp.bin" />
-    <EmbeddedResource Include="font.Default-Xbox360.bin" />
-    <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
-    <None Include="..\ThirdParty\Cloo\Linux\Cloo\Cloo.dll.config">
-      <Link>Cloo.dll.config</Link>
+    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_32.so.3.0.1">
+      <Platforms>Linux</Platforms>
+      <Link>libassimp_32.so.3.0.1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_64.so.3.0.1">
+      <Platforms>Linux</Platforms>
+      <Link>libassimp_64.so.3.0.1</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\Binaries\Windows\Assimp32.dll">
+      <Link>Assimp32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="..\ThirdParty\Binaries\Windows\Assimp64.dll">
+      <Link>Assimp64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\NVTT\Windows\x64\nvtt.dll">
+      <Link>nvtt.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\freetype6.dll">
+      <Link>freetype6.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.dylib">
+      <Platforms>MacOS</Platforms>
+      <Link>libfreetype.6.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.so">
+      <Platforms>Linux</Platforms>
+      <Link>libfreetype.6.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng12.so">
+      <Platforms>Linux</Platforms>
+      <Link>libpng12.so</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng15.15.dylib">
+      <Platforms>MacOS</Platforms>
+      <Link>libpng15.15.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libmojoshader_src_32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <Content Include="libmojoshader_src_64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Platforms>Windows</Platforms>
+    </Content>
+    <EmbeddedResource Include="Assets\Effects\Macros.fx" />
+    <EmbeddedResource Include="effect.Basic-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-RaspberryPi.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Basic-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-RaspberryPi.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Color-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-RaspberryPi.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.Skinned-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-NativeClient.bin">
+      <Platforms>NativeClient</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-PlayStationMobile.bin">
+      <Platforms>PSMobile</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-RaspberryPi.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-WindowsPhone.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="font.Default-Xbox360.bin">
+      <Platforms>Xbox360</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
     <None Include="effect.Basic.fx" />
     <None Include="effect.Color.fx" />
     <None Include="effect.Skinned.fx" />
     <None Include="font.Default.asset" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Scripting\LogicControl\Grammar.grm" />
-    <None Include="Scripting\LogicControl\LogicBuiltins.tt" />
-    <None Include="Structure\PositionOctreeUtil.tt" />
+    <None Include="Scripting\LogicControl\LogicBuiltins.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LogicBuiltins.cs</LastGenOutput>
+    </None>
+    <None Include="Structure\PositionOctreeUtil.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PositionOctreeUtil.cs</LastGenOutput>
+    </None>
   </Files>
 </Project>
