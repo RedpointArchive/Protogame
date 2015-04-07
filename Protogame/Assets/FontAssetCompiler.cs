@@ -107,6 +107,13 @@ namespace Protogame
                     asset.Spacing,
                     FontDescriptionStyle.Regular,
                     asset.UseKerning);
+
+                // Add the entire ASCII range of characters to the sprite font.
+                for (var c = 0; c < 256; c++)
+                {
+                    fontDesc.Characters.Add((char)c);
+                }
+
 #if PLATFORM_LINUX
                 fontDesc.Identity = new ContentIdentity
                 {
