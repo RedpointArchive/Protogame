@@ -1,5 +1,5 @@
 @echo off
 
 cd %~dp0
-..\ProtogameAssetTool\bin\Debug\ProtogameAssetTool.exe ^
+..\ProtogameAssetTool\bin\Windows\AnyCPU\Debug\ProtogameAssetTool.exe ^
   -m builtin
