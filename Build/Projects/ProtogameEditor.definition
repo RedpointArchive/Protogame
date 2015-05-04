@@ -23,5 +23,7 @@
     <Compile Include="EditorWorld.cs" />
     <Compile Include="IDEEditor.cs" />
     <None Include="Test.test" />
+    <Compile Include="ISerializableEntity.cs" />
+    <Compile Include="CubeEntity.cs" />
   </Files>
 </Project>

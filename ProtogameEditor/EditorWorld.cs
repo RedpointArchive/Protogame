@@ -3,6 +3,7 @@ using Protogame;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Ninject;
 
 namespace ProtogameEditor
 {
@@ -19,6 +20,7 @@ namespace ProtogameEditor
         private int _count;
 
         public EditorWorld(
+            IKernel kernel,
             I2DRenderUtilities twodRenderUtilities,
             I3DRenderUtilities renderUtilities,
             IAssetManagerProvider assetManagerProvider)
@@ -29,6 +31,12 @@ namespace ProtogameEditor
             this._assetManager = assetManagerProvider.GetAssetManager();
             this._defaultFont = this._assetManager.Get<FontAsset>("font.Default");
             this._count = 0;
+
+            var entity = kernel.Get<CubeEntity>();
+            entity.X = 3.05f;
+            entity.Y = 0;
+            entity.Z = 2.1f;
+            this.Entities.Add(entity);
         }
 
         public void RenderAbove(IGameContext gameContext, IRenderContext renderContext)
@@ -52,21 +60,6 @@ namespace ProtogameEditor
                     Vector3.Zero,
                     Vector3.Up);
                 renderContext.World = Matrix.Identity;
-
-                _renderUtilities.RenderCube(
-                    renderContext,
-                    Matrix.CreateTranslation(new Vector3(-0.5f, 0, -0.5f)),
-                    new Color(194, 194, 194));
-
-                _renderUtilities.RenderCube(
-                    renderContext,
-                    Matrix.CreateTranslation(new Vector3(3.05f, 0, 2.1f)),
-                    new Color(194, 194, 194));
-
-                _renderUtilities.RenderCube(
-                    renderContext,
-                    Matrix.CreateTranslation(new Vector3(-5.4f, 0, 4.6f)),
-                    new Color(0, 163, 194));
 
                 var size = 15;
 
