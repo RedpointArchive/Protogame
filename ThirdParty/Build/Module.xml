@@ -13,7 +13,7 @@
     </PackageRef>
     <PackageRef>
       <Uri>http://protobuild.org/hach-que/Cloo</Uri>
-      <GitRef>0921d9a70979d81cf42efc9429c5687ae55ea92b</GitRef>
+      <GitRef>e19b6a79b85b32f655889ad4894b09604eb04258</GitRef>
       <Folder>Cloo</Folder>
     </PackageRef>
     <PackageRef>
