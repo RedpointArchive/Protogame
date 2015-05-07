@@ -11,6 +11,13 @@ namespace ProtogameEditor
             this.Height = 300;
         }
 
+		public IntPtr WindowHandle
+		{
+			get;
+			set;
+		}
+
+#if PLATFORM_LINUX
         public OpenTK.Graphics.IGraphicsContext GraphicsContext
         {
             get;
@@ -22,6 +29,7 @@ namespace ProtogameEditor
             get;
             set;
         }
+#endif
 
         public int Width { get; set; }
 

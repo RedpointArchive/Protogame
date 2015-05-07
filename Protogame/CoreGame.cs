@@ -396,7 +396,16 @@ namespace Protogame
         /// </remarks>
         /// <param name="deviceInformation">The device information.</param>
         protected virtual void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)
-        {
+		{
+#if PLATFORM_WINDOWS
+			var embedContext = this.m_Kernel.TryGet<IEmbedContext>();
+			if (embedContext != null && embedContext.WindowHandle != IntPtr.Zero)
+			{
+				deviceInformation.PresentationParameters.DeviceWindowHandle = 
+					embedContext.WindowHandle;
+			}
+#endif
+
             deviceInformation.PresentationParameters.RenderTargetUsage =
                 RenderTargetUsage.PreserveContents;
 

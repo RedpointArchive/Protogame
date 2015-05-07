@@ -1,11 +1,13 @@
 ﻿using System;
-using OpenTK.Graphics;
 using Ninject;
 using Protogame;
 using Microsoft.Xna.Framework;
-using OpenTK.Platform;
 using System.IO;
 using System.Linq;
+#if PLATFORM_LINUX
+using OpenTK.Graphics;
+using OpenTK.Platform;
+#endif
 
 namespace ProtogameEditor
 {
@@ -45,10 +47,17 @@ namespace ProtogameEditor
             return kernel;
         }
 
+		#if PLATFORM_WINDOWS
+		public void OpenWithContext(IntPtr windowHandle)
+		{
+			this.Resume(windowHandle);
+		}
+		#else
         public void OpenWithContext(IGraphicsContext graphicsContext, IWindowInfo windowInfo)
         {
             this.Resume(graphicsContext, windowInfo);
         }
+		#endif
 
         public bool Update()
         {
@@ -85,6 +94,24 @@ namespace ProtogameEditor
             //_kernel = null;
         }
 
+		#if PLATFORM_WINDOWS
+		public void Resume(IntPtr windowHandle)
+		{
+			_isSuspended = false;
+
+			if (_game == null)
+			{
+				_kernel = CreateEditorKernel<EditorEmbedContext>();
+
+				var context = _kernel.Get<IEmbedContext>();
+
+				((EditorEmbedContext)context).WindowHandle = IntPtr.Zero;
+
+				Console.WriteLine ("Created game with DirectX context.");
+				_game = new EditorGame(_kernel);
+			}
+		}
+		#else
         public void Resume(IGraphicsContext graphicsContext, IWindowInfo windowInfo)
         {
             _isSuspended = false;
@@ -101,6 +128,7 @@ namespace ProtogameEditor
                 _game = new EditorGame(_kernel);
             }
         }
+		#endif
 
         public void Load(string path)
         {
