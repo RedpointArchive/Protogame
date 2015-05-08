@@ -2,6 +2,17 @@
 <Project Name="Protogame.Tests" Path="Protogame.Tests" Type="Tests" Platforms="Linux,MacOS,Windows">
   <Properties>
     <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
+    <FrameworkVersions>
+      <Platform Name="Windows">
+        <Version>4.5</Version>
+      </Platform>
+      <Platform Name="MacOS">
+        <Version>4.5</Version>
+      </Platform>
+      <Platform Name="Linux">
+        <Version>4.5</Version>
+      </Platform>
+    </FrameworkVersions>
   </Properties>
   <References>
     <Reference Include="Protogame" />

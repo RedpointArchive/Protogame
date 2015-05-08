@@ -97,18 +97,28 @@ namespace ProtogameEditor
 		#if PLATFORM_WINDOWS
 		public void Resume(IntPtr windowHandle)
 		{
+			if (windowHandle == IntPtr.Zero) {
+				System.Diagnostics.Debug.Write ("Ignoring zero int ptr");
+				return;
+			}
+
+			System.Diagnostics.Debug.Write ("Resuming with int ptr " + windowHandle);
+
 			_isSuspended = false;
 
-			if (_game == null)
-			{
-				_kernel = CreateEditorKernel<EditorEmbedContext>();
+			if (_game == null) {
+				_kernel = CreateEditorKernel<EditorEmbedContext> ();
 
-				var context = _kernel.Get<IEmbedContext>();
+				var context = _kernel.Get<IEmbedContext> ();
 
-				((EditorEmbedContext)context).WindowHandle = IntPtr.Zero;
+				((EditorEmbedContext)context).WindowHandle = windowHandle;
 
 				Console.WriteLine ("Created game with DirectX context.");
-				_game = new EditorGame(_kernel);
+				_game = new EditorGame (_kernel);
+			} else {
+				var context = _kernel.Get<IEmbedContext>();
+
+				((EditorEmbedContext)context).WindowHandle = windowHandle;
 			}
 		}
 		#else
