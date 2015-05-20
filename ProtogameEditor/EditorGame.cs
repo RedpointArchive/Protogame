@@ -10,6 +10,13 @@ namespace ProtogameEditor
         public EditorGame(IKernel kernel) : base(kernel)
         {
         }
+
+        protected override void LoadContent ()
+        {
+            this.GraphicsDeviceManager.GraphicsDevice.Clear(new Color(63, 63, 63));
+
+            base.LoadContent ();
+        }
     }
 }
 

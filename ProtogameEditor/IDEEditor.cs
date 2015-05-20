@@ -47,18 +47,6 @@ namespace ProtogameEditor
             return kernel;
         }
 
-		#if PLATFORM_WINDOWS
-		public void OpenWithContext(IntPtr windowHandle)
-		{
-			this.Resume(windowHandle);
-		}
-		#else
-        public void OpenWithContext(IGraphicsContext graphicsContext, IWindowInfo windowInfo)
-        {
-            this.Resume(graphicsContext, windowInfo);
-        }
-		#endif
-
         public bool Update()
         {
             if (_game != null && !_isSuspended)
@@ -86,16 +74,14 @@ namespace ProtogameEditor
             context.TriggerResize();
         }
 
-        public void Suspend()
+        public byte[] Suspend()
         {
             _isSuspended = true;
-            //_game.Dispose();
-            //_game = null;
-            //_kernel = null;
+            return null;
         }
 
 		#if PLATFORM_WINDOWS
-		public void Resume(IntPtr windowHandle)
+        public void Resume(IntPtr windowHandle, byte[] state)
 		{
 			if (windowHandle == IntPtr.Zero) {
 				System.Diagnostics.Debug.Write ("Ignoring zero int ptr");
@@ -122,7 +108,7 @@ namespace ProtogameEditor
 			}
 		}
 		#else
-        public void Resume(IGraphicsContext graphicsContext, IWindowInfo windowInfo)
+        public void Resume(IGraphicsContext graphicsContext, IWindowInfo windowInfo, byte[] state)
         {
             _isSuspended = false;
 
