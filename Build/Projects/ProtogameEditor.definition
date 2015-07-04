@@ -18,12 +18,12 @@
     <Reference Include="FrameworkReferences" />
   </References>
   <Files>
+    <Compile Include="CubeEntity.cs" />
     <Compile Include="EditorEmbedContext.cs" />
     <Compile Include="EditorGame.cs" />
     <Compile Include="EditorWorld.cs" />
     <Compile Include="IDEEditor.cs" />
-    <None Include="Test.test" />
     <Compile Include="ISerializableEntity.cs" />
-    <Compile Include="CubeEntity.cs" />
+    <None Include="Test.test" />
   </Files>
 </Project>
