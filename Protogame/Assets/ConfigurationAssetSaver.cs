@@ -48,6 +48,7 @@ namespace Protogame
         public static Dictionary<string, object> FlattenDictionary(Dictionary<string, Dictionary<string, object>> settings)
         {
             var dict = new Dictionary<string, object>();
+            dict["Loader"] = typeof(ConfigurationAssetLoader).FullName;
             dict["GroupCount"] = settings.Count;
             var groupNames = settings.Keys.ToList();
             for (var i = 0; i < groupNames.Count; i++)

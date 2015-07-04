@@ -65,6 +65,9 @@
     <Compile Include="Assets\CompiledAsset.cs" />
     <Compile Include="Assets\CompiledAssetSaver.cs" />
     <Compile Include="Assets\CompiledAssetSerializer.cs" />
+    <Compile Include="Assets\ConfigurationAsset.cs" />
+    <Compile Include="Assets\ConfigurationAssetLoader.cs" />
+    <Compile Include="Assets\ConfigurationAssetSaver.cs" />
     <Compile Include="Assets\ContentCompilation\DummyContentImporterContext.cs" />
     <Compile Include="Assets\ContentCompilation\DummyContentProcessorContext.cs" />
     <Compile Include="Assets\ContentCompilation\MojoShaderDeploy.cs" />
@@ -141,6 +144,7 @@
     <Compile Include="Assets\RawAssetLoader.cs" />
     <Compile Include="Assets\RawAssetSaver.cs" />
     <Compile Include="Assets\RawAudioLoadStrategy.cs" />
+    <Compile Include="Assets\RawConfigurationLoadStrategy.cs" />
     <Compile Include="Assets\RawEffectLoadStrategy.cs" />
     <Compile Include="Assets\RawLevelLoadStrategy.cs" />
     <Compile Include="Assets\RawModelLoadStrategy.cs" />

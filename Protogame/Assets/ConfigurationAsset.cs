@@ -83,7 +83,7 @@ namespace Protogame
         /// <param name="group">The setting group.</param>
         /// <param name="key">The setting key in the group.</param>
         /// <param name="default">The default value.</param>
-        public object GetSetting(string @group, string key, object @default)
+        public T GetSetting<T>(string @group, string key, T @default)
         {
             if (!this.Settings.ContainsKey(@group))
             {
@@ -95,7 +95,44 @@ namespace Protogame
                 return @default;
             }
 
-            return this.Settings[@group][key];
+            var rawValue = this.Settings[@group][key];
+
+            if (typeof(T) == typeof(int) && rawValue is long)
+            {
+                return (T)(object)(int)((long)rawValue);
+            }
+
+            if (typeof(T) == typeof(short) && rawValue is long)
+            {
+                return (T)(object)(short)((long)rawValue);
+            }
+
+            if (typeof(T) == typeof(float) && rawValue is long)
+            {
+                return (T)(object)(float)((long)rawValue);
+            }
+
+            if (typeof(T) == typeof(double) && rawValue is long)
+            {
+                return (T)(object)(double)((long)rawValue);
+            }
+
+            if (typeof(T) == typeof(int) && rawValue is double)
+            {
+                return (T)(object)(int)((double)rawValue);
+            }
+
+            if (typeof(T) == typeof(short) && rawValue is double)
+            {
+                return (T)(object)(short)((double)rawValue);
+            }
+
+            if (typeof(T) == typeof(float) && rawValue is double)
+            {
+                return (T)(object)(float)((double)rawValue);
+            }
+
+            return (T)rawValue;
         }
 
         /// <summary>

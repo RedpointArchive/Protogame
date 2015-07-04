@@ -61,6 +61,7 @@ namespace Protogame
                             {
                                 // Start of INI file group.
                                 currentGroupName = line.Trim().Trim(new[] { '[', ']' });
+                                dict[currentGroupName] = new Dictionary<string, object>();
                             }
                             else if (line.Contains("="))
                             {
