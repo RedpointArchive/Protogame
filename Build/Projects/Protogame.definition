@@ -364,6 +364,7 @@
     <Compile Include="Pooling\ScalingPool.cs" />
     <Compile Include="Protogame2DIoCModule.cs" />
     <Compile Include="Protogame3DIoCModule.cs" />
+    <Compile Include="ReloadableGameAssetManagerProvider.cs" />
     <Compile Include="Scripting\GOLD\DataIndex.cs" />
     <Compile Include="Scripting\GOLD\GrammarProperties.cs" />
     <Compile Include="Scripting\GOLD\Internal\CharacterRange.cs" />
