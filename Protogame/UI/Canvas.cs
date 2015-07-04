@@ -78,11 +78,16 @@ namespace Protogame
         /// </param>
         public void Draw(IRenderContext context, ISkin skin, Rectangle layout)
         {
-            skin.DrawCanvas(context, layout, this);
+            this.Render(context, skin, layout);
             if (this.m_Child != null)
             {
                 this.m_Child.Draw(context, skin, layout);
             }
+        }
+
+        protected virtual void Render(IRenderContext context, ISkin skin, Rectangle layout)
+        {
+            skin.DrawCanvas(context, layout, this);
         }
 
         /// <summary>
