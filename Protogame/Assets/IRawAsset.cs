@@ -26,5 +26,14 @@
         /// <typeparam name="T">The type of data to retrieve.</typeparam>
         /// <returns>The data on the raw asset.</returns>
         T GetProperty<T>(string name, T defaultValue = default(T));
+
+        /// <summary>
+        /// Retrieve a property value from a raw asset.
+        /// </summary>
+        /// <param name="type">The property type.</param>
+        /// <param name="name">The property name.</param>
+        /// <param name="defaultValue">The default value to return if the property is not present.</param>
+        /// <returns>The data on the raw asset.</returns>
+        object GetProperty(System.Type type, string name, object defaultValue = default(object));
     }
 }

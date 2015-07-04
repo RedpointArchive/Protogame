@@ -112,5 +112,82 @@
 
             return defaultValue;
         }
+
+        public object GetProperty(System.Type type, string name, object defaultValue = default(object))
+        {
+            if (this.m_Dictionary.ContainsKey(name))
+            {
+                try
+                {
+                    if (type.IsEnum)
+                    {
+                        if (this.m_Dictionary[name] is string)
+                        {
+                            return Enum.Parse(type, (string)this.m_Dictionary[name]);
+                        }
+
+                        if (this.m_Dictionary[name] is long)
+                        {
+                            return Enum.ToObject(type, (long)this.m_Dictionary[name]);
+                        }
+
+                        throw new InvalidOperationException(
+                            "Enumeration was stored as " + this.m_Dictionary[name].GetType());
+                    }
+
+                    if (type == typeof(int) && this.m_Dictionary[name] is string)
+                    {
+                        return
+                            int.Parse((string)this.m_Dictionary[name], CultureInfo.InvariantCulture.NumberFormat);
+                    }
+
+                    if (type == typeof(int) && this.m_Dictionary[name] is long)
+                    {
+                        return (int)((long)this.m_Dictionary[name]);
+                    }
+
+                    if (type == typeof(short) && this.m_Dictionary[name] is long)
+                    {
+                        return (short)((long)this.m_Dictionary[name]);
+                    }
+
+                    if (type == typeof(float) && this.m_Dictionary[name] is long)
+                    {
+                        return (float)((long)this.m_Dictionary[name]);
+                    }
+
+                    if (type == typeof(double) && this.m_Dictionary[name] is long)
+                    {
+                        return (double)((long)this.m_Dictionary[name]);
+                    }
+
+                    if (type == typeof(int) && this.m_Dictionary[name] is double)
+                    {
+                        return (int)((double)this.m_Dictionary[name]);
+                    }
+
+                    if (type == typeof(short) && this.m_Dictionary[name] is double)
+                    {
+                        return (short)((double)this.m_Dictionary[name]);
+                    }
+
+                    if (type == typeof(float) && this.m_Dictionary[name] is double)
+                    {
+                        return (float)((double)this.m_Dictionary[name]);
+                    }
+
+                    return this.m_Dictionary[name];
+                }
+                catch (InvalidCastException)
+                {
+                    var obj = this.m_Dictionary[name];
+                    var sourceType = obj == null ? "<null>" : obj.GetType().FullName;
+
+                    throw new InvalidCastException("Attempted to cast property '" + name + "' stored as " + sourceType + " to target type " + type.FullName);
+                }
+            }
+
+            return defaultValue;
+        }
     }
 }

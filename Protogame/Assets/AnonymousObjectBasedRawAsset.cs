@@ -44,5 +44,15 @@
 
             return defaultValue;
         }
+
+        public object GetProperty(System.Type type, string name, object defaultValue = default(object))
+        {
+            if (this.m_Dictionary.ContainsKey(name))
+            {
+                return this.m_Dictionary[name];
+            }
+
+            return defaultValue;
+        }
     }
 }

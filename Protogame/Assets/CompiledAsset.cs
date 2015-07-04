@@ -90,5 +90,35 @@
                     throw new MissingMemberException(this.GetType().FullName, name);
             }
         }
+
+        /// <summary>
+        /// Retrieve a property value from a raw asset.
+        /// </summary>
+        /// <param name="type">The property type.</param>
+        /// <param name="name">The property name.</param>
+        /// <param name="defaultValue">The default value if the property isn't present.</param>
+        /// <returns>The data on the raw asset.</returns>
+        public object GetProperty(System.Type type, string name, object defaultValue = default(object))
+        {
+            switch (name)
+            {
+                case "Loader":
+                    if (type != typeof(string))
+                    {
+                        throw new InvalidCastException();
+                    }
+
+                    return this.Loader;
+                case "PlatformData":
+                    if (type != typeof(PlatformData))
+                    {
+                        throw new InvalidCastException();
+                    }
+
+                    return this.PlatformData;
+                default:
+                    throw new MissingMemberException(this.GetType().FullName, name);
+            }
+        }
     }
 }

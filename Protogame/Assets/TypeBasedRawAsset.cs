@@ -61,5 +61,28 @@
                     throw new MissingMemberException(this.GetType().FullName, name);
             }
         }
+
+        public object GetProperty(System.Type type, string name, object defaultValue = default(object))
+        {
+            switch (name)
+            {
+                case "Name":
+                    if (type != typeof(string))
+                    {
+                        throw new InvalidCastException();
+                    }
+
+                    return this.m_Name;
+                case "Type":
+                    if (type != typeof(Type))
+                    {
+                        throw new InvalidCastException();
+                    }
+
+                    return this.m_Type;
+                default:
+                    throw new MissingMemberException(this.GetType().FullName, name);
+            }
+        }
     }
 }

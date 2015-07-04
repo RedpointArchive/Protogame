@@ -24,6 +24,7 @@ namespace Protogame
             this.Bind<IAssetLoader>().To<ModelAssetLoader>();
             this.Bind<IAssetLoader>().To<TextureAtlasAssetLoader>();
             this.Bind<IAssetLoader>().To<VariableAssetLoader>();
+            this.Bind<IAssetLoader>().To<ConfigurationAssetLoader>();
             this.Bind<IAssetSaver>().To<FontAssetSaver>();
             this.Bind<IAssetSaver>().To<LanguageAssetSaver>();
             this.Bind<IAssetSaver>().To<TextureAssetSaver>();
@@ -34,6 +35,7 @@ namespace Protogame
             this.Bind<IAssetSaver>().To<ModelAssetSaver>();
             this.Bind<IAssetSaver>().To<TextureAtlasAssetSaver>();
             this.Bind<IAssetSaver>().To<VariableAssetSaver>();
+            this.Bind<IAssetSaver>().To<ConfigurationAssetSaver>();
             this.Bind<IRawAssetLoader>().To<RawAssetLoader>();
             this.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
@@ -45,6 +47,7 @@ namespace Protogame
             this.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
+            this.Bind<ILoadStrategy>().To<RawConfigurationLoadStrategy>();
 #endif
             this.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
             this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
