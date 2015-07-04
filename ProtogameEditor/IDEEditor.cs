@@ -4,7 +4,7 @@ using Protogame;
 using Microsoft.Xna.Framework;
 using System.IO;
 using System.Linq;
-#if PLATFORM_LINUX
+#if !PLATFORM_WINDOWS
 using OpenTK.Graphics;
 using OpenTK.Platform;
 #endif
