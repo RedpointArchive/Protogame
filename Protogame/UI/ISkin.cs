@@ -1,6 +1,7 @@
 namespace Protogame
 {
     using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
 
     /// <summary>
     /// The Skin interface.
@@ -54,6 +55,10 @@ namespace Protogame
         /// The menu item height.
         /// </value>
         int MenuItemHeight { get; }
+
+        int HorizontalScrollBarHeight { get; }
+
+        int VerticalScrollBarWidth { get; }
 
         /// <summary>
         /// The draw audio player.
@@ -279,6 +284,8 @@ namespace Protogame
         /// </param>
         void DrawSingleContainer(IRenderContext context, Rectangle layout, SingleContainer singleContainer);
 
+        void DrawScrollableContainer(IRenderContext context, Rectangle layout, ScrollableContainer scrollableContainer, RenderTarget2D childContent);
+
         /// <summary>
         /// The draw text box.
         /// </summary>
@@ -376,5 +383,9 @@ namespace Protogame
         /// The <see cref="Vector2"/>.
         /// </returns>
         Vector2 MeasureText(IRenderContext context, string text);
+
+        void BeforeRenderTargetChange(IRenderContext renderContext);
+
+        void AfterRenderTargetChange(IRenderContext renderContext);
     }
 }

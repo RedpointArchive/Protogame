@@ -487,6 +487,7 @@
     <Compile Include="UI\IBasicSkin.cs" />
     <Compile Include="UI\IContainer.cs" />
     <Compile Include="UI\IHasCanvases.cs" />
+    <Compile Include="UI\IHasDesiredSize.cs" />
     <Compile Include="UI\ISkin.cs" />
     <Compile Include="UI\Label.cs" />
     <Compile Include="UI\Link.cs" />
@@ -496,6 +497,7 @@
     <Compile Include="UI\MainMenu.cs" />
     <Compile Include="UI\MenuItem.cs" />
     <Compile Include="UI\ProtogameUIIoCModule.cs" />
+    <Compile Include="UI\ScrollableContainer.cs" />
     <Compile Include="UI\SelectedItemChangedEventArgs.cs" />
     <Compile Include="UI\SelectedItemChangedEventHandler.cs" />
     <Compile Include="UI\SingleContainer.cs" />

@@ -1,6 +1,7 @@
 namespace Protogame
 {
     using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
 
     /// <summary>
     /// The basic skin.
@@ -127,6 +128,10 @@ namespace Protogame
                 return 24;
             }
         }
+
+        public int HorizontalScrollBarHeight { get { return 16; } }
+
+        public int VerticalScrollBarWidth { get { return 16; } }
 
         /// <summary>
         /// The draw audio player.
@@ -507,6 +512,50 @@ namespace Protogame
             this.DrawSunken(context, layout);
         }
 
+        public void DrawScrollableContainer(IRenderContext context, Rectangle layout, ScrollableContainer scrollableContainer, RenderTarget2D childContent)
+        {
+            this.DrawSunken(context, layout);
+
+            var layoutWidth = layout.Width - this.HorizontalScrollBarHeight;
+            var layoutHeight = layout.Height - this.VerticalScrollBarWidth;
+
+            this.m_RenderUtilities.RenderTexture(
+                context,
+                new Vector2(layout.X, layout.Y),
+                new TextureAsset(childContent),
+                new Vector2(layoutWidth, layoutHeight),
+                sourceArea: new Rectangle(
+                    (int)(scrollableContainer.ScrollX * (System.Math.Max(childContent.Width, layoutWidth) - layoutWidth)),
+                    (int)(scrollableContainer.ScrollY * (System.Math.Max(childContent.Height, layoutHeight) - layoutHeight)),
+                    layoutWidth,
+                    layoutHeight));
+
+            var raisedPadding = 3;
+
+            this.DrawSunken(context, new Rectangle(
+                layout.X,
+                layout.Y + layout.Height - this.HorizontalScrollBarHeight,
+                layout.Width - this.VerticalScrollBarWidth,
+                this.HorizontalScrollBarHeight));
+            this.DrawSunken(context, new Rectangle(
+                layout.X + layout.Width - this.VerticalScrollBarWidth,
+                layout.Y,
+                this.VerticalScrollBarWidth,
+                layout.Height - this.HorizontalScrollBarHeight));
+            
+            this.DrawRaised(context, new Rectangle(
+                (int)(layout.X + scrollableContainer.ScrollX * (layoutWidth - ((layoutWidth / (float)childContent.Width) * layoutWidth))) + raisedPadding,
+                layout.Y + layout.Height - this.HorizontalScrollBarHeight + raisedPadding,
+                (int)((layoutWidth / (float)childContent.Width) * layoutWidth) - raisedPadding * 2,
+                this.HorizontalScrollBarHeight - raisedPadding * 2));
+            
+            this.DrawRaised(context, new Rectangle(
+                layout.X + layout.Width - this.VerticalScrollBarWidth + raisedPadding,
+                (int)(layout.Y + scrollableContainer.ScrollY * (layoutHeight - ((layoutHeight / (float)childContent.Height) * layoutHeight))) + raisedPadding,
+                this.VerticalScrollBarWidth - raisedPadding * 2,
+                (int)((layoutHeight / (float)childContent.Height) * layoutHeight) - raisedPadding * 2));
+        }
+
         /// <summary>
         /// The draw text box.
         /// </summary>
@@ -750,6 +799,16 @@ namespace Protogame
                 new Vector2(layout.X, layout.Y), 
                 new Vector2(layout.X, layout.Y + layout.Height), 
                 this.m_BasicSkin.DarkEdgeColor);
+        }
+
+        public void BeforeRenderTargetChange(IRenderContext renderContext)
+        {
+            this.m_RenderUtilities.SuspendSpriteBatch(renderContext);
+        }
+
+        public void AfterRenderTargetChange(IRenderContext renderContext)
+        {
+            this.m_RenderUtilities.ResumeSpriteBatch(renderContext);
         }
     }
 }
