@@ -72,5 +72,17 @@ namespace ProtogameAssetTool
         {
             return new[] { "font.Default", "effect.Basic", "effect.Color", "effect.Skinned" };
         }
+
+        public IEnumerable<string> GetPotentialPathsForRawAsset(string name)
+        {
+            foreach (var strategy in this.m_Strategies)
+            {
+                var result = strategy.GetPotentialPaths(Environment.CurrentDirectory, name);
+                foreach (var r in result)
+                {
+                    yield return r;
+                }
+            }
+        }
     }
 }

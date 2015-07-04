@@ -82,5 +82,10 @@
 
             return null;
         }
+
+        public System.Collections.Generic.IEnumerable<string> GetPotentialPaths(string path, string name, bool noTranslate = false)
+        {
+            yield break;
+        }
     }
 }

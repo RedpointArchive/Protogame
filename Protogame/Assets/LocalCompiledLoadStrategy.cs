@@ -118,5 +118,14 @@
 
             return null;
         }
+
+        public System.Collections.Generic.IEnumerable<string> GetPotentialPaths(string path, string name, bool noTranslate = false)
+        {
+            yield return Path.Combine(
+                path, 
+                TargetPlatformUtility.GetExecutingPlatform().ToString(),
+                (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin");
+            yield return Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin");
+        }
     }
 }

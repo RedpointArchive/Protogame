@@ -61,6 +61,7 @@
     <Compile Include="Assets\AudioAssetCompiler.cs" />
     <Compile Include="Assets\AudioAssetLoader.cs" />
     <Compile Include="Assets\AudioAssetSaver.cs" />
+    <Compile Include="Assets\AutomaticAssetReload.cs" />
     <Compile Include="Assets\ByteReader.cs" />
     <Compile Include="Assets\CompiledAsset.cs" />
     <Compile Include="Assets\CompiledAssetSaver.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Assets\IAssetManager.cs" />
     <Compile Include="Assets\IAssetManagerProvider.cs" />
     <Compile Include="Assets\IAssetSaver.cs" />
+    <Compile Include="Assets\IAutomaticAssetReload.cs" />
     <Compile Include="Assets\ILoadStrategy.cs" />
     <Compile Include="Assets\IRawAsset.cs" />
     <Compile Include="Assets\IRawAssetLoader.cs" />

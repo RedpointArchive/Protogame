@@ -41,6 +41,7 @@ namespace Protogame
             this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+            this.Bind<IAutomaticAssetReload>().To<AutomaticAssetReload>().InSingletonScope();
 #if DEBUG
             this.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();

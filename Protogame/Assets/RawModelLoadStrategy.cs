@@ -106,6 +106,12 @@
             return null;
         }
 
+        public System.Collections.Generic.IEnumerable<string> GetPotentialPaths(string path, string name, bool noTranslate = false)
+        {
+            yield return Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".fbx");
+            yield return Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".x");
+        }
+
         /// <summary>
         /// The read model data.
         /// </summary>

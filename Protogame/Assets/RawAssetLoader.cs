@@ -108,6 +108,31 @@ namespace Protogame
             }
         }
 
+        public IEnumerable<string> GetPotentialPathsForRawAsset(string name)
+        {
+            foreach (var strategy in this.m_Strategies)
+            {
+                IEnumerable<string> result;
+
+                if (strategy.ScanSourcePath && this.m_SourcePath != null)
+                {
+                    result = strategy.GetPotentialPaths(this.m_SourcePath, name);
+                    foreach (var r in result)
+                    {
+                        yield return r;
+                    }
+                }
+
+                {
+                    result = strategy.GetPotentialPaths(this.m_Path, name);
+                    foreach (var r in result)
+                    {
+                        yield return r;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// The rescan assets.
         /// </summary>

@@ -39,5 +39,7 @@
         /// The <see cref="object"/>.
         /// </returns>
         IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false);
+
+        System.Collections.Generic.IEnumerable<string> GetPotentialPaths(string path, string name, bool noTranslate = false);
     }
 }

@@ -26,6 +26,14 @@ namespace Protogame
         IEnumerable<KeyValuePair<IRawAsset, DateTime?>> LoadRawAssetCandidatesWithModificationDates(string name);
 
         /// <summary>
+        /// Gets all of the potentially modifiable paths for an asset so that the source representations
+        /// of an asset can be monitored for file changes.
+        /// </summary>
+        /// <param name="name">The name of the asset.</param>
+        /// <returns>The list of potential paths.</returns>
+        IEnumerable<string> GetPotentialPathsForRawAsset(string name);
+
+        /// <summary>
         /// Return all available asset names.
         /// </summary>
         /// <returns>
