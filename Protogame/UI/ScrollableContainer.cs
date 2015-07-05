@@ -53,6 +53,14 @@ namespace Protogame
                 var hasDesiredSize = this.m_Child as IHasDesiredSize;
                 childWidth = hasDesiredSize.GetDesiredWidth(skin) ?? layoutWidth;
                 childHeight = hasDesiredSize.GetDesiredHeight(skin) ?? layoutHeight;
+                if (childWidth < layoutWidth)
+                {
+                    childWidth = layoutWidth;
+                }
+                if (childHeight < layoutHeight)
+                {
+                    childHeight = layoutHeight;
+                }
             }
 
             if (this.m_RenderTarget == null || this.m_RenderTarget.Width != childWidth ||
@@ -65,8 +73,8 @@ namespace Protogame
 
                 this.m_RenderTarget = new RenderTarget2D(
                     context.GraphicsDevice,
-                    childWidth,
-                    childHeight);
+                    Math.Max(1, childWidth),
+                    Math.Max(1, childHeight));
             }
 
             skin.BeforeRenderTargetChange(context);
@@ -206,16 +214,24 @@ namespace Protogame
                 {
                     if (horizontalScrollBarRectangle.Contains(mousePressEvent.MouseState.Position))
                     {
-                        this.m_IsHorizontalScrolling = true;
-                        this.m_HorizontalScrollOffset = mousePressEvent.MouseState.Position.X - horizontalScrollBarRectangle.X;
-                        this.m_HorizontalScrollStart = mousePressEvent.MouseState.Position.X;
+                        if (this.m_RenderTarget.Width > layout.Width)
+                        {
+                            this.m_IsHorizontalScrolling = true;
+                            this.m_HorizontalScrollOffset = mousePressEvent.MouseState.Position.X - horizontalScrollBarRectangle.X;
+                            this.m_HorizontalScrollStart = mousePressEvent.MouseState.Position.X;
+                        }
+
                         return true;
                     }
                     else if (verticalScrollBarRectangle.Contains(mousePressEvent.MouseState.Position))
                     {
-                        this.m_IsVerticalScrolling = true;
-                        this.m_VerticalScrollOffset = mousePressEvent.MouseState.Position.Y - verticalScrollBarRectangle.Y;
-                        this.m_VerticalScrollStart = mousePressEvent.MouseState.Position.Y;
+                        if (this.m_RenderTarget.Height > layout.Height)
+                        {
+                            this.m_IsVerticalScrolling = true;
+                            this.m_VerticalScrollOffset = mousePressEvent.MouseState.Position.Y - verticalScrollBarRectangle.Y;
+                            this.m_VerticalScrollStart = mousePressEvent.MouseState.Position.Y;
+                        }
+
                         return true;
                     }
                 }
