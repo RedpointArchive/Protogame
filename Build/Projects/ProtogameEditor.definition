@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Name="ProtogameEditor" Path="ProtogameEditor" Type="IDEEditor" Platforms="Linux,MacOS,Windows">
+<Project Name="ProtogameEditor" Path="ProtogameEditor" Type="IDEEditor" Platforms="Linux,Windows">
   <Properties>
     <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
   </Properties>
