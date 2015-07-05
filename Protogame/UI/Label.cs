@@ -54,6 +54,13 @@ namespace Protogame
         public string Text { get; set; }
 
         /// <summary>
+        /// Gets or sets the color of the text.  If this value is null,
+        /// then the default color of the skin should be used.
+        /// </summary>
+        /// <value>The desired color of the text.</value>
+        public Color? OverrideColor { get; set; }
+
+        /// <summary>
         /// The draw.
         /// </summary>
         /// <param name="context">

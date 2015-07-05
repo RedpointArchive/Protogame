@@ -353,9 +353,10 @@ namespace Protogame
                 context, 
                 new Vector2(layout.Center.X, layout.Center.Y), 
                 label.Text, 
-                this.m_AssetManager.Get<FontAsset>("font.Default"), 
+                this.m_AssetManager.Get<FontAsset>("font.Default"),
                 HorizontalAlignment.Center, 
-                VerticalAlignment.Center);
+                VerticalAlignment.Center,
+                label.OverrideColor);
         }
 
         /// <summary>
