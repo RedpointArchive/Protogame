@@ -6,12 +6,16 @@ namespace Protogame
     /// <summary>
     /// The single container.
     /// </summary>
-    public class SingleContainer : IContainer
+    public class SingleContainer : IContainer, IHasDesiredSize
     {
         /// <summary>
         /// The m_ child.
         /// </summary>
         private IContainer m_Child;
+
+        public int? DesiredWidth { get; set; }
+
+        public int? DesiredHeight { get; set; }
 
         /// <summary>
         /// Gets the children.
@@ -50,6 +54,16 @@ namespace Protogame
         /// The parent.
         /// </value>
         public IContainer Parent { get; set; }
+
+        public int? GetDesiredWidth(ISkin skin)
+        {
+            return this.DesiredWidth;
+        }
+
+        public int? GetDesiredHeight(ISkin skin)
+        {
+            return this.DesiredHeight;
+        }
 
         /// <summary>
         /// The draw.
