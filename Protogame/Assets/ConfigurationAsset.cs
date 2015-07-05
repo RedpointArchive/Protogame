@@ -97,6 +97,22 @@ namespace Protogame
 
             var rawValue = this.Settings[@group][key];
 
+            if (typeof(T).IsEnum)
+            {
+                if (rawValue is string)
+                {
+                    return (T)Enum.Parse(typeof(T), (string)rawValue);
+                }
+
+                if (rawValue is long)
+                {
+                    return (T)Enum.ToObject(typeof(T), (long)rawValue);
+                }
+
+                throw new InvalidOperationException(
+                    "Enumeration was stored as " + rawValue.GetType());
+            }
+            
             if (typeof(T) == typeof(int) && rawValue is long)
             {
                 return (T)(object)(int)((long)rawValue);
