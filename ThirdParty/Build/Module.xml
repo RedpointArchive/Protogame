@@ -51,5 +51,10 @@
       <GitRef>master</GitRef>
       <Folder>xunit</Folder>
     </PackageRef>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/AStarPathFinder</Uri>
+      <GitRef>master</GitRef>
+      <Folder>AStarPathFinder</Folder>
+    </PackageRef>
   </Packages>
 </ModuleInfo>
