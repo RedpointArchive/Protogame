@@ -96,7 +96,20 @@
 
         public int? GetDesiredHeight(ISkin skin)
         {
-            return this.Children.Length * skin.HeightForTreeItem;
+            var current = 0;
+            foreach (var item in this.m_Items)
+            {
+                var desiredSize = item as IHasDesiredSize;
+                if (desiredSize != null && desiredSize.GetDesiredHeight(skin) != null)
+                {
+                    current += desiredSize.GetDesiredHeight(skin).Value;
+                }
+                else
+                {
+                    current += skin.HeightForTreeItem;
+                }
+            }
+            return current;
         }
 
         /// <summary>
@@ -161,14 +174,25 @@
         public IEnumerable<ListEntry> GetChildrenWithLayouts(ISkin skin, Rectangle layout)
         {
             var list = this.m_Items.Select(x => new ListEntry { Item = x }).ToList();
+            var current = layout.Y;
             for (var i = 0; i < list.Count; i++)
             {
                 list[i].Layout = new Rectangle(
                     layout.X + skin.ListHorizontalPadding, 
-                    layout.Y + i * skin.HeightForTreeItem + skin.ListVerticalPadding, 
+                    current + skin.ListVerticalPadding, 
                     layout.Width - skin.ListHorizontalPadding * 2, 
                     skin.HeightForTreeItem);
                 yield return list[i];
+
+                var desiredSize = list[i].Item as IHasDesiredSize;
+                if (desiredSize != null && desiredSize.GetDesiredHeight(skin) != null)
+                {
+                    current += desiredSize.GetDesiredHeight(skin).Value;
+                }
+                else
+                {
+                    current += skin.HeightForTreeItem;
+                }
             }
         }
 
