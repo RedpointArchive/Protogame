@@ -9,7 +9,7 @@
     /// <summary>
     /// The list view.
     /// </summary>
-    public class ListView : IContainer
+    public class ListView : IContainer, IHasDesiredSize
     {
         /// <summary>
         /// The m_ items.
@@ -87,6 +87,16 @@
 
                 this.Focus();
             }
+        }
+
+        public int? GetDesiredWidth(ISkin skin)
+        {
+            return null;
+        }
+
+        public int? GetDesiredHeight(ISkin skin)
+        {
+            return this.Children.Length * skin.HeightForTreeItem;
         }
 
         /// <summary>

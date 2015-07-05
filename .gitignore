@@ -27,3 +27,4 @@ StyleCop.Cache
 /ThirdParty/Ninject
 /ThirdParty/NDesk.Options
 /ThirdParty/xunit
+/ThirdParty/AStarPathFinder

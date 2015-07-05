@@ -4,9 +4,9 @@ namespace Protogame
 {
     public interface IHasDesiredSize
     {
-        int? DesiredWidth { get; }
+        int? GetDesiredWidth(ISkin skin);
 
-        int? DesiredHeight { get; }
+        int? GetDesiredHeight(ISkin skin);
     }
 }
 

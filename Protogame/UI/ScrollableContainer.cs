@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Protogame
 {
@@ -50,8 +51,8 @@ namespace Protogame
             else
             {
                 var hasDesiredSize = this.m_Child as IHasDesiredSize;
-                childWidth = hasDesiredSize.DesiredWidth ?? layoutWidth;
-                childHeight = hasDesiredSize.DesiredHeight ?? layoutHeight;
+                childWidth = hasDesiredSize.GetDesiredWidth(skin) ?? layoutWidth;
+                childHeight = hasDesiredSize.GetDesiredHeight(skin) ?? layoutHeight;
             }
 
             if (this.m_RenderTarget == null || this.m_RenderTarget.Width != childWidth ||
@@ -221,7 +222,54 @@ namespace Protogame
 
                 if (this.m_Child != null)
                 {
-                    return this.m_Child.HandleEvent(skin, layout, context, @event);
+                    var mouseEvent = @event as MouseEvent;
+
+                    MouseState originalState = default(MouseState);
+                    int scrollXPixels = 0, scrollYPixels = 0;
+                    if (mouseEvent != null)
+                    {
+                        scrollXPixels = (int)(this.ScrollX * (System.Math.Max(this.m_RenderTarget.Width, layoutWidth) - layoutWidth));
+                        scrollYPixels = (int)(this.ScrollY * (System.Math.Max(this.m_RenderTarget.Height, layoutHeight) - layoutHeight));
+
+                        originalState = mouseEvent.MouseState;
+                        mouseEvent.MouseState = new Microsoft.Xna.Framework.Input.MouseState(
+                            mouseEvent.MouseState.X + scrollXPixels,
+                            mouseEvent.MouseState.Y + scrollYPixels,
+                            mouseEvent.MouseState.ScrollWheelValue,
+                            mouseEvent.MouseState.LeftButton,
+                            mouseEvent.MouseState.MiddleButton,
+                            mouseEvent.MouseState.RightButton,
+                            mouseEvent.MouseState.XButton1,
+                            mouseEvent.MouseState.XButton2);
+
+                        var mouseMoveEvent = @event as MouseMoveEvent;
+
+                        if (mouseMoveEvent != null)
+                        {
+                            mouseMoveEvent.LastX += scrollXPixels;
+                            mouseMoveEvent.LastY += scrollYPixels;
+                            mouseMoveEvent.X += scrollXPixels;
+                            mouseMoveEvent.Y += scrollYPixels;
+                        }
+                    }
+
+                    var result = this.m_Child.HandleEvent(skin, layout, context, @event);
+
+                    // Restore event state.
+                    if (mouseEvent != null)
+                    {
+                        mouseEvent.MouseState = originalState;
+
+                        var mouseMoveEvent = @event as MouseMoveEvent;
+
+                        if (mouseMoveEvent != null)
+                        {
+                            mouseMoveEvent.LastX -= scrollXPixels;
+                            mouseMoveEvent.LastY -= scrollYPixels;
+                            mouseMoveEvent.X -= scrollXPixels;
+                            mouseMoveEvent.Y -= scrollYPixels;
+                        }
+                    }
                 }
             }
 
