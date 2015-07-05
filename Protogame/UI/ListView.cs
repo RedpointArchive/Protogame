@@ -14,17 +14,17 @@
         /// <summary>
         /// The m_ items.
         /// </summary>
-        private readonly List<ListItem> m_Items = new List<ListItem>();
+        private readonly List<IContainer> m_Items = new List<IContainer>();
 
         /// <summary>
         /// The p_ selected item.
         /// </summary>
-        private ListItem p_SelectedItem;
+        private IContainer p_SelectedItem;
 
         /// <summary>
         /// The selected item changed.
         /// </summary>
-        public event SelectedItemChangedEventHandler<ListItem> SelectedItemChanged;
+        public event SelectedItemChangedEventHandler<IContainer> SelectedItemChanged;
 
         /// <summary>
         /// Gets the children.
@@ -70,7 +70,7 @@
         /// <value>
         /// The selected item.
         /// </value>
-        public ListItem SelectedItem
+        public IContainer SelectedItem
         {
             get
             {
@@ -82,7 +82,7 @@
                 this.p_SelectedItem = value;
                 if (this.SelectedItemChanged != null)
                 {
-                    this.SelectedItemChanged(this, new SelectedItemChangedEventArgs<ListItem>(value));
+                    this.SelectedItemChanged(this, new SelectedItemChangedEventArgs<IContainer>(value));
                 }
 
                 this.Focus();
@@ -109,7 +109,7 @@
         /// </exception>
         /// <exception cref="InvalidOperationException">
         /// </exception>
-        public void AddChild(ListItem item)
+        public void AddChild(IContainer item)
         {
             if (item == null)
             {
@@ -286,7 +286,7 @@
             /// <summary>
             /// The item.
             /// </summary>
-            public ListItem Item;
+            public IContainer Item;
 
             /// <summary>
             /// The layout.
