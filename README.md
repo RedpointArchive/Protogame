@@ -1,5 +1,7 @@
-Protogame v3
-=============
+Protogame v3 Beta
+===================
+
+**NOTE:** The version 3 Beta is still a work-in-progress!
 
 Protogame is an open source game engine (MIT licensed) written on top of MonoGame and C#, designed to allow game developers to rapidly produce games within 48 hours.
 
