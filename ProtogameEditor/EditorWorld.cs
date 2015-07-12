@@ -19,6 +19,8 @@ namespace ProtogameEditor
 
         private int _count;
 
+        private bool _clicked;
+
         public EditorWorld(
             IKernel kernel,
             I2DRenderUtilities twodRenderUtilities,
@@ -63,6 +65,11 @@ namespace ProtogameEditor
 
                 var size = 15;
 
+                if (this._clicked)
+                {
+                    size = 30;
+                }
+
                 for (var x = -size; x <= size; x++)
                 {
                     _renderUtilities.RenderLine(
@@ -94,6 +101,12 @@ namespace ProtogameEditor
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             this._count++;
+
+            var mouseState = Mouse.GetState();
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                this._clicked = true;
+            }
         }
 
         public IList<IEntity> Entities

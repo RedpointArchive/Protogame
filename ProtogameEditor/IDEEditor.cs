@@ -61,14 +61,19 @@ namespace ProtogameEditor
             }
         }
 
-        public void Resize(int width, int height)
+        public void Resize(int x, int y, int width, int height)
         {
             if (_kernel == null)
             {
                 return;
             }
 
+            Console.WriteLine(x);
+            Console.WriteLine(y);
+
             var context = (EditorEmbedContext)_kernel.Get<IEmbedContext>();
+            context.X = x;
+            context.Y = y;
             context.Width = width;
             context.Height = height;
             context.TriggerResize();

@@ -35,6 +35,10 @@ namespace ProtogameEditor
 
         public int Height { get; set; }
 
+        public int X { get; set; }
+
+        public int Y { get; set; }
+
         public void TriggerResize()
         {
             if (this.OnResize != null)
@@ -45,7 +49,9 @@ namespace ProtogameEditor
 
         public System.Drawing.Point PointToClient(System.Drawing.Point point)
         {
-            return new System.Drawing.Point(0, 0);
+            return new System.Drawing.Point(
+                point.X - this.X, 
+                point.Y - this.Y);
         }
 
         public Rectangle GetClientBounds()
