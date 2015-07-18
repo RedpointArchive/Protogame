@@ -8,6 +8,10 @@
     <Reference Include="MonoGame.Framework" />
     <Reference Include="MonoGame.Framework.Content.Pipeline" />
     <Reference Include="Ninject" />
+    <Reference Include="Ninject.Extensions.Factory" />
+    <Reference Include="Ninject.Extensions.Interception" />
+    <Reference Include="Ninject.Extensions.Interception.DynamicProxy" />
+    <Reference Include="Castle.Core" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />

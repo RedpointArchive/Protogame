@@ -25,6 +25,8 @@ StyleCop.Cache
 /ThirdParty/Binaries
 /ThirdParty/MonoGame
 /ThirdParty/Ninject
+/ThirdParty/Ninject.Extensions.Factory
+/ThirdParty/Ninject.Extensions.Interception
 /ThirdParty/NDesk.Options
 /ThirdParty/xunit
 /ThirdParty/AStarPathFinder

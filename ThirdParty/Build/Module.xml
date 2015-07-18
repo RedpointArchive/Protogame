@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModuleInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Path>/home/june/Projects/Protogame/ThirdParty</Path>
   <Name>ThirdParty</Name>
   <DefaultAction>resync</DefaultAction>
   <GenerateNuGetRepositories>true</GenerateNuGetRepositories>
@@ -37,11 +38,6 @@
       <Folder>Binaries</Folder>
     </PackageRef>
     <PackageRef>
-      <Uri>https-git://github.com/hach-que/ninject.git</Uri>
-      <GitRef>445839c40c85149adc75965267b907951e610205</GitRef>
-      <Folder>Ninject</Folder>
-    </PackageRef>
-    <PackageRef>
       <Uri>https-git://github.com/hach-que/NDesk.Options.git</Uri>
       <GitRef>master</GitRef>
       <Folder>NDesk.Options</Folder>
@@ -55,6 +51,21 @@
       <Uri>http://protobuild.org/hach-que/AStarPathFinder</Uri>
       <GitRef>master</GitRef>
       <Folder>AStarPathFinder</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/Ninject</Uri>
+      <GitRef>master</GitRef>
+      <Folder>Ninject</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/Ninject.Extensions.Factory</Uri>
+      <GitRef>master</GitRef>
+      <Folder>Ninject.Extensions.Factory</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/Ninject.Extensions.Interception</Uri>
+      <GitRef>master</GitRef>
+      <Folder>Ninject.Extensions.Interception</Folder>
     </PackageRef>
   </Packages>
 </ModuleInfo>

@@ -4,52 +4,16 @@
   <Platform Type="Windows">
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Binary
-      Name="Ninject.Extensions.Factory"
-      Path="Ninject.Extensions.Factory/Ninject.Extensions.Factory.dll" />
-    <Binary
-      Name="Ninject.Extensions.Interception"
-      Path="Ninject.Extensions.Interception/Ninject.Extensions.Interception.dll" />
-    <Binary
-      Name="Ninject.Extensions.Interception.DynamicProxy"
-      Path="Ninject.Extensions.Interception/Ninject.Extensions.Interception.DynamicProxy.dll" />
-    <Binary
-      Name="Castle.Core"
-      Path="Castle.Core/Castle.Core.dll" />
   </Platform>
 
   <Platform Type="Linux">
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Binary
-      Name="Ninject.Extensions.Factory"
-      Path="Ninject.Extensions.Factory/Ninject.Extensions.Factory.dll" />
-    <Binary
-      Name="Ninject.Extensions.Interception"
-      Path="Ninject.Extensions.Interception/Ninject.Extensions.Interception.dll" />
-    <Binary
-      Name="Ninject.Extensions.Interception.DynamicProxy"
-      Path="Ninject.Extensions.Interception/Ninject.Extensions.Interception.DynamicProxy.dll" />
-    <Binary
-      Name="Castle.Core"
-      Path="Castle.Core/Castle.Core.dll" />
   </Platform>
 
   <Platform Type="MacOS">
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Binary
-      Name="Ninject.Extensions.Factory"
-      Path="Ninject.Extensions.Factory/Ninject.Extensions.Factory.dll" />
-    <Binary
-      Name="Ninject.Extensions.Interception"
-      Path="Ninject.Extensions.Interception/Ninject.Extensions.Interception.dll" />
-    <Binary
-      Name="Ninject.Extensions.Interception.DynamicProxy"
-      Path="Ninject.Extensions.Interception/Ninject.Extensions.Interception.DynamicProxy.dll" />
-    <Binary
-      Name="Castle.Core"
-      Path="Castle.Core/Castle.Core.dll" />
   </Platform>
 
   <Platform Type="Android">
