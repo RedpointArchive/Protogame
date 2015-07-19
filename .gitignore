@@ -18,15 +18,15 @@ StyleCop.Cache
 *.tar.lzma
 
 # Ignore ThirdParty
-/ThirdParty/Jitter
-/ThirdParty/Cloo
-/ThirdParty/Newtonsoft.Json
-/ThirdParty/protobuf-net
-/ThirdParty/Binaries
-/ThirdParty/MonoGame
-/ThirdParty/Ninject
-/ThirdParty/Ninject.Extensions.Factory
-/ThirdParty/Ninject.Extensions.Interception
-/ThirdParty/NDesk.Options
-/ThirdParty/xunit
-/ThirdParty/AStarPathFinder
+/Jitter
+/Cloo
+/Newtonsoft.Json
+/protobuf-net
+/Binaries
+/MonoGame
+/Ninject
+/Ninject.Extensions.Factory
+/Ninject.Extensions.Interception
+/NDesk.Options
+/xunit
+/AStarPathFinder

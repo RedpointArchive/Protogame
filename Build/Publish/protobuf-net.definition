@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<ExternalProject Name="protobuf-net">
-
-  <Binary Name="protobuf-net" Path="Protogame\protobuf-net.dll" />
-
-</ExternalProject>

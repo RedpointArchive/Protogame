@@ -513,52 +513,52 @@
     <Compile Include="UI\VerticalContainer.cs" />
     <Compile Include="UI\Window.cs" />
     <Compile Include="VerticalAlignment.cs" />
-    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_32.so.3.0.1">
+    <Content Include="..\Binaries\Linux\libassimp_32.so.3.0.1">
       <Platforms>Linux</Platforms>
       <Link>libassimp_32.so.3.0.1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\ThirdParty\Binaries\Linux\libassimp_64.so.3.0.1">
+    <Content Include="..\Binaries\Linux\libassimp_64.so.3.0.1">
       <Platforms>Linux</Platforms>
       <Link>libassimp_64.so.3.0.1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\ThirdParty\Binaries\Windows\Assimp32.dll">
+    <Content Include="..\Binaries\Windows\Assimp32.dll">
       <Link>Assimp32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
     </Content>
-    <Content Include="..\ThirdParty\Binaries\Windows\Assimp64.dll">
+    <Content Include="..\Binaries\Windows\Assimp64.dll">
       <Link>Assimp64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
     </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\NVTT\Windows\x64\nvtt.dll">
+    <Content Include="..\MonoGame\ThirdParty\Dependencies\NVTT\Windows\x64\nvtt.dll">
       <Link>nvtt.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
     </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\freetype6.dll">
+    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\freetype6.dll">
       <Link>freetype6.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Platforms>Windows</Platforms>
     </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.dylib">
+    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.dylib">
       <Platforms>MacOS</Platforms>
       <Link>libfreetype.6.dylib</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.so">
+    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.so">
       <Platforms>Linux</Platforms>
       <Link>libfreetype.6.so</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng12.so">
+    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng12.so">
       <Platforms>Linux</Platforms>
       <Link>libpng12.so</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\ThirdParty\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng15.15.dylib">
+    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng15.15.dylib">
       <Platforms>MacOS</Platforms>
       <Link>libpng15.15.dylib</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
