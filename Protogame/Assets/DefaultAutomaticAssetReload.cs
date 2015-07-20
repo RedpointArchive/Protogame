@@ -1,11 +1,13 @@
-﻿using System;
+﻿#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+
+using System;
 using Protogame;
 using System.IO;
 using System.Collections.Generic;
 
 namespace Protogame
 {
-    public class AutomaticAssetReload : IAutomaticAssetReload
+    public class DefaultAutomaticAssetReload : IAutomaticAssetReload
     {
         private readonly IAssetManager _assetManager;
 
@@ -13,7 +15,7 @@ namespace Protogame
 
         private bool _started;
 
-        public AutomaticAssetReload(
+        public DefaultAutomaticAssetReload(
             IAssetManager assetManager,
             IRawAssetLoader rawAssetLoader)
         {
@@ -76,3 +78,4 @@ namespace Protogame
     }
 }
 
+#endif

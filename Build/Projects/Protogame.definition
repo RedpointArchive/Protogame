@@ -65,7 +65,6 @@
     <Compile Include="Assets\AudioAssetCompiler.cs" />
     <Compile Include="Assets\AudioAssetLoader.cs" />
     <Compile Include="Assets\AudioAssetSaver.cs" />
-    <Compile Include="Assets\AutomaticAssetReload.cs" />
     <Compile Include="Assets\ByteReader.cs" />
     <Compile Include="Assets\CompiledAsset.cs" />
     <Compile Include="Assets\CompiledAssetSaver.cs" />
@@ -77,8 +76,10 @@
     <Compile Include="Assets\ContentCompilation\DummyContentProcessorContext.cs" />
     <Compile Include="Assets\ContentCompilation\MojoShaderDeploy.cs" />
     <Compile Include="Assets\ContentCompilation\MonoGameContentCompiler.cs" />
+    <Compile Include="Assets\DefaultAutomaticAssetReload.cs" />
     <Compile Include="Assets\DefaultTransparentAssetCompiler.cs" />
     <Compile Include="Assets\DictionaryBasedRawAsset.cs" />
+    <Compile Include="Assets\DisabledAutomaticAssetReload.cs" />
     <Compile Include="Assets\EffectAsset.cs" />
     <Compile Include="Assets\EffectAssetCompiler.cs" />
     <Compile Include="Assets\EffectAssetLoader.cs" />

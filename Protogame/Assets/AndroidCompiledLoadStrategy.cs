@@ -6,9 +6,9 @@ namespace Protogame
     using Protogame.Compression;
 
     /// <summary>
-	/// The Android compiled load strategy.
+    /// The Android compiled load strategy.
     /// </summary>
-	public class AndroidCompiledLoadStrategy : ILoadStrategy
+    public class AndroidCompiledLoadStrategy : ILoadStrategy
     {
         /// <summary>
         /// Gets the asset extensions.
@@ -55,19 +55,17 @@ namespace Protogame
             try
             {
                 var stream1 = global::Android.App.Application.Context.Assets.Open(
-    				TargetPlatformUtility.GetExecutingPlatform().ToString() + Path.DirectorySeparatorChar +
-                    (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin");
+                                  TargetPlatformUtility.GetExecutingPlatform().ToString() + Path.DirectorySeparatorChar +
+                                  (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin");
                 return this.AttemptLoadOfStream(stream1, name);
-            }
-            catch (Java.IO.FileNotFoundException)
+            } catch (Java.IO.FileNotFoundException)
             {
                 try
                 {
                     var stream2 = global::Android.App.Application.Context.Assets.Open(
-                        (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin");
+                                      (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".bin");
                     return this.AttemptLoadOfStream(stream2, name);
-                }
-                catch (Java.IO.FileNotFoundException)
+                } catch (Java.IO.FileNotFoundException)
                 {
                     return null;
                 }
@@ -121,6 +119,11 @@ namespace Protogame
                     }
                 }
             }
+        }
+
+        public System.Collections.Generic.IEnumerable<string> GetPotentialPaths(string path, string name, bool noTranslate = false)
+        {
+            yield break;
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Protogame
         }
 
         /// <summary>
-		/// Gets a value indicating whether scan source path.
+        /// Gets a value indicating whether scan source path.
         /// </summary>
         /// <value>
         /// The scan source path.
@@ -57,33 +57,36 @@ namespace Protogame
             try
             {
                 var stream = global::Android.App.Application.Context.Assets.Open(
-                    TargetPlatformUtility.GetExecutingPlatform().ToString() + Path.DirectorySeparatorChar +
-                    (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset");
+                                 TargetPlatformUtility.GetExecutingPlatform().ToString() + Path.DirectorySeparatorChar +
+                                 (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset");
                 using (var reader = new StreamReader(stream, Encoding.UTF8))
                 {
                     return
                         new DictionaryBasedRawAsset(
-                            JsonConvert.DeserializeObject<Dictionary<string, object>>(reader.ReadToEnd()));
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(reader.ReadToEnd()));
                 }
-            }
-            catch (Java.IO.FileNotFoundException)
+            } catch (Java.IO.FileNotFoundException)
             {
                 try
                 {
                     var stream = global::Android.App.Application.Context.Assets.Open(
-                        (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset");
+                                     (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset");
                     using (var reader = new StreamReader(stream, Encoding.UTF8))
                     {
                         return
                             new DictionaryBasedRawAsset(
-                                JsonConvert.DeserializeObject<Dictionary<string, object>>(reader.ReadToEnd()));
+                            JsonConvert.DeserializeObject<Dictionary<string, object>>(reader.ReadToEnd()));
                     }
-                }
-                catch (Java.IO.FileNotFoundException)
+                } catch (Java.IO.FileNotFoundException)
                 {
                     return null;
                 }
             }
+        }
+
+        public System.Collections.Generic.IEnumerable<string> GetPotentialPaths(string path, string name, bool noTranslate = false)
+        {
+            yield break;
         }
     }
 }
