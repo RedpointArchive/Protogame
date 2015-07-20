@@ -699,7 +699,6 @@
     <None Include="effect.Skinned.fx" />
     <None Include="font.Default.asset" />
     <None Include="packages.config" />
-    <None Include="Properties\AndroidManifest.xml" />
     <None Include="Scripting\LogicControl\Grammar.grm" />
     <None Include="Scripting\LogicControl\LogicBuiltins.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
