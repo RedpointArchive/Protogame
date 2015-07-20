@@ -80,12 +80,8 @@
             // Only allow source and raw load strategies.
             kernel.Unbind<ILoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
+            var assetModule = new ProtogameAssetIoCModule();
+            assetModule.LoadRawAssetStrategies(kernel);
 
             // Set up remaining bindings.
             kernel.Bind<IAssetCleanup>().To<DefaultAssetCleanup>();
@@ -195,12 +191,8 @@
             // Only allow source and raw load strategies.
             kernel.Unbind<ILoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
+            var assetModule = new ProtogameAssetIoCModule();
+            assetModule.LoadRawAssetStrategies(kernel);
 
             // The assembly load strategy is required for references.
             // Assets loaded with the assembly load strategy won't have

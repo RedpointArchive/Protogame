@@ -1,3 +1,5 @@
+using Ninject;
+
 namespace Protogame
 {
     using System;
@@ -43,12 +45,7 @@ namespace Protogame
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             this.Bind<IAutomaticAssetReload>().To<DefaultAutomaticAssetReload>().InSingletonScope();
 #if DEBUG
-            this.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
-            this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
-            this.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
-            this.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
-            this.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
-            this.Bind<ILoadStrategy>().To<RawConfigurationLoadStrategy>();
+            this.LoadRawAssetStrategies(this.Kernel);
 #endif
             this.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
             this.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
@@ -80,6 +77,19 @@ namespace Protogame
 #endif
 #endif
             }
+        }
+
+        public void LoadRawAssetStrategies(IKernel kernel)
+        {
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+            kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawConfigurationLoadStrategy>();
+#endif
         }
     }
 }
