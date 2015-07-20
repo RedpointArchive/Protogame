@@ -41,7 +41,7 @@ namespace Protogame
             this.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-            this.Bind<IAutomaticAssetReload>().To<AutomaticAssetReload>().InSingletonScope();
+            this.Bind<IAutomaticAssetReload>().To<DefaultAutomaticAssetReload>().InSingletonScope();
 #if DEBUG
             this.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
             this.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
@@ -56,6 +56,7 @@ namespace Protogame
             this.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
             this.Bind<ILoadStrategy>().To<AssemblyLoadStrategy>();
 #elif PLATFORM_ANDROID || PLATFORM_OUYA
+            this.Bind<IAutomaticAssetReload>().To<DisabledAutomaticAssetReload>().InSingletonScope();
             this.Bind<ILoadStrategy>().To<AndroidSourceLoadStrategy>();
             this.Bind<ILoadStrategy>().To<AndroidCompiledLoadStrategy>();
             this.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
