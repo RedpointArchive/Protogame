@@ -110,6 +110,11 @@ namespace Protogame
 #endif
 
             this.m_Kernel = kernel;
+
+            // Load the Ninject.Extensions.Factory and Ninject.Extensions.Interception modules.
+            this.m_Kernel.Load<Ninject.Extensions.Factory.FuncModule>();
+            this.m_Kernel.Load<Ninject.Extensions.Interception.DynamicProxyModule>();
+
             this.m_GraphicsDeviceManager = new GraphicsDeviceManager(this);
             this.m_GraphicsDeviceManager.PreparingDeviceSettings +=
                 (sender, e) =>
