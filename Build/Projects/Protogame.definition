@@ -188,6 +188,23 @@
     <Compile Include="Commands\ExitCommand.cs" />
     <Compile Include="Commands\GCCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
+    <Compile Include="Component\ComponentizedEntity.cs" />
+    <Compile Include="Component\ComponentizedObject.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ComponentizedObject.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Component\IBuiltinComponentFactory.cs" />
+    <Compile Include="Component\IComponentCallable.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IComponentCallable.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Component\IRenderableComponent.cs" />
+    <Compile Include="Component\IUpdatableComponent.cs" />
+    <Compile Include="Component\ProtogameComponentModule.cs" />
+    <Compile Include="Component\Render2DTextComponent.cs" />
+    <Compile Include="Component\Render2DTextureComponent.cs" />
     <Compile Include="Compression\CRC.cs" />
     <Compile Include="Compression\ICoder.cs" />
     <Compile Include="Compression\IMatchFinder.cs" />
@@ -563,6 +580,14 @@
       <Platforms>MacOS</Platforms>
       <Link>libpng15.15.dylib</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Component\ComponentizedObject.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ComponentizedObject.cs</LastGenOutput>
+    </Content>
+    <Content Include="Component\IComponentCallable.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IComponentCallable.cs</LastGenOutput>
     </Content>
     <Content Include="libmojoshader_src_32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
