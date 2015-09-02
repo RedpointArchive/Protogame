@@ -10,6 +10,7 @@ namespace Protogame
     /// <remarks>
     /// This is from the Jitter demo code.
     /// </remarks>
+    /// <module>Physics</module>
     public static class ConversionExtensions
     {
         /// <summary>

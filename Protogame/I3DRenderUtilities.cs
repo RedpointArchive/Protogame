@@ -5,6 +5,7 @@ namespace Protogame
     /// <summary>
     /// The 3DRenderUtilities interface.
     /// </summary>
+    /// <module>Graphics 3D</module>
     public interface I3DRenderUtilities
     {
         /// <summary>

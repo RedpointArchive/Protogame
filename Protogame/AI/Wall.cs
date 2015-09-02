@@ -9,6 +9,7 @@
     /// These are placed such that is start to end were to make a circle, the normals
     /// face outward (on the left hand side from start to end).
     /// </remarks>
+    /// <module>AI</module>
     public class Wall : IEntity
     {
         private readonly I2DRenderUtilities m_2DRenderUtilities;

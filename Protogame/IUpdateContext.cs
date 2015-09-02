@@ -13,6 +13,7 @@ namespace Protogame
     /// during execution.
     /// </para>
     /// </summary>
+    /// <module>Core API</module>
     public interface IUpdateContext
     {
         /// <summary>

@@ -7,6 +7,9 @@ namespace Protogame
     /// <summary>
     /// An implementation of <see cref="I2DRenderUtilities"/>.
     /// </summary>
+    /// <module>Graphics 2D</module>
+    /// <internal>True</internal>
+    /// <interface_ref>I2DRenderUtilities</interface_ref>
     public class Default2DRenderUtilities : I2DRenderUtilities
     {
         /// <summary>

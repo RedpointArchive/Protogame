@@ -10,6 +10,10 @@ namespace Protogame
     using Jitter.Dynamics.Constraints;
     using Jitter.LinearMath;
 
+    /// <summary>
+    /// A simple physics-based character controller.
+    /// </summary>
+    /// <module>Physics</module>
     public class PhysicsCharacterController : Constraint
     {
         private float feetPosition;

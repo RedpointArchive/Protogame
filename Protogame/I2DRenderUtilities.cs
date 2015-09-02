@@ -6,6 +6,7 @@ namespace Protogame
     /// <summary>
     /// The 2DRenderUtilities interface.
     /// </summary>
+    /// <module>Graphics 2D</module>
     public interface I2DRenderUtilities
     {
         /// <summary>

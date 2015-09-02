@@ -6,6 +6,7 @@ namespace Protogame
     /// <summary>
     /// The RenderContext interface.
     /// </summary>
+    /// <module>Core API</module>
     public interface IRenderContext
     {
         /// <summary>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Name="ProtogameDocsTool" Path="ProtogameDocsTool" Type="Console" Platforms="Linux,MacOS,Windows">
+  <Properties>
+    <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
+  </Properties>
+  <References>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Protogame" />
+    <Reference Include="MonoGame.Framework" />
+    <Reference Include="Ninject" />
+    <Reference Include="AssImp" />
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="NDesk.Options" />
+  </References>
+  <Files>
+    <Compile Include="Program.cs" />
+  </Files>
+</Project>

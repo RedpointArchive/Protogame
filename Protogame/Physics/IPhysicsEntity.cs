@@ -5,6 +5,10 @@ using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
+    /// <summary>
+    /// Represents a physics entity.
+    /// </summary>
+    /// <module>Physics</module>
     public interface IPhysicsEntity : IHasPosition
 	{
         Matrix Rotation { get; set; }
