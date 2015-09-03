@@ -8,7 +8,32 @@ namespace Protogame
     using Ninject.Parameters;
 
     /// <summary>
-    /// The core Protogame game implementation.  You should derive your Game instance from this class.
+    /// The core Protogame game implementation.  You should derive your Game class from this
+    /// implementation.
+    /// </summary>
+    /// <typeparam name="TInitialWorld">
+    /// The initial world class to start the game with.
+    /// </typeparam>
+    /// <module>Core API</module>
+    public abstract class CoreGame<TInitialWorld> : CoreGame<TInitialWorld, RenderPipelineWorldManager>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CoreGame{TInitialWorld}"/> class. 
+        /// </summary>
+        /// <param name="kernel">
+        /// The dependency injection kernel.
+        /// </param>
+        protected CoreGame(IKernel kernel) : base(kernel)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The implementation of Protogame's base game class.  In previous versions of Protogame, this
+    /// acted as the base class for the developer's Game class.  However newer games written in
+    /// Protogame should use <see cref="CoreGame{TInitialWorld}"/> instead, as this correctly
+    /// sets games to use the new render pipeline, which sets TWorldManager to be
+    /// <see cref="RenderPipelineWorldManager"/> automatically.
     /// </summary>
     /// <typeparam name="TInitialWorld">
     /// The initial world class to start the game with.
@@ -16,6 +41,9 @@ namespace Protogame
     /// <typeparam name="TWorldManager">
     /// The world manager class for this game.
     /// </typeparam>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.Core{TInitialWorld}</interface_ref>
     public abstract class CoreGame<TInitialWorld, TWorldManager> : Game, ICoreGame
         where TInitialWorld : IWorld where TWorldManager : IWorldManager
     {
@@ -95,7 +123,7 @@ namespace Protogame
         /// <param name="kernel">
         /// The dependency injection kernel.
         /// </param>
-        public CoreGame(IKernel kernel) : base(kernel.TryGet<IEmbedContext>())
+        protected CoreGame(IKernel kernel) : base(kernel.TryGet<IEmbedContext>())
         {
 #if PLATFORM_MACOS
             // On Mac, the MonoGame launcher changes the current working
@@ -253,9 +281,20 @@ namespace Protogame
                 new ConstructorArgument("worldManager", worldManager), 
                 new ConstructorArgument("window", this.ConstructGameWindow()));
 
+            // If we are using the new rendering pipeline, we need to ensure that
+            // the rendering context and the render pipeline world manager share
+            // the same render pipeline.
+            var renderPipelineWorldManager = worldManager as RenderPipelineWorldManager;
+            IRenderPipeline renderPipeline = null;
+            if (renderPipelineWorldManager != null)
+            {
+                renderPipeline = renderPipelineWorldManager.RenderPipeline;
+            }
+
             // Create the update and render contexts.
             this.UpdateContext = this.m_Kernel.Get<IUpdateContext>();
-            this.RenderContext = this.m_Kernel.Get<IRenderContext>();
+            this.RenderContext = this.m_Kernel.Get<IRenderContext>(
+                new ConstructorArgument("renderPipeline", renderPipeline));
 
             // Retrieve all engine hooks.  These can be set up by additional modules
             // to change runtime behaviour.

@@ -7,9 +7,15 @@ namespace Protogame
     using Microsoft.Xna.Framework.Input;
 
     /// <summary>
-    /// The default render context implementation.
+    /// An implementation of <see cref="IRenderContext" /> which does not use
+    /// the new render pipeline.  This is the class bound to the <see cref="IRenderContext" />
+    /// interface whenever <see cref="Protogame2DIoCModule"/> or <see cref="Protogame3DIoCModule"/>
+    /// are loaded instead of the newer <see cref="ProtogameCoreModule"/>.
     /// </summary>
-    internal class DefaultRenderContext : IRenderContext
+    /// <module>Graphics</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IRenderContext</interface_ref>
+    internal class LegacyRenderContext : IRenderContext
     {
         /// <summary>
         /// The current stack of effect.
@@ -476,6 +482,30 @@ namespace Protogame
             {
                 assign(effectMatrices);
             }
+        }
+
+        /// <summary>
+        /// This method is not supported in the legacy rendering system.
+        /// </summary>
+        public IRenderPass AddRenderPass(IRenderPass renderPass)
+        {
+            throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
+        }
+
+        /// <summary>
+        /// This method is not supported in the legacy rendering system.
+        /// </summary>
+        public void RemoveRenderPass(IRenderPass renderPass)
+        {
+            throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
+        }
+
+        /// <summary>
+        /// This method is not supported in the legacy rendering system.
+        /// </summary>
+        public IRenderPass AppendRenderPass(IRenderPass renderPass)
+        {
+            throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
         }
     }
 }

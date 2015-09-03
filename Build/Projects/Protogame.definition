@@ -221,16 +221,13 @@
     <Compile Include="Compression\RangeCoderBitTree.cs" />
     <Compile Include="CoreGame.cs" />
     <Compile Include="Default2DRenderUtilities.cs" />
-    <Compile Include="Default2DWorldManager.cs" />
     <Compile Include="Default3DRenderUtilities.cs" />
-    <Compile Include="Default3DWorldManager.cs" />
     <Compile Include="DefaultAudioHandle.cs" />
     <Compile Include="DefaultAudioUtilities.cs" />
     <Compile Include="DefaultBoundingBoxUtilities.cs" />
     <Compile Include="DefaultConsole.cs" />
     <Compile Include="DefaultGameContext.cs" />
     <Compile Include="DefaultKeyboardStringReader.cs" />
-    <Compile Include="DefaultRenderContext.cs" />
     <Compile Include="DefaultStringSanitizer.cs" />
     <Compile Include="DefaultTileUtilities.cs" />
     <Compile Include="DefaultUpdateContext.cs" />
@@ -278,6 +275,21 @@
     <Compile Include="Extensions\VectorExtensions.cs" />
     <Compile Include="FadingWorld.cs" />
     <Compile Include="GameAssetManagerProvider.cs" />
+    <Compile Include="Graphics\Default2DBatchedRenderPass.cs" />
+    <Compile Include="Graphics\Default2DDirectRenderPass.cs" />
+    <Compile Include="Graphics\DefaultRenderPipeline.cs" />
+    <Compile Include="Graphics\I2DBatchedRenderPass.cs" />
+    <Compile Include="Graphics\I2DDirectRenderPass.cs" />
+    <Compile Include="Graphics\IGraphicsFactory.cs" />
+    <Compile Include="Graphics\IRenderPass.cs" />
+    <Compile Include="Graphics\IRenderPipeline.cs" />
+    <Compile Include="Graphics\Legacy\Default2DWorldManager.cs" />
+    <Compile Include="Graphics\Legacy\Default3DWorldManager.cs" />
+    <Compile Include="Graphics\Legacy\LegacyRenderContext.cs" />
+    <Compile Include="Graphics\Legacy\Protogame2DIoCModule.cs" />
+    <Compile Include="Graphics\Legacy\Protogame3DIoCModule.cs" />
+    <Compile Include="Graphics\RenderPipelineRenderContext.cs" />
+    <Compile Include="Graphics\RenderPipelineWorldManager.cs" />
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="I2DRenderUtilities.cs" />
     <Compile Include="I3DRenderUtilities.cs" />
@@ -385,8 +397,7 @@
     <Compile Include="Pooling\IPoolManager.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Pooling\ScalingPool.cs" />
-    <Compile Include="Protogame2DIoCModule.cs" />
-    <Compile Include="Protogame3DIoCModule.cs" />
+    <Compile Include="ProtogameCoreModule.cs" />
     <Compile Include="ReloadableGameAssetManagerProvider.cs" />
     <Compile Include="Scripting\GOLD\DataIndex.cs" />
     <Compile Include="Scripting\GOLD\GrammarProperties.cs" />
@@ -722,7 +733,6 @@
     <None Include="effect.Color.fx" />
     <None Include="effect.Skinned.fx" />
     <None Include="font.Default.asset" />
-    <None Include="packages.config" />
     <None Include="Scripting\LogicControl\Grammar.grm" />
     <None Include="Scripting\LogicControl\LogicBuiltins.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

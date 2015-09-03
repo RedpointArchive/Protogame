@@ -6,6 +6,7 @@ namespace Protogame
     /// The Ninject module to load when building a 3D game in Protogame.  This provides various
     /// bindings that are applicable to 3D games.
     /// </summary>
+    [System.Obsolete("Use ProtogameCoreModule along with the new render pipeline")]
     public class Protogame3DIoCModule : NinjectModule
     {
         /// <summary>
@@ -21,7 +22,7 @@ namespace Protogame
             this.Bind<IBoundingBoxUtilities>().To<DefaultBoundingBoxUtilities>();
             this.Bind<IGameContext>().To<DefaultGameContext>();
             this.Bind<IUpdateContext>().To<DefaultUpdateContext>();
-            this.Bind<IRenderContext>().To<DefaultRenderContext>();
+            this.Bind<IRenderContext>().To<LegacyRenderContext>();
             this.Bind<IKeyboardStringReader>().To<DefaultKeyboardStringReader>();
             this.Bind<IConsole>().To<DefaultConsole>().InSingletonScope();
             this.Bind<ICommand>().To<ExitCommand>();
