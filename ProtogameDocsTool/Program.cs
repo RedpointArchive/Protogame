@@ -19,6 +19,7 @@ namespace ProtogameDocsTool
             {
                 { "Protogame", "Protogame.xml", true },
                 { "MonoGame.Framework", "MonoGame.Framework.xml", false },
+                { "Jitter", "Jitter.xml", false },
             };
 
             var outputPath = Path.Combine(currentLocation, "Protogame.combined.xml");
@@ -46,7 +47,7 @@ namespace ProtogameDocsTool
             output.Save(outputPath);
         }
 
-        const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+        const BindingFlags BindingFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
         static void CombineDocumentationWithAssembly (Assembly assembly, XmlDocument documentation, XmlElement typesElem, bool supportsModules)
         {

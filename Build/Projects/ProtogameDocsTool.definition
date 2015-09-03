@@ -17,6 +17,8 @@
     <Reference Include="NDesk.Options" />
   </References>
   <Files>
+    <Compile Include="DocumentationList.cs" />
+    <Compile Include="DocumentationToProcess.cs" />
     <Compile Include="Program.cs" />
   </Files>
 </Project>
