@@ -1,42 +1,50 @@
 namespace Protogame
 {
     /// <summary>
-    /// The Asset interface.
+    /// The interface for all assets.
+    /// <para>
+    /// When you implement a new asset type, you need to implement this interface.
+    /// </para>
     /// </summary>
+    /// <module>Assets</module>
     public interface IAsset
     {
         /// <summary>
-        /// Gets a value indicating whether compiled only.
+        /// Gets a value indicating whether the asset only contains compiled information.
         /// </summary>
         /// <value>
-        /// The compiled only.
+        /// Whether the asset only contains compiled information.
         /// </value>
         bool CompiledOnly { get; }
 
         /// <summary>
-        /// Gets the name.
+        /// Gets the name of the asset.
         /// </summary>
         /// <value>
-        /// The name.
+        /// The name of the asset.
         /// </value>
         string Name { get; }
 
         /// <summary>
-        /// Gets a value indicating whether source only.
+        /// Gets a value indicating whether the asset only contains source information.
         /// </summary>
         /// <value>
-        /// The source only.
+        /// Whether the asset only contains source information.
         /// </value>
         bool SourceOnly { get; }
 
         /// <summary>
-        /// The resolve.
+        /// Attempt to resolve this asset to the specified type.
         /// </summary>
         /// <typeparam name="T">
+        /// The target type of the asset.
         /// </typeparam>
         /// <returns>
-        /// The <see cref="T"/>.
+        /// The current asset as a <see cref="T"/>.
         /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the current asset can not be casted to the designated type.
+        /// </exception>
         T Resolve<T>() where T : class, IAsset;
     }
 }

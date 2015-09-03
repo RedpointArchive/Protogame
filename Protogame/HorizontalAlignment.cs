@@ -1,22 +1,23 @@
 namespace Protogame
 {
     /// <summary>
-    /// The horizontal alignment.
+    /// Represents horizontal alignment.
     /// </summary>
+    /// <module>Graphics 2D</module>
     public enum HorizontalAlignment
     {
         /// <summary>
-        /// The left.
+        /// The given X value should indicate the left of what is being aligned.
         /// </summary>
         Left, 
 
         /// <summary>
-        /// The center.
+        /// The given X value should indicate the center of what is being aligned.
         /// </summary>
         Center, 
 
         /// <summary>
-        /// The right.
+        /// The given X value should indicate the right of what is being aligned.
         /// </summary>
         Right
     }

@@ -10,7 +10,7 @@ namespace Protogame
     /// The default 3 d render utilities.
     /// </summary>
     /// <internal>True</internal>
-    /// <interface_ref>I3DRenderUtilities</interface_ref>
+    /// <interface_ref>Protogame.I3DRenderUtilities</interface_ref>
     public class Default3DRenderUtilities : I3DRenderUtilities
     {
         /// <summary>

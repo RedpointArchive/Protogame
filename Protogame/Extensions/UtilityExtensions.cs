@@ -6,15 +6,16 @@ namespace Protogame
     using Microsoft.Xna.Framework;
 
     /// <summary>
-    /// The utility extensions.
+    /// These utility extension methods don't belong anywhere else.
     /// </summary>
+    /// <module>Extensions</module>
     public static class UtilityExtensions
     {
         /// <summary>
-        /// The shuffle.
+        /// Shuffles the specified list in-place.
         /// </summary>
         /// <param name="list">
-        /// The list.
+        /// The list to shuffle.
         /// </param>
         /// <remarks>
         /// Http://stackoverflow.com/questions/273313/randomize-a-listt-in-c-sharp.
@@ -39,10 +40,9 @@ namespace Protogame
         /// <summary>
         /// Converts the color to it's premultiplied format.
         /// </summary>
-        /// <param name="color">
-        /// </param>
+        /// <param name="color">The color to convert.</param>
         /// <returns>
-        /// The <see cref="Color"/>.
+        /// The premultiplied <see cref="Color"/>.
         /// </returns>
         public static Color ToPremultiplied(this Color color)
         {

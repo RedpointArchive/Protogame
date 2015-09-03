@@ -8,7 +8,7 @@ namespace Protogame
     /// </summary>
     /// <module>Level</module>
     /// <internal>True</internal>
-    /// <interface_ref>ILevelManager</interface_ref>
+    /// <interface_ref>Protogame.ILevelManager</interface_ref>
     public class DefaultLevelManager : ILevelManager
     {
         /// <summary>

@@ -7,7 +7,7 @@ namespace Protogame
     /// </summary>
     /// <module>Level</module>
     /// <internal>True</internal>
-    /// <interface_ref>ITileset</interface_ref>
+    /// <interface_ref>Protogame.ITileset</interface_ref>
     public class DefaultTileset : ITileset
     {
         /// <summary>

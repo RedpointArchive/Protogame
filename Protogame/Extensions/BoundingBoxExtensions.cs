@@ -3,18 +3,24 @@ namespace Protogame
     using Microsoft.Xna.Framework;
 
     /// <summary>
-    /// The bounding box extensions.
+    /// These extension methods assist with converting between bounding boxes
+    /// and rectangles.
+    /// <para>
+    /// Protogame's bounding box includes speed attributes, which the built-in
+    /// MonoGame bounding box does not have.
+    /// </para>
     /// </summary>
+    /// <module>Extensions</module>
     public static class BoundingBoxExtensions
     {
         /// <summary>
-        /// The copy to.
+        /// Copies the specified Protogame bounding box to the XNA rectangle.
         /// </summary>
         /// <param name="boundingBox">
-        /// The bounding box.
+        /// The Protogame bounding box to copy from.
         /// </param>
         /// <param name="rectangle">
-        /// The rectangle.
+        /// The XNA rectangle to copy to.
         /// </param>
         public static void CopyTo(this IBoundingBox boundingBox, Rectangle rectangle)
         {
@@ -25,13 +31,13 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The copy to.
+        /// Copies the specified XNA rectangle to the Protogame bounding box.
         /// </summary>
         /// <param name="rectangle">
-        /// The rectangle.
+        /// The XNA rectangle to copy from.
         /// </param>
         /// <param name="boundingBox">
-        /// The bounding box.
+        /// The Protogame bounding box to copy to.
         /// </param>
         public static void CopyTo(this Rectangle rectangle, IBoundingBox boundingBox)
         {
@@ -42,10 +48,10 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The to bounding box.
+        /// Converts the specified XNA rectangle to a Protogame bounding box.
         /// </summary>
         /// <param name="rectangle">
-        /// The rectangle.
+        /// The XNA rectangle to convert.
         /// </param>
         /// <returns>
         /// The <see cref="IBoundingBox"/>.
@@ -62,10 +68,10 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The to protogame.
+        /// Converts the specified XNA bounding box to a Protogame bounding box.
         /// </summary>
         /// <param name="boundingBox">
-        /// The bounding box.
+        /// The XNA bounding box to convert.
         /// </param>
         /// <returns>
         /// The <see cref="IBoundingBox"/>.
@@ -84,10 +90,10 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The to rectangle.
+        /// Converts the specified Protogame bounding box to an XNA rectangle.
         /// </summary>
         /// <param name="boundingBox">
-        /// The bounding box.
+        /// The Protogame bounding box to convert.
         /// </param>
         /// <returns>
         /// The <see cref="Rectangle"/>.
@@ -102,13 +108,13 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The to xna.
+        /// Converts the specified Protogame bounding box to an XNA bounding box.
         /// </summary>
         /// <param name="boundingBox">
-        /// The bounding box.
+        /// The Protogame bounding box to convert.
         /// </param>
         /// <returns>
-        /// The <see cref="BoundingBox"/>.
+        /// The <see cref="Microsoft.Xna.Framework.BoundingBox"/>.
         /// </returns>
         public static Microsoft.Xna.Framework.BoundingBox ToXna(this IBoundingBox boundingBox)
         {

@@ -9,7 +9,7 @@ namespace Protogame
     /// </summary>
     /// <module>Graphics 2D</module>
     /// <internal>True</internal>
-    /// <interface_ref>I2DRenderUtilities</interface_ref>
+    /// <interface_ref>Protogame.I2DRenderUtilities</interface_ref>
     public class Default2DRenderUtilities : I2DRenderUtilities
     {
         /// <summary>

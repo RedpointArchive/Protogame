@@ -9,8 +9,10 @@ namespace Protogame
     using Microsoft.Xna.Framework;
 
     /// <summary>
-    /// Vector extensions.
+    /// These extension methods provide additional
+    /// functionality to vector classes.
     /// </summary>
+    /// <module>Extensions</module>
     public static class VectorExtensions
     {
         /// <summary>

@@ -7,11 +7,12 @@ namespace Protogame
 
     /// <summary>
     /// Extensions for the XNA <see cref="MouseState"/> class.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// This provides state-aware functions for detecting changes in the mouse state, without having
     /// to track the previous state in each object that wants to know about button presses.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    /// <module>Extensions</module>
     public static class MouseStateExtensions
     {
         /// <summary>

@@ -3,8 +3,10 @@ namespace Protogame
     using System;
 
     /// <summary>
-    /// The random extensions.
+    /// These extension methods provide additional types of random number generation
+    /// on the <see cref="Random"/> class provided by .NET
     /// </summary>
+    /// <module>Extensions</module>
     public static class RandomExtensions
     {
         /// <summary>
@@ -34,19 +36,19 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The next guassian clamped.
+        /// Returns a new normally distributed number, clamped to specified values.
         /// </summary>
         /// <param name="rand">
-        /// The rand.
+        /// The random number generator.
         /// </param>
         /// <param name="min">
-        /// The min.
+        /// The lower bound.
         /// </param>
         /// <param name="max">
-        /// The max.
+        /// The upper bound.
         /// </param>
         /// <returns>
-        /// The <see cref="double"/>.
+        /// A random normally distributed number, clamped to within sigma 3.
         /// </returns>
         public static double NextGuassianClamped(this Random rand, double min, double max)
         {

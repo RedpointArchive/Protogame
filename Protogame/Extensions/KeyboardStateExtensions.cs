@@ -6,8 +6,13 @@ namespace Protogame
     using Microsoft.Xna.Framework.Input;
 
     /// <summary>
-    /// The keyboard state extensions.
+    /// Extensions for the XNA <see cref="KeyboardState"/> class.
+    /// <para>
+    /// This provides state-aware functions for detecting changes in the keyboard state, without having
+    /// to track the previous state in each object that wants to know about key presses.
+    /// </para>
     /// </summary>
+    /// <module>Extensions</module>
     public static class KeyboardStateExtensions
     {
         /// <summary>

@@ -3,6 +3,7 @@ namespace Protogame
     /// <summary>
     /// Represents vertical alignment.
     /// </summary>
+    /// <module>Graphics 2D</module>
     public enum VerticalAlignment
     {
         /// <summary>

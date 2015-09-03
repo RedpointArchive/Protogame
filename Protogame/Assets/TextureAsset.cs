@@ -10,6 +10,7 @@ namespace Protogame
     /// This represents a texture, stored in a Protogame asset.
     /// </para>
     /// </summary>
+    /// <module>Assets</module>
     public class TextureAsset : MarshalByRefObject, IAsset
     {
         /// <summary>

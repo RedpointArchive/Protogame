@@ -7,7 +7,7 @@ namespace Protogame
     /// </summary>
     /// <module>Physics</module>
     /// <internal>True</internal>
-    /// <interface_ref>IPhysicsEngine</interface_ref>
+    /// <interface_ref>Protogame.IPhysicsEngine</interface_ref>
     public class DefaultPhysicsEngine : IPhysicsEngine
     {
         public void UpdateWorld(JitterWorld world, IGameContext gameContext, IUpdateContext updateContext)
