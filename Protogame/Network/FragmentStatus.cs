@@ -3,6 +3,7 @@
     /// <summary>
     /// Represents a fragment's status.
     /// </summary>
+    /// <module>Network</module>
     public enum FragmentStatus
     {
         /// <summary>

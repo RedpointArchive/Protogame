@@ -10,6 +10,7 @@
     /// The Mx dispatcher; this handles receiving messages on the UDP client and dispatching
     /// them to the correct connected Mx client.
     /// </summary>
+    /// <module>Network</module>
     public class MxDispatcher
     {
         /// <summary>

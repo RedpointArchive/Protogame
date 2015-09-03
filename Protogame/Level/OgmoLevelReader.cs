@@ -11,6 +11,9 @@ namespace Protogame
     /// <summary>
     /// The ogmo level reader.
     /// </summary>
+    /// <module>Level</module>
+    /// <internal>True</internal>
+    /// <interface_ref>ILevelReader</interface_ref>
     public class OgmoLevelReader : ILevelReader
     {
         /// <summary>

@@ -10,6 +10,7 @@ namespace Protogame
     /// Translated from Javascript on http://www.convertalot.com/sphere_solver.html, originally
     /// linked to by http://stackoverflow.com/questions/13600739/calculate-centre-of-sphere-whose-surface-contains-4-points-c.
     /// </remarks>
+    /// <module>Math</module>
     public class CircumcentreSolver
     {
         /// <summary>

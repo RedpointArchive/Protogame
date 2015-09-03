@@ -3,6 +3,7 @@ namespace Protogame
     /// <summary>
     /// The single time machine.
     /// </summary>
+    /// <module>Network</module>
     public class SingleTimeMachine : InterpolatedTimeMachine<float>
     {
         /// <summary>

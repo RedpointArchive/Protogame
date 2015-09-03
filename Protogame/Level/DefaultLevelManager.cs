@@ -6,6 +6,9 @@ namespace Protogame
     /// <summary>
     /// The default level manager.
     /// </summary>
+    /// <module>Level</module>
+    /// <internal>True</internal>
+    /// <interface_ref>ILevelManager</interface_ref>
     public class DefaultLevelManager : ILevelManager
     {
         /// <summary>

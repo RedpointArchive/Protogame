@@ -6,6 +6,7 @@
     /// <summary>
     /// The message class that represents a message being transferred over the Mx protocol.
     /// </summary>
+    /// <module>Network</module>
     [ProtoContract]
     public class MxMessage
     {

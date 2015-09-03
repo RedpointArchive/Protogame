@@ -3,6 +3,7 @@ namespace Protogame
     /// <summary>
     /// The LevelManager interface.
     /// </summary>
+    /// <module>Level</module>
     public interface ILevelManager
     {
         /// <summary>

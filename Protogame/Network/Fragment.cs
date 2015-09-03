@@ -4,6 +4,7 @@
     /// Represents a fragment of data being sent over the network.  This is used to
     /// track what fragments have been received / sent.
     /// </summary>
+    /// <module>Network</module>
     public class Fragment
     {
         /// <summary>

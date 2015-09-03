@@ -5,6 +5,7 @@ namespace Protogame
     /// <summary>
     /// The int 16 time machine.
     /// </summary>
+    /// <module>Network</module>
     public class Int16TimeMachine : InterpolatedTimeMachine<short>
     {
         /// <summary>

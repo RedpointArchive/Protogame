@@ -15,6 +15,7 @@ namespace Protogame
     /// and so that we don't introduce a new DLL from the result of precompile.  If the structure of
     /// MxMessage or MxPayload ever changes, this code will need to be regenerated.
     /// </remarks>
+    /// <module>Network</module>
     public sealed class MxMessageSerializer : TypeModel
     {
         /// <summary>

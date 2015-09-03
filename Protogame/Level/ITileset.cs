@@ -5,6 +5,7 @@ namespace Protogame
     /// <summary>
     /// The Tileset interface.
     /// </summary>
+    /// <module>Level</module>
     public interface ITileset : IEntity
     {
         /// <summary>

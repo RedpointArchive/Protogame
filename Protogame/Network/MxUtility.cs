@@ -3,6 +3,7 @@
     /// <summary>
     /// The mx utility.
     /// </summary>
+    /// <module>Network</module>
     public static class MxUtility
     {
         /// <summary>

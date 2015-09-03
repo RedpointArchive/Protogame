@@ -5,6 +5,9 @@ namespace Protogame
     /// <summary>
     /// The default tileset.
     /// </summary>
+    /// <module>Level</module>
+    /// <internal>True</internal>
+    /// <interface_ref>ITileset</interface_ref>
     public class DefaultTileset : ITileset
     {
         /// <summary>

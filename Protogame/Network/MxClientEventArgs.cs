@@ -5,6 +5,7 @@
     /// <summary>
     /// The mx client event args.
     /// </summary>
+    /// <module>Network</module>
     public class MxClientEventArgs : EventArgs
     {
         /// <summary>

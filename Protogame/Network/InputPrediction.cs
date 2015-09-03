@@ -6,6 +6,7 @@
     /// <summary>
     /// The input prediction.
     /// </summary>
+    /// <module>Network</module>
     public class InputPrediction
     {
         /// <summary>

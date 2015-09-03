@@ -5,6 +5,7 @@
     /// <summary>
     /// The mx message event args.
     /// </summary>
+    /// <module>Network</module>
     public class MxReliabilityTransmitEventArgs : EventArgs
     {
         /// <summary>

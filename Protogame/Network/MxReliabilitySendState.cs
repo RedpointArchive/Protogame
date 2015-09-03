@@ -6,6 +6,7 @@
     /// <summary>
     /// Represents the current send state of a reliable message.
     /// </summary>
+    /// <module>Network</module>
     public class MxReliabilitySendState
     {
         /// <summary>

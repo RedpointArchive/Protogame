@@ -3,6 +3,7 @@ namespace Protogame
     /// <summary>
     /// The double time machine.
     /// </summary>
+    /// <module>Network</module>
     public class DoubleTimeMachine : InterpolatedTimeMachine<double>
     {
         /// <summary>

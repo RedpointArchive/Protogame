@@ -9,5 +9,6 @@
     /// <param name="e">
     /// The event arguments.
     /// </param>
+    /// <module>Network</module>
     public delegate void MxReliabilityTransmitEventHandler(object sender, MxReliabilityTransmitEventArgs e);
 }

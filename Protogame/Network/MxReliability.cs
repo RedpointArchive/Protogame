@@ -13,6 +13,7 @@
     /// fragment is either acknowledged by the receiving machine, or sent again.
     /// </para>
     /// </summary>
+    /// <module>Network</module>
     public class MxReliability
     {
         /// <summary>

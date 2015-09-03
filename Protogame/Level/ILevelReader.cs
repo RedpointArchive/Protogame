@@ -7,6 +7,7 @@ namespace Protogame
     /// The level reader interface that supplies services for
     /// reading level formats and returning a list of entities.
     /// </summary>
+    /// <module>Level</module>
     public interface ILevelReader
     {
         /// <summary>

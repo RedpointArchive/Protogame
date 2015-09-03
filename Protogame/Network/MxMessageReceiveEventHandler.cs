@@ -9,5 +9,6 @@
     /// <param name="e">
     /// The event arguments.
     /// </param>
+    /// <module>Network</module>
     public delegate void MxMessageReceiveEventHandler(object sender, MxMessageReceiveEventArgs e);
 }

@@ -3,6 +3,7 @@ namespace Protogame
     /// <summary>
     /// A time machine for a boolean.
     /// </summary>
+    /// <module>Network</module>
     public class BooleanTimeMachine : TimeMachine<bool>
     {
         /// <summary>

@@ -3,6 +3,7 @@ namespace Protogame
     /// <summary>
     /// The int 32 time machine.
     /// </summary>
+    /// <module>Network</module>
     public class Int32TimeMachine : InterpolatedTimeMachine<int>
     {
         /// <summary>

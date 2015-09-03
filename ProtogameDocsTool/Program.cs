@@ -19,7 +19,13 @@ namespace ProtogameDocsTool
             {
                 { "Protogame", "Protogame.xml", true },
                 { "MonoGame.Framework", "MonoGame.Framework.xml", false },
+                { "MonoGame.Framework.Content.Pipeline", "MonoGame.Framework.Content.Pipeline.xml", false },
                 { "Jitter", "Jitter.xml", false },
+                { "Ninject", "Ninject.xml", false },
+                { "Ninject.Extensions.Factory", "Ninject.Extensions.Factory.xml", false },
+                { "Ninject.Extensions.Interception", "Ninject.Extensions.Interception.xml", false },
+                { "NDesk.Options", "NDesk.Options.xml", false },
+                { "Newtonsoft.Json", "Newtonsoft.Json.xml", false },
             };
 
             var outputPath = Path.Combine(currentLocation, "Protogame.combined.xml");
@@ -33,6 +39,11 @@ namespace ProtogameDocsTool
             foreach (var entry in toProcess)
             {
                 var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.GetName().Name == entry.AssemblyFile);
+                if (assembly == null)
+                {
+                    assembly = Assembly.Load(entry.AssemblyFile);
+                }
+
                 var documentationPath = Path.Combine(currentLocation, entry.DocumentationFile);
                 var documentation = new XmlDocument();
                 documentation.Load(documentationPath);

@@ -5,6 +5,7 @@ namespace Protogame
     /// <summary>
     /// The protogame level io c module.
     /// </summary>
+    /// <module>Level</module>
     public class ProtogameLevelIoCModule : NinjectModule
     {
         /// <summary>

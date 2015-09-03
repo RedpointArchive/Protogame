@@ -7,6 +7,7 @@ namespace Protogame
     /// <typeparam name="T">
     /// The type of data that will be tracked by the time machine.
     /// </typeparam>
+    /// <module>Network</module>
     public abstract class InterpolatedTimeMachine<T> : TimeMachine<T>
         where T : struct
     {

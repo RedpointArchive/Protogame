@@ -10,6 +10,7 @@
     /// <summary>
     /// A client on the Mx protocol.
     /// </summary>
+    /// <module>Network</module>
     public class MxClient
     {
         /// <summary>

@@ -3,6 +3,7 @@ namespace Protogame
     /// <summary>
     /// A time machine for a string.
     /// </summary>
+    /// <module>Network</module>
     public class StringTimeMachine : TimeMachine<string>
     {
         /// <summary>

@@ -6,6 +6,7 @@
     /// Encapsulates an Mx payload.  We have a seperate class since we need
     /// an array of byte arrays, which can't be represented directly in Protobuf.
     /// </summary>
+    /// <module>Network</module>
     [ProtoContract]
     public class MxPayload
     {

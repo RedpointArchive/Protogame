@@ -9,5 +9,6 @@
     /// <param name="e">
     /// The event arguments.
     /// </param>
+    /// <module>Network</module>
     public delegate void MxDisconnectEventHandler(object sender, MxDisconnectEventArgs e);
 }

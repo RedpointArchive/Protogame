@@ -5,6 +5,7 @@
     /// <summary>
     /// The flow control changed event args.
     /// </summary>
+    /// <module>Network</module>
     public class FlowControlChangedEventArgs : EventArgs
     {
         /// <summary>
