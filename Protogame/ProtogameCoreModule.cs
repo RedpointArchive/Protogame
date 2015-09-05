@@ -28,6 +28,7 @@ namespace Protogame
 
             this.Bind<IRenderContext>().To<RenderPipelineRenderContext>();
             this.Bind<IRenderPipeline>().To<DefaultRenderPipeline>();
+            this.Bind<IGraphicsBlit>().To<DefaultGraphicsBlit>();
         }
     }
 }

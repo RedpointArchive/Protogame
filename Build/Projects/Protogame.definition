@@ -277,9 +277,11 @@
     <Compile Include="GameAssetManagerProvider.cs" />
     <Compile Include="Graphics\Default2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\Default2DDirectRenderPass.cs" />
+    <Compile Include="Graphics\DefaultGraphicsBlit.cs" />
     <Compile Include="Graphics\DefaultRenderPipeline.cs" />
     <Compile Include="Graphics\I2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\I2DDirectRenderPass.cs" />
+    <Compile Include="Graphics\IGraphicsBlit.cs" />
     <Compile Include="Graphics\IGraphicsFactory.cs" />
     <Compile Include="Graphics\IRenderPass.cs" />
     <Compile Include="Graphics\IRenderPipeline.cs" />
@@ -730,6 +732,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
     <None Include="effect.Basic.fx" />
+    <None Include="effect.Blit.fx" />
     <None Include="effect.Color.fx" />
     <None Include="effect.Skinned.fx" />
     <None Include="font.Default.asset" />
