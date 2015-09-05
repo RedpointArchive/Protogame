@@ -1,4 +1,5 @@
-﻿using Ninject.Modules;
+﻿using Ninject.Extensions.Factory;
+using Ninject.Modules;
 
 namespace Protogame
 {
@@ -29,6 +30,13 @@ namespace Protogame
             this.Bind<IRenderContext>().To<RenderPipelineRenderContext>();
             this.Bind<IRenderPipeline>().To<DefaultRenderPipeline>();
             this.Bind<IGraphicsBlit>().To<DefaultGraphicsBlit>();
+            this.Bind<IGraphicsFactory>().ToFactory();
+
+            this.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>();
+            this.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>();
+            this.Bind<I3DRenderPass>().To<Default3DRenderPass>();
+            this.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>();
+            this.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>();
         }
     }
 }

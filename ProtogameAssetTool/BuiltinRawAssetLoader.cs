@@ -3,6 +3,9 @@
 // on the main Tychaia website (www.tychaia.com).  Changes to the         //
 // license on the website apply retroactively.                            //
 // ====================================================================== //
+
+using System.IO;
+
 namespace ProtogameAssetTool
 {
     using System;
@@ -70,7 +73,13 @@ namespace ProtogameAssetTool
         /// </returns>
         public IEnumerable<string> ScanRawAssets()
         {
-            return new[] { "font.Default", "effect.Basic", "effect.Color", "effect.Skinned" };
+            var dir = new DirectoryInfo(Environment.CurrentDirectory);
+            return dir
+                .GetFiles("*.png")
+                .Concat(dir.GetFiles("*.fx"))
+                .Concat(dir.GetFiles("*.asset"))
+                .Select(x => x.Name.Substring(0, x.Name.Length - x.Extension.Length))
+                .ToArray();
         }
 
         public IEnumerable<string> GetPotentialPathsForRawAsset(string name)

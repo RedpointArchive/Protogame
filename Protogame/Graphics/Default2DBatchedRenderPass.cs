@@ -11,15 +11,12 @@ namespace Protogame
     /// <interface_ref>Protogame.I2DBatchedRenderPass</interface_ref>
     public class Default2DBatchedRenderPass : I2DBatchedRenderPass
     {
-        private SpriteBatch _spriteBatch;
-
         private Viewport _viewport;
 
         private bool _viewportConfigured;
 
         public Default2DBatchedRenderPass()
         {
-            this.Viewport
         }
 
         /// <summary>
@@ -53,7 +50,7 @@ namespace Protogame
             set;
         }
 
-        public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass)
+        public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
 #if PLATFORM_WINDOWS
             if (!_viewportConfigured)
@@ -67,20 +64,20 @@ namespace Protogame
             }
 #endif
 
-            if (_spriteBatch == null)
-            {
-                _spriteBatch = new SpriteBatch(renderContext.GraphicsDevice);
-            }
 
-            renderContext.GraphicsDevice.Viewport = this.Viewport;
+            if (_viewportConfigured)
+            {
+                renderContext.GraphicsDevice.Viewport = this.Viewport;
+            }
 
             renderContext.Is3DContext = false;
 
-            _spriteBatch.Begin(TextureSortMode);
+            renderContext.SpriteBatch.Begin(TextureSortMode);
         }
 
-                    public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
+        public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
+            renderContext.SpriteBatch.End();
         }
     }
 }

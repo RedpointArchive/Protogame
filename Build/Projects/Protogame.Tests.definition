@@ -31,6 +31,35 @@
     <Compile Include="PlatformingModuleTests.cs" />
     <Compile Include="PoolTests.cs" />
     <Compile Include="PositionOctreeTests.cs" />
+    <Compile Include="RenderPipelineTests.cs" />
     <Compile Include="TimeMachineTests.cs" />
+    <EmbeddedResource Include="texture.Player-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="texture.Player-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="texture.Player-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="texture.Player-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="texture.Player-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="texture.Player-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="texture.Player-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="texture.Player-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="texture.Player-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <None Include="texture.Player.png" />
   </Files>
 </Project>

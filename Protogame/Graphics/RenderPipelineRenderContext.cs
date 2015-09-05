@@ -3,6 +3,7 @@ using Ninject;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Protogame
 {
@@ -511,7 +512,7 @@ namespace Protogame
         /// <param name="renderPass">The render pass to add.</param>
         public IRenderPass AddRenderPass(IRenderPass renderPass)
         {
-            _renderPipeline.AddRenderPass(renderPass);
+            return _renderPipeline.AddRenderPass(renderPass);
         }
 
         /// <summary>
@@ -547,7 +548,51 @@ namespace Protogame
         /// <param name="renderPass">The render pass to add.</param>
         public IRenderPass AppendRenderPass(IRenderPass renderPass)
         {
-            _renderPipeline.AppendRenderPass(renderPass);
+            return _renderPipeline.AppendRenderPass(renderPass);
+        }
+
+        /// <summary>
+        /// Gets the current render pass that is being used.
+        /// </summary>
+        /// <value>The current render pass that is being used.</value>
+        public IRenderPass CurrentRenderPass { get; internal set; }
+
+        /// <summary>
+        /// Returns whether or not the current render pass is of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type to check the render pass against.</typeparam>
+        /// <returns>Whether or not the current render pass is of the specified type.</returns>
+        public bool IsCurrentRenderPass<T>() where T : class, IRenderPass
+        {
+            return CurrentRenderPass is T;
+        }
+
+        /// <summary>
+        /// Returns whether or not the current render pass is of the specified type.  Outputs
+        /// the casted render pass to currentRenderPass.
+        /// </summary>
+        /// <typeparam name="T">The type to check the render pass against.</typeparam>
+        /// <param name="currentRenderPass">The current render pass casted to the specified type.</param>
+        /// <returns>Whether or not the current render pass is of the specified type.</returns>
+        public bool IsCurrentRenderPass<T>(out T currentRenderPass) where T : class, IRenderPass
+        {
+            currentRenderPass = CurrentRenderPass as T;
+            return currentRenderPass != null;
+        }
+
+        /// <summary>
+        /// Returns the current render pass as the type T.
+        /// </summary>
+        /// <typeparam name="T">The type of render pass to return.</typeparam>
+        /// <returns>The current render pass as the type T.</returns>
+        public T GetCurrentRenderPass<T>() where T : class, IRenderPass
+        {
+            if (!(CurrentRenderPass is T))
+            {
+                throw new InvalidOperationException("The current render pass is not of type " + typeof(T).FullName);
+            }
+
+            return (T)CurrentRenderPass;
         }
     }
 }

@@ -1,3 +1,5 @@
+using Ninject.Syntax;
+
 namespace Protogame
 {
     using System;
@@ -15,8 +17,13 @@ namespace Protogame
     /// The initial world class to start the game with.
     /// </typeparam>
     /// <module>Core API</module>
-    public abstract class CoreGame<TInitialWorld> : CoreGame<TInitialWorld, RenderPipelineWorldManager>
+    public abstract class CoreGame<TInitialWorld> : CoreGame<TInitialWorld, RenderPipelineWorldManager> where TInitialWorld : IWorld
     {
+        /// <summary>
+        /// The dependency injection kernel.
+        /// </summary>
+        private readonly IKernel _kernel;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CoreGame{TInitialWorld}"/> class. 
         /// </summary>
@@ -25,7 +32,35 @@ namespace Protogame
         /// </param>
         protected CoreGame(IKernel kernel) : base(kernel)
         {
+            _kernel = kernel;
         }
+
+        /// <summary>
+        /// Configure the render pipeline before the game begins.
+        /// <para>
+        /// In the new rendering system, you need to add render passes to the render pipeline
+        /// of your game to indicate how things will be rendered.  Use
+        /// <see cref="IRenderPipeline.AddRenderPass"/> to add passes to the render pipeline.
+        /// </para>
+        /// </summary>
+        /// <param name="pipeline">The render pipeline to configure.</param>
+        /// <param name="kernel">
+        /// The dependency injection kernel, on which you can call 
+        /// <see cref="ResolutionExtensions.Get{T}(IResolutionRoot, IParameter[])"/> to create
+        /// new render passes for adding to the pipeline.
+        /// </param>
+        protected abstract void ConfigureRenderPipeline(IRenderPipeline pipeline, IKernel kernel);
+        
+        /// <summary>
+        /// Calls <see cref="ConfigureRenderPipeline"/>, which needs to be implemented by
+        /// your game to configure the render pipeline.
+        /// </summary>
+        /// <param name="pipeline">The render pipeline to configure.</param>
+        protected sealed override void InternalConfigureRenderPipeline(IRenderPipeline pipeline)
+        {
+            this.ConfigureRenderPipeline(pipeline, _kernel);
+        }
+
     }
 
     /// <summary>
@@ -140,8 +175,14 @@ namespace Protogame
             this.m_Kernel = kernel;
 
             // Load the Ninject.Extensions.Factory and Ninject.Extensions.Interception modules.
-            this.m_Kernel.Load<Ninject.Extensions.Factory.FuncModule>();
-            this.m_Kernel.Load<Ninject.Extensions.Interception.DynamicProxyModule>();
+            if (!this.m_Kernel.HasModule("Ninject.Extensions.Factory.FuncModule"))
+            {
+                this.m_Kernel.Load<Ninject.Extensions.Factory.FuncModule>();
+            }
+            if (!this.m_Kernel.HasModule("Ninject.Extensions.Interception.DynamicProxyModule"))
+            {
+                this.m_Kernel.Load<Ninject.Extensions.Interception.DynamicProxyModule>();
+            }
 
             this.m_GraphicsDeviceManager = new GraphicsDeviceManager(this);
             this.m_GraphicsDeviceManager.PreparingDeviceSettings +=
@@ -296,6 +337,12 @@ namespace Protogame
             this.RenderContext = this.m_Kernel.Get<IRenderContext>(
                 new ConstructorArgument("renderPipeline", renderPipeline));
 
+            // Configure the render pipeline if possible.
+            if (renderPipeline != null)
+            {
+                this.InternalConfigureRenderPipeline(renderPipeline);
+            }
+
             // Retrieve all engine hooks.  These can be set up by additional modules
             // to change runtime behaviour.
             this.m_EngineHooks = this.m_Kernel.GetAll<IEngineHook>().ToArray();
@@ -305,6 +352,20 @@ namespace Protogame
 
             // Register with analytics services.
             this.m_AnalyticsEngine.LogGameplayEvent("Game:Start");
+        }
+
+        /// <summary>
+        /// Internal use only.  Derive from <see cref="CoreGame{TInitialWorld}"/> and
+        /// implement <see cref="CoreGame{TInitialWorld}.ConfigureRenderPipeline"/>
+        /// if you want to configure a render pipeline for newer Protogame games.
+        /// <para>
+        /// This method is not called if the world manager is not <see cref="RenderPipelineWorldManager"/>.
+        /// </para>
+        /// </summary>
+        /// <param name="pipeline">The render pipeline to configure.</param>
+        protected virtual void InternalConfigureRenderPipeline(IRenderPipeline pipeline)
+        {
+            throw new NotSupportedException();
         }
 
         /// <summary>

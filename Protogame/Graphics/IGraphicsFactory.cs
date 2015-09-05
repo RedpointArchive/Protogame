@@ -12,7 +12,11 @@
     /// <module>Graphics</module>
     public interface IGraphicsFactory
     {
-        I2DRenderPass Create2DRenderPass();
+        I2DDirectRenderPass Create2DDirectRenderPass();
+        I2DBatchedRenderPass Create2DBatchedRenderPass();
+        I3DRenderPass Create3DRenderPass();
+        IInvertPostProcessingRenderPass CreateInvertPostProcessingRenderPass();
+        IBlurPostProcessingRenderPass CreateBlurPostProcessingRenderPass();
     }
 }
 

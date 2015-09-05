@@ -277,12 +277,18 @@
     <Compile Include="GameAssetManagerProvider.cs" />
     <Compile Include="Graphics\Default2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\Default2DDirectRenderPass.cs" />
+    <Compile Include="Graphics\Default3DRenderPass.cs" />
+    <Compile Include="Graphics\DefaultBlurPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultGraphicsBlit.cs" />
+    <Compile Include="Graphics\DefaultInvertPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultRenderPipeline.cs" />
     <Compile Include="Graphics\I2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\I2DDirectRenderPass.cs" />
+    <Compile Include="Graphics\I3DRenderPass.cs" />
+    <Compile Include="Graphics\IBlurPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\IGraphicsBlit.cs" />
     <Compile Include="Graphics\IGraphicsFactory.cs" />
+    <Compile Include="Graphics\IInvertPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\IRenderPass.cs" />
     <Compile Include="Graphics\IRenderPipeline.cs" />
     <Compile Include="Graphics\Legacy\Default2DWorldManager.cs" />
@@ -610,132 +616,187 @@
       <Platforms>Windows</Platforms>
     </Content>
     <EmbeddedResource Include="Assets\Effects\Macros.fx" />
-    <EmbeddedResource Include="effect.Basic-Android.bin">
+    <EmbeddedResource Include="Resources\effect.Basic-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-iOS.bin">
+    <EmbeddedResource Include="Resources\effect.Basic-iOS.bin">
       <Platforms>iOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-Linux.bin">
+    <EmbeddedResource Include="Resources\effect.Basic-Linux.bin">
       <Platforms>Linux</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-MacOSX.bin">
+    <EmbeddedResource Include="Resources\effect.Basic-MacOSX.bin">
       <Platforms>MacOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-Ouya.bin">
+    <EmbeddedResource Include="Resources\effect.Basic-Ouya.bin">
       <Platforms>Ouya</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-RaspberryPi.bin">
-      <Platforms>Linux</Platforms>
+    <EmbeddedResource Include="Resources\effect.Basic-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-Windows.bin">
+    <EmbeddedResource Include="Resources\effect.Basic-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-WindowsPhone8.bin">
+    <EmbeddedResource Include="Resources\effect.Basic-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Basic-WindowsStoreApp.bin">
+    <EmbeddedResource Include="Resources\effect.Basic-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-Android.bin">
+    <EmbeddedResource Include="Resources\effect.Blur-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-iOS.bin">
+    <EmbeddedResource Include="Resources\effect.Blur-iOS.bin">
       <Platforms>iOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-Linux.bin">
+    <EmbeddedResource Include="Resources\effect.Blur-Linux.bin">
       <Platforms>Linux</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-MacOSX.bin">
+    <EmbeddedResource Include="Resources\effect.Blur-MacOSX.bin">
       <Platforms>MacOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-Ouya.bin">
+    <EmbeddedResource Include="Resources\effect.Blur-Ouya.bin">
       <Platforms>Ouya</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-RaspberryPi.bin">
-      <Platforms>Linux</Platforms>
+    <EmbeddedResource Include="Resources\effect.Blur-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-Windows.bin">
+    <EmbeddedResource Include="Resources\effect.Blur-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-WindowsPhone8.bin">
+    <EmbeddedResource Include="Resources\effect.Blur-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Color-WindowsStoreApp.bin">
+    <EmbeddedResource Include="Resources\effect.Blur-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-Android.bin">
+    <EmbeddedResource Include="Resources\effect.Color-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-iOS.bin">
+    <EmbeddedResource Include="Resources\effect.Color-iOS.bin">
       <Platforms>iOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-Linux.bin">
+    <EmbeddedResource Include="Resources\effect.Color-Linux.bin">
       <Platforms>Linux</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-MacOSX.bin">
+    <EmbeddedResource Include="Resources\effect.Color-MacOSX.bin">
       <Platforms>MacOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-Ouya.bin">
+    <EmbeddedResource Include="Resources\effect.Color-Ouya.bin">
       <Platforms>Ouya</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-RaspberryPi.bin">
-      <Platforms>Linux</Platforms>
+    <EmbeddedResource Include="Resources\effect.Color-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-Windows.bin">
+    <EmbeddedResource Include="Resources\effect.Color-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-WindowsPhone8.bin">
+    <EmbeddedResource Include="Resources\effect.Color-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="effect.Skinned-WindowsStoreApp.bin">
+    <EmbeddedResource Include="Resources\effect.Color-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-Android.bin">
+    <EmbeddedResource Include="Resources\effect.Invert-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-iOS.bin">
+    <EmbeddedResource Include="Resources\effect.Invert-iOS.bin">
       <Platforms>iOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-Linux.bin">
+    <EmbeddedResource Include="Resources\effect.Invert-Linux.bin">
       <Platforms>Linux</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-MacOSX.bin">
+    <EmbeddedResource Include="Resources\effect.Invert-MacOSX.bin">
       <Platforms>MacOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-NativeClient.bin">
+    <EmbeddedResource Include="Resources\effect.Invert-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Invert-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Invert-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Invert-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Invert-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.Skinned-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\font.Default-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\font.Default-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\font.Default-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\font.Default-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\font.Default-NativeClient.bin">
       <Platforms>NativeClient</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-Ouya.bin">
+    <EmbeddedResource Include="Resources\font.Default-Ouya.bin">
       <Platforms>Ouya</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-PlayStationMobile.bin">
+    <EmbeddedResource Include="Resources\font.Default-PlayStationMobile.bin">
       <Platforms>PSMobile</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-RaspberryPi.bin">
-      <Platforms>Linux</Platforms>
+    <EmbeddedResource Include="Resources\font.Default-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-Windows.bin">
+    <EmbeddedResource Include="Resources\font.Default-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-WindowsPhone.bin">
+    <EmbeddedResource Include="Resources\font.Default-WindowsPhone.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-WindowsPhone8.bin">
+    <EmbeddedResource Include="Resources\font.Default-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-WindowsStoreApp.bin">
+    <EmbeddedResource Include="Resources\font.Default-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="font.Default-Xbox360.bin">
+    <EmbeddedResource Include="Resources\font.Default-Xbox360.bin">
       <Platforms>Xbox360</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
-    <None Include="effect.Basic.fx" />
-    <None Include="effect.Blit.fx" />
-    <None Include="effect.Color.fx" />
-    <None Include="effect.Skinned.fx" />
-    <None Include="font.Default.asset" />
+    <None Include="Resources\effect.Basic.fx" />
+    <None Include="Resources\effect.Blur.fx" />
+    <None Include="Resources\effect.Color.fx" />
+    <None Include="Resources\effect.Invert.fx" />
+    <None Include="Resources\effect.Skinned.fx" />
+    <None Include="Resources\font.Default.asset" />
     <None Include="Scripting\LogicControl\Grammar.grm" />
     <None Include="Scripting\LogicControl\LogicBuiltins.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

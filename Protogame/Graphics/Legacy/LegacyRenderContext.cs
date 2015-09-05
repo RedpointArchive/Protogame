@@ -507,5 +507,40 @@ namespace Protogame
         {
             throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
         }
+
+        /// <summary>
+        /// This method is not supported in the legacy rendering system.
+        /// </summary>
+        public IRenderPass CurrentRenderPass
+        {
+            get
+            {
+                throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
+            }
+        }
+
+        /// <summary>
+        /// This method is not supported in the legacy rendering system.
+        /// </summary>
+        public bool IsCurrentRenderPass<T>() where T : class, IRenderPass
+        {
+            throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
+        }
+
+        /// <summary>
+        /// This method is not supported in the legacy rendering system.
+        /// </summary>
+        public bool IsCurrentRenderPass<T>(out T currentRenderPass) where T : class, IRenderPass
+        {
+            throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
+        }
+
+        /// <summary>
+        /// This method is not supported in the legacy rendering system.
+        /// </summary>
+        public T GetCurrentRenderPass<T>() where T : class, IRenderPass
+        {
+            throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
+        }
     }
 }

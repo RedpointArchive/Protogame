@@ -59,7 +59,8 @@
             var embedded = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                             where !assembly.IsDynamic
                             from resource in assembly.GetManifestResourceNames()
-                            where resource == assembly.GetName().Name + "." + name + ".asset"
+                            where resource == assembly.GetName().Name + "." + name + ".asset" ||
+                                  resource == assembly.GetName().Name + ".Resources." + name + ".asset"
                             select assembly.GetManifestResourceStream(resource)).ToList();
             if (embedded.Any())
             {

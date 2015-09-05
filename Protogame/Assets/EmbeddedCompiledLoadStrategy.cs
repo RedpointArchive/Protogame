@@ -61,8 +61,11 @@
                             from resource in assembly.GetManifestResourceNames()
                             where
                                 resource
-                                == assembly.GetName().Name + "." + name + "-"
-                                + TargetPlatformUtility.GetExecutingPlatform() + ".bin"
+                                    == assembly.GetName().Name + "." + name + "-"
+                                    + TargetPlatformUtility.GetExecutingPlatform() + ".bin" ||
+                                resource
+                                    == assembly.GetName().Name + ".Resources." + name + "-"
+                                    + TargetPlatformUtility.GetExecutingPlatform() + ".bin"
                             select assembly.GetManifestResourceStream(resource)).ToList();
             if (embedded.Any())
             {

@@ -1,3 +1,6 @@
+using System;
+using System.Runtime.CompilerServices;
+
 namespace Protogame
 {
     using Microsoft.Xna.Framework;
@@ -44,6 +47,7 @@ namespace Protogame
         /// <value>
         /// Whether the rendering context is currently a 3D context.
         /// </value>
+        [Obsolete("For games using the new render pipeline, call IRenderContext.IsCurrentRenderPass<I3DRenderPass>() instead.")]
         bool Is3DContext { get; set; }
 
         /// <summary>
@@ -208,5 +212,34 @@ namespace Protogame
         /// </returns>
         /// <param name="renderPass">The render pass to add.</param>
         IRenderPass AppendRenderPass(IRenderPass renderPass);
+
+        /// <summary>
+        /// Gets the current render pass that is being used.
+        /// </summary>
+        /// <value>The current render pass that is being used.</value>
+        IRenderPass CurrentRenderPass { get; }
+
+        /// <summary>
+        /// Returns whether or not the current render pass is of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type to check the render pass against.</typeparam>
+        /// <returns>Whether or not the current render pass is of the specified type.</returns>
+        bool IsCurrentRenderPass<T>() where T : class, IRenderPass;
+
+        /// <summary>
+        /// Returns whether or not the current render pass is of the specified type.  Outputs
+        /// the casted render pass to currentRenderPass.
+        /// </summary>
+        /// <typeparam name="T">The type to check the render pass against.</typeparam>
+        /// <param name="currentRenderPass">The current render pass casted to the specified type.</param>
+        /// <returns>Whether or not the current render pass is of the specified type.</returns>
+        bool IsCurrentRenderPass<T>(out T currentRenderPass) where T : class, IRenderPass;
+
+        /// <summary>
+        /// Returns the current render pass as the type T.
+        /// </summary>
+        /// <typeparam name="T">The type of render pass to return.</typeparam>
+        /// <returns>The current render pass as the type T.</returns>
+        T GetCurrentRenderPass<T>() where T : class, IRenderPass;
     }
 }

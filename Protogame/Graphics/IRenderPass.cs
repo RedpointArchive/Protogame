@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -48,11 +49,21 @@ namespace Protogame
         /// targets that are required for the render pipeline to operate.
         /// </para>
         /// </summary>
+        /// <param name="gameContext">The current game context.</param>
         /// <param name="renderContext">The current render context.</param>
         /// <param name="previousPass">
-        /// The previous render pass, or null if this is the first pass in the pipeline.
+        ///     The previous render pass, or null if this is the first pass in the pipeline.
         /// </param>
-        void BeginRenderPass(IRenderContext renderContext, IRenderPass previousPass);
+        /// <param name="postProcessingSource">
+        ///     If this is a post-processing render pass, this argument is set to the source texture
+        ///     that is used as input for the shader.  As a general guide, you should pass this
+        ///     texture as the source parameter to the <see cref="IGraphicsBlit.Blit"/> if you are
+        ///     using that API.
+        ///     <para>
+        ///         If this is a standard render pass, this argument is always null.
+        ///     </para>
+        /// </param>
+        void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource);
 
         /// <summary>
         /// Ends the render pass.
@@ -64,10 +75,11 @@ namespace Protogame
         /// <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/> when it runs.
         /// </para>
         /// </summary>
+        /// <param name="gameContext">The current game context.</param>
         /// <param name="renderContext">The current render context.</param>
         /// <param name="nextPass">
-        /// The next render pass, or null if this is the last pass in the pipeline.
+        ///     The next render pass, or null if this is the last pass in the pipeline.
         /// </param>
-        void EndRenderPass(IRenderContext renderContext, IRenderPass nextPass);
+        void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass);
     }
 }
