@@ -31,12 +31,16 @@ namespace Protogame
             this.Bind<IRenderPipeline>().To<DefaultRenderPipeline>();
             this.Bind<IGraphicsBlit>().To<DefaultGraphicsBlit>();
             this.Bind<IGraphicsFactory>().ToFactory();
+            this.Bind<IRenderTargetBackBufferUtilities>().To<DefaultRenderTargetBackBufferUtilities>();
 
             this.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>();
             this.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>();
             this.Bind<I3DRenderPass>().To<Default3DRenderPass>();
             this.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>();
             this.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>();
+            this.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>();
+            this.Bind<ICaptureCopyPostProcessingRenderPass>().To<DefaultCaptureCopyPostProcessingRenderPass>();
+            this.Bind<ICaptureInlinePostProcessingRenderPass>().To<DefaultCaptureInlinePostProcessingRenderPass>();
         }
     }
 }

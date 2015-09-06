@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Ninject;
 using Xunit;
 
@@ -22,9 +19,29 @@ namespace Protogame.Tests
 
             private readonly IBlurPostProcessingRenderPass _blurPostProcess;
 
-            private bool _invertEnabled;
+            private readonly ICustomPostProcessingRenderPass _customPostProcess;
 
-            private bool _blurEnabled;
+            private readonly ICaptureInlinePostProcessingRenderPass _captureInlinePostProcess;
+
+            private List<Tuple<bool, bool, bool>> _combinations = new List<Tuple<bool, bool, bool>>
+            {
+                new Tuple<bool, bool, bool>(false, false, false),
+                new Tuple<bool, bool, bool>(false, false, true),
+                new Tuple<bool, bool, bool>(false, true, false),
+                new Tuple<bool, bool, bool>(false, true, true),
+                new Tuple<bool, bool, bool>(true, false, false),
+                new Tuple<bool, bool, bool>(true, false, true),
+                new Tuple<bool, bool, bool>(true, true, false),
+                new Tuple<bool, bool, bool>(true, true, true),
+            };
+
+            private const int Width = 800;
+
+            private const int Height = 480;
+            
+            private int _frame;
+
+            private bool _didExit;
 
             public RenderPipelineWorld(IAssetManagerProvider assetManagerProvider, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory)
             {
@@ -32,6 +49,34 @@ namespace Protogame.Tests
                 _texture = assetManagerProvider.GetAssetManager().Get<TextureAsset>("texture.Player");
                 _invertPostProcess = graphicsFactory.CreateInvertPostProcessingRenderPass();
                 _blurPostProcess = graphicsFactory.CreateBlurPostProcessingRenderPass();
+                _customPostProcess = graphicsFactory.CreateCustomPostProcessingRenderPass("effect.MakeRed");
+                _captureInlinePostProcess = graphicsFactory.CreateCaptureInlinePostProcessingRenderPass();
+                _captureInlinePostProcess.RenderPipelineStateAvailable = d =>
+                {
+#if RECORDING
+                    using (var writer = new StreamWriter("output" + _frame + ".png"))
+                    {
+                        d.SaveAsPng(writer.BaseStream, Width, Height);
+                    }
+#else
+                    var baseStream =
+                        typeof (RenderPipelineWorld).Assembly.GetManifestResourceStream(
+                            "Protogame.Tests.Expected.RenderPipeline.output" + _frame + ".png");
+                    var baseBytes = new byte[baseStream.Length];
+                    baseStream.Read(baseBytes, 0, baseBytes.Length);
+                    var memoryStream = new MemoryStream();
+                    d.SaveAsPng(memoryStream, Width, Height);
+                    var memoryBytes = new byte[memoryStream.Position];
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    memoryStream.Read(memoryBytes, 0, memoryBytes.Length);
+                    memoryStream.Dispose();
+                    baseStream.Dispose();
+
+                    Assert.Equal(baseBytes, memoryBytes);
+#endif
+
+                    _frame++;
+                };
 
                 this.Entities = new List<IEntity>();
             }
@@ -46,32 +91,47 @@ namespace Protogame.Tests
             {
                 renderContext.GraphicsDevice.Clear(Color.Green);
 
+                if (_frame >= _combinations.Count)
+                {
+                    return;
+                }
+
                 if (renderContext.IsCurrentRenderPass<I2DBatchedRenderPass>())
                 {
                     _renderUtilities.RenderTexture(renderContext, Vector2.Zero, _texture);
 
-                    if (_invertEnabled)
+                    var combination = _combinations[_frame];
+
+                    if (combination.Item1)
                     {
                         renderContext.AppendRenderPass(_invertPostProcess);
                     }
 
-                    if (_blurEnabled)
+                    if (combination.Item2)
                     {
                         renderContext.AppendRenderPass(_blurPostProcess);
                     }
+
+                    if (combination.Item3)
+                    {
+                        renderContext.AppendRenderPass(_customPostProcess);
+                    }
+
+                    renderContext.AppendRenderPass(_captureInlinePostProcess);
                 }
             }
 
             public void Update(IGameContext gameContext, IUpdateContext updateContext)
             {
-                if (Keyboard.GetState().IsKeyChanged(this, Keys.Space) == KeyState.Up)
+                if (_didExit)
                 {
-                    _invertEnabled = !_invertEnabled;
+                    return;
                 }
 
-                if (Keyboard.GetState().IsKeyChanged(this, Keys.B) == KeyState.Up)
+                if (_frame == _combinations.Count)
                 {
-                    _blurEnabled = !_blurEnabled;
+                    gameContext.Game.Exit();
+                    _didExit = true;
                 }
             }
 
@@ -82,6 +142,10 @@ namespace Protogame.Tests
 
         public class RenderPipelineGame : CoreGame<RenderPipelineWorld>
         {
+            private const int Width = 800;
+
+            private const int Height = 480;
+
             public RenderPipelineGame(IKernel kernel) : base(kernel)
             {
             }
@@ -89,10 +153,16 @@ namespace Protogame.Tests
             protected override void ConfigureRenderPipeline(IRenderPipeline pipeline, IKernel kernel)
             {
                 var factory = kernel.Get<IGraphicsFactory>();
-
-                //pipeline.AddRenderPass(factory.Create3DRenderPass());
+                
                 pipeline.AddRenderPass(factory.Create2DBatchedRenderPass());
-                //pipeline.AddRenderPass();
+            }
+
+            protected override void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)
+            {
+                base.PrepareDeviceSettings(deviceInformation);
+
+                this.GraphicsDeviceManager.PreferredBackBufferWidth = Width;
+                this.GraphicsDeviceManager.PreferredBackBufferHeight = Height;
             }
         }
 

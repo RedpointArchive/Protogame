@@ -33,6 +33,41 @@
     <Compile Include="PositionOctreeTests.cs" />
     <Compile Include="RenderPipelineTests.cs" />
     <Compile Include="TimeMachineTests.cs" />
+    <EmbeddedResource Include="effect.MakeRed-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.MakeRed-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.MakeRed-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.MakeRed-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.MakeRed-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.MakeRed-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.MakeRed-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.MakeRed-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="effect.MakeRed-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Expected\RenderPipeline\output0.png" />
+    <EmbeddedResource Include="Expected\RenderPipeline\output1.png" />
+    <EmbeddedResource Include="Expected\RenderPipeline\output2.png" />
+    <EmbeddedResource Include="Expected\RenderPipeline\output3.png" />
+    <EmbeddedResource Include="Expected\RenderPipeline\output4.png" />
+    <EmbeddedResource Include="Expected\RenderPipeline\output5.png" />
+    <EmbeddedResource Include="Expected\RenderPipeline\output6.png" />
+    <EmbeddedResource Include="Expected\RenderPipeline\output7.png" />
     <EmbeddedResource Include="texture.Player-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
@@ -60,6 +95,7 @@
     <EmbeddedResource Include="texture.Player-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
+    <None Include="effect.MakeRed.fx" />
     <None Include="texture.Player.png" />
   </Files>
 </Project>
