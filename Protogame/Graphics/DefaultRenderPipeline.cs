@@ -242,7 +242,7 @@ namespace Protogame
 #endif
         }
 
-        public IRenderPass AddRenderPass(IRenderPass renderPass)
+        public IRenderPass AddFixedRenderPass(IRenderPass renderPass)
         {
             if (renderPass.IsPostProcessingPass)
             {
@@ -256,7 +256,7 @@ namespace Protogame
             return renderPass;
         }
 
-        public void RemoveRenderPass(IRenderPass renderPass)
+        public void RemoveFixedRenderPass(IRenderPass renderPass)
         {
             if (renderPass.IsPostProcessingPass)
             {
@@ -268,7 +268,7 @@ namespace Protogame
             }
         }
 
-        public IRenderPass AppendRenderPass(IRenderPass renderPass)
+        public IRenderPass AppendTransientRenderPass(IRenderPass renderPass)
         {
             if (renderPass.IsPostProcessingPass)
             {

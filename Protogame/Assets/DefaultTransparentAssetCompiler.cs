@@ -5,7 +5,6 @@
     /// <summary>
     /// The default transparent asset compiler.
     /// </summary>
-    /// <module>Assets</module>
     public class DefaultTransparentAssetCompiler : ITransparentAssetCompiler
     {
         /// <summary>
@@ -99,7 +98,6 @@
         /// </summary>
         /// <typeparam name="T">
         /// </typeparam>
-        /// <module>Assets</module>
         private class AssetCompilerProxy<T> : IAssetCompilerProxyInterface
             where T : IAsset
         {

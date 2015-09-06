@@ -41,6 +41,8 @@ namespace Protogame.Tests
             
             private int _frame;
 
+            private int _manualTest;
+
             private bool _didExit;
 
             public RenderPipelineWorld(IAssetManagerProvider assetManagerProvider, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory)
@@ -53,7 +55,8 @@ namespace Protogame.Tests
                 _captureInlinePostProcess = graphicsFactory.CreateCaptureInlinePostProcessingRenderPass();
                 _captureInlinePostProcess.RenderPipelineStateAvailable = d =>
                 {
-#if RECORDING
+#if MANUAL_TEST
+#elif RECORDING
                     using (var writer = new StreamWriter("output" + _frame + ".png"))
                     {
                         d.SaveAsPng(writer.BaseStream, Width, Height);
@@ -75,7 +78,15 @@ namespace Protogame.Tests
                     Assert.Equal(baseBytes, memoryBytes);
 #endif
 
+#if MANUAL_TEST
+                    _manualTest++;
+                    if (_manualTest % 60 == 0)
+                    {
+                        _frame++;
+                    }
+#else
                     _frame++;
+#endif
                 };
 
                 this.Entities = new List<IEntity>();
@@ -91,38 +102,41 @@ namespace Protogame.Tests
             {
                 renderContext.GraphicsDevice.Clear(Color.Green);
 
+#if !MANUAL_TEST
                 if (_frame >= _combinations.Count)
                 {
                     return;
                 }
+#endif
 
                 if (renderContext.IsCurrentRenderPass<I2DBatchedRenderPass>())
                 {
                     _renderUtilities.RenderTexture(renderContext, Vector2.Zero, _texture);
 
-                    var combination = _combinations[_frame];
+                    var combination = _combinations[_frame % _combinations.Count];
 
                     if (combination.Item1)
                     {
-                        renderContext.AppendRenderPass(_invertPostProcess);
+                        renderContext.AppendTransientRenderPass(_invertPostProcess);
                     }
 
                     if (combination.Item2)
                     {
-                        renderContext.AppendRenderPass(_blurPostProcess);
+                        renderContext.AppendTransientRenderPass(_blurPostProcess);
                     }
 
                     if (combination.Item3)
                     {
-                        renderContext.AppendRenderPass(_customPostProcess);
+                        renderContext.AppendTransientRenderPass(_customPostProcess);
                     }
 
-                    renderContext.AppendRenderPass(_captureInlinePostProcess);
+                    renderContext.AppendTransientRenderPass(_captureInlinePostProcess);
                 }
             }
 
             public void Update(IGameContext gameContext, IUpdateContext updateContext)
             {
+#if !MANUAL_TEST
                 if (_didExit)
                 {
                     return;
@@ -133,6 +147,7 @@ namespace Protogame.Tests
                     gameContext.Game.Exit();
                     _didExit = true;
                 }
+#endif
             }
 
             public void Dispose()
@@ -154,7 +169,7 @@ namespace Protogame.Tests
             {
                 var factory = kernel.Get<IGraphicsFactory>();
                 
-                pipeline.AddRenderPass(factory.Create2DBatchedRenderPass());
+                pipeline.AddFixedRenderPass(factory.Create2DBatchedRenderPass());
             }
 
             protected override void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)

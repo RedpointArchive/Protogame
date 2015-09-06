@@ -5,6 +5,7 @@ namespace Protogame
     /// <summary>
     /// The interface for the rendering pipeline.
     /// </summary>
+    /// <module>Graphics</module>
     public interface IRenderPipeline
     {
         /// <summary>
@@ -23,17 +24,17 @@ namespace Protogame
         /// The render pass that was given to this function.  This return
         /// value is for convenience only, so that you may construct and add
         /// a render pass in a single statement, while obtaining a reference to
-        /// it if you need to modify it's values or call <see cref="RemoveRenderPass"/>
+        /// it if you need to modify it's values or call <see cref="RemoveFixedRenderPass"/>
         /// later.  The render pass is not modified by this function.
         /// </returns>
         /// <param name="renderPass">The render pass to add.</param>
-        IRenderPass AddRenderPass(IRenderPass renderPass);
+        IRenderPass AddFixedRenderPass(IRenderPass renderPass);
 
         /// <summary>
         /// Removes the specified render pass from the render pipeline.
         /// </summary>
         /// <param name="renderPass">The render pass to remove.</param>
-        void RemoveRenderPass(IRenderPass renderPass);
+        void RemoveFixedRenderPass(IRenderPass renderPass);
 
         /// <summary>
         /// Append the specified render pass to the render pipeline
@@ -46,7 +47,7 @@ namespace Protogame
         /// </para>
         /// <para>
         /// Render passes that were appended can not be removed with
-        /// <see cref="RemoveRenderPass"/>.
+        /// <see cref="RemoveFixedRenderPass"/>.
         /// </para>
         /// </summary>
         /// <returns>
@@ -57,7 +58,7 @@ namespace Protogame
         /// modified by this function.
         /// </returns>
         /// <param name="renderPass">The render pass to add.</param>
-        IRenderPass AppendRenderPass(IRenderPass renderPass);
+        IRenderPass AppendTransientRenderPass(IRenderPass renderPass);
     }
 }
 

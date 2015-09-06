@@ -104,7 +104,7 @@ namespace ProtogameDocsTool
 
         static string GetAnchor(string docIdentifier)
         {
-            return docIdentifier.Substring(2).Replace("`", "*");
+            return docIdentifier;
         }
 
         static string IndentText(string currentText, string text, int indent)
@@ -279,7 +279,7 @@ namespace ProtogameDocsTool
             typeElem.SetAttribute("Namespace", type.Namespace);
             typeElem.SetAttribute("FullName", type.FullName);
             typeElem.SetAttribute("Module", NormalizeName(moduleName));
-            typeElem.SetAttribute("Anchor", GetAnchor(typeXmlName));
+            typeElem.SetAttribute("Anchor", GetAnchor(type));
             typeElem.SetAttribute("IsProtogameInternal", internalText);
 
             if (interfaceRef != null)
@@ -323,7 +323,7 @@ namespace ProtogameDocsTool
                 baseField.SetAttribute("TypeName", type.BaseType.Name);
                 baseField.SetAttribute("TypeNamespace", type.BaseType.Namespace);
                 baseField.SetAttribute("TypeFullName", type.BaseType.FullName);
-                baseField.SetAttribute("TypeAnchor", GetTypeXmlName(type.BaseType));
+                baseField.SetAttribute("TypeAnchor", GetAnchor(type.BaseType));
             }
 
             foreach (var @interface in type.GetInterfaces())
@@ -333,7 +333,7 @@ namespace ProtogameDocsTool
                 implementsField.SetAttribute("TypeName", @interface.Name);
                 implementsField.SetAttribute("TypeNamespace", @interface.Namespace);
                 implementsField.SetAttribute("TypeFullName", @interface.FullName);
-                implementsField.SetAttribute("TypeAnchor", GetTypeXmlName(@interface));
+                implementsField.SetAttribute("TypeAnchor", GetAnchor(@interface));
             }
 
             foreach (var typeParameter in type.GetGenericArguments())
@@ -343,7 +343,7 @@ namespace ProtogameDocsTool
                 typeParameterElem.SetAttribute("TypeName", typeParameter.Name);
                 typeParameterElem.SetAttribute("TypeNamespace", typeParameter.Namespace);
                 typeParameterElem.SetAttribute("TypeFullName", typeParameter.FullName);
-                typeParameterElem.SetAttribute("TypeAnchor", GetTypeXmlName(typeParameter));
+                typeParameterElem.SetAttribute("TypeAnchor", GetAnchor(typeParameter));
 
                 if (docs != null)
                 {
@@ -399,14 +399,14 @@ namespace ProtogameDocsTool
             var fieldElem = output.CreateElement("Field");
             container.AppendChild(fieldElem);
             fieldElem.SetAttribute("Name", field.Name);
-            fieldElem.SetAttribute("Anchor", GetAnchor(fieldXmlName));
+            fieldElem.SetAttribute("Anchor", GetAnchor(field));
             fieldElem.SetAttribute("IsPublic", field.IsPublic ? "True" : "False");
             fieldElem.SetAttribute("IsProtected", field.IsFamily ? "True" : "False");
             fieldElem.SetAttribute("IsPrivate", field.IsPrivate ? "True" : "False");
             fieldElem.SetAttribute("TypeName", field.FieldType.Name);
             fieldElem.SetAttribute("TypeNamespace", field.FieldType.Namespace);
             fieldElem.SetAttribute("TypeFullName", field.FieldType.FullName);
-            fieldElem.SetAttribute("TypeAnchor", GetTypeXmlName(field.FieldType));
+            fieldElem.SetAttribute("TypeAnchor", GetAnchor(field.FieldType));
             try
             {
                 var constVal = field.GetRawConstantValue();
@@ -455,7 +455,7 @@ namespace ProtogameDocsTool
             var propertyElem = output.CreateElement("Property");
             container.AppendChild(propertyElem);
             propertyElem.SetAttribute("Name", property.Name);
-            propertyElem.SetAttribute("Anchor", GetAnchor(propertyXmlName));
+            propertyElem.SetAttribute("Anchor", GetAnchor(property));
             if (property.GetGetMethod() != null)
             {
                 propertyElem.SetAttribute("HasGet", "True");
@@ -483,7 +483,7 @@ namespace ProtogameDocsTool
             propertyElem.SetAttribute("TypeName", property.PropertyType.Name);
             propertyElem.SetAttribute("TypeNamespace", property.PropertyType.Namespace);
             propertyElem.SetAttribute("TypeFullName", property.PropertyType.FullName);
-            propertyElem.SetAttribute("TypeAnchor", GetTypeXmlName(property.PropertyType));
+            propertyElem.SetAttribute("TypeAnchor", GetAnchor(property.PropertyType));
 
             if (docs != null)
             {
@@ -530,6 +530,46 @@ namespace ProtogameDocsTool
             return name;
         }
 
+        static string GetAnchor(Type type)
+        {
+            return 
+                type.Namespace + "." + 
+                GetGenericName(type);
+        }
+
+        static string GetAnchor(MethodInfo method)
+        {
+            string methodParams = string.Empty;
+            var genericMethodParams = method.GetParameters().Select(x => GetGenericName(x.ParameterType)).DefaultIfEmpty("").Aggregate((a, b) => a + "," + b);
+            if (genericMethodParams != string.Empty)
+            {
+                methodParams += "(";
+                methodParams += genericMethodParams;
+                methodParams += ")";
+            }
+
+            return 
+                method.DeclaringType.Namespace + "." + 
+                GetGenericName(method.DeclaringType) + "." + 
+                GetGenericName(method) + methodParams;
+        }
+
+        static string GetAnchor(FieldInfo field)
+        {
+            return 
+                field.DeclaringType.Namespace + "." + 
+                GetGenericName(field.DeclaringType) + "." + 
+                field.Name;
+        }
+
+        static string GetAnchor(PropertyInfo property)
+        {
+            return 
+                property.DeclaringType.Namespace + "." + 
+                GetGenericName(property.DeclaringType) + "." + 
+                property.Name;
+        }
+
         static void ProcessMethod(XmlDocument output, XmlElement container, Dictionary<string, XmlElement> lookup, Type type, MethodInfo method)
         {
             var methodXmlName = "M:";
@@ -562,7 +602,7 @@ namespace ProtogameDocsTool
             var methodElem = output.CreateElement("Method");
             container.AppendChild(methodElem);
             methodElem.SetAttribute("Name", GetGenericName(method));
-            methodElem.SetAttribute("Anchor", GetAnchor(methodXmlName));
+            methodElem.SetAttribute("Anchor", GetAnchor(method));
             methodElem.SetAttribute("IsPublic", method.IsPublic ? "True" : "False");
             methodElem.SetAttribute("IsProtected", method.IsFamily ? "True" : "False");
             methodElem.SetAttribute("IsPrivate", method.IsPrivate ? "True" : "False");
@@ -570,7 +610,7 @@ namespace ProtogameDocsTool
             methodElem.SetAttribute("ReturnTypeName", method.ReturnType.Name);
             methodElem.SetAttribute("ReturnTypeNamespace", method.ReturnType.Namespace);
             methodElem.SetAttribute("ReturnTypeFullName", method.ReturnType.FullName);
-            methodElem.SetAttribute("ReturnTypeAnchor", GetTypeXmlName(method.ReturnType));
+            methodElem.SetAttribute("ReturnTypeAnchor", GetAnchor(method.ReturnType));
 
             if (docs != null)
             {
@@ -585,7 +625,7 @@ namespace ProtogameDocsTool
                 typeParameterElem.SetAttribute("TypeName", typeParameter.Name);
                 typeParameterElem.SetAttribute("TypeNamespace", typeParameter.Namespace);
                 typeParameterElem.SetAttribute("TypeFullName", typeParameter.FullName);
-                typeParameterElem.SetAttribute("TypeAnchor", GetTypeXmlName(typeParameter));
+                typeParameterElem.SetAttribute("TypeAnchor", GetAnchor(typeParameter));
 
                 if (docs != null)
                 {
@@ -616,7 +656,7 @@ namespace ProtogameDocsTool
                 parameterElem.SetAttribute("TypeName", paramType.Name);
                 parameterElem.SetAttribute("TypeNamespace", paramType.Namespace);
                 parameterElem.SetAttribute("TypeFullName", paramType.FullName);
-                parameterElem.SetAttribute("TypeAnchor", GetTypeXmlName(paramType));
+                parameterElem.SetAttribute("TypeAnchor", GetAnchor(paramType));
                 parameterElem.SetAttribute("IsRef", isRetval ? "True" : "False");
                 parameterElem.SetAttribute("IsOut", isOut ? "True" : "False");
 

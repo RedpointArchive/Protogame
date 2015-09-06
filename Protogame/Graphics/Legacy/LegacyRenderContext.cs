@@ -487,7 +487,7 @@ namespace Protogame
         /// <summary>
         /// This method is not supported in the legacy rendering system.
         /// </summary>
-        public IRenderPass AddRenderPass(IRenderPass renderPass)
+        public IRenderPass AddFixedRenderPass(IRenderPass renderPass)
         {
             throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
         }
@@ -495,7 +495,7 @@ namespace Protogame
         /// <summary>
         /// This method is not supported in the legacy rendering system.
         /// </summary>
-        public void RemoveRenderPass(IRenderPass renderPass)
+        public void RemoveFixedRenderPass(IRenderPass renderPass)
         {
             throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
         }
@@ -503,7 +503,7 @@ namespace Protogame
         /// <summary>
         /// This method is not supported in the legacy rendering system.
         /// </summary>
-        public IRenderPass AppendRenderPass(IRenderPass renderPass)
+        public IRenderPass AppendTransientRenderPass(IRenderPass renderPass)
         {
             throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
         }

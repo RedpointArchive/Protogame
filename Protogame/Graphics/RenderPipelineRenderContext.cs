@@ -506,22 +506,22 @@ namespace Protogame
         /// The render pass that was given to this function.  This return
         /// value is for convenience only, so that you may construct and add
         /// a render pass in a single statement, while obtaining a reference to
-        /// it if you need to modify it's values or call <see cref="RemoveRenderPass"/>
+        /// it if you need to modify it's values or call <see cref="RemoveFixedRenderPass"/>
         /// later.  The render pass is not modified by this function.
         /// </returns>
         /// <param name="renderPass">The render pass to add.</param>
-        public IRenderPass AddRenderPass(IRenderPass renderPass)
+        public IRenderPass AddFixedRenderPass(IRenderPass renderPass)
         {
-            return _renderPipeline.AddRenderPass(renderPass);
+            return _renderPipeline.AddFixedRenderPass(renderPass);
         }
 
         /// <summary>
         /// Removes the specified render pass from the render pipeline.
         /// </summary>
         /// <param name="renderPass">The render pass to remove.</param>
-        public void RemoveRenderPass(IRenderPass renderPass)
+        public void RemoveFixedRenderPass(IRenderPass renderPass)
         {
-            _renderPipeline.RemoveRenderPass(renderPass);
+            _renderPipeline.RemoveFixedRenderPass(renderPass);
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace Protogame
         /// </para>
         /// <para>
         /// Render passes that were appended can not be removed with
-        /// <see cref="RemoveRenderPass"/>.
+        /// <see cref="RemoveFixedRenderPass"/>.
         /// </para>
         /// </summary>
         /// <returns>
@@ -546,9 +546,9 @@ namespace Protogame
         /// modified by this function.
         /// </returns>
         /// <param name="renderPass">The render pass to add.</param>
-        public IRenderPass AppendRenderPass(IRenderPass renderPass)
+        public IRenderPass AppendTransientRenderPass(IRenderPass renderPass)
         {
-            return _renderPipeline.AppendRenderPass(renderPass);
+            return _renderPipeline.AppendTransientRenderPass(renderPass);
         }
 
         /// <summary>

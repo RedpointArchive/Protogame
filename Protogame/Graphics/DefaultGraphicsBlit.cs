@@ -78,8 +78,12 @@ namespace Protogame
             renderContext.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
             renderContext.World = Matrix.CreateScale(destWidth, destHeight, 1);
-            renderContext.Projection = //Matrix.CreateTranslation(-0.5f, -0.5f, 0)* (this might be needed for OpenGL?)
-                                       Matrix.CreateOrthographicOffCenter(0, destWidth, destHeight, 0, 0, 1);
+#if PLATFORM_WINDOWS
+            renderContext.Projection = Matrix.CreateOrthographicOffCenter(0, destWidth, destHeight, 0, 0, 1);
+#else
+            renderContext.Projection = Matrix.CreateTranslation(-0.5f, -0.5f, 0) *
+                Matrix.CreateOrthographicOffCenter(0, destWidth, destHeight, 0, 0, 1);
+#endif
             renderContext.View = Matrix.Identity;
             
             renderContext.PushEffect(shader);

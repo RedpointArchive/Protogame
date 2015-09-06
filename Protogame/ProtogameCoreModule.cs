@@ -1,4 +1,5 @@
-﻿using Ninject.Extensions.Factory;
+﻿using Ninject;
+using Ninject.Extensions.Factory;
 using Ninject.Modules;
 
 namespace Protogame
@@ -11,6 +12,10 @@ namespace Protogame
     /// <module>Core API</module>
     public class ProtogameCoreModule : NinjectModule
     {
+        /// <summary>
+        /// You should call <see cref="ModuleLoadExtensions.Load{ProtogameCoreModule}"/> 
+        /// instead of calling this method directly.
+        /// </summary>
         public override void Load()
         {
             this.Bind<I2DRenderUtilities>().To<Default2DRenderUtilities>();
