@@ -555,7 +555,13 @@ namespace Protogame
         /// Gets the current render pass that is being used.
         /// </summary>
         /// <value>The current render pass that is being used.</value>
-        public IRenderPass CurrentRenderPass { get; internal set; }
+        public IRenderPass CurrentRenderPass
+        {
+            get
+            {
+                return _renderPipeline.GetCurrentRenderPass();
+            }
+        }
 
         /// <summary>
         /// Returns whether or not the current render pass is of the specified type.
@@ -593,6 +599,17 @@ namespace Protogame
             }
 
             return (T)CurrentRenderPass;
+        }
+
+        /// <summary>
+        /// Returns whether this is the first render pass being performed.  You can use
+        /// this method to isolate render logic that should only occur once per
+        /// frame (such as appending transient render passes).
+        /// </summary>
+        /// <returns>Whether this is the first render pass being performed.</returns>
+        public bool IsFirstRenderPass()
+        {
+            return _renderPipeline.IsFirstRenderPass();
         }
     }
 }

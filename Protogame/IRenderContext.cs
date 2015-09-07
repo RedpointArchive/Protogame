@@ -241,5 +241,13 @@ namespace Protogame
         /// <typeparam name="T">The type of render pass to return.</typeparam>
         /// <returns>The current render pass as the type T.</returns>
         T GetCurrentRenderPass<T>() where T : class, IRenderPass;
+
+        /// <summary>
+        /// Returns whether this is the first render pass being performed.  You can use
+        /// this method to isolate render logic that should only occur once per
+        /// frame (such as appending transient render passes).
+        /// </summary>
+        /// <returns>Whether this is the first render pass being performed.</returns>
+        bool IsFirstRenderPass();
     }
 }

@@ -542,5 +542,13 @@ namespace Protogame
         {
             throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
         }
+
+        /// <summary>
+        /// This method is not supported in the legacy rendering system.
+        /// </summary>
+        public bool IsFirstRenderPass()
+        {
+            throw new NotSupportedException("You must use the new rendering system to call AddRenderPass.");
+        }
     }
 }

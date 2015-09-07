@@ -59,6 +59,19 @@ namespace Protogame
         /// </returns>
         /// <param name="renderPass">The render pass to add.</param>
         IRenderPass AppendTransientRenderPass(IRenderPass renderPass);
+
+        /// <summary>
+        /// Returns the current render pass.  Returns null if the code is
+        /// not currently executing from within <see cref="Render"/>.
+        /// </summary>
+        /// <returns>The current render pass, or null if the render pipeline isn't rendering.</returns>
+        IRenderPass GetCurrentRenderPass();
+
+        /// <summary>
+        /// Returns if the current render pass is the first one in the pipeline.
+        /// </summary>
+        /// <returns>Whether the current render pass is the first one in the pipeline.</returns>
+        bool IsFirstRenderPass();
     }
 }
 
