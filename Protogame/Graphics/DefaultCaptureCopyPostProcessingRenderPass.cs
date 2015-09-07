@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -49,6 +49,8 @@ namespace Protogame
         {
         }
 
-        public RenderTarget2D CapturedRenderTarget { get; }
+        public RenderTarget2D CapturedRenderTarget {
+            get { return _renderTarget; }
+        }
     }
 }
