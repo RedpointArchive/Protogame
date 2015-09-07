@@ -158,7 +158,7 @@ namespace Protogame
         /// <param name="kernel">
         /// The dependency injection kernel.
         /// </param>
-        protected CoreGame(IKernel kernel) : base(kernel.TryGet<IEmbedContext>())
+        protected CoreGame(IKernel kernel) : base(Prestart(kernel.TryGet<IEmbedContext>()))
         {
 #if PLATFORM_MACOS
             // On Mac, the MonoGame launcher changes the current working
@@ -540,6 +540,92 @@ namespace Protogame
             get
             {
                 return (Android.Views.View)this.Services.GetService(typeof(Android.Views.View));
+            }
+        }
+#endif
+
+        /// <summary>
+        /// Runs code before MonoGame performs any initialization logic.
+        /// </summary>
+        /// <param name="passthrough">The value to passthrough.</param>
+        private static IEmbedContext Prestart(IEmbedContext passthrough)
+        {
+#if PLATFORM_LINUX
+            LoadPrimusRunPathForDualGPUDevices();
+#endif
+
+            return passthrough;
+        }
+
+#if PLATFORM_LINUX
+        public static void LoadPrimusRunPathForDualGPUDevices()
+        {
+            const string primusRunPath = "/usr/bin/primusrun";
+            var basePath = new System.IO.FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName;
+            if (System.IO.File.Exists(primusRunPath))
+            {
+                // primusrun exists, we should try and upgrade
+                // the graphics before libGL is loaded so that we
+                // can use the NVIDIA GPU instead of Intel (which
+                // generally doesn't work with the render pipeline
+                // on Linux).
+                Console.Error.WriteLine(
+                    "Detected Linux system with primusrun; will attempt to use NVIDIA GPU!");
+                var process = new System.Diagnostics.Process();
+                process.StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    FileName = primusRunPath,
+                    Arguments = "env",
+                    WorkingDirectory = basePath
+                };
+                process.Start();
+                using (var output = process.StandardOutput)
+                {
+                    var regex = new System.Text.RegularExpressions.Regex(
+                        "^LD_LIBRARY_PATH=(.*)$",
+                        System.Text.RegularExpressions.RegexOptions.Multiline);
+                    var m = regex.Match(output.ReadToEnd());
+                    if (m.Success)
+                    {
+                        var ldLibraryPath = m.Groups[1].Value;
+
+                        Console.Error.WriteLine("Creating symbolic links to NVIDIA libGL...");
+                        var created = new System.Collections.Generic.List<string>();
+                        foreach (var path in ldLibraryPath.Split(':'))
+                        {
+                            var dir = new System.IO.DirectoryInfo(path);
+                            if (dir.Exists)
+                            {
+                                foreach (var f in dir.GetFiles())
+                                {
+                                    if (!created.Contains(f.Name) && !System.IO.File.Exists(System.IO.Path.Combine(basePath, f.Name)))
+                                    {
+                                        Console.Error.WriteLine("Mapping " + f.Name + " to " + f.FullName + "...");
+                                        var ln = new System.Diagnostics.Process();
+                                        ln.StartInfo = new System.Diagnostics.ProcessStartInfo
+                                        {
+                                            UseShellExecute = false,
+                                            FileName = "/usr/bin/ln",
+                                            Arguments = "-s '" + f.FullName + "' '" + System.IO.Path.Combine(basePath, f.Name) + "'",
+                                            WorkingDirectory = basePath
+                                        };
+                                        ln.Start();
+                                        ln.WaitForExit();
+                                        created.Add(f.Name);
+                                    }
+                                }
+                            }
+                        }
+                        Console.Error.WriteLine("Created symbolic links so that NVIDIA GPU is used.");
+                    }
+                    else
+                    {
+                        Console.Error.WriteLine(
+                            "Unable to find newer LD_LIBRARY_PATH, rendering might not work correctly!");
+                    }
+                }
             }
         }
 #endif
