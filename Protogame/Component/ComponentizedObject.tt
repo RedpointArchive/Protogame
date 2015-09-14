@@ -6,12 +6,15 @@
 <#@ output extension=".cs" #>
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Protogame
 {
-	public class ComponentizedObject
+	public class ComponentizedObject : IContainsComponents
 	{
-		private List<object> _registeredComponents = new List<object>(); 
+		private List<object> _registeredComponents = new List<object>();
+
+		private List<object> _publicComponents = new List<object>(); 
 	
 <#
 	for (var i = 0; i < 16; i++)
@@ -68,9 +71,23 @@ namespace Protogame
 <#
 	}
 #>
-		protected void RegisterComponent(object component)
+		protected void RegisterPrivateComponent(object component)
 		{
 			_registeredComponents.Add(component);
+		}
+
+		protected void RegisterPublicComponent(object component)
+		{
+			_registeredComponents.Add(component);
+			_publicComponents.Add(component);
+		}
+
+		public ReadOnlyCollection<object> PublicComponents
+		{
+			get
+			{
+				return _publicComponents.AsReadOnly();
+			}
 		}
 	}
 }

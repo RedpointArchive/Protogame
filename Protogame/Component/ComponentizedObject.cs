@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Protogame
 {
-	public class ComponentizedObject
+	public class ComponentizedObject : IContainsComponents
 	{
-		private List<object> _registeredComponents = new List<object>(); 
+		private List<object> _registeredComponents = new List<object>();
+
+		private List<object> _publicComponents = new List<object>(); 
 	
 		private class ImplementedComponentCallable<T> : IComponentCallable where T : class
 		{
@@ -551,9 +554,38 @@ namespace Protogame
 			}
 		}
 
-		protected void RegisterComponent(object component)
+		protected void RegisterPrivateComponent(object component)
+        {
+		    if (component is IInternalHasComponent)
+		    {
+		        _registeredComponents.Add(((IInternalHasComponent)component).Component);
+		    }
+		    else
+            {
+                _registeredComponents.Add(component);
+            }
+        }
+
+		protected void RegisterPublicComponent(object component)
 		{
-			_registeredComponents.Add(component);
+		    if (component is IInternalHasComponent)
+		    {
+		        _registeredComponents.Add(((IInternalHasComponent)component).Component);
+                _publicComponents.Add(((IInternalHasComponent)component).Component);
+            }
+		    else
+            {
+                _registeredComponents.Add(component);
+                _publicComponents.Add(component);
+            }
+		}
+
+		public ReadOnlyCollection<object> PublicComponents
+		{
+			get
+			{
+				return _publicComponents.AsReadOnly();
+			}
 		}
 	}
 }

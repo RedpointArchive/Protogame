@@ -26,6 +26,7 @@
     <Compile Include="AgentTests.cs" />
     <Compile Include="BoundingBoxTests.cs" />
     <Compile Include="CircumcentreSolverTest.cs" />
+    <Compile Include="ComponentTests.cs" />
     <Compile Include="EventEngineTests.cs" />
     <Compile Include="MxTests.cs" />
     <Compile Include="PlatformingModuleTests.cs" />
