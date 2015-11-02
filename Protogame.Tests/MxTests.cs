@@ -1,19 +1,26 @@
-﻿namespace Protogame.Tests
+﻿using Prototest.Library.Version1;
+
+namespace Protogame.Tests
 {
     using System.Net;
     using System.Text;
     using System.Threading;
-    using Xunit;
 
     /// <summary>
     /// Tests relating to the multiplayer connection classes.
     /// </summary>
     public class MxTests
     {
+        private readonly IAssert _assert;
+
+        public MxTests(IAssert assert)
+        {
+            _assert = assert;
+        }
+
         /// <summary>
         /// Test that the dispatcher can connect and update without throwing an exception.
         /// </summary>
-        [Fact]
         public void TestConnectionWithUpdate()
         {
             var dispatcher1 = new MxDispatcher(9001);
@@ -35,7 +42,6 @@
         /// <summary>
         /// Test that the dispatcher can connect without throwing an exception.
         /// </summary>
-        [Fact]
         public void TestConnectionWithoutUpdate()
         {
             var dispatcher1 = new MxDispatcher(9005);
@@ -55,7 +61,6 @@
         /// <summary>
         /// Test that the dispatcher can be constructed without throwing an exception.
         /// </summary>
-        [Fact]
         public void TestConstruction()
         {
             var dispatcher1 = new MxDispatcher(9009);
@@ -69,7 +74,6 @@
         /// Test that large amounts of data can be sent over the reliable connection
         /// without data becoming corrupt or lost.
         /// </summary>
-        [Fact]
         public void TestLargeReliableData()
         {
             const string Text = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
@@ -107,11 +111,11 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
                     Encoding.ASCII.GetBytes(Text), 
                     true);
 
-                Assert.Null(receivedText);
+                _assert.Null(receivedText);
 
                 this.SimulateNetworkCycles(14, dispatcher1, dispatcher2);
 
-                Assert.Equal(Text, receivedText);
+                _assert.Equal(Text, receivedText);
             }
             finally
             {
@@ -124,7 +128,6 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
         /// Test that large amounts of data can be sent over the reliable connection
         /// without data becoming corrupt or lost.
         /// </summary>
-        [Fact]
         public void TestHugeReliableData()
         {
             const string Content = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
@@ -172,14 +175,14 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                     Encoding.ASCII.GetBytes(text),
                     true);
 
-                Assert.Null(receivedText);
+                _assert.Null(receivedText);
 
                 for (var i = 0; i < 246 * 1024 && receivedText == null; i++)
                 {
                     this.SimulateNetworkCycles(2, dispatcher1, dispatcher2);
                 }
 
-                Assert.Equal(text, receivedText);
+                _assert.Equal(text, receivedText);
             }
             finally
             {
@@ -191,7 +194,6 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         /// <summary>
         /// Test that a small piece of data can be sent over the unreliable protocol.
         /// </summary>
-        [Fact]
         public void TestUnreliableData()
         {
             const string Text = @"hello";
@@ -212,11 +214,11 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 
                 dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9021), Encoding.ASCII.GetBytes(Text));
 
-                Assert.Null(receivedText);
+                _assert.Null(receivedText);
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
-                Assert.Equal(Text, receivedText);
+                _assert.Equal(Text, receivedText);
             }
             finally
             {
@@ -228,13 +230,12 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         /// <summary>
         /// Test that a small piece of data can be sent over the unreliable protocol.
         /// </summary>
-        [Fact]
         public void TestAcknowledgeEventData()
         {
             const string Text = @"hello";
 
-            var dispatcher1 = new MxDispatcher(9023);
-            var dispatcher2 = new MxDispatcher(9025);
+            var dispatcher1 = new MxDispatcher(9033);
+            var dispatcher2 = new MxDispatcher(9035);
 
             try
             {
@@ -252,18 +253,18 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                     acknowledged = true; 
                 };
 
-                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9023));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9033));
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
-                dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9023), Encoding.ASCII.GetBytes(Text));
+                dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9033), Encoding.ASCII.GetBytes(Text));
 
-                Assert.Null(receivedText);
+                _assert.Null(receivedText);
 
                 this.SimulateNetworkCycles(8, dispatcher1, dispatcher2);
 
-                Assert.Equal(Text, receivedText);
-                Assert.True(acknowledged);
+                _assert.Equal(Text, receivedText);
+                _assert.True(acknowledged);
             }
             finally
             {
@@ -275,7 +276,6 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         /// <summary>
         /// Test that a small piece of data can be sent over the unreliable protocol.
         /// </summary>
-        [Fact]
         public void TestLostIsNotTriggered()
         {
             const string Text = @"hello";
@@ -309,12 +309,12 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
 
                 dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9027), bytes);
 
-                Assert.Null(receivedText);
+                _assert.Null(receivedText);
 
                 this.SimulateNetworkCycles(8, dispatcher1, dispatcher2);
 
-                Assert.Equal(Text, receivedText);
-                Assert.False(lost);
+                _assert.Equal(Text, receivedText);
+                _assert.False(lost);
             }
             finally
             {
@@ -327,22 +327,21 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         /// Verifies that the sequence number difference is calculated correctly
         /// for different sequence numbers.
         /// </summary>
-        [Fact]
         public void TestSequenceNumbers()
         {
-            Assert.Equal(2, MxUtility.GetSequenceNumberDifference(3, 1));
-            Assert.Equal(1, MxUtility.GetSequenceNumberDifference(2, 1));
-            Assert.Equal(1, MxUtility.GetSequenceNumberDifference(1, 0));
-            Assert.Equal(1, MxUtility.GetSequenceNumberDifference(0, uint.MaxValue));
+            _assert.Equal(2, MxUtility.GetSequenceNumberDifference(3, 1));
+            _assert.Equal(1, MxUtility.GetSequenceNumberDifference(2, 1));
+            _assert.Equal(1, MxUtility.GetSequenceNumberDifference(1, 0));
+            _assert.Equal(1, MxUtility.GetSequenceNumberDifference(0, uint.MaxValue));
 
-            Assert.Equal(-1, MxUtility.GetSequenceNumberDifference(1, 2));
-            Assert.Equal(-2, MxUtility.GetSequenceNumberDifference(1, 3));
-            Assert.Equal(-1, MxUtility.GetSequenceNumberDifference(0, 1));
-            Assert.Equal(-1, MxUtility.GetSequenceNumberDifference(uint.MaxValue, 0));
+            _assert.Equal(-1, MxUtility.GetSequenceNumberDifference(1, 2));
+            _assert.Equal(-2, MxUtility.GetSequenceNumberDifference(1, 3));
+            _assert.Equal(-1, MxUtility.GetSequenceNumberDifference(0, 1));
+            _assert.Equal(-1, MxUtility.GetSequenceNumberDifference(uint.MaxValue, 0));
 
-            Assert.Equal(-int.MaxValue, MxUtility.GetSequenceNumberDifference(0, uint.MaxValue / 2));
-            Assert.Equal(int.MinValue, MxUtility.GetSequenceNumberDifference(0, (uint.MaxValue / 2) + 1));
-            Assert.Equal(int.MaxValue, MxUtility.GetSequenceNumberDifference(0, (uint.MaxValue / 2) + 2));
+            _assert.Equal(-int.MaxValue, MxUtility.GetSequenceNumberDifference(0, uint.MaxValue / 2));
+            _assert.Equal(int.MinValue, MxUtility.GetSequenceNumberDifference(0, (uint.MaxValue / 2) + 1));
+            _assert.Equal(int.MaxValue, MxUtility.GetSequenceNumberDifference(0, (uint.MaxValue / 2) + 2));
         }
 
         /// <summary>

@@ -1,19 +1,25 @@
-using Xunit;
+using Prototest.Library.Version1;
 
 namespace Protogame.Math.Tests
 {
     public class CircumcentreSolverTest
     {
+        private readonly IAssert _assert;
+
+        public CircumcentreSolverTest(IAssert assert)
+        {
+            _assert = assert;
+        }
+
         private void AssertSphere(double[] a, double[] b, double[] c, double[] d, double[] centre, double radius)
         {
             CircumcentreSolver solver = new CircumcentreSolver(a, b, c, d);
-            Assert.Equal(centre[0], solver.Centre[0]);
-            Assert.Equal(centre[1], solver.Centre[1]);
-            Assert.Equal(centre[2], solver.Centre[2]);
-            Assert.Equal(radius, solver.Radius);
+            _assert.Equal(centre[0], solver.Centre[0]);
+            _assert.Equal(centre[1], solver.Centre[1]);
+            _assert.Equal(centre[2], solver.Centre[2]);
+            _assert.Equal(radius, solver.Radius);
         }
-
-        [Fact]
+        
         public void TestSolver()
         {
             this.AssertSphere(

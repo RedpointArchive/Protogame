@@ -1,10 +1,12 @@
 using Ninject;
-using Xunit;
+using Prototest.Library.Version1;
 
 namespace Protogame.Tests
 {
     public class EventEngineTests
     {
+        private static IAssert _staticAssert;
+
         private class BasicEvent : Event
         {
             public int Original { get; set; }
@@ -28,7 +30,7 @@ namespace Protogame.Tests
         {
             public void Handle(IGameContext gameContext, Event @event)
             {
-                Assert.IsType<BasicEvent>(@event);
+                _staticAssert.IsType<BasicEvent>(@event);
             }
         }
         
@@ -55,18 +57,21 @@ namespace Protogame.Tests
                 this.Bind<BasicEvent>(x => x.Original == 1).To<BasicAction>();
             }
         }
+
+        public EventEngineTests(IAssert assert)
+        {
+            _staticAssert = assert;
+        }
     
-        [Fact]
         public void TestBasicPropagation()
         {
             var @event = new BasicEvent { Original = 1 };
             var binder = new BasicStaticEventBinder();
             var engine = new DefaultEventEngine<IGameContext>(new StandardKernel(), new[] { binder });
             engine.Fire(null, @event);
-            Assert.Equal(1, @event.HitValue);
+            _staticAssert.Equal(1, @event.HitValue);
         }
     
-        [Fact]
         public void TestFilteredPropagationInOrder()
         {
             var event1 = new BasicEvent { Original = 1 };
@@ -74,12 +79,11 @@ namespace Protogame.Tests
             var binder = new FilteredStaticEventBinder();
             var engine = new DefaultEventEngine<IGameContext>(new StandardKernel(), new[] { binder });
             engine.Fire(null, event1);
-            Assert.Equal(1, event1.HitValue);
+            _staticAssert.Equal(1, event1.HitValue);
             engine.Fire(null, event2);
-            Assert.NotEqual(2, event2.HitValue);
+            _staticAssert.NotEqual(2, event2.HitValue);
         }
         
-        [Fact]
         public void TestFilteredPropagationOutOfOrder()
         {
             var event1 = new BasicEvent { Original = 1 };
@@ -87,12 +91,11 @@ namespace Protogame.Tests
             var binder = new FilteredStaticEventBinder();
             var engine = new DefaultEventEngine<IGameContext>(new StandardKernel(), new[] { binder });
             engine.Fire(null, event2);
-            Assert.NotEqual(2, event2.HitValue);
+            _staticAssert.NotEqual(2, event2.HitValue);
             engine.Fire(null, event1);
-            Assert.Equal(1, event1.HitValue);
+            _staticAssert.Equal(1, event1.HitValue);
         }
         
-        [Fact]
         public void TestEventTypeCheck()
         {
             var @event = new OtherEvent();

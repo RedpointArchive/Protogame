@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ninject;
-using Xunit;
+using Prototest.Library.Version1;
 
 namespace Protogame.Tests
 {
     public class ComponentTests
     {
+        private readonly IAssert _assert;
+
         private class ComponentA
         {
         }
@@ -114,7 +113,11 @@ namespace Protogame.Tests
             }
         }
 
-        [Fact]
+        public ComponentTests(IAssert assert)
+        {
+            _assert = assert;
+        }
+
         public void TestInstantiateComponentResolution()
         {
             var kernel = new StandardKernel();
@@ -124,11 +127,10 @@ namespace Protogame.Tests
             factory.HierarchyRoot = new object();
             factory.PlanForEntityCreation<EntityC>();
             var entities = factory.CreateEntities();
-            
-            Assert.NotNull(((EntityC)entities[0]).ComponentD);
-        }
 
-        [Fact]
+            _assert.NotNull(((EntityC)entities[0]).ComponentD);
+        }
+        
         public void TestRequireComponentResolution()
         {
             var kernel = new StandardKernel();
@@ -143,10 +145,9 @@ namespace Protogame.Tests
             var entityA = entities.OfType<EntityA>().First();
             var entityD = entities.OfType<EntityD>().First();
 
-            Assert.Equal(entityA.ComponentA, entityD.ComponentA);
+            _assert.Same(entityA.ComponentA, entityD.ComponentA);
         }
-
-        [Fact]
+        
         public void TestRequireComponentResolutionInReverse()
         {
             var kernel = new StandardKernel();
@@ -161,10 +162,9 @@ namespace Protogame.Tests
             var entityA = entities.OfType<EntityA>().First();
             var entityD = entities.OfType<EntityD>().First();
 
-            Assert.Equal(entityA.ComponentA, entityD.ComponentA);
+            _assert.Same(entityA.ComponentA, entityD.ComponentA);
         }
-
-        [Fact]
+        
         public void TestComponentResolution()
         {
             var kernel = new StandardKernel();

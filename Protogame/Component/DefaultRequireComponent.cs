@@ -1,6 +1,6 @@
 ﻿namespace Protogame
 {
-    public class DefaultRequireComponent<T> : IRequireComponent<T>, IInternalHasComponent
+    public class DefaultRequireComponent<T> : IRequireComponent<T>, IInternalHasComponent, IRequireComponentInDescendants<T>, IRequireComponentInHierarchy<T>
     {
         public T Component { get { return (T)((IInternalHasComponent) this).Component; } }
 

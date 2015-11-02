@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Ninject;
-using Xunit;
+using Prototest.Library.Version1;
 
 namespace Protogame.Tests
 {
     public class RenderPipelineTests
     {
+        private readonly IAssert _assert;
+        private readonly ICategorize _categorize;
+
         public class RenderPipelineWorld : IWorld
         {
             private readonly I2DRenderUtilities _renderUtilities;
+            private readonly IAssert _assert;
 
             private readonly TextureAsset _texture;
 
@@ -45,9 +49,10 @@ namespace Protogame.Tests
 
             private bool _didExit;
 
-            public RenderPipelineWorld(IAssetManagerProvider assetManagerProvider, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory)
+            public RenderPipelineWorld(IAssetManagerProvider assetManagerProvider, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory, IAssert assert)
             {
                 _renderUtilities = renderUtilities;
+                _assert = assert;
                 _texture = assetManagerProvider.GetAssetManager().Get<TextureAsset>("texture.Player");
                 _invertPostProcess = graphicsFactory.CreateInvertPostProcessingRenderPass();
                 _blurPostProcess = graphicsFactory.CreateBlurPostProcessingRenderPass();
@@ -75,7 +80,7 @@ namespace Protogame.Tests
                     memoryStream.Dispose();
                     baseStream.Dispose();
 
-                    Assert.Equal(baseBytes, memoryBytes);
+                    _assert.Equal(baseBytes, memoryBytes);
 #endif
 
 #if MANUAL_TEST
@@ -181,12 +186,19 @@ namespace Protogame.Tests
             }
         }
 
-        [Fact, Trait("IsFunctional", "True")]
+        public RenderPipelineTests(IAssert assert, ICategorize categorize)
+        {
+            _assert = assert;
+
+            categorize.Method("IsFunctional", () => PerformRenderPipelineTest());
+        }
+        
         public void PerformRenderPipelineTest()
         {
             var kernel = new StandardKernel();
             kernel.Load<ProtogameCoreModule>();
             kernel.Load<ProtogameAssetIoCModule>();
+            kernel.Bind<IAssert>().ToMethod(x => _assert);
             AssetManagerClient.AcceptArgumentsAndSetup<GameAssetManagerProvider>(kernel, new string[0]);
 
             using (var game = new RenderPipelineGame(kernel))

@@ -16,7 +16,9 @@ namespace Protogame
             Bind<IEntityFactory>().To<DefaultEntityFactory>();
 
             Bind(typeof(IInstantiateComponent<>)).ToMethod(InstantiateComponent);
-            Bind(typeof(IRequireComponent<>)).ToMethod(RequireComponent);
+            Bind(typeof(IRequireComponent<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Immediate));
+            Bind(typeof(IRequireComponentInDescendants<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Full));
+            Bind(typeof(IRequireComponentInHierarchy<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Full));
         }
 
         private object InstantiateComponent(IContext arg)
@@ -30,11 +32,11 @@ namespace Protogame
             return concrete;
         }
 
-        private object RequireComponent(IContext arg)
+        private object RequireComponent(IContext arg, ComponentHierarchyPlannerDescendantMode mode)
         {
             var svc = arg.Request.Service.GetGenericArguments()[0];
             var parameter = arg.Request.Parameters.OfType<IComponentHierarchyParameter>().First();
-            var components = parameter.GetComponentsUnderPath(GetContextPath(arg, 1), ComponentHierarchyPlannerDescendantMode.Immediate);
+            var components = parameter.GetComponentsUnderPath(GetContextPath(arg, 1), mode);
             var requiredComponent = components.FirstOrDefault(x => svc.IsInstanceOfType(x));
             if (requiredComponent == null)
             {

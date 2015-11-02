@@ -1,18 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Name="Protogame.Tests" Path="Protogame.Tests" Type="Tests" Platforms="Linux,MacOS,Windows">
+<Project Name="Protogame.Tests" Path="Protogame.Tests" Type="Console" Platforms="Linux,MacOS,Windows">
   <Properties>
     <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
-    <FrameworkVersions>
-      <Platform Name="Windows">
-        <Version>v4.5</Version>
-      </Platform>
-      <Platform Name="MacOS">
-        <Version>v4.5</Version>
-      </Platform>
-      <Platform Name="Linux">
-        <Version>v4.5</Version>
-      </Platform>
-    </FrameworkVersions>
   </Properties>
   <References>
     <Reference Include="Protogame" />
@@ -20,7 +9,7 @@
     <Reference Include="Ninject" />
     <Reference Include="Ninject.MockingKernel" />
     <Reference Include="MonoGame.Framework" />
-    <Reference Include="xunit" />
+    <Reference Include="Prototest" />
   </References>
   <Files>
     <Compile Include="AgentTests.cs" />
