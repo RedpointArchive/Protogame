@@ -1,6 +1,7 @@
 namespace Protogame
 {
     using System.Linq;
+    using Ninject;
 
     /// <summary>
     /// Listens for incoming events and directs them to UI elements.
@@ -18,9 +19,9 @@ namespace Protogame
         /// <param name="skin">
         /// The skin being used by the UI system.
         /// </param>
-        public UIEventListener(ISkin skin)
+        public UIEventListener([Optional] ISkin skin, IKernel kernel)
         {
-            this.m_Skin = skin;
+            this.m_Skin = skin ?? ProtogameUIIoCModule.GetDefaultSkin(kernel);
         }
 
         /// <summary>
