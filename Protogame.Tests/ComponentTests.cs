@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Ninject;
+using Protoinject;
 using Prototest.Library.Version1;
 
 namespace Protogame.Tests
 {
+#if FALSE
     public class ComponentTests
     {
         private readonly IAssert _assert;
@@ -173,4 +174,5 @@ namespace Protogame.Tests
             var world = kernel.Get<MyDesignedWorld>();
         }
     }
+#endif
 }

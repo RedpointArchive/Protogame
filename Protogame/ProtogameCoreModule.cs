@@ -1,6 +1,4 @@
-﻿using Ninject;
-using Ninject.Extensions.Factory;
-using Ninject.Modules;
+﻿using Protoinject;
 
 namespace Protogame
 {
@@ -10,42 +8,42 @@ namespace Protogame
     /// for Protogame to work.
     /// </summary>
     /// <module>Core API</module>
-    public class ProtogameCoreModule : NinjectModule
+    public class ProtogameCoreModule : IProtoinjectModule
     {
         /// <summary>
         /// You should call <see cref="ModuleLoadExtensions.Load{ProtogameCoreModule}"/> 
         /// instead of calling this method directly.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<I2DRenderUtilities>().To<Default2DRenderUtilities>();
-            this.Bind<I3DRenderUtilities>().To<Default3DRenderUtilities>();
-            this.Bind<IAudioUtilities>().To<DefaultAudioUtilities>();
-            this.Bind<ITileUtilities>().To<DefaultTileUtilities>();
-            this.Bind<IBoundingBoxUtilities>().To<DefaultBoundingBoxUtilities>();
-            this.Bind<IGameContext>().To<DefaultGameContext>();
-            this.Bind<IUpdateContext>().To<DefaultUpdateContext>();
-            this.Bind<IKeyboardStringReader>().To<DefaultKeyboardStringReader>();
-            this.Bind<IConsole>().To<DefaultConsole>().InSingletonScope();
-            this.Bind<ICommand>().To<ExitCommand>();
-            this.Bind<ICommand>().To<HelpCommand>();
-            this.Bind<ICommand>().To<GCCommand>();
-            this.Bind<IStringSanitizer>().To<DefaultStringSanitizer>();
+            kernel.Bind<I2DRenderUtilities>().To<Default2DRenderUtilities>();
+            kernel.Bind<I3DRenderUtilities>().To<Default3DRenderUtilities>();
+            kernel.Bind<IAudioUtilities>().To<DefaultAudioUtilities>();
+            kernel.Bind<ITileUtilities>().To<DefaultTileUtilities>();
+            kernel.Bind<IBoundingBoxUtilities>().To<DefaultBoundingBoxUtilities>();
+            kernel.Bind<IGameContext>().To<DefaultGameContext>();
+            kernel.Bind<IUpdateContext>().To<DefaultUpdateContext>();
+            kernel.Bind<IKeyboardStringReader>().To<DefaultKeyboardStringReader>();
+            kernel.Bind<IConsole>().To<DefaultConsole>().InSingletonScope();
+            kernel.Bind<ICommand>().To<ExitCommand>();
+            kernel.Bind<ICommand>().To<HelpCommand>();
+            kernel.Bind<ICommand>().To<GCCommand>();
+            kernel.Bind<IStringSanitizer>().To<DefaultStringSanitizer>();
 
-            this.Bind<IRenderContext>().To<RenderPipelineRenderContext>();
-            this.Bind<IRenderPipeline>().To<DefaultRenderPipeline>();
-            this.Bind<IGraphicsBlit>().To<DefaultGraphicsBlit>();
-            this.Bind<IGraphicsFactory>().ToFactory();
-            this.Bind<IRenderTargetBackBufferUtilities>().To<DefaultRenderTargetBackBufferUtilities>();
+            kernel.Bind<IRenderContext>().To<RenderPipelineRenderContext>();
+            kernel.Bind<IRenderPipeline>().To<DefaultRenderPipeline>();
+            kernel.Bind<IGraphicsBlit>().To<DefaultGraphicsBlit>();
+            kernel.Bind<IGraphicsFactory>().ToFactory();
+            kernel.Bind<IRenderTargetBackBufferUtilities>().To<DefaultRenderTargetBackBufferUtilities>();
 
-            this.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>();
-            this.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>();
-            this.Bind<I3DRenderPass>().To<Default3DRenderPass>();
-            this.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>();
-            this.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>();
-            this.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>();
-            this.Bind<ICaptureCopyPostProcessingRenderPass>().To<DefaultCaptureCopyPostProcessingRenderPass>();
-            this.Bind<ICaptureInlinePostProcessingRenderPass>().To<DefaultCaptureInlinePostProcessingRenderPass>();
+            kernel.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>();
+            kernel.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>();
+            kernel.Bind<I3DRenderPass>().To<Default3DRenderPass>();
+            kernel.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>();
+            kernel.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>();
+            kernel.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>();
+            kernel.Bind<ICaptureCopyPostProcessingRenderPass>().To<DefaultCaptureCopyPostProcessingRenderPass>();
+            kernel.Bind<ICaptureInlinePostProcessingRenderPass>().To<DefaultCaptureInlinePostProcessingRenderPass>();
         }
     }
 }

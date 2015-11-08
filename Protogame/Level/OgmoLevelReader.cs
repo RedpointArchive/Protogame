@@ -5,8 +5,7 @@ namespace Protogame
     using System.IO;
     using System.Linq;
     using System.Xml.Linq;
-    using Ninject;
-    using Ninject.Parameters;
+    using Protoinject;
 
     /// <summary>
     /// The ogmo level reader.
@@ -94,13 +93,13 @@ namespace Protogame
             // implement the required tiles and entities.
             foreach (var solid in solids)
             {
-                // TODO: Use Ninject.Extensions.Factory for the solid entity.
+                // TODO: Use Protoinject.Extensions.Factory for the solid entity.
                 var entity =
                     this.m_Kernel.Get<ISolidEntity>(
-                        new ConstructorArgument("x", Convert.ToSingle(solid.Attribute(XName.Get("x")).Value)), 
-                        new ConstructorArgument("y", Convert.ToSingle(solid.Attribute(XName.Get("y")).Value)), 
-                        new ConstructorArgument("width", Convert.ToSingle(solid.Attribute(XName.Get("w")).Value)), 
-                        new ConstructorArgument("height", Convert.ToSingle(solid.Attribute(XName.Get("h")).Value)));
+                        new NamedConstructorArgument("x", Convert.ToSingle(solid.Attribute(XName.Get("x")).Value)), 
+                        new NamedConstructorArgument("y", Convert.ToSingle(solid.Attribute(XName.Get("y")).Value)), 
+                        new NamedConstructorArgument("width", Convert.ToSingle(solid.Attribute(XName.Get("w")).Value)), 
+                        new NamedConstructorArgument("height", Convert.ToSingle(solid.Attribute(XName.Get("h")).Value)));
                 yield return entity;
             }
 
@@ -110,10 +109,10 @@ namespace Protogame
                 {
                     var entity = this.m_Kernel.Get<ITileEntity>(
                         tileset.Tileset, 
-                        new ConstructorArgument("x", tile.X), 
-                        new ConstructorArgument("y", tile.Y), 
-                        new ConstructorArgument("tx", tile.TX), 
-                        new ConstructorArgument("ty", tile.TY));
+                        new NamedConstructorArgument("x", tile.X), 
+                        new NamedConstructorArgument("y", tile.Y), 
+                        new NamedConstructorArgument("tx", tile.TX), 
+                        new NamedConstructorArgument("ty", tile.TY));
                     yield return entity;
                 }
             }
@@ -122,11 +121,11 @@ namespace Protogame
             {
                 var entity = this.m_Kernel.Get<IEntity>(
                     entitydef.Type, 
-                    new ConstructorArgument("name", entitydef.Type), 
-                    new ConstructorArgument("id", entitydef.ID), 
-                    new ConstructorArgument("x", entitydef.X), 
-                    new ConstructorArgument("y", entitydef.Y), 
-                    new ConstructorArgument("attributes", entitydef.Attributes));
+                    new NamedConstructorArgument("name", entitydef.Type), 
+                    new NamedConstructorArgument("id", entitydef.ID), 
+                    new NamedConstructorArgument("x", entitydef.X), 
+                    new NamedConstructorArgument("y", entitydef.Y), 
+                    new NamedConstructorArgument("attributes", entitydef.Attributes));
                 yield return entity;
             }
         }

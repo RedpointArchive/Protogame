@@ -1,18 +1,18 @@
 namespace Protogame
 {
-    using Ninject.Modules;
+    using Protoinject;
 
     /// <summary>
     /// The protogame caching io c module.
     /// </summary>
-    public class ProtogameCachingIoCModule : NinjectModule
+    public class ProtogameCachingIoCModule : IProtoinjectModule
     {
         /// <summary>
         /// The load.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<IRenderCache>().To<DefaultRenderCache>().InSingletonScope();
+            kernel.Bind<IRenderCache>().To<DefaultRenderCache>().InSingletonScope();
         }
     }
 }

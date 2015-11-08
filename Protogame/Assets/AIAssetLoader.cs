@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using Ninject;
+    using Protoinject;
 
     /// <summary>
     /// The asset loader for <see cref="AIAsset"/>.

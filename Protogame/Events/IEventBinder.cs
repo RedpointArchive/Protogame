@@ -1,7 +1,7 @@
+using Protoinject;
+
 namespace Protogame
 {
-    using Ninject.Syntax;
-
     /// <summary>
     /// The EventBinder interface.
     /// </summary>
@@ -20,10 +20,10 @@ namespace Protogame
         /// <summary>
         /// The assign.
         /// </summary>
-        /// <param name="resolutionRoot">
-        /// The resolution root.
+        /// <param name="kernel">
+        /// The dependency injection kernel.
         /// </param>
-        void Assign(IResolutionRoot resolutionRoot);
+        void Assign(IKernel kernel);
 
         /// <summary>
         /// The handle.

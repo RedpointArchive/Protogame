@@ -1,6 +1,6 @@
 namespace Protogame
 {
-    using Ninject;
+    using Protoinject;
 
     /// <summary>
     /// This is the local asset manager for ProtogameAssetManager.  Do not use it in your game!.

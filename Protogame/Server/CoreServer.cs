@@ -1,8 +1,7 @@
 namespace Protogame
 {
     using System;
-    using Ninject;
-    using Ninject.Parameters;
+    using Protoinject;
 
     public class CoreServer<TInitialServerWorld, TServerWorldManager> : Server, ICoreServer, IDisposable
         where TInitialServerWorld : IServerWorld where TServerWorldManager : IServerWorldManager
@@ -150,9 +149,9 @@ namespace Protogame
 
             // Create the game context.
             this.ServerContext = this.m_Kernel.Get<IServerContext>(
-                new ConstructorArgument("server", this), 
-                new ConstructorArgument("world", world), 
-                new ConstructorArgument("worldManager", worldManager));
+                new NamedConstructorArgument("server", this), 
+                new NamedConstructorArgument("world", world), 
+                new NamedConstructorArgument("worldManager", worldManager));
             this.ServerContext.StartTime = DateTime.Now;
 
             // Create the update context.

@@ -1,7 +1,8 @@
+using Protoinject;
+
 namespace Protogame
 {
     using System.Linq;
-    using Ninject.Syntax;
 
     /// <summary>
     /// The default event engine.
@@ -18,18 +19,18 @@ namespace Protogame
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultEventEngine{TContext}"/> class.
         /// </summary>
-        /// <param name="resolutionRoot">
-        /// The resolution root.
+        /// <param name="kernel">
+        /// The dependency injection kernel.
         /// </param>
         /// <param name="eventBinders">
         /// The event binders.
         /// </param>
-        public DefaultEventEngine(IResolutionRoot resolutionRoot, IEventBinder<TContext>[] eventBinders)
+        public DefaultEventEngine(IKernel kernel, IEventBinder<TContext>[] eventBinders)
         {
             this.m_EventBinders = eventBinders;
             foreach (var eventBinder in this.m_EventBinders)
             {
-                eventBinder.Assign(resolutionRoot);
+                eventBinder.Assign(kernel);
             }
         }
 

@@ -7,7 +7,7 @@ namespace Protogame
     /// logic based on the current state of the game.
     /// </para>
     /// <para>
-    /// Bind this interface in the Ninject kernel before creating an instance
+    /// Bind this interface in the Protoinject kernel before creating an instance
     /// of your game, and the <see cref="CoreGame&lt;TInitialWorld, TWorldManager&gt;"/>
     /// implementation will create an instance of the bound type and use it
     /// during execution.

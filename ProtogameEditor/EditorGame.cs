@@ -1,6 +1,6 @@
 ﻿using System;
 using Protogame;
-using Ninject;
+using Protoinject;
 using Microsoft.Xna.Framework;
 
 namespace ProtogameEditor

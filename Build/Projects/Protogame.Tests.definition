@@ -6,8 +6,7 @@
   <References>
     <Reference Include="Protogame" />
     <Reference Include="System" />
-    <Reference Include="Ninject" />
-    <Reference Include="Ninject.MockingKernel" />
+    <Reference Include="Protoinject" />
     <Reference Include="MonoGame.Framework" />
     <Reference Include="Prototest" />
   </References>

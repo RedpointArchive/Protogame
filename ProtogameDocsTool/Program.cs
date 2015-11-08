@@ -22,9 +22,9 @@ namespace ProtogameDocsTool
                 { "MonoGame.Framework", "MonoGame.Framework.xml", false },
                 { "MonoGame.Framework.Content.Pipeline", "MonoGame.Framework.Content.Pipeline.xml", false },
                 { "Jitter", "Jitter.xml", false },
-                { "Ninject", "Ninject.xml", false },
-                { "Ninject.Extensions.Factory", "Ninject.Extensions.Factory.xml", false },
-                { "Ninject.Extensions.Interception", "Ninject.Extensions.Interception.xml", false },
+                { "Protoinject", "Protoinject.xml", false },
+                { "Protoinject.Extensions.Factory", "Protoinject.Extensions.Factory.xml", false },
+                { "Protoinject.Extensions.Interception", "Protoinject.Extensions.Interception.xml", false },
                 { "NDesk.Options", "NDesk.Options.xml", false },
                 { "Newtonsoft.Json", "Newtonsoft.Json.xml", false },
             };

@@ -1,9 +1,7 @@
 ﻿namespace Protogame
 {
     using System;
-    using System.Linq;
     using Microsoft.Xna.Framework;
-    using Ninject.Planning.Targets;
 
     public class WanderAI : IAI
     {

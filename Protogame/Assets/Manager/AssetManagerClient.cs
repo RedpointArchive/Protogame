@@ -9,7 +9,7 @@ namespace Protogame
     using System.IO;
     using System.Reflection;
     using NDesk.Options;
-    using Ninject;
+    using Protoinject;
 
     /// <summary>
     /// The asset manager client.

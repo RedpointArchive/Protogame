@@ -2,6 +2,7 @@
 <Module>
   <Name>Protogame</Name>
   <DefaultAction>resync</DefaultAction>
+  <DisableSynchronisation>false</DisableSynchronisation>
   <GenerateNuGetRepositories>true</GenerateNuGetRepositories>
   <Packages>
     <Package Uri="http://protobuild.org/hach-que/Jitter" Folder="Jitter" GitRef="master" />
@@ -13,8 +14,6 @@
     <Package Uri="https-git://github.com/hach-que/NDesk.Options.git" Folder="NDesk.Options" GitRef="master" />
     <Package Uri="http://protobuild.org/hach-que/Prototest" Folder="Prototest" GitRef="master" />
     <Package Uri="http://protobuild.org/hach-que/AStarPathFinder" Folder="AStarPathFinder" GitRef="master" />
-    <Package Uri="http://protobuild.org/hach-que/Ninject" Folder="Ninject" GitRef="master" />
-    <Package Uri="http://protobuild.org/hach-que/Ninject.Extensions.Factory" Folder="Ninject.Extensions.Factory" GitRef="master" />
-    <Package Uri="http://protobuild.org/hach-que/Ninject.Extensions.Interception" Folder="Ninject.Extensions.Interception" GitRef="master" />
+    <Package Uri="http://protobuild.org/hach-que/Protoinject" Folder="Protoinject" GitRef="master" />
   </Packages>
 </Module>

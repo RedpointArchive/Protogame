@@ -1,4 +1,4 @@
-using Ninject;
+using Protoinject;
 using Protogame;
 using System.Diagnostics;
 using System;

@@ -1,12 +1,12 @@
 namespace Protogame
 {
     using System.Diagnostics.CodeAnalysis;
-    using Ninject.Modules;
+    using Protoinject;
 
     // ReSharper disable InconsistentNaming
 
     /// <summary>
-    /// The Ninject module to load when using Game Analytics (http://gameanalytics.com) services.
+    /// The Protoinject module to load when using Game Analytics (http://gameanalytics.com) services.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -22,17 +22,16 @@ namespace Protogame
         "StyleCop.CSharp.DocumentationRules",
         "SA1650:ElementDocumentationMustBeSpelledCorrectly",
         Justification = "Reviewed. Suppression is OK here.")]
-    public class ProtogameGAAnalyticsIoCModule : NinjectModule
+    public class ProtogameGAAnalyticsIoCModule : IProtoinjectModule
     {
         /// <summary>
-        /// An internal method called by the Ninject module system.
+        /// An internal method called by the Protoinject module system.
         /// Use kernel.Load&lt;Protogame2DIoCModule&gt; to load this module.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<IAnalyticsEngine>().To<GameAnalyticsAnalyticsEngine>().InSingletonScope();
+            kernel.Bind<IAnalyticsEngine>().To<GameAnalyticsAnalyticsEngine>().InSingletonScope();
         }
     }
-
     // ReSharper restore InconsistentNaming
 }

@@ -1,7 +1,7 @@
 namespace Protogame
 {
     using System;
-    using Ninject;
+    using Protoinject;
 
     public class DefaultServerContext : IServerContext
     {

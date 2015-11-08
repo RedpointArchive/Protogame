@@ -1,17 +1,16 @@
 namespace Protogame
 {
-    using Ninject;
-    using Ninject.Modules;
+    using Protoinject;
 
     /// <summary>
     /// The protogame ui io c module.
     /// </summary>
-    public class ProtogameUIIoCModule : NinjectModule
+    public class ProtogameUIIoCModule : IProtoinjectModule
     {
         /// <summary>
         /// The load.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
         }
 

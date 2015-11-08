@@ -14,7 +14,7 @@
     using Assimp.Configs;
     using Microsoft.Xna.Framework;
     using NDesk.Options;
-    using Ninject;
+    using Protoinject;
     using Protogame;
 
     public static class Program

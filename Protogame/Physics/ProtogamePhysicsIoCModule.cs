@@ -1,19 +1,19 @@
 namespace Protogame
 {
-    using Ninject.Modules;
+    using Protoinject;
 
     /// <summary>
-    /// The Ninject module to load when using the physics services in Protogame.
+    /// The Protoinject module to load when using the physics services in Protogame.
     /// </summary>
-    public class ProtogamePhysicsIoCModule : NinjectModule
+    public class ProtogamePhysicsIoCModule : IProtoinjectModule
     {
         /// <summary>
-        /// An internal method called by the Ninject module system.
+        /// An internal method called by the Protoinject module system.
         /// Use kernel.Load&lt;ProtogamePhysicsIoCModule&gt; to load this module.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<IPhysicsEngine>().To<DefaultPhysicsEngine>();
+            kernel.Bind<IPhysicsEngine>().To<DefaultPhysicsEngine>();
         }
     }
 }

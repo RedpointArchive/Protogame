@@ -1,6 +1,6 @@
 namespace Protogame
 {
-    using Ninject;
+    using Protoinject;
 
     /// <summary>
     /// The reloadable game asset manager provider.

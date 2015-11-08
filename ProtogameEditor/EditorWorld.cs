@@ -3,7 +3,7 @@ using Protogame;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Ninject;
+using Protoinject;
 
 namespace ProtogameEditor
 {

@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Ninject;
+    using Protoinject;
     using Protogame;
 
     /// <summary>

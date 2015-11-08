@@ -1,18 +1,18 @@
 namespace Protogame
 {
-    using Ninject.Modules;
+    using Protoinject;
 
     /// <summary>
     /// The protogame collision io c module.
     /// </summary>
-    public class ProtogameCollisionIoCModule : NinjectModule
+    public class ProtogameCollisionIoCModule : IProtoinjectModule
     {
         /// <summary>
         /// The load.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<ICollision>().To<DefaultCollision>();
+            kernel.Bind<ICollision>().To<DefaultCollision>();
         }
     }
 }

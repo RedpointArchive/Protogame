@@ -3,7 +3,7 @@ namespace Protogame
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Ninject;
+    using Protoinject;
 
     /// <summary>
     /// An implementation of an asset manager that is designed

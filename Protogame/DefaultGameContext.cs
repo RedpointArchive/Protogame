@@ -2,7 +2,7 @@ namespace Protogame
 {
     using System;
     using Microsoft.Xna.Framework;
-    using Ninject;
+    using Protoinject;
 
     /// <summary>
     /// The default game context.

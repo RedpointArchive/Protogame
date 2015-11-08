@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Linq;
-using Ninject;
-using Ninject.Activation;
-using Ninject.Extensions.Factory;
-using Ninject.Modules;
+using Protoinject;
 using System.Collections.Generic;
 
+#if FALSE
 namespace Protogame
 {
-    public class ProtogameComponentModule : NinjectModule
+    public class ProtogameComponentModule : IProtoinjectModule
     {
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            Bind<IBuiltinComponentFactory>().ToFactory();
-            Bind<IEntityFactory>().To<DefaultEntityFactory>();
+            kernel.Bind<IBuiltinComponentFactory>().ToFactory();
+            kernel.Bind<IEntityFactory>().To<DefaultEntityFactory>();
 
-            Bind(typeof(IInstantiateComponent<>)).ToMethod(InstantiateComponent);
-            Bind(typeof(IRequireComponent<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Immediate));
-            Bind(typeof(IRequireComponentInDescendants<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Full));
-            Bind(typeof(IRequireComponentInHierarchy<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Full));
+            kernel.Bind(typeof(IInstantiateComponent<>)).ToMethod(InstantiateComponent);
+            kernel.Bind(typeof(IRequireComponent<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Immediate));
+            kernel.Bind(typeof(IRequireComponentInDescendants<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Full));
+            kernel.Bind(typeof(IRequireComponentInHierarchy<>)).ToMethod(arg => RequireComponent(arg, ComponentHierarchyPlannerDescendantMode.Full));
         }
 
         private object InstantiateComponent(IContext arg)
@@ -69,3 +67,4 @@ namespace Protogame
         }
     }
 }
+#endif

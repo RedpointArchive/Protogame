@@ -1,7 +1,7 @@
 
 #if FALSE
 using Dx.Runtime;
-using Ninject;
+using Protoinject;
 using Protogame;
 
 namespace Protogame

@@ -1,7 +1,7 @@
-﻿namespace Protogame
-{
-    using Ninject;
+﻿using Protoinject;
 
+namespace Protogame
+{
     /// <summary>
     /// The default transparent asset compiler.
     /// </summary>

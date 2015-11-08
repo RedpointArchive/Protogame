@@ -2,7 +2,7 @@ namespace Protogame
 {
     using System;
     using System.Threading;
-    using Ninject;
+    using Protoinject;
 
     /// <summary>
     /// The default implementation for tick regulation on a game server.
@@ -12,8 +12,7 @@ namespace Protogame
         private readonly int m_TicksPerSecond;
 
         private DateTime? m_StartTime;
-
-        [Inject]
+        
         public DefaultTickRegulator()
         {
             // The default tick amount aligns with MonoGame's 60 FPS target.

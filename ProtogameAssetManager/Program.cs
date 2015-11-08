@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using NDesk.Options;
-using Ninject;
+using Protoinject;
 using Protogame;
 
 namespace ProtogameAssetManager

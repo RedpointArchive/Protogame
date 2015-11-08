@@ -1,21 +1,21 @@
 namespace Protogame
 {
-    using Ninject.Modules;
+    using Protoinject;
 
     /// <summary>
     /// The protogame level io c module.
     /// </summary>
     /// <module>Level</module>
-    public class ProtogameLevelIoCModule : NinjectModule
+    public class ProtogameLevelIoCModule : IProtoinjectModule
     {
         /// <summary>
         /// The load.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<ITileset>().To<DefaultTileset>();
-            this.Bind<ILevelManager>().To<DefaultLevelManager>();
-            this.Bind<ILevelReader>().To<OgmoLevelReader>();
+            kernel.Bind<ITileset>().To<DefaultTileset>();
+            kernel.Bind<ILevelManager>().To<DefaultLevelManager>();
+            kernel.Bind<ILevelReader>().To<OgmoLevelReader>();
         }
     }
 }

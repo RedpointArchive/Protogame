@@ -3,8 +3,7 @@ namespace Protogame
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Ninject;
-    using Ninject.Syntax;
+    using Protoinject;
 
     /// <summary>
     /// The static event binder.
@@ -24,9 +23,9 @@ namespace Protogame
         private bool m_Configured;
 
         /// <summary>
-        /// The m_ resolution root.
+        /// The dependency injection kernel.
         /// </summary>
-        private IResolutionRoot m_ResolutionRoot;
+        private IKernel m_ResolutionRoot;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StaticEventBinder{TContext}"/> class.
@@ -223,12 +222,12 @@ namespace Protogame
         /// <summary>
         /// The assign.
         /// </summary>
-        /// <param name="resolutionRoot">
-        /// The resolution root.
+        /// <param name="kernel">
+        /// The dependency injection kernel.
         /// </param>
-        public void Assign(IResolutionRoot resolutionRoot)
+        public void Assign(IKernel kernel)
         {
-            this.m_ResolutionRoot = resolutionRoot;
+            this.m_ResolutionRoot = kernel;
         }
 
         /// <summary>

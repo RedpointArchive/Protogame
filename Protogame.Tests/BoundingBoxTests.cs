@@ -1,4 +1,4 @@
-using Ninject;
+using Protoinject;
 using Prototest.Library.Version1;
 
 namespace Protogame.Tests

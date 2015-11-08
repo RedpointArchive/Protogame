@@ -1,14 +1,14 @@
-using Ninject.Modules;
+using Protoinject;
 using Protogame;
 
 namespace ProtogameAssetManager
 {
-    internal class AssetManagerIoCModule : NinjectModule
+    internal class AssetManagerIoCModule : IProtoinjectModule
     {
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<ISkin>().To<BasicSkin>();
-            this.Bind<IBasicSkin>().To<AssetManagerBasicSkin>();
+            kernel.Bind<ISkin>().To<BasicSkin>();
+            kernel.Bind<IBasicSkin>().To<AssetManagerBasicSkin>();
         }
     }
 }

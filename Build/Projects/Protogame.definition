@@ -6,10 +6,7 @@
   <References>
     <Reference Include="MonoGame.Framework" />
     <Reference Include="MonoGame.Framework.Content.Pipeline" />
-    <Reference Include="Ninject" />
-    <Reference Include="Ninject.Extensions.Factory" />
-    <Reference Include="Ninject.Extensions.Interception" />
-    <Reference Include="Ninject.Extensions.Interception.DynamicProxy" />
+    <Reference Include="Protoinject" />
     <Reference Include="Castle.Core" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -187,14 +184,12 @@
     <Compile Include="Commands\ExitCommand.cs" />
     <Compile Include="Commands\GCCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
-    <Compile Include="Component\ComponentInterfaceTarget.cs" />
     <Compile Include="Component\ComponentizedEntity.cs" />
     <Compile Include="Component\ComponentizedObject.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ComponentizedObject.tt</DependentUpon>
     </Compile>
-    <Compile Include="Component\DefaultEntityFactory.cs" />
     <Compile Include="Component\DefaultInstantiateComponent.cs" />
     <Compile Include="Component\DefaultRequireComponent.cs" />
     <Compile Include="Component\IBuiltinComponentFactory.cs" />
@@ -203,10 +198,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>IComponentCallable.tt</DependentUpon>
     </Compile>
-    <Compile Include="Component\IComponentHierarchyParameter.cs" />
     <Compile Include="Component\IComponentOwner.cs" />
     <Compile Include="Component\IContainsComponents.cs" />
-    <Compile Include="Component\IEntityFactory.cs" />
     <Compile Include="Component\IHasComponent.cs" />
     <Compile Include="Component\IHierarchialComponent.cs" />
     <Compile Include="Component\IInstantiateComponent.cs" />

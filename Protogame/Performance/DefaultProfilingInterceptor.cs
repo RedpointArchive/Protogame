@@ -1,6 +1,6 @@
-#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+#if FALSE
 
-using Ninject.Extensions.Interception;
+using Protoinject.Extensions.Interception;
 
 namespace Protogame
 {

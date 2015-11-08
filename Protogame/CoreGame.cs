@@ -1,13 +1,10 @@
-using Ninject.Syntax;
-
 namespace Protogame
 {
     using System;
     using System.Linq;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
-    using Ninject;
-    using Ninject.Parameters;
+    using Protoinject;
 
     /// <summary>
     /// The core Protogame game implementation.  You should derive your Game class from this
@@ -123,6 +120,11 @@ namespace Protogame
         private IEngineHook[] m_EngineHooks;
 
         /// <summary>
+        /// The current hierarchical node of the game in the dependency injection system.
+        /// </summary>
+        private INode m_Current;
+
+        /// <summary>
         /// Gets the current game context.  You should not generally access this property; outside
         /// an explicit Update or Render loop, the state of the game context is not guaranteed.  Inside
         /// the context of an Update or Render loop, the game context is already provided.
@@ -173,16 +175,7 @@ namespace Protogame
 #endif
 
             this.m_Kernel = kernel;
-
-            // Load the Ninject.Extensions.Factory and Ninject.Extensions.Interception modules.
-            if (!this.m_Kernel.HasModule("Ninject.Extensions.Factory.FuncModule"))
-            {
-                this.m_Kernel.Load<Ninject.Extensions.Factory.FuncModule>();
-            }
-            if (!this.m_Kernel.HasModule("Ninject.Extensions.Interception.DynamicProxyModule"))
-            {
-                this.m_Kernel.Load<Ninject.Extensions.Interception.DynamicProxyModule>();
-            }
+            this.m_Current = this.m_Kernel.CreateEmptyNode("Game");
 
             this.m_GraphicsDeviceManager = new GraphicsDeviceManager(this);
             this.m_GraphicsDeviceManager.PreparingDeviceSettings +=
@@ -191,25 +184,25 @@ namespace Protogame
                     this.PrepareDeviceSettings(e.GraphicsDeviceInformation);
                 };
 
-            this.m_Profiler = kernel.TryGet<IProfiler>();
+            this.m_Profiler = kernel.TryGet<IProfiler>(this.m_Current);
             if (this.m_Profiler == null)
             {
                 kernel.Bind<IProfiler>().To<NullProfiler>();
-                this.m_Profiler = kernel.Get<IProfiler>();
+                this.m_Profiler = kernel.Get<IProfiler>(this.m_Current);
             }
 
-            this.m_AnalyticsEngine = kernel.TryGet<IAnalyticsEngine>();
+            this.m_AnalyticsEngine = kernel.TryGet<IAnalyticsEngine>(this.m_Current);
             if (this.m_AnalyticsEngine == null)
             {
                 kernel.Bind<IAnalyticsEngine>().To<NullAnalyticsEngine>();
-                this.m_AnalyticsEngine = kernel.Get<IAnalyticsEngine>();
+                this.m_AnalyticsEngine = kernel.Get<IAnalyticsEngine>(this.m_Current);
             }
 
-            this.m_AnalyticsInitializer = kernel.TryGet<IAnalyticsInitializer>();
+            this.m_AnalyticsInitializer = kernel.TryGet<IAnalyticsInitializer>(this.m_Current);
             if (this.m_AnalyticsInitializer == null)
             {
                 kernel.Bind<IAnalyticsInitializer>().To<NullAnalyticsInitializer>();
-                this.m_AnalyticsInitializer = kernel.Get<IAnalyticsInitializer>();
+                this.m_AnalyticsInitializer = kernel.Get<IAnalyticsInitializer>(this.m_Current);
             }
 
             this.m_AnalyticsInitializer.Initialize(this.m_AnalyticsEngine);
@@ -259,8 +252,8 @@ namespace Protogame
             // after they've been constructed.
             this.m_Kernel.Bind<IWorld>().To<TInitialWorld>();
             this.m_Kernel.Bind<IWorldManager>().To<TWorldManager>();
-            var world = this.m_Kernel.Get<IWorld>();
-            var worldManager = this.m_Kernel.Get<IWorldManager>();
+            var world = this.m_Kernel.Get<IWorld>(this.m_Current);
+            var worldManager = this.m_Kernel.Get<IWorldManager>(this.m_Current);
             this.m_Kernel.Unbind<IWorld>();
             this.m_Kernel.Unbind<IWorldManager>();
 
@@ -316,11 +309,12 @@ namespace Protogame
 
             // Create the game context.
             this.GameContext = this.m_Kernel.Get<IGameContext>(
-                new ConstructorArgument("game", this), 
-                new ConstructorArgument("graphics", this.m_GraphicsDeviceManager), 
-                new ConstructorArgument("world", world), 
-                new ConstructorArgument("worldManager", worldManager), 
-                new ConstructorArgument("window", this.ConstructGameWindow()));
+                this.m_Current,
+                new NamedConstructorArgument("game", this), 
+                new NamedConstructorArgument("graphics", this.m_GraphicsDeviceManager), 
+                new NamedConstructorArgument("world", world), 
+                new NamedConstructorArgument("worldManager", worldManager), 
+                new NamedConstructorArgument("window", this.ConstructGameWindow()));
 
             // If we are using the new rendering pipeline, we need to ensure that
             // the rendering context and the render pipeline world manager share
@@ -333,9 +327,10 @@ namespace Protogame
             }
 
             // Create the update and render contexts.
-            this.UpdateContext = this.m_Kernel.Get<IUpdateContext>();
+            this.UpdateContext = this.m_Kernel.Get<IUpdateContext>(this.m_Current);
             this.RenderContext = this.m_Kernel.Get<IRenderContext>(
-                new ConstructorArgument("renderPipeline", renderPipeline));
+                this.m_Current,
+                new NamedConstructorArgument("renderPipeline", renderPipeline));
 
             // Configure the render pipeline if possible.
             if (renderPipeline != null)
@@ -345,7 +340,7 @@ namespace Protogame
 
             // Retrieve all engine hooks.  These can be set up by additional modules
             // to change runtime behaviour.
-            this.m_EngineHooks = this.m_Kernel.GetAll<IEngineHook>().ToArray();
+            this.m_EngineHooks = this.m_Kernel.GetAll<IEngineHook>(this.m_Current).ToArray();
 
             // Set up defaults.
             this.Window.Title = "Protogame!";

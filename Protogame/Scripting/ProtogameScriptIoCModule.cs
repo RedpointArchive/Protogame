@@ -1,22 +1,22 @@
 namespace Protogame
 {
-    using Ninject.Modules;
+    using Protoinject;
 
     /// <summary>
-    /// The Ninject module to load when using scripting assets.
+    /// The Protoinject module to load when using scripting assets.
     /// </summary>
-    public class ProtogameScriptIoCModule : NinjectModule
+    public class ProtogameScriptIoCModule : IProtoinjectModule
     {
         /// <summary>
-        /// An internal method called by the Ninject module system.
+        /// An internal method called by the Protoinject module system.
         /// Use kernel.Load&lt;ProtogameScriptIoCModule&gt; to load this module.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<IAssetLoader>().To<LogicControlScriptAssetLoader>();
-            this.Bind<IAssetSaver>().To<LogicControlScriptAssetSaver>();
+            kernel.Bind<IAssetLoader>().To<LogicControlScriptAssetLoader>();
+            kernel.Bind<IAssetSaver>().To<LogicControlScriptAssetSaver>();
 
-            this.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
         }
     }
 }

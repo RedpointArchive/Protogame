@@ -1,18 +1,18 @@
 namespace Protogame
 {
-    using Ninject.Modules;
+    using Protoinject;
 
     /// <summary>
     /// The protogame platforming io c module.
     /// </summary>
-    public class ProtogamePlatformingIoCModule : NinjectModule
+    public class ProtogamePlatformingIoCModule : IProtoinjectModule
     {
         /// <summary>
         /// The load.
         /// </summary>
-        public override void Load()
+        public void Load(IKernel kernel)
         {
-            this.Bind<IPlatforming>().To<DefaultPlatforming>();
+            kernel.Bind<IPlatforming>().To<DefaultPlatforming>();
         }
     }
 }
