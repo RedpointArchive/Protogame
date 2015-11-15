@@ -47,6 +47,12 @@
                 return;
             }
 
+            if (IntPtr.Size != 8)
+            {
+                Console.Error.WriteLine("ERROR: Asset compilation is only supported on 64-bit machines.");
+                Environment.Exit(1);
+            }
+
             // Deploy the correct MojoShader DLL.
             MojoShaderDeploy.Deploy();
 
