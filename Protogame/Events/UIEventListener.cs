@@ -1,7 +1,7 @@
 namespace Protogame
 {
     using System.Linq;
-    using Ninject;
+    using Protoinject;
 
     /// <summary>
     /// Listens for incoming events and directs them to UI elements.
