@@ -1,0 +1,32 @@
+#version 1
+
+if host Windows
+  set target-platforms Windows
+endif
+if host MacOS
+  set target-platforms MacOS,iOS,Android
+endif
+if host Linux
+  set target-platforms Linux
+endif
+
+generate
+build
+execute Protogame.Tests
+
+pack . $TARGET_PLATFORM.tar.lzma $TARGET_PLATFORM
+if host Windows
+  if file-exists C:\Users\build\Documents\protobuild_api_key.txt
+    push C:\Users\build\Documents\protobuild_api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM $GIT_BRANCH --ignore-on-existing
+  endif
+endif
+if host MacOS
+  if file-exists /Users/june/protobuild_api_key.txt
+    push /Users/june/protobuild_api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM $GIT_BRANCH --ignore-on-existing
+  endif
+endif
+if host Linux
+  if file-exists /srv/api_key.txt
+    push /srv/api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM $GIT_BRANCH --ignore-on-existing
+  endif
+endif
