@@ -9,7 +9,7 @@
     <Package Uri="http://protobuild.org/hach-que/Cloo" Folder="Cloo" GitRef="master" />
     <Package Uri="http://protobuild.org/hach-que/Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="master" />
     <Package Uri="http://protobuild.org/hach-que/protobuf-net" Folder="protobuf-net" GitRef="master" />
-    <Package Uri="https-git://github.com/hach-que/MonoGame" Folder="MonoGame" GitRef="develop-20150406" />
+    <Package Uri="https-git://github.com/hach-que/MonoGame" Folder="MonoGame" GitRef="develop" />
     <Package Uri="https-git://code.redpointsoftware.com.au/diffusion/PTPB/" Folder="Binaries" GitRef="ee0e3ab65061317bb01329fdce4d26bae127b75c" />
     <Package Uri="https-git://github.com/hach-que/NDesk.Options.git" Folder="NDesk.Options" GitRef="master" />
     <Package Uri="http://protobuild.org/hach-que/Prototest" Folder="Prototest" GitRef="master" />
