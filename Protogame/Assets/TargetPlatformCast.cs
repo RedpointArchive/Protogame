@@ -43,10 +43,6 @@ namespace Protogame
                     return TargetPlatform.WindowsStoreApp;
                 case MonoGamePlatform.NativeClient:
                     return TargetPlatform.NativeClient;
-                case MonoGamePlatform.Ouya:
-                    return TargetPlatform.Ouya;
-                case MonoGamePlatform.PlayStationMobile:
-                    return TargetPlatform.PlayStationMobile;
                 case MonoGamePlatform.WindowsPhone8:
                     return TargetPlatform.WindowsPhone8;
                 case MonoGamePlatform.RaspberryPi:
@@ -90,9 +86,7 @@ namespace Protogame
                 case TargetPlatform.NativeClient:
                     return MonoGamePlatform.NativeClient;
                 case TargetPlatform.Ouya:
-                    return MonoGamePlatform.Ouya;
-                case TargetPlatform.PlayStationMobile:
-                    return MonoGamePlatform.PlayStationMobile;
+                    return MonoGamePlatform.Android;
                 case TargetPlatform.WindowsPhone8:
                     return MonoGamePlatform.WindowsPhone8;
                 case TargetPlatform.RaspberryPi:

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Protoinject;
 
 namespace Protogame
 {
@@ -12,7 +13,7 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Graphics</module>
-    public interface IGraphicsFactory
+    public interface IGraphicsFactory : IGenerateFactory
     {
         /// <summary>
         /// Creates a render pass in which graphics rendering is configured for an

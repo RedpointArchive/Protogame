@@ -34,45 +34,45 @@ namespace Protogame
                 return;
             }
 
-            var output = new Texture2DContent();
-            var bitmap = new Bitmap(new MemoryStream(asset.RawData));
-            var width = bitmap.Width;
-            var height = bitmap.Height;
-
-            if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed)
-            {
-                throw new InvalidDataException(
-                    "8-bit indexed PNGs do not convert correctly (at least under Mono) to 32-bit ARGB.  Save " +
-                    "your PNG files in a non-indexed format, such as 24-bit or 32-bit ARGB.");
-            }
-
-            if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
-            {
-                var newBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-                using (var graphics = Graphics.FromImage(newBitmap)) graphics.DrawImage(bitmap, 0, 0, width, height);
-                bitmap = newBitmap;
-            }
-
-            output.Faces[0] = new MipmapChain(bitmap.ToXnaBitmap(true));
-            bitmap.Dispose();
-
-            var manager = new PipelineManager(
-                Environment.CurrentDirectory, 
-                Environment.CurrentDirectory, 
-                Environment.CurrentDirectory);
-            var dictionary = new OpaqueDataDictionary();
-            var processor = manager.CreateProcessor("TextureProcessor", dictionary);
-            var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
-            var content = processor.Process(output, context);
-
-            asset.PlatformData = new PlatformData { Platform = platform, Data = this.CompileAndGetBytes(content) };
-
+            var tempPath = System.IO.Path.GetTempFileName();
             try
             {
-                asset.ReloadTexture();
+                using (var stream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    stream.Write(asset.RawData, 0, asset.RawData.Length);
+                }
+
+                var importer = new TextureImporter();
+                var output = importer.Import(tempPath, new DummyContentImporterContext());
+
+                var manager = new PipelineManager(
+                    Environment.CurrentDirectory, 
+                    Environment.CurrentDirectory, 
+                    Environment.CurrentDirectory);
+                var dictionary = new OpaqueDataDictionary();
+                var processor = manager.CreateProcessor("TextureProcessor", dictionary);
+                var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
+                var content = processor.Process(output, context);
+
+                asset.PlatformData = new PlatformData { Platform = platform, Data = this.CompileAndGetBytes(content) };
+
+                try
+                {
+                    asset.ReloadTexture();
+                }
+                catch (NoAssetContentManagerException)
+                {
+                }
             }
-            catch (NoAssetContentManagerException)
+            finally
             {
+                try
+                {
+                    File.Delete(tempPath);
+                }
+                catch
+                {
+                }
             }
         }
     }
