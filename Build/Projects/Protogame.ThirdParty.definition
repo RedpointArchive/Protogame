@@ -14,6 +14,7 @@
   <Platform Type="MacOS">
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="OpenTK" />
   </Platform>
 
   <Platform Type="Android">
