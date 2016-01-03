@@ -4,7 +4,7 @@ if host Windows
   set target-platforms Windows
 endif
 if host MacOS
-  set target-platforms MacOS
+  set target-platforms MacOS,Android
 endif
 if host Linux
   set target-platforms Linux

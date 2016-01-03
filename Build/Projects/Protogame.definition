@@ -9,7 +9,6 @@
     <Reference Include="MonoGame.Framework.Content.Pipeline" />
     <Reference Include="Framework.Content.Pipeline.References" />
     <Reference Include="Protoinject" />
-    <Reference Include="Castle.Core" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />

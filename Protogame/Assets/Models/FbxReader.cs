@@ -1,3 +1,5 @@
+#if PLATFORM_LINUX || PLATFORM_MACOS || PLATFORM_WINDOWS
+
 namespace Protogame
 {
     using System;
@@ -497,3 +499,5 @@ namespace Protogame
 #endif
     }
 }
+
+#endif
