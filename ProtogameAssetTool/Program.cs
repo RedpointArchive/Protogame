@@ -11,7 +11,6 @@
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
-    using Assimp.Configs;
     using Microsoft.Xna.Framework;
     using NDesk.Options;
     using Protoinject;
