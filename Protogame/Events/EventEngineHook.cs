@@ -111,7 +111,7 @@ namespace Protogame
         /// </param>
         private void UpdateGamepad(IGameContext gameContext)
         {
-            for (var index = 0; index < GamePad.GetMaximumGamePadIndex(); index++)
+            for (var index = 0; index < GamePad.MaximumGamePadCount; index++)
             {
                 var gamepadState = GamePad.GetState(index);
 
