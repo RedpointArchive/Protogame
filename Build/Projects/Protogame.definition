@@ -423,6 +423,9 @@
     <Compile Include="Pooling\ScalingPool.cs" />
     <Compile Include="ProtogameCoreModule.cs" />
     <Compile Include="ReloadableGameAssetManagerProvider.cs" />
+    <Compile Include="Resources\Resource.Designer.cs">
+      <Platforms>Android,Ouya</Platforms>
+    </Compile>
     <Compile Include="Scripting\GOLD\DataIndex.cs" />
     <Compile Include="Scripting\GOLD\GrammarProperties.cs" />
     <Compile Include="Scripting\GOLD\Internal\CharacterRange.cs" />
