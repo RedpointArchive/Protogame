@@ -12,7 +12,6 @@
     <Reference Include="Protogame" />
     <Reference Include="MonoGame.Framework" />
     <Reference Include="Protoinject" />
-    <Reference Include="AssImp" />
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="NDesk.Options" />
   </References>

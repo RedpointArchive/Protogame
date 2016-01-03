@@ -439,6 +439,8 @@ namespace Protogame
         {
             using (this.m_Profiler.Measure("render", (this.GameContext.FrameCount - 1).ToString()))
             {
+                RenderContext.IsRendering = true;
+
                 this.m_TotalFrames++;
 
                 // This can be used in case MonoGame does not initialize correctly before the first frame.
@@ -470,6 +472,8 @@ namespace Protogame
                     this.Window.ClientBounds.Width,
                     this.Window.ClientBounds.Height);
 #endif
+
+                RenderContext.IsRendering = false;
             }
         }
 

@@ -5,7 +5,9 @@
   </Properties>
   <References>
     <Reference Include="MonoGame.Framework" />
+    <Reference Include="FrameworkReferences" />
     <Reference Include="MonoGame.Framework.Content.Pipeline" />
+    <Reference Include="Framework.Content.Pipeline.References" />
     <Reference Include="Protoinject" />
     <Reference Include="Castle.Core" />
     <Reference Include="System" />
@@ -14,7 +16,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="protobuf-net" />
-    <Reference Include="AssImp" />
     <Reference Include="Protogame.ThirdParty" />
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="NDesk.Options" />
@@ -565,56 +566,6 @@
     <Compile Include="UI\VerticalContainer.cs" />
     <Compile Include="UI\Window.cs" />
     <Compile Include="VerticalAlignment.cs" />
-    <Content Include="..\Binaries\Linux\libassimp_32.so.3.0.1">
-      <Platforms>Linux</Platforms>
-      <Link>libassimp_32.so.3.0.1</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Binaries\Linux\libassimp_64.so.3.0.1">
-      <Platforms>Linux</Platforms>
-      <Link>libassimp_64.so.3.0.1</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\Binaries\Windows\Assimp32.dll">
-      <Link>Assimp32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="..\Binaries\Windows\Assimp64.dll">
-      <Link>Assimp64.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="..\MonoGame\ThirdParty\Dependencies\NVTT\Windows\x64\nvtt.dll">
-      <Link>nvtt.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\freetype6.dll">
-      <Link>freetype6.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.dylib">
-      <Platforms>MacOS</Platforms>
-      <Link>libfreetype.6.dylib</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.so">
-      <Platforms>Linux</Platforms>
-      <Link>libfreetype.6.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng12.so">
-      <Platforms>Linux</Platforms>
-      <Link>libpng12.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\MonoGame\ThirdParty\Dependencies\SharpFont\x64\libpng15.15.dylib">
-      <Platforms>MacOS</Platforms>
-      <Link>libpng15.15.dylib</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Component\ComponentizedObject.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ComponentizedObject.cs</LastGenOutput>
@@ -622,14 +573,6 @@
     <Content Include="Component\IComponentCallable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IComponentCallable.cs</LastGenOutput>
-    </Content>
-    <Content Include="libmojoshader_src_32.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
-    </Content>
-    <Content Include="libmojoshader_src_64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Platforms>Windows</Platforms>
     </Content>
     <EmbeddedResource Include="Assets\Effects\Macros.fx" />
     <EmbeddedResource Include="Resources\effect.Basic-Android.bin">

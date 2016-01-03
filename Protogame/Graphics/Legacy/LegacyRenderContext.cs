@@ -82,6 +82,16 @@ namespace Protogame
         public bool Is3DContext { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether the game is currently rendering
+        /// in either the render pipeline or the backbuffer.  This value will always
+        /// be true within any method call that occurs below <see cref="Game.Draw"/>
+        /// in the call stack.  When you are rendering, certain operations can not
+        /// be performed, in particular, operations which reset the graphics device
+        /// like resizing the game window.
+        /// </summary>
+        public bool IsRendering { get; set; }
+
+        /// <summary>
         /// Gets or sets the projection matrix for 3D rendering.
         /// </summary>
         /// <value>

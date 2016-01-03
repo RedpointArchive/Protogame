@@ -196,6 +196,14 @@ namespace Protogame
         /// </param>
         public void ResizeWindow(int width, int height)
         {
+            var coreGame = Game as ICoreGame;
+            if (coreGame != null && coreGame.RenderContext.IsRendering)
+            {
+                throw new InvalidOperationException(
+                    "You can not resize the game window while rendering.  You should move " +
+                    "the ResizeWindow call into the update loop instead.");
+            }
+
             if (this.Window.ClientBounds.Width == width && this.Window.ClientBounds.Height == height)
             {
                 return;

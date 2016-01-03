@@ -10,7 +10,6 @@
     <Package Uri="https://protobuild.org/hach-que/Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/protobuf-net" Folder="protobuf-net" GitRef="master" />
     <Package Uri="https://protobuild.org/RedpointGames/MonoGame" Folder="MonoGame" GitRef="develop" />
-    <Package Uri="https-git://code.redpointsoftware.com.au/diffusion/PTPB/" Folder="Binaries" GitRef="ee0e3ab65061317bb01329fdce4d26bae127b75c" />
     <Package Uri="https://protobuild.org/hach-que/NDesk.Options" Folder="NDesk.Options" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/Prototest" Folder="Prototest" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/AStarPathFinder" Folder="AStarPathFinder" GitRef="master" />
