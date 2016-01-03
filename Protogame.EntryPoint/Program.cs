@@ -7,13 +7,57 @@ using Microsoft.Xna.Framework;
 using Protogame;
 using Protoinject;
 
+#if PLATFORM_MACOS
+#if PLATFORM_MACOS_LEGACY
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+#else
+using AppKit;
+using Foundation;
+#endif
+
+public static class Program
+{
+	public static void Main(string[] args)
+	{
+		NSApplication.Init();
+
+		using (var p = new NSAutoreleasePool())
+		{
+			NSApplication.SharedApplication.Delegate = new AppDelegate();
+
+			// TODO: Offer a way of setting the application icon.
+			//NSImage appIcon = NSImage.ImageNamed("monogameicon.png");
+			//NSApplication.SharedApplication.ApplicationIconImage = appIcon;
+
+			NSApplication.Main(args);
+		}
+	}
+}
+
+public class AppDelegate : NSApplicationDelegate
+{
+	public override bool ApplicationShouldTerminateAfterLastWindowClosed(NSApplication sender)
+	{
+		return true;
+	}
+
+#if PLATFORM_MACOS_LEGACY
+	public override void FinishedLaunching(NSObject notification)
+#else
+	public override void DidFinishLaunching(NSNotification notification)
+#endif
+	{
+		var args = new string[0];
+#else
 public static class Program
 {
     public static void Main(string[] args)
     {
+#endif
         var kernel = new StandardKernel();
         
-        Func<System.Reflection.Assembly, Type[]> tryGetTypes = assembly =>
+		Func<System.Reflection.Assembly, Type[]> TryGetTypes = assembly =>
 		{
 			try
 			{
@@ -29,10 +73,10 @@ public static class Program
         // the IGameConfiguration.
         var configurations =
             (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-             from type in tryGetTypes(assembly)
-             where typeof(IGameConfiguration).IsAssignableFrom(type) &&
-                   !type.IsInterface && !type.IsAbstract
-             select Activator.CreateInstance(type) as IGameConfiguration).ToList();
+				from type in TryGetTypes(assembly)
+            where typeof (IGameConfiguration).IsAssignableFrom(type) &&
+                  !type.IsInterface && !type.IsAbstract
+            select Activator.CreateInstance(type) as IGameConfiguration).ToList();
 
         if (configurations.Count == 0)
         {
@@ -68,11 +112,15 @@ public static class Program
                 "No implementation of IGameConfiguration provided " +
                 "returned a game instance from ConstructGame.");
         }
-
+			
+#if PLATFORM_MACOS
+		game.Run();
+#else
         using (var runningGame = game)
         {
             runningGame.Run();
         }
+#endif
     }
 }
 
