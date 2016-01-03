@@ -44,6 +44,7 @@
     <Compile Include="Analytics\NullAnalyticsEngine.cs" />
     <Compile Include="Analytics\NullAnalyticsInitializer.cs" />
     <Compile Include="Analytics\ProtogameGAAnalyticsIoCModule.cs" />
+    <Compile Include="AssetManagerProviderInitializer.cs" />
     <Compile Include="Assets\AIAsset.cs" />
     <Compile Include="Assets\AIAssetLoader.cs" />
     <Compile Include="Assets\AndroidCompiledLoadStrategy.cs" />
@@ -317,6 +318,7 @@
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="I2DRenderUtilities.cs" />
     <Compile Include="I3DRenderUtilities.cs" />
+    <Compile Include="IAssetManagerProviderInitializer.cs" />
     <Compile Include="IAudioHandle.cs" />
     <Compile Include="IAudioUtilities.cs" />
     <Compile Include="IBoundingBox.cs" />
@@ -326,6 +328,7 @@
     <Compile Include="ICoreGame.cs" />
     <Compile Include="IEngineHook.cs" />
     <Compile Include="IEntity.cs" />
+    <Compile Include="IGameConfiguration.cs" />
     <Compile Include="IGameContext.cs" />
     <Compile Include="IGameWindow.cs" />
     <Compile Include="IHasPosition.cs" />

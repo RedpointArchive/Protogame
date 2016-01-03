@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IncludeProject Name="Protogame.EntryPoint" Path="Protogame.EntryPoint">
+  <Files>
+    <Compile Include="Program.cs" />
+    <Compile Include="GameActivity.cs">
+	  <Platforms>Android,Ouya</Platforms>
+	</Compile>
+  </Files>
+</IncludeProject>
