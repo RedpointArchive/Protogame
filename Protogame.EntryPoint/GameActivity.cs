@@ -33,25 +33,53 @@ public class GameActivity : AndroidGameActivity
         base.OnCreate(bundle);
 
         var kernel = new StandardKernel();
-        
+
         // Search the application domain for implementations of
         // the IGameConfiguration.
-        
-        /*
-        var kernel = new StandardKernel();
-        kernel.Load<ProtogameCoreModule>();
-        kernel.Load<ProtogameAssetIoCModule>();
-        kernel.Load<ProtogamePlatformingIoCModule>();
-        kernel.Load<ProtogameLevelIoCModule>();
-        kernel.Load<ProtogameEventsIoCModule>();
-        kernel.Load<TestGame7Module>();
-        AssetManagerClient.AcceptArgumentsAndSetup<GameAssetManagerProvider>(kernel, null);
+        var configurations =
+            (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+             from type in assembly.GetTypes()
+             where typeof(IGameConfiguration).IsAssignableFrom(type) &&
+                   !type.IsInterface && !type.IsAbstract
+             select Activator.CreateInstance(type) as IGameConfiguration).ToList();
 
-        // Create our OpenGL view, and display it
-        var g = new TestGame7Game(kernel);
-        SetContentView(g.AndroidGameView);
-        g.Run();
-        */
+        if (configurations.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "You must have at least one implementation of " +
+                "IGameConfiguration in your game.");
+        }
+
+        Game game = null;
+
+        foreach (var configuration in configurations)
+        {
+            configuration.ConfigureKernel(kernel);
+
+            // It is expected that the AssetManagerProvider architecture will
+            // be refactored in future to just provide IAssetManager directly,
+            // and this method call will be dropped.
+            configuration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, new string[0]));
+
+            // We only construct one game.  In the event there are
+            // multiple game configurations (such as a third-party library
+            // providing additional game tools, it's expected that libraries
+            // will return null for ConstructGame).
+            if (game == null)
+            {
+                game = configuration.ConstructGame(kernel);
+            }
+        }
+
+        if (game == null)
+        {
+            throw new InvalidOperationException(
+                "No implementation of IGameConfiguration provided " +
+                "returned a game instance from ConstructGame.");
+        }
+        
+        SetContentView(((ICoreGame)game).AndroidGameView);
+        game.Run();
     }
 }
 

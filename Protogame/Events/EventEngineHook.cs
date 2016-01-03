@@ -22,7 +22,7 @@ namespace Protogame
         /// A dictionary of the last game pad state for each player.  We use this to detect
         /// the difference between button press and button held events.
         /// </summary>
-        private readonly Dictionary<PlayerIndex, GamePadState> m_LastGamePadStates;
+        private readonly Dictionary<int, GamePadState> m_LastGamePadStates;
 
         /// <summary>
         /// The last mouse state.  We use this to detect mouse move events and only fire them
@@ -51,7 +51,7 @@ namespace Protogame
         public EventEngineHook(IEventEngine<IGameContext> eventEngine)
         {
             this.m_EventEngine = eventEngine;
-            this.m_LastGamePadStates = new Dictionary<PlayerIndex, GamePadState>();
+            this.m_LastGamePadStates = new Dictionary<int, GamePadState>();
         }
 
         /// <summary>
@@ -111,9 +111,10 @@ namespace Protogame
         /// </param>
         private void UpdateGamepad(IGameContext gameContext)
         {
-            foreach (var index in new[] { PlayerIndex.One, PlayerIndex.Two, PlayerIndex.Three, PlayerIndex.Four })
+            for (var index = 0; index < GamePad.GetMaximumGamePadIndex(); index++)
             {
                 var gamepadState = GamePad.GetState(index);
+
                 if (gamepadState.IsConnected)
                 {
                     this.UpdateGamepadSingle(gameContext, index, gamepadState);
@@ -133,7 +134,7 @@ namespace Protogame
         /// <param name="gamepadState">
         /// The game pad state.
         /// </param>
-        private void UpdateGamepadSingle(IGameContext gameContext, PlayerIndex index, GamePadState gamepadState)
+        private void UpdateGamepadSingle(IGameContext gameContext, int index, GamePadState gamepadState)
         {
             var lastGamepadState = new GamePadState();
             if (this.m_LastGamePadStates.ContainsKey(index))
@@ -163,7 +164,7 @@ namespace Protogame
                             {
                                 Button = button, 
                                 GamePadState = gamepadState, 
-                                PlayerIndex = index
+                                GamePadIndex = index
                             });
                     }
                     else
@@ -174,7 +175,7 @@ namespace Protogame
                             {
                                 Button = button, 
                                 GamePadState = gamepadState, 
-                                PlayerIndex = index
+                                GamePadIndex = index
                             });
                     }
                 }
@@ -188,7 +189,7 @@ namespace Protogame
                             {
                                 Button = button, 
                                 GamePadState = gamepadState, 
-                                PlayerIndex = index
+                                GamePadIndex = index
                             });
                     }
                 }

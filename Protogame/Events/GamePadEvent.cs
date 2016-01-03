@@ -17,11 +17,11 @@ namespace Protogame
         public GamePadState GamePadState { get; set; }
 
         /// <summary>
-        /// Gets or sets the player index.
+        /// Gets or sets the game pad index.
         /// </summary>
         /// <value>
-        /// The player index.
+        /// The game pad index.
         /// </value>
-        public PlayerIndex PlayerIndex { get; set; }
+        public int GamePadIndex { get; set; }
     }
 }

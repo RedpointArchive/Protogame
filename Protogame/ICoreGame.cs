@@ -28,5 +28,15 @@ namespace Protogame
         /// The update context.
         /// </value>
         IUpdateContext UpdateContext { get; }
+
+#if PLATFORM_ANDROID || PLATFORM_OUYA
+        /// <summary>
+        /// Gets the Android game view.
+        /// </summary>
+        /// <value>
+        /// The Android game view.
+        /// </value>
+        Android.Views.View AndroidGameView { get; }
+#endif
     }
 }
