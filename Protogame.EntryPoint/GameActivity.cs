@@ -34,11 +34,23 @@ public class GameActivity : AndroidGameActivity
 
         var kernel = new StandardKernel();
 
+        Func<System.Reflection.Assembly, Type[]> tryGetTypes = assembly =>
+		{
+			try
+			{
+				return assembly.GetTypes();
+			}
+			catch
+			{
+				return new Type[0];
+			}
+		};
+
         // Search the application domain for implementations of
         // the IGameConfiguration.
         var configurations =
             (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-             from type in assembly.GetTypes()
+             from type in tryGetTypes(assembly)
              where typeof(IGameConfiguration).IsAssignableFrom(type) &&
                    !type.IsInterface && !type.IsAbstract
              select Activator.CreateInstance(type) as IGameConfiguration).ToList();
