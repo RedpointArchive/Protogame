@@ -18,20 +18,9 @@
     <Reference Include="Protogame.ThirdParty" />
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="NDesk.Options" />
+    <Reference Include="Jitter" />
+    <Reference Include="Cloo" />
   </References>
-  <Services>
-    <Service Name="Default">
-      <Requires>Physics,OpenCL</Requires>
-      <DefaultForRoot>True</DefaultForRoot>
-    </Service>
-    <Service Name="Core" />
-    <Service Name="Physics">
-      <Requires>Jitter/Default</Requires>
-    </Service>
-    <Service Name="OpenCL">
-      <Requires>Cloo/Default</Requires>
-    </Service>
-  </Services>
   <Files>
     <Compile Include="AI\Agent.cs" />
     <Compile Include="AI\IAI.cs" />
