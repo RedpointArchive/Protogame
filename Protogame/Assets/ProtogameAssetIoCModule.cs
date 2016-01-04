@@ -57,6 +57,11 @@ namespace Protogame
             kernel.Bind<ILoadStrategy>().To<AndroidCompiledLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
+#elif PLATFORM_IOS || PLATFORM_TVOS
+            kernel.Bind<IAutomaticAssetReload>().To<DisabledAutomaticAssetReload>().InSingletonScope();
+            // TODO: We still need to implement load strategies for normal content on iOS.
+            kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
 #endif
 
             // MonoGame compilation requires 64-bit for content compilation.

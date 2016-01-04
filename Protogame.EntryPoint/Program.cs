@@ -49,6 +49,21 @@ public class AppDelegate : NSApplicationDelegate
 #endif
 	{
 		var args = new string[0];
+#elif PLATFORM_IOS
+using Foundation;
+using UIKit;
+
+[Register("AppDelegate")]
+public class Program : UIApplicationDelegate
+{
+    public static void Main(string[] args)
+    {
+        UIApplication.Main(args, null, "AppDelegate");
+    }
+
+    public override void FinishedLaunching(UIApplication app)
+    {
+        var args = new string[0];
 #else
 public static class Program
 {
@@ -113,7 +128,7 @@ public static class Program
                 "returned a game instance from ConstructGame.");
         }
 			
-#if PLATFORM_MACOS
+#if PLATFORM_MACOS || PLATFORM_IOS
 		game.Run();
 #else
         using (var runningGame = game)
