@@ -17,16 +17,16 @@ execute Protogame.Tests
 pack . $TARGET_PLATFORM.tar.lzma $TARGET_PLATFORM
 if host Windows
   if file-exists C:\Users\build\Documents\protobuild_api_key.txt
-    push C:\Users\build\Documents\protobuild_api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM $GIT_BRANCH --ignore-on-existing
+    push C:\Users\build\Documents\protobuild_api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM master --ignore-on-existing
   endif
 endif
 if host MacOS
   if file-exists /Users/june/protobuild_api_key.txt
-    push /Users/june/protobuild_api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM $GIT_BRANCH --ignore-on-existing
+    push /Users/june/protobuild_api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM master --ignore-on-existing
   endif
 endif
 if host Linux
   if file-exists /srv/api_key.txt
-    push /srv/api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM $GIT_BRANCH --ignore-on-existing
+    push /srv/api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM master --ignore-on-existing
   endif
 endif
