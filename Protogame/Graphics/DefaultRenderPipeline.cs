@@ -55,6 +55,13 @@ namespace Protogame
             {
                 renderContext.Render(gameContext);
 
+                // NOTE: We MUST clear the depth buffer because OpenGL will not do it for us.
+                renderContext.GraphicsDevice.Clear(
+                    ClearOptions.DepthBuffer, 
+                    Microsoft.Xna.Framework.Color.Transparent, 
+                    renderContext.GraphicsDevice.Viewport.MaxDepth,
+                    0);
+
                 _primary = _renderTargetBackBufferUtilities.UpdateRenderTarget(_primary, gameContext);
                 _secondary = _renderTargetBackBufferUtilities.UpdateRenderTarget(_secondary, gameContext);
 

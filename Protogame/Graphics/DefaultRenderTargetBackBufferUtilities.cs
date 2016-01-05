@@ -25,7 +25,9 @@ namespace Protogame
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight,
                     false,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat,
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat);
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
+                    0,
+                    RenderTargetUsage.PreserveContents);
             }
 
             return renderTarget;
