@@ -35,7 +35,7 @@ namespace Protogame
                     return TargetPlatform.iOS;
                 case MonoGamePlatform.Android:
                     return TargetPlatform.Android;
-                case MonoGamePlatform.Linux:
+                case MonoGamePlatform.DesktopGL:
                     return TargetPlatform.Linux;
                 case MonoGamePlatform.MacOSX:
                     return TargetPlatform.MacOSX;
@@ -78,7 +78,7 @@ namespace Protogame
                 case TargetPlatform.Android:
                     return MonoGamePlatform.Android;
                 case TargetPlatform.Linux:
-                    return MonoGamePlatform.Linux;
+                    return MonoGamePlatform.DesktopGL;
                 case TargetPlatform.MacOSX:
                     return MonoGamePlatform.MacOSX;
                 case TargetPlatform.WindowsStoreApp:
