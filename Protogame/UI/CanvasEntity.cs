@@ -83,13 +83,17 @@ namespace Protogame
                 return;
             }
 
-            this.m_LastRenderBounds = gameContext.Window.ClientBounds;
+            var bounds = gameContext.Window.ClientBounds;
+            bounds.X = 0;
+            bounds.Y = 0;
+
+            this.m_LastRenderBounds = bounds;
 
             base.Render(gameContext, renderContext);
 
             if (this.Canvas != null)
             {
-                this.Canvas.Draw(renderContext, this.m_Skin, gameContext.Window.ClientBounds);
+                this.Canvas.Draw(renderContext, this.m_Skin, bounds);
             }
 
             foreach (var window in this.Windows.OrderBy(x => x.Order))
@@ -126,7 +130,11 @@ namespace Protogame
 
             if (this.Canvas != null)
             {
-                this.Canvas.Update(this.m_Skin, gameContext.Window.ClientBounds, gameContext.GameTime, ref stealFocus);
+                var bounds = gameContext.Window.ClientBounds;
+                bounds.X = 0;
+                bounds.Y = 0;
+
+                this.Canvas.Update(this.m_Skin, bounds, gameContext.GameTime, ref stealFocus);
             }
 
             if (stealFocus)

@@ -542,6 +542,7 @@
     <Compile Include="UI\SingleContainer.cs" />
     <Compile Include="UI\TextBox.cs" />
     <Compile Include="UI\TextureViewer.cs" />
+    <Compile Include="UI\TransparentBasicSkin.cs" />
     <Compile Include="UI\TreeItem.cs" />
     <Compile Include="UI\TreeView.cs" />
     <Compile Include="UI\VerticalAlign.cs" />
