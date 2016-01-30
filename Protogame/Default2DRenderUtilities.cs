@@ -325,9 +325,62 @@ namespace Protogame
             bool flipVertically = false, 
             Rectangle? sourceArea = null)
         {
+            RenderTexture(
+                context,
+                position,
+                texture.Texture,
+                size,
+                color,
+                rotation,
+                flipHorizontally,
+                flipVertically,
+                sourceArea);
+        }
+
+        /// <summary>
+        /// Renders a texture at the specified position.
+        /// </summary>
+        /// <param name="context">
+        /// The rendering context.
+        /// </param>
+        /// <param name="position">
+        /// The position to render the texture.
+        /// </param>
+        /// <param name="texture">
+        /// The texture.
+        /// </param>
+        /// <param name="size">
+        /// The size to render the texture as (defaults to the texture size).
+        /// </param>
+        /// <param name="color">
+        /// The colorization to apply to the texture.
+        /// </param>
+        /// <param name="rotation">
+        /// The rotation to apply to the texture.
+        /// </param>
+        /// <param name="flipHorizontally">
+        /// If set to <c>true</c> the texture is flipped horizontally.
+        /// </param>
+        /// <param name="flipVertically">
+        /// If set to <c>true</c> the texture is flipped vertically.
+        /// </param>
+        /// <param name="sourceArea">
+        /// The source area of the texture (defaults to the full texture).
+        /// </param>
+        public void RenderTexture(
+            IRenderContext context,
+            Vector2 position,
+            Texture2D texture,
+            Vector2? size = null,
+            Color? color = null,
+            float rotation = 0,
+            bool flipHorizontally = false,
+            bool flipVertically = false,
+            Rectangle? sourceArea = null)
+        {
             if (size == null)
             {
-                size = new Vector2(texture.Texture.Width, texture.Texture.Height);
+                size = new Vector2(texture.Width, texture.Height);
             }
 
             if (color == null)
@@ -341,13 +394,13 @@ namespace Protogame
                  + (int)(flipVertically ? SpriteEffects.FlipVertically : SpriteEffects.None));
 
             context.SpriteBatch.Draw(
-                texture.Texture, 
-                new Rectangle((int)position.X, (int)position.Y, (int)size.Value.X, (int)size.Value.Y), 
-                sourceArea, 
-                color.Value.ToPremultiplied(), 
+                texture,
+                new Rectangle((int)position.X, (int)position.Y, (int)size.Value.X, (int)size.Value.Y),
+                sourceArea,
+                color.Value.ToPremultiplied(),
                 rotation,
                 new Vector2(0, 0),
-                effects, 
+                effects,
                 0);
         }
 
