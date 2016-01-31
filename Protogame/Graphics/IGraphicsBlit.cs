@@ -21,6 +21,7 @@ namespace Protogame
         /// <param name="source">The source render target.</param>
         /// <param name="destination">The destination render target, or the backbuffer if null.</param>
         /// <param name="shader">The effect shader to use, or the default blit shader if null.</param>
-        void Blit(IRenderContext renderContext, RenderTarget2D source, RenderTarget2D destination = null, Effect shader = null);
+        /// <param name="blendState">The blend state to use, or opaque blend mode if null.</param>
+        void Blit(IRenderContext renderContext, Texture2D source, RenderTarget2D destination = null, Effect shader = null, BlendState blendState = null);
     }
 }

@@ -78,27 +78,25 @@ namespace Protogame
         /// </param>
         public override void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            if (renderContext.Is3DContext)
+            if (renderContext.IsCurrentRenderPass<ICanvasRenderPass>())
             {
-                return;
-            }
+                var bounds = gameContext.Window.ClientBounds;
+                bounds.X = 0;
+                bounds.Y = 0;
 
-            var bounds = gameContext.Window.ClientBounds;
-            bounds.X = 0;
-            bounds.Y = 0;
+                this.m_LastRenderBounds = bounds;
 
-            this.m_LastRenderBounds = bounds;
+                base.Render(gameContext, renderContext);
 
-            base.Render(gameContext, renderContext);
+                if (this.Canvas != null)
+                {
+                    this.Canvas.Draw(renderContext, this.m_Skin, bounds);
+                }
 
-            if (this.Canvas != null)
-            {
-                this.Canvas.Draw(renderContext, this.m_Skin, bounds);
-            }
-
-            foreach (var window in this.Windows.OrderBy(x => x.Order))
-            {
-                window.Draw(renderContext, this.m_Skin, window.Bounds);
+                foreach (var window in this.Windows.OrderBy(x => x.Order))
+                {
+                    window.Draw(renderContext, this.m_Skin, window.Bounds);
+                }
             }
         }
 

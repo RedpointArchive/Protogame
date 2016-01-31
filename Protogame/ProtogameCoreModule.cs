@@ -38,6 +38,7 @@ namespace Protogame
 
             kernel.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>();
             kernel.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>();
+            kernel.Bind<ICanvasRenderPass>().To<DefaultCanvasRenderPass>();
             kernel.Bind<I3DRenderPass>().To<Default3DRenderPass>();
             kernel.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>();
             kernel.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>();

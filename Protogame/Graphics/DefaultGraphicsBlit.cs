@@ -33,7 +33,7 @@ namespace Protogame
             _blitEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Basic").Effect;
         }
 
-        public void Blit(IRenderContext renderContext, RenderTarget2D source, RenderTarget2D destination = null, Effect shader = null)
+        public void Blit(IRenderContext renderContext, Texture2D source, RenderTarget2D destination = null, Effect shader = null, BlendState blendState = null)
         {
             float destWidth, destHeight;
             if (destination != null)
@@ -47,6 +47,11 @@ namespace Protogame
                 // TODO: renderContext.GraphicsDevice.GetRenderTargets();
                 destWidth = renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth;
                 destHeight = renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            }
+
+            if (blendState == null)
+            {
+                blendState = BlendState.Opaque;
             }
 
             if (shader == null)
@@ -72,7 +77,7 @@ namespace Protogame
             var oldProjection = renderContext.Projection;
             var oldView = renderContext.View;
 
-            renderContext.GraphicsDevice.BlendState = BlendState.Opaque;
+            renderContext.GraphicsDevice.BlendState = blendState;
             renderContext.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             renderContext.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
             renderContext.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;

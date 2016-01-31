@@ -277,6 +277,7 @@
     <Compile Include="Graphics\Default2DDirectRenderPass.cs" />
     <Compile Include="Graphics\Default3DRenderPass.cs" />
     <Compile Include="Graphics\DefaultBlurPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\DefaultCanvasRenderPass.cs" />
     <Compile Include="Graphics\DefaultCaptureCopyPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultCaptureInlinePostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultCustomPostProcessingRenderPass.cs" />
@@ -288,6 +289,7 @@
     <Compile Include="Graphics\I2DDirectRenderPass.cs" />
     <Compile Include="Graphics\I3DRenderPass.cs" />
     <Compile Include="Graphics\IBlurPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\ICanvasRenderPass.cs" />
     <Compile Include="Graphics\ICaptureCopyPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\ICaptureInlinePostProcessingRenderPass.cs" />
     <Compile Include="Graphics\ICustomPostProcessingRenderPass.cs" />
