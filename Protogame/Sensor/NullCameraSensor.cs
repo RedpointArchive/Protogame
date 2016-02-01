@@ -4,6 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
+    /// <summary>
+    /// An implementation of <see cref="ICameraSensor"/> which provides no
+    /// cameras.
+    /// </summary>
+    /// <module>Sensor</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.ICameraSensor</interface_ref>
     public class NullCameraSensor : ICameraSensor
     {
         public void Render(IGameContext gameContext, IRenderContext renderContext)

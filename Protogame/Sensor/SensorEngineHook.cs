@@ -1,5 +1,11 @@
 ﻿namespace Protogame
 {
+    /// <summary>
+    /// The default implementation of <see cref="IEngineHook"/>.
+    /// </summary>
+    /// <module>Sensor</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IEngineHook</interface_ref>
     public class SensorEngineHook : IEngineHook
     {
         private readonly ISensorEngine _sensorEngine;

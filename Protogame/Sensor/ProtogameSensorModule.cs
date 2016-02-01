@@ -2,6 +2,10 @@
 
 namespace Protogame
 {
+    /// <summary>
+    /// This module provides access to hardware sensors on the current
+    /// device, such as reading from cameras.
+    /// </summary>
     public class ProtogameSensorModule : IProtoinjectModule
     {
         public void Load(IKernel kernel)
