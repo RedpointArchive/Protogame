@@ -485,6 +485,16 @@
     <Compile Include="Scripting\RawLogicControlScriptLoadStrategy.cs" />
     <Compile Include="Scripting\ScriptAsset.cs" />
     <Compile Include="Scripting\ScriptAssetInstance.cs" />
+    <Compile Include="Sensor\DefaultSensorEngine.cs" />
+    <Compile Include="Sensor\DirectShowCameraSensor.cs" />
+    <Compile Include="Sensor\ICamera.cs" />
+    <Compile Include="Sensor\ICameraSensor.cs" />
+    <Compile Include="Sensor\Internal\VideoCapture.cs" />
+    <Compile Include="Sensor\ISensor.cs" />
+    <Compile Include="Sensor\ISensorEngine.cs" />
+    <Compile Include="Sensor\NullCameraSensor.cs" />
+    <Compile Include="Sensor\ProtogameSensorModule.cs" />
+    <Compile Include="Sensor\SensorEngineHook.cs" />
     <Compile Include="Server\CoreServer.cs" />
     <Compile Include="Server\DefaultServerContext.cs" />
     <Compile Include="Server\DefaultServerWorldManager.cs" />
