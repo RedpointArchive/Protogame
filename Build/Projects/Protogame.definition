@@ -326,6 +326,16 @@
     <Compile Include="IHasSize.cs" />
     <Compile Include="IHasVelocity.cs" />
     <Compile Include="IKeyboardStringReader.cs" />
+    <Compile Include="ImageProcessing\DefaultColorInImageDetectionDebugRenderer.cs" />
+    <Compile Include="ImageProcessing\IColorInImageDetection.cs" />
+    <Compile Include="ImageProcessing\IColorInImageDetectionDebugRenderer.cs" />
+    <Compile Include="ImageProcessing\IImageProcessingFactory.cs" />
+    <Compile Include="ImageProcessing\IImageSource.cs" />
+    <Compile Include="ImageProcessing\ImageSourceFromRGBAArray.cs" />
+    <Compile Include="ImageProcessing\ImageSourceFromTexture.cs" />
+    <Compile Include="ImageProcessing\ISelectedColorHandle.cs" />
+    <Compile Include="ImageProcessing\ProtogameImageProcessingModule.cs" />
+    <Compile Include="ImageProcessing\ThreadedColorInImageDetection.cs" />
     <Compile Include="IRenderContext.cs" />
     <Compile Include="ISolidEntity.cs" />
     <Compile Include="IStringSanitizer.cs" />
