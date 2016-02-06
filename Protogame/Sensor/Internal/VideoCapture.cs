@@ -211,9 +211,6 @@ namespace Protogame
         protected void Initialize()
         {
             FrameReady = false;
-            frame = new Texture2D(GraphicsDevice, Width, Height, false, SurfaceFormat.Color);
-            FrameBGR = new byte[Width*Height*3];
-            FrameRGBA = new byte[Width*Height*4];
             GraphBuilder = (IGraphBuilder) new FilterGraph();
             CaptureGraphBuilder = (ICaptureGraphBuilder2) new CaptureGraphBuilder2();
             MediaControl = (IMediaControl) GraphBuilder;
@@ -232,17 +229,82 @@ namespace Protogame
                 };
                 SampleGrabber.SetMediaType(Type);
                 GraphBuilder.AddFilter(videoInput, "Camera");
+                SetCaptureFormat(videoInput);
                 SampleGrabber.SetBufferSamples(false);
                 SampleGrabber.SetOneShot(false);
                 SampleGrabber.GetConnectedMediaType(new AMMediaType());
                 SampleGrabber.SetCallback(this, 1);
                 CaptureGraphBuilder.RenderStream(PinCategory.Preview, MediaType.Video, videoInput, null,
                     SampleGrabber as IBaseFilter);
+                frame = new Texture2D(GraphicsDevice, Width, Height, false, SurfaceFormat.Color);
+                FrameBGR = new byte[Width * Height * 3];
+                FrameRGBA = new byte[Width * Height * 4];
                 UpdateThread = new Thread(UpdateBuffer);
                 UpdateThread.IsBackground = true;
                 UpdateThread.Start();
                 MediaControl.Run();
                 Marshal.ReleaseComObject(videoInput);
+            }
+        }
+
+        private void SetCaptureFormat(IBaseFilter videoInput)
+        {
+            object configRef;
+            IAMStreamConfig config = null;
+
+            var hr = CaptureGraphBuilder.FindInterface(
+                PinCategory.Capture,
+                MediaType.Video,
+                videoInput,
+                typeof (IAMStreamConfig).GUID,
+                out configRef);
+            if (hr != 0x0)
+            {
+                return;
+            }
+
+            int count = 0, size = 0;
+            config = (IAMStreamConfig) configRef;
+            hr = config.GetNumberOfCapabilities(out count, out size);
+            if (hr != 0x0)
+            {
+                return;
+            }
+
+            var formats = new List<KeyValuePair<BitmapInfoHeader, AMMediaType>>();
+
+            for (var i = 0; i < count; i++)
+            {
+                var ptr = Marshal.AllocCoTaskMem(size);
+                try
+                {
+                    AMMediaType pmt;
+                    hr = config.GetStreamCaps(i, out pmt, ptr);
+                    if (hr == 0x0)
+                    {
+                        if (pmt.formatType == FormatType.VideoInfo)
+                        {
+                            var videoInfoHeader =
+                                (VideoInfoHeader) Marshal.PtrToStructure(pmt.formatPtr, typeof (VideoInfoHeader));
+                            var bitmapInfoHeader = videoInfoHeader.BmiHeader;
+
+                            formats.Add(new KeyValuePair<BitmapInfoHeader, AMMediaType>(bitmapInfoHeader, pmt));
+                        }
+                    }
+                }
+                finally
+                {
+                    Marshal.FreeCoTaskMem(ptr);
+                }
+            }
+
+            var highestFormat = formats.Where(x => x.Key.BitCount == 24).OrderByDescending(x => x.Key.Width*x.Key.Height).ToList();
+            if (highestFormat.Count != 0)
+            {
+                var first = highestFormat[0];
+                Width = first.Key.Width;
+                Height = first.Key.Height;
+                config.SetFormat(first.Value);
             }
         }
 
