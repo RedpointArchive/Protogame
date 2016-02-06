@@ -8,6 +8,7 @@ namespace Protogame
         {
             kernel.Bind<IImageProcessingFactory>().ToFactory();
             kernel.Bind<IColorInImageDetection>().To<ThreadedColorInImageDetection>();
+            kernel.Bind<IPointInAnalysedImageDetection>().To<ThreadedPointInAnalysedImageDetection>();
             kernel.Bind<IColorInImageDetectionDebugRenderer>()
                 .To<DefaultColorInImageDetectionDebugRenderer>()
                 .InSingletonScope();

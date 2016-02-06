@@ -38,5 +38,16 @@ namespace Protogame
         /// <param name="source">The image source to detect color in.</param>
         /// <returns>The color detection object.</returns>
         IColorInImageDetection CreateColorInImageDetection(IImageSource source);
+
+        /// <summary>
+        /// Creates an object which can be used for converting detected colors
+        /// in an image into a series of discrete points.
+        /// </summary>
+        /// <param name="colorInImageDetection">The color detection object.</param>
+        /// <param name="selectedColorHandle">The color to detect points with.</param>
+        /// <returns></returns>
+        IPointInAnalysedImageDetection CreatePointInAnalysedImageDetection(
+            IColorInImageDetection colorInImageDetection,
+            ISelectedColorHandle selectedColorHandle);
     }
 }

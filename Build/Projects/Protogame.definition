@@ -333,9 +333,11 @@
     <Compile Include="ImageProcessing\IImageSource.cs" />
     <Compile Include="ImageProcessing\ImageSourceFromRGBAArray.cs" />
     <Compile Include="ImageProcessing\ImageSourceFromTexture.cs" />
+    <Compile Include="ImageProcessing\IPointInAnalysedImageDetection.cs" />
     <Compile Include="ImageProcessing\ISelectedColorHandle.cs" />
     <Compile Include="ImageProcessing\ProtogameImageProcessingModule.cs" />
     <Compile Include="ImageProcessing\ThreadedColorInImageDetection.cs" />
+    <Compile Include="ImageProcessing\ThreadedPointInAnalysedImageDetection.cs" />
     <Compile Include="IRenderContext.cs" />
     <Compile Include="ISolidEntity.cs" />
     <Compile Include="IStringSanitizer.cs" />
