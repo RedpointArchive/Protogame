@@ -23,8 +23,6 @@ namespace ProtogameDocsTool
                 { "MonoGame.Framework.Content.Pipeline", "MonoGame.Framework.Content.Pipeline.xml", false },
                 { "Jitter", "Jitter.xml", false },
                 { "Protoinject", "Protoinject.xml", false },
-                { "Protoinject.Extensions.Factory", "Protoinject.Extensions.Factory.xml", false },
-                { "Protoinject.Extensions.Interception", "Protoinject.Extensions.Interception.xml", false },
                 { "NDesk.Options", "NDesk.Options.xml", false },
                 { "Newtonsoft.Json", "Newtonsoft.Json.xml", false },
             };
@@ -46,6 +44,11 @@ namespace ProtogameDocsTool
                 }
 
                 var documentationPath = Path.Combine(currentLocation, entry.DocumentationFile);
+                if (!File.Exists(documentationPath))
+                {
+                    continue;
+                }
+
                 var documentation = new XmlDocument();
                 documentation.Load(documentationPath);
 
