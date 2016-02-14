@@ -14,6 +14,7 @@ namespace Protogame
     /// This is an interface which all of the worlds you define should implement.
     /// </para>
     /// </summary>
+    /// <module>Core API</module>
     public interface IWorld : IDisposable
     {
         /// <summary>

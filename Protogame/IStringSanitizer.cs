@@ -5,6 +5,7 @@
     /// <summary>
     /// An interface which provides mechanisms to sanitize text input.
     /// </summary>
+    /// <module>Core API</module>
     public interface IStringSanitizer
     {
         /// <summary>

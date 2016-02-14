@@ -5,6 +5,7 @@ namespace Protogame
     /// in the dependency injection container.  All registered engine hooks will be automatically
     /// fired during execution of the game.
     /// </summary>
+    /// <module>Core API</module>
     public interface IEngineHook
     {
         /// <summary>

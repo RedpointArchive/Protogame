@@ -16,6 +16,7 @@ namespace Protogame
     /// You can rebind this interface to perform advanced rendering or update logic.
     /// </para>
     /// </summary>
+    /// <module>Core API</module>
     public interface IWorldManager
     {
         /// <summary>
