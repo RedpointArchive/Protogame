@@ -413,6 +413,7 @@
     <Compile Include="Pooling\DefaultPoolManager.cs" />
     <Compile Include="Pooling\IPool.cs" />
     <Compile Include="Pooling\IPoolManager.cs" />
+    <Compile Include="Pooling\IRawPool.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Pooling\ScalingPool.cs" />
     <Compile Include="ProtogameCoreModule.cs" />

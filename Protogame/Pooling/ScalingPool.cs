@@ -3,6 +3,15 @@
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// An implementation of an <see cref="IPool{T}"/> which is capable of
+    /// scaling the capacity as more objects are needed.  Unlike standard
+    /// allocation and collection, this implementation allocates objects
+    /// in an incremental block amount.
+    /// </summary>
+    /// <module>Pooling</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IPool</interface_ref>
     public class ScalingPool<T> : IPool<T>
         where T : class
     {

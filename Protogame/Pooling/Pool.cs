@@ -2,6 +2,19 @@
 {
     using System;
 
+    /// <summary>
+    /// An implementation of an <see cref="IPool{T}"/> which manages an array
+    /// of objects.  This implementation does not allocate the objects for
+    /// you; you need to initialize an array of objects which is then used
+    /// in this implementation.
+    /// <para>
+    /// It's recommended that you use <see cref="ScalingPool{T}"/> instead,
+    /// creating it via <see cref="IPoolManager"/>.
+    /// </para>
+    /// </summary>
+    /// <module>Pooling</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IPool</interface_ref>
     public class Pool<T> : IPool<T>
         where T : class
     {

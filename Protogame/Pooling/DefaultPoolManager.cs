@@ -3,6 +3,12 @@
     using System;
     using System.Linq;
 
+    /// <summary>
+    /// The default implementation of an <see cref="IPoolManager"/>.
+    /// </summary>
+    /// <module>Pooling</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IPoolManager</interface_ref>
     public class DefaultPoolManager : IPoolManager
     {
         public IPool<T> NewPool<T>(string name, int size, Action<T> resetAction) where T : class, new()

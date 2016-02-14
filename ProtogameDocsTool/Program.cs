@@ -573,6 +573,45 @@ namespace ProtogameDocsTool
                 property.Name;
         }
 
+        static string GetGenericTypeInstanceXmlName(Type type)
+        {
+            var tmpName = type.FullName;
+
+            if (type.IsGenericType)
+            {
+                tmpName = tmpName.Split('`')[0];
+                tmpName += "{";
+                tmpName += type.GetGenericArguments().Select(y =>
+                {
+                    if (y.IsGenericParameter)
+                    {
+                        if (y.DeclaringMethod != null)
+                        {
+                            return "``" + y.GenericParameterPosition;
+                        }
+                        else
+                        {
+                            return "`" + y.GenericParameterPosition;
+                        }
+                    }
+                    else
+                    {
+                        if (y.IsGenericType)
+                        {
+                            return GetGenericTypeInstanceXmlName(y);
+                        }
+                        else
+                        {
+                            return GetTypeXmlName(y);
+                        }
+                    }
+                }).Aggregate((a, b) => a + "," + b);
+                tmpName += "}";
+            }
+
+            return tmpName;
+        }
+
         static void ProcessMethod(XmlDocument output, XmlElement container, Dictionary<string, XmlElement> lookup, Type type, MethodInfo method)
         {
             var methodXmlName = "M:";
@@ -586,7 +625,7 @@ namespace ProtogameDocsTool
                 methodXmlName += method.GetGenericArguments().Length.ToString(System.Globalization.CultureInfo.InvariantCulture);
             }
 
-            var xmlParams = method.GetParameters().Select(x => x.ParameterType.FullName).DefaultIfEmpty("").Aggregate((a, b) => a + "," + b);
+            var xmlParams = method.GetParameters().Select(x => GetGenericTypeInstanceXmlName(x.ParameterType)).DefaultIfEmpty("").Aggregate((a, b) => a + "," + b);
             if (xmlParams != string.Empty)
             {
                 methodXmlName += "(";

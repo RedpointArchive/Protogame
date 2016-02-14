@@ -1,5 +1,9 @@
 namespace Protogame
 {
+    /// <summary>
+    /// A memory pool of objects.
+    /// </summary>
+    /// <module>Pooling</module>
     public interface IPool<T> : IRawPool
         where T : class
     {
@@ -8,18 +12,5 @@ namespace Protogame
         void Release(T instance);
 
         void ReleaseAll();
-    }
-
-    public interface IRawPool
-    {
-        string Name { get; }
-
-        int NextAvailable { get; }
-
-        int NextReturn { get; }
-
-        int Free { get; }
-
-        int Total { get; }
     }
 }
