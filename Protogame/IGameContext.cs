@@ -6,69 +6,62 @@ namespace Protogame
     /// <summary>
     /// The GameContext interface.
     /// </summary>
+    /// <module>Core API</module>
     public interface IGameContext
     {
         /// <summary>
-        /// Gets or sets the camera.
+        /// Gets the frames-per-second of the current game.
         /// </summary>
         /// <value>
-        /// The camera.
-        /// </value>
-        Camera Camera { get; set; }
-
-        /// <summary>
-        /// Gets or sets the fps.
-        /// </summary>
-        /// <value>
-        /// The fps.
+        /// The FPS.
         /// </value>
         int FPS { get; set; }
 
         /// <summary>
-        /// Gets or sets the frame count.
+        /// Gets the number of frames that have been rendered in total during the game.
         /// </summary>
         /// <value>
-        /// The frame count.
+        /// The total number of frames rendered.
         /// </value>
         int FrameCount { get; set; }
 
         /// <summary>
-        /// Gets the game.
+        /// Gets the game instance.
         /// </summary>
         /// <value>
-        /// The game.
+        /// The game instance.
         /// </value>
         Game Game { get; }
 
         /// <summary>
-        /// Gets or sets the game time.
+        /// Gets the amount of game time elapsed since the last update or render step.
         /// </summary>
         /// <value>
-        /// The game time.
+        /// The elapsed game time since the last update or render step.
         /// </value>
         GameTime GameTime { get; set; }
 
         /// <summary>
-        /// Gets the graphics.
+        /// Gets the graphics device manager, which provide a high-level API to the graphics device.
         /// </summary>
         /// <value>
-        /// The graphics.
+        /// The graphics device manager.
         /// </value>
         GraphicsDeviceManager Graphics { get; }
 
         /// <summary>
-        /// Gets the window.
+        /// Gets the game window.
         /// </summary>
         /// <value>
-        /// The window.
+        /// The window the game is rendering in.
         /// </value>
         IGameWindow Window { get; }
 
         /// <summary>
-        /// Gets the world.
+        /// Gets the current world.
         /// </summary>
         /// <value>
-        /// The world.
+        /// The current active world in the game.
         /// </value>
         IWorld World { get; }
 
@@ -107,9 +100,10 @@ namespace Protogame
         Plane MouseVerticalPlane { get; set; }
 
         /// <summary>
-        /// The create world.
+        /// Creates the specified world and returns it.
         /// </summary>
         /// <typeparam name="T">
+        /// The type of the world to create.
         /// </typeparam>
         /// <returns>
         /// The <see cref="IWorld"/>.
@@ -117,12 +111,11 @@ namespace Protogame
         IWorld CreateWorld<T>() where T : IWorld;
 
         /// <summary>
-        /// The create world.
+        /// Creates the specified world using a given factory and returns it.
         /// </summary>
-        /// <param name="creator">
-        /// The creator.
-        /// </param>
-        /// <typeparam name="TFactory">
+        /// <param name="creator">The method used to create the world.</param>
+        /// <typeparam name="T">
+        /// The type of the world to create.
         /// </typeparam>
         /// <returns>
         /// The <see cref="IWorld"/>.
@@ -130,40 +123,46 @@ namespace Protogame
         IWorld CreateWorld<TFactory>(Func<TFactory, IWorld> creator);
 
         /// <summary>
-        /// The resize window.
+        /// Resizes the game window to the specified width and height.  This method
+        /// can only be called during the update step (not during rendering).
         /// </summary>
         /// <param name="width">
-        /// The width.
+        /// The desired width of the game window.
         /// </param>
         /// <param name="height">
-        /// The height.
+        /// The desired height of the game window.
         /// </param>
         void ResizeWindow(int width, int height);
 
         /// <summary>
-        /// The switch world.
+        /// Switches the current active world to a new instance of the world, as
+        /// specified by the given type.
         /// </summary>
         /// <typeparam name="T">
+        /// The type of world to create and switch to.
         /// </typeparam>
         void SwitchWorld<T>() where T : IWorld;
 
         /// <summary>
-        /// The switch world.
+        /// Switches the current active world to a new instance of the world, using
+        /// the specified factory method to create the instance of the world.
         /// </summary>
         /// <param name="creator">
-        /// The creator.
+        /// The factory method used to create the world.
         /// </param>
         /// <typeparam name="TFactory">
+        /// The type of world to create and switch to.
         /// </typeparam>
         void SwitchWorld<TFactory>(Func<TFactory, IWorld> creator);
 
         /// <summary>
-        /// The switch world.
+        /// Switches the current active world to the specified world instance.
         /// </summary>
         /// <param name="world">
-        /// The world.
+        /// The world instance to switch to.
         /// </param>
-        /// <typeparam name="T">
+        /// <typeparam name="TFactory">
+        /// The type of world to switch to.
         /// </typeparam>
         void SwitchWorld<T>(T world) where T : IWorld;
     }
