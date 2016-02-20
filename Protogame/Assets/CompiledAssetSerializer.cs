@@ -19,10 +19,11 @@ namespace Protogame
         /// <summary>
         /// The known types.
         /// </summary>
-        private static readonly Type[] knownTypes =
+        private static readonly string[] knownTypes =
         {
-            typeof(CompiledAsset), typeof(PlatformData), 
-            typeof(TargetPlatform)
+            typeof(CompiledAsset).FullName,
+            typeof(PlatformData).FullName, 
+            typeof(TargetPlatform).FullName
         };
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Protogame
         /// </returns>
         protected override int GetKeyImpl(Type value)
         {
-            return ((IList)knownTypes).IndexOf(value);
+            return ((IList)knownTypes).IndexOf(value.FullName);
         }
 
         /// <summary>

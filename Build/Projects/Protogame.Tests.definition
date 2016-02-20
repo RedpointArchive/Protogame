@@ -5,6 +5,7 @@
   </Properties>
   <References>
     <Reference Include="Protogame" />
+    <Reference Include="protobuf-net" />
     <Reference Include="System" />
     <Reference Include="Protoinject" />
     <Reference Include="MonoGame.Framework" />
@@ -21,6 +22,7 @@
     <Compile Include="PoolTests.cs" />
     <Compile Include="PositionOctreeTests.cs" />
     <Compile Include="RenderPipelineTests.cs" />
+    <Compile Include="TestNetworkMessage.cs" />
     <Compile Include="TimeMachineTests.cs" />
     <EmbeddedResource Include="effect.MakeRed-Android.bin">
       <Platforms>Android</Platforms>
