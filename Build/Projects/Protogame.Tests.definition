@@ -18,6 +18,7 @@
     <Compile Include="ComponentTests.cs" />
     <Compile Include="EventEngineTests.cs" />
     <Compile Include="MxTests.cs" />
+    <Compile Include="NetworkSerializationTests.cs" />
     <Compile Include="PlatformingModuleTests.cs" />
     <Compile Include="PoolTests.cs" />
     <Compile Include="PositionOctreeTests.cs" />

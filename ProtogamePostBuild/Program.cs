@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 using ProtoBuf.Meta;
 using ProtoBuf.Precompile;
 
@@ -22,6 +23,7 @@ namespace ProtogamePostBuild
         {
             // First generate a temporary assembly that contains the compiled protobuf serializer.  Using
             // a precompiled serializer dramatically improves performance.
+            File.Copy(intermediateAssembly, intermediateAssembly + ".NetworkSource.dll", true);
             var temporaryAssemblyName = intermediateAssembly + ".NetworkIntermediate.dll";
             var context = new PreCompileContext();
             context.AssemblyName = temporaryAssemblyName;
@@ -58,17 +60,30 @@ namespace ProtogamePostBuild
                 var targetAssembly = AssemblyDefinition.ReadAssembly(intermediateAssembly,
                     new ReaderParameters { ReadSymbols = readSymbols, AssemblyResolver = resolver });
 
-                var serializer = temporaryAssembly.MainModule.Types.First(x => x.Name == "IntermediateNetworkSerializer");
-                var serializerCopy = new TypeDefinition("NetworkSerializers", (Path.GetFileNameWithoutExtension(intermediateAssembly) ?? string.Empty).Replace(".", "") + "Serializer", serializer.Attributes);
-                targetAssembly.MainModule.Types.Add(serializerCopy);
-                Console.WriteLine("Created type " + serializerCopy.FullName + ".");
+                targetAssembly.Modules.Add(temporaryAssembly.MainModule);
 
-                foreach (var method in serializer.Methods)
-                {
-                    var methodCopy = new MethodDefinition(method.Name, method.Attributes, targetAssembly.MainModule.Import(method.ReturnType));
-                    serializerCopy.Methods.Add(methodCopy);
-                    Console.WriteLine("Copied method " + methodCopy.FullName + ".");
-                }
+                var targetModule = targetAssembly.Modules.Last();
+                targetModule.Name = "NetworkSerializersModule";
+
+                // Get the serializer type.
+                var baseSerializer = targetModule.Types.First(x => x.Name == "IntermediateNetworkSerializer");
+
+                // Strip the sealed attribute off it.
+                baseSerializer.Attributes &= ~TypeAttributes.Sealed;
+
+                // Now create a new class in the module which inherits from the target class.
+                var netSerializer = new TypeDefinition("_NetworkSerializers", "<>GeneratedSerializer",
+                    TypeAttributes.AnsiClass | TypeAttributes.AutoClass | TypeAttributes.BeforeFieldInit | TypeAttributes.Public);
+                netSerializer.BaseType = targetAssembly.MainModule.Import(baseSerializer);
+                targetAssembly.MainModule.Types.Add(netSerializer);
+
+                // Create a constructor in that class.
+                var netConstructor = new MethodDefinition(".ctor", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName, targetAssembly.MainModule.Import(typeof(void)));
+                netConstructor.Body.MaxStackSize = 8;
+                netConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+                netConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, targetAssembly.MainModule.Import(baseSerializer.Methods.First(x => x.Name == ".ctor"))));
+                netConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+                netSerializer.Methods.Add(netConstructor);
 
                 try
                 {

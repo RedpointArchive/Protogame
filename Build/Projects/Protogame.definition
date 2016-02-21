@@ -353,10 +353,12 @@
     <Compile Include="Level\OgmoLevelReader.cs" />
     <Compile Include="Level\ProtogameLevelIoCModule.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
+    <Compile Include="Network\AheadOfTimeNetworkMessageSerialization.cs" />
     <Compile Include="Network\FlowControlChangedEventArgs.cs" />
     <Compile Include="Network\FlowControlChangedEventHandler.cs" />
     <Compile Include="Network\Fragment.cs" />
     <Compile Include="Network\FragmentStatus.cs" />
+    <Compile Include="Network\INetworkMessageSerialization.cs" />
     <Compile Include="Network\InputPrediction.cs" />
     <Compile Include="Network\InterpolatedTimeMachine.cs" />
     <Compile Include="Network\MxClient.cs" />
@@ -379,6 +381,8 @@
     <Compile Include="Network\MxReliabilityTransmitEventHandler.cs" />
     <Compile Include="Network\MxUtility.cs" />
     <Compile Include="Network\NetworkMessageAttribute.cs" />
+    <Compile Include="Network\NetworkTagAttribute.cs" />
+    <Compile Include="Network\ProtogameNetworkModule.cs" />
     <Compile Include="Network\TimeMachine.cs" />
     <Compile Include="Network\TimeMachines\BooleanTimeMachine.cs" />
     <Compile Include="Network\TimeMachines\DoubleTimeMachine.cs" />
