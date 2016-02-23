@@ -30,9 +30,9 @@ namespace ProtogamePostBuild
             context.ProbePaths.AddRange(referencedAssemblies.Select(Path.GetDirectoryName));
             context.Inputs.Add(intermediateAssembly + ".NetworkSource.dll");
             context.Accessibility = RuntimeTypeModel.Accessibility.Public;
-            context.TypeName = "IntermediateNetworkSerializer";
+            context.TypeName = "_NetworkSerializer";
             context.Execute();
-
+            
             // If the file doesn't exist, there were no network types to generate.
             if (!File.Exists(temporaryAssemblyName))
             {
@@ -60,34 +60,16 @@ namespace ProtogamePostBuild
                 var targetAssembly = AssemblyDefinition.ReadAssembly(intermediateAssembly,
                     new ReaderParameters { ReadSymbols = readSymbols, AssemblyResolver = resolver });
 
-                targetAssembly.Modules.Add(temporaryAssembly.MainModule);
-
-                var targetModule = targetAssembly.Modules.Last();
-                targetModule.Name = "NetworkSerializersModule";
-
-                // Get the serializer type.
-                var baseSerializer = targetModule.Types.First(x => x.Name == "IntermediateNetworkSerializer");
-
-                // Strip the sealed attribute off it.
-                baseSerializer.Attributes &= ~TypeAttributes.Sealed;
-
-                // Now create a new class in the module which inherits from the target class.
-                var netSerializer = new TypeDefinition("_NetworkSerializers", "<>GeneratedSerializer",
-                    TypeAttributes.AnsiClass | TypeAttributes.AutoClass | TypeAttributes.BeforeFieldInit | TypeAttributes.Public);
-                netSerializer.BaseType = targetAssembly.MainModule.Import(baseSerializer);
-                targetAssembly.MainModule.Types.Add(netSerializer);
-
-                // Create a constructor in that class.
-                var netConstructor = new MethodDefinition(".ctor", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName, targetAssembly.MainModule.Import(typeof(void)));
-                netConstructor.Body.MaxStackSize = 8;
-                netConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
-                netConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, targetAssembly.MainModule.Import(baseSerializer.Methods.First(x => x.Name == ".ctor"))));
-                netConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
-                netSerializer.Methods.Add(netConstructor);
-
+                // This copies just enough for the protobuf serializer to copy across (e.g.
+                // it doesn't support generics or anything fancy).
+                var sourceType = temporaryAssembly.MainModule.GetType("_NetworkSerializer");
+                var targetType = new TypeDefinition("_NetworkSerializers", "<>GeneratedSerializer", sourceType.Attributes, targetAssembly.MainModule.Import(sourceType.BaseType));
+                targetAssembly.MainModule.Types.Add(targetType);
+                CopyType(sourceType, targetType);
+                
                 try
                 {
-                    targetAssembly.Write(intermediateAssembly, new WriterParameters {WriteSymbols = false});
+                    targetAssembly.Write(intermediateAssembly, new WriterParameters {WriteSymbols = readSymbols});
                     Console.WriteLine("Saved modified assembly.");
                 }
                 catch (IOException)
@@ -103,6 +85,94 @@ namespace ProtogamePostBuild
                 }
                 catch { }
             }
+        }
+
+        private static void CopyType(TypeDefinition sourceType, TypeDefinition targetType)
+        {
+            foreach (var field in sourceType.Fields)
+            {
+                CopyFieldTo(field, targetType);
+            }
+
+            foreach (var method in sourceType.Methods)
+            {
+                CopyMethodTo(method, targetType);
+            }
+        }
+
+        private static void CopyFieldTo(FieldDefinition field, TypeDefinition targetType)
+        {
+            var target = new FieldDefinition(field.Name, field.Attributes, targetType.Module.Import(field.FieldType));
+            targetType.Fields.Add(target);
+
+            Console.WriteLine("Copied field " + target.Name + ".");
+        }
+
+        private static void CopyMethodTo(MethodDefinition method, TypeDefinition targetType)
+        {
+            var target = new MethodDefinition(method.Name, method.Attributes, targetType.Module.Import(method.ReturnType));
+            targetType.Methods.Add(target);
+
+            foreach (var @override in method.Overrides)
+            {
+                var targetOverride = targetType.Module.Import(@override);
+                target.Overrides.Add(targetOverride);
+            }
+
+            foreach (var parameter in method.Parameters)
+            {
+                var targetParameter = new ParameterDefinition(parameter.Name, parameter.Attributes, targetType.Module.Import(parameter.ParameterType));
+                target.Parameters.Add(targetParameter);
+            }
+
+            foreach (var variable in method.Body.Variables)
+            {
+                var targetVariable = new VariableDefinition(variable.Name, targetType.Module.Import(variable.VariableType));
+                target.Body.Variables.Add(targetVariable);
+            }
+
+            foreach (var instruction in method.Body.Instructions)
+            {
+                if (instruction.Operand is FieldReference)
+                {
+                    var f = (FieldReference) instruction.Operand;
+                    instruction.Operand = targetType.Fields.First(x => x.Name == f.Name);
+                }
+                else if (instruction.Operand is ParameterReference)
+                {
+                    var p = (ParameterReference) instruction.Operand;
+                    instruction.Operand = target.Parameters[p.Index];
+                }
+                else if (instruction.Operand is MethodReference)
+                {
+                    var m = (MethodReference) instruction.Operand;
+                    if (m.DeclaringType.Name == "_NetworkSerializer")
+                    {
+                        // redirect to this type.
+                        var om = m;
+                        m = new MethodReference(m.Name, targetType.Module.Import(m.ReturnType), targetType);
+                        foreach (var oldArg in om.Parameters)
+                        {
+                            m.Parameters.Add(new ParameterDefinition(oldArg.Name, oldArg.Attributes, targetType.Module.Import(oldArg.ParameterType)));
+                        }
+                    }
+                    else
+                    {
+                        m = targetType.Module.Import(m);
+                    }
+                    instruction.Operand = m;
+                }
+                else if (instruction.Operand is TypeReference)
+                {
+                    instruction.Operand = targetType.Module.Import((TypeReference)instruction.Operand);
+                }
+
+                target.Body.Instructions.Add(instruction);
+
+                //var copiedInstruction = instruction;
+            }
+
+            Console.WriteLine("Copied method " + target.Name + ".");
         }
     }
 }

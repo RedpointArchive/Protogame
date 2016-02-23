@@ -358,6 +358,7 @@
     <Compile Include="Network\FlowControlChangedEventHandler.cs" />
     <Compile Include="Network\Fragment.cs" />
     <Compile Include="Network\FragmentStatus.cs" />
+    <Compile Include="Network\INetworkMessage.cs" />
     <Compile Include="Network\INetworkMessageSerialization.cs" />
     <Compile Include="Network\InputPrediction.cs" />
     <Compile Include="Network\InterpolatedTimeMachine.cs" />
