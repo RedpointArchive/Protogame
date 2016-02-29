@@ -41,7 +41,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="object"/>.
         /// </returns>
-        protected override object Deserialize(int num, object obj, ProtoReader protoReader)
+        protected internal override object Deserialize(int num, object obj, ProtoReader protoReader)
         {
             switch (num)
             {
@@ -82,7 +82,7 @@ namespace Protogame
         /// <param name="protoWriter">
         /// The proto writer.
         /// </param>
-        protected override void Serialize(int num, object obj, ProtoWriter protoWriter)
+        protected internal override void Serialize(int num, object obj, ProtoWriter protoWriter)
         {
             switch (num)
             {
