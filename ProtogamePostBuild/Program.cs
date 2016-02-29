@@ -29,7 +29,6 @@ namespace ProtogamePostBuild
             context.AssemblyName = temporaryAssemblyName;
             context.ProbePaths.AddRange(referencedAssemblies.Select(Path.GetDirectoryName));
             context.Inputs.Add(intermediateAssembly + ".NetworkSource.dll");
-            context.Accessibility = RuntimeTypeModel.Accessibility.Public;
             context.TypeName = "_NetworkSerializer";
             context.Execute();
             
