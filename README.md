@@ -1,10 +1,28 @@
-Protogame v3 Beta
+Protogame v4 Beta
 ===================
 
-**NOTE:** The version 3 Beta is still a work-in-progress!
+**NOTE:** Version 4 is still a work-in-progress!
+
+* The latest version (version 4) is available on the `master` branch.
+* The last version of version 3 is available at the `v3.0` tag.
+* The last version of version 2 is available at the `v2.0` tag.
+* The last version of version 1 is available at the `v1.0` tag.
+
+New features in Version 4
+-----------------------------
+
+Version 4 breaks compatibility with version 3, in order to introduce the following features:
+
+ * Entities now have matrixes instead of explicit X, Y and Z properties.  This is necessary to
+   support hierarchical matrix combination.
+ * Worlds no longer have an `Entities` property.  Instead the dependency injection hierarchy is
+   used to track entities in the world.  This means entities you inject in the constructor will
+   automatically be added to the world.  To add entities to the world, you now need to inject
+   `IHierarchy` and `INode` and call `_hierarchy.AddChild(_hierarchy.CreateNodeForObject(entity))`.
+   We'll have a cleaner API for entity management in the future that wraps this call.
+ * We expect to significantly rework the platforming and bounding box APIs to make them work cleaner
+   with the new matrix composition system.
 
 Protogame is an open source game engine (MIT licensed) written on top of MonoGame and C#, designed to allow game developers to rapidly produce games within 48 hours.
 
 Read more about Protogame at the website: http://protogame.org/
-
-If you are on Windows, you will need to download and install http://www.microsoft.com/en-us/download/confirmation.aspx?id=30679 in order to compile models.
