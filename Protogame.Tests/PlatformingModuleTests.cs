@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using Protoinject;
 using Prototest.Library.Version1;
 
@@ -11,8 +12,7 @@ namespace Protogame.Tests
         {
             return new BoundingBox
             {
-                X = x,
-                Y = y,
+                LocalMatrix = Matrix.CreateTranslation(x, y, 0),
                 Width = width,
                 Height = height,
                 XSpeed = xspeed,

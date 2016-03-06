@@ -1,3 +1,6 @@
+using System.Collections.ObjectModel;
+using Protoinject;
+
 namespace Protogame
 {
     using System;
@@ -72,6 +75,14 @@ namespace Protogame
         /// The world manager.
         /// </value>
         IWorldManager WorldManager { get; }
+
+        /// <summary>
+        /// Gets the dependency injection hierarchy, which contains all worlds, entities and components.
+        /// </summary>
+        /// <value>
+        /// The dependency injection hierarchy, which contains all worlds, entities and components.
+        /// </value>
+        IHierarchy Hierarchy { get; }
 
         /// <summary>
         /// Gets or sets the ray representing the mouse cursor in 3D space.  This is

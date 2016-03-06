@@ -1,4 +1,6 @@
-﻿namespace Protogame
+﻿using Microsoft.Xna.Framework;
+
+namespace Protogame
 {
     /// <summary>
     /// The base class for entities which support having components.
@@ -43,27 +45,13 @@
         /// </summary>
         public ComponentizedEntity()
         {
+            LocalMatrix = Matrix.Identity;
+
             _update = RegisterCallable<IUpdatableComponent, IGameContext, IUpdateContext>((t, g, u) => t.Update(this, g, u));
             _render = RegisterCallable<IRenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Render(this, g, r));
-        }  
 
-        /// <summary>
-        /// Gets or sets the X position of the entity.
-        /// </summary>
-        /// <value>The X position of the entity.</value>
-        public float X { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Y position of the entity.
-        /// </summary>
-        /// <value>The Y position of the entity.</value>
-        public float Y { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Z position of the entity.
-        /// </summary>
-        /// <value>The Z position of the entity.</value>
-        public float Z { get; set; }
+            RegisterPrivateComponent(this); // Register this as IPositionComponent.
+        }
 
         /// <summary>
         /// Renders the entity.
@@ -83,6 +71,13 @@
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             _update.Invoke(gameContext, updateContext);
+        }
+
+        public Matrix LocalMatrix { get; set; }
+
+        public Matrix GetFinalMatrix()
+        {
+            return LocalMatrix;
         }
     }
 }

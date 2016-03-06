@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+
 namespace Protogame
 {
     /// <summary>
@@ -5,6 +7,11 @@ namespace Protogame
     /// </summary>
     public class BoundingBox : IBoundingBox
     {
+        public BoundingBox()
+        {
+            LocalMatrix = Matrix.Identity;
+        }
+
         /// <summary>
         /// Gets or sets the depth.
         /// </summary>
@@ -30,28 +37,12 @@ namespace Protogame
         public float Width { get; set; }
 
         /// <summary>
-        /// Gets or sets the x.
-        /// </summary>
-        /// <value>
-        /// The x.
-        /// </value>
-        public float X { get; set; }
-
-        /// <summary>
         /// Gets or sets the x speed.
         /// </summary>
         /// <value>
         /// The x speed.
         /// </value>
         public float XSpeed { get; set; }
-
-        /// <summary>
-        /// Gets or sets the y.
-        /// </summary>
-        /// <value>
-        /// The y.
-        /// </value>
-        public float Y { get; set; }
 
         /// <summary>
         /// Gets or sets the y speed.
@@ -62,19 +53,21 @@ namespace Protogame
         public float YSpeed { get; set; }
 
         /// <summary>
-        /// Gets or sets the z.
-        /// </summary>
-        /// <value>
-        /// The z.
-        /// </value>
-        public float Z { get; set; }
-
-        /// <summary>
         /// Gets or sets the z speed.
         /// </summary>
         /// <value>
         /// The z speed.
         /// </value>
         public float ZSpeed { get; set; }
+
+        /// <summary>
+        /// Gets the matrix.  For bounding boxes, this currently is only used for translation.
+        /// </summary>
+        public Matrix LocalMatrix { get; set; }
+        
+        public Matrix GetFinalMatrix()
+        {
+            return LocalMatrix;
+        }
     }
 }

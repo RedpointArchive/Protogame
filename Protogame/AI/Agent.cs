@@ -1,4 +1,6 @@
-﻿namespace Protogame
+﻿using Protoinject;
+
+namespace Protogame
 {
     using System;
     using System.Linq;
@@ -6,10 +8,13 @@
 
     public class Agent
     {
+        private readonly IHierarchy _hierarchy;
+
         private Vector2[] m_WallFeelers = null;
 
-        public Agent(IEntity entity, IAI ai, float maxSpeed)
+        public Agent(IHierarchy hierarchy, IEntity entity, IAI ai, float maxSpeed)
         {
+            _hierarchy = hierarchy;
             this.Entity = entity;
             this.AI = ai;
             this.MaxSpeed = maxSpeed;
@@ -29,13 +34,13 @@
         {
             get
             {
-                return new Vector2(this.Entity.X, this.Entity.Y);
+                return new Vector2(this.Entity.LocalMatrix.Translation.X, this.Entity.LocalMatrix.Translation.Y);
             }
 
             set
             {
-                this.Entity.X = value.X;
-                this.Entity.Y = value.Y;
+                this.Entity.LocalMatrix *= Matrix.CreateTranslation(
+                    new Vector3(value.X, value.Y, 0) - this.Entity.LocalMatrix.Translation);
             }
         }
 
@@ -87,7 +92,7 @@
         public bool CanSee(IGameContext gameContext, IEntity other)
         {
             // Agents can't see behind themselves.
-            if (this.Unproject(new Vector2(other.X, other.Y)).X < 0)
+            if (this.Unproject(new Vector2(other.LocalMatrix.Translation.X, other.LocalMatrix.Translation.Y)).X < 0)
             {
                 return false;
             }
@@ -98,7 +103,7 @@
             float? closestIntersection;
             if (this.Raycast(
                 gameContext,
-                new Vector2(other.X, other.Y) - this.Position,
+                new Vector2(other.LocalMatrix.Translation.X, other.LocalMatrix.Translation.Y) - this.Position,
                 out closestEntity,
                 out closestIntersection,
                 out collisionPoint))
@@ -112,7 +117,7 @@
         public bool Raycast(IGameContext gameContext, Vector2 direction, out IEntity closestEntity, out float? closestIntersection, out Vector2? collisionPoint)
         {
             // Project all agents and walls into local space.
-            var entities = gameContext.World.Entities.ToList();
+            var entities = gameContext.World.GetEntitiesForWorld(_hierarchy);
 
             closestEntity = null;
             closestIntersection = null;
@@ -184,7 +189,7 @@
 
             var matrix = Matrix.Identity;
             matrix *= Matrix.CreateRotationY(-(float)Math.Atan2(heading.Value.Y, heading.Value.X));
-            matrix *= Matrix.CreateTranslation(new Vector3(this.Entity.X, 0, this.Entity.Y));
+            matrix *= Matrix.CreateTranslation(new Vector3(this.Entity.LocalMatrix.Translation.X, 0, this.Entity.LocalMatrix.Translation.Y));
 
             var projected = Vector3.Transform(new Vector3(local.X, 0, local.Y), matrix);
             return new Vector2(projected.X, projected.Z);
@@ -249,7 +254,7 @@
             heading = heading ?? this.Heading;
 
             var matrix = Matrix.Identity;
-            matrix *= Matrix.CreateTranslation(new Vector3(-this.Entity.X, 0, -this.Entity.Y));
+            matrix *= Matrix.CreateTranslation(new Vector3(-this.Entity.LocalMatrix.Translation.X, 0, -this.Entity.LocalMatrix.Translation.Y));
             matrix *= Matrix.CreateRotationY((float)Math.Atan2(heading.Value.Y, heading.Value.X));
 
             var unprojected = Vector3.Transform(new Vector3(world.X, 0, world.Y), matrix);
@@ -281,7 +286,7 @@
 
         private Vector2 AvoidWalls(IGameContext gameContext)
         {
-            var walls = gameContext.World.Entities.OfType<Wall>().ToList();
+            var walls = gameContext.World.GetEntitiesForWorld(_hierarchy).OfType<Wall>().ToList();
             var accel = Vector2.Zero;
 
             foreach (var feeler in this.m_WallFeelers)
@@ -342,7 +347,7 @@
         private Vector2 UnprojectFeeler(Vector2 world, Vector2 feeler)
         {
             var matrix = Matrix.Identity;
-            matrix *= Matrix.CreateTranslation(new Vector3(-this.Entity.X, 0, -this.Entity.Y));
+            matrix *= Matrix.CreateTranslation(new Vector3(-this.Entity.LocalMatrix.Translation.X, 0, -this.Entity.LocalMatrix.Translation.Y));
             matrix *= Matrix.CreateRotationY((float)Math.Atan2(this.Heading.Y, this.Heading.X));
             matrix *= Matrix.CreateRotationY((float)Math.Atan2(feeler.Y, feeler.X));
 

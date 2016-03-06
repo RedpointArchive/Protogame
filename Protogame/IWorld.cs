@@ -1,3 +1,5 @@
+using Protoinject;
+
 namespace Protogame
 {
     using System;
@@ -17,18 +19,6 @@ namespace Protogame
     /// <module>Core API</module>
     public interface IWorld : IDisposable
     {
-        /// <summary>
-        /// Gets the entities.
-        /// <para>
-        /// This is a list of entities that are currently present in the world.  The <see cref="IWorldManager"/>
-        /// will use this list to invoke the rendering and update of entities at the appropriate time.
-        /// </para>
-        /// </summary>
-        /// <value>
-        /// The entities.
-        /// </value>
-        IList<IEntity> Entities { get; }
-
         /// <summary>
         /// This is called by <see cref="IWorldManager"/> when rendering is about to finish.  Rendering
         /// has not yet been completely finalized, but all entities have been rendered in the current context.

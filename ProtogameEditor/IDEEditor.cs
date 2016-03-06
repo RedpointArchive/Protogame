@@ -139,7 +139,7 @@ namespace ProtogameEditor
         {
             using (var writer = new StreamWriter(path))
             {
-                foreach (var entity in _game.GameContext.World.Entities.OfType<ISerializableEntity>())
+                foreach (var entity in _game.GameContext.World.GetEntitiesForWorld(_kernel.Hierarchy).OfType<ISerializableEntity>())
                 {
                     writer.WriteLine(entity.Text);
                 }

@@ -174,15 +174,18 @@
     <Compile Include="Commands\ExitCommand.cs" />
     <Compile Include="Commands\GCCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
+    <Compile Include="Component\Builtin\AbsoluteMatrixComponent.cs" />
+    <Compile Include="Component\Builtin\IBuiltinComponentFactory.cs" />
+    <Compile Include="Component\Builtin\Render2DTextComponent.cs" />
+    <Compile Include="Component\Builtin\Render2DTextureComponent.cs" />
+    <Compile Include="Component\Builtin\Render3DPlaneComponent.cs" />
     <Compile Include="Component\ComponentizedEntity.cs" />
     <Compile Include="Component\ComponentizedObject.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ComponentizedObject.tt</DependentUpon>
     </Compile>
-    <Compile Include="Component\DefaultInstantiateComponent.cs" />
-    <Compile Include="Component\DefaultRequireComponent.cs" />
-    <Compile Include="Component\IBuiltinComponentFactory.cs" />
+    <Compile Include="Component\FromParentAttribute.cs" />
     <Compile Include="Component\IComponentCallable.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -192,16 +195,8 @@
     <Compile Include="Component\IContainsComponents.cs" />
     <Compile Include="Component\IHasComponent.cs" />
     <Compile Include="Component\IHierarchialComponent.cs" />
-    <Compile Include="Component\IInstantiateComponent.cs" />
     <Compile Include="Component\IRenderableComponent.cs" />
-    <Compile Include="Component\IRequireComponent.cs" />
-    <Compile Include="Component\IRequireComponentInDescendants.cs" />
-    <Compile Include="Component\IRequireComponentInHierarchy.cs" />
     <Compile Include="Component\IUpdatableComponent.cs" />
-    <Compile Include="Component\NeedsComponentInHierarchyToContinueException.cs" />
-    <Compile Include="Component\ProtogameComponentModule.cs" />
-    <Compile Include="Component\Render2DTextComponent.cs" />
-    <Compile Include="Component\Render2DTextureComponent.cs" />
     <Compile Include="Compression\CRC.cs" />
     <Compile Include="Compression\ICoder.cs" />
     <Compile Include="Compression\IMatchFinder.cs" />
@@ -321,7 +316,7 @@
     <Compile Include="IGameConfiguration.cs" />
     <Compile Include="IGameContext.cs" />
     <Compile Include="IGameWindow.cs" />
-    <Compile Include="IHasPosition.cs" />
+    <Compile Include="IHasMatrix.cs" />
     <Compile Include="IHasSize.cs" />
     <Compile Include="IHasVelocity.cs" />
     <Compile Include="IKeyboardStringReader.cs" />
@@ -345,6 +340,7 @@
     <Compile Include="IUpdateContext.cs" />
     <Compile Include="IWorld.cs" />
     <Compile Include="IWorldManager.cs" />
+    <Compile Include="KernelExtensions.cs" />
     <Compile Include="Level\DefaultLevelManager.cs" />
     <Compile Include="Level\DefaultTileset.cs" />
     <Compile Include="Level\ILevelManager.cs" />

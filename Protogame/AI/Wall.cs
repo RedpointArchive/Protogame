@@ -22,6 +22,7 @@
             this.m_2DRenderUtilities = twoDRenderUtilities;
             this.DebugRenderWallColor = Color.Black;
             this.DebugRenderWallNormalColor = Color.DarkGray;
+            LocalMatrix = Matrix.Identity;
         }
 
         public Vector2 Start { get; set; }
@@ -102,6 +103,12 @@
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
+        }
+
+        public Matrix LocalMatrix { get; set; }
+        public Matrix GetFinalMatrix()
+        {
+            return LocalMatrix;
         }
     }
 }

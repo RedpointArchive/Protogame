@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+
 namespace Protogame
 {
     /// <summary>
@@ -5,6 +7,11 @@ namespace Protogame
     /// </summary>
     public class Entity : IBoundingBox, IEntity
     {
+        public Entity()
+        {
+            LocalMatrix = Matrix.Identity;
+        }
+
         /// <summary>
         /// Gets or sets the depth.
         /// </summary>
@@ -30,14 +37,6 @@ namespace Protogame
         public virtual float Width { get; set; }
 
         /// <summary>
-        /// Gets or sets the x.
-        /// </summary>
-        /// <value>
-        /// The x.
-        /// </value>
-        public virtual float X { get; set; }
-
-        /// <summary>
         /// Gets or sets the x speed.
         /// </summary>
         /// <value>
@@ -46,28 +45,12 @@ namespace Protogame
         public virtual float XSpeed { get; set; }
 
         /// <summary>
-        /// Gets or sets the y.
-        /// </summary>
-        /// <value>
-        /// The y.
-        /// </value>
-        public virtual float Y { get; set; }
-
-        /// <summary>
         /// Gets or sets the y speed.
         /// </summary>
         /// <value>
         /// The y speed.
         /// </value>
         public virtual float YSpeed { get; set; }
-
-        /// <summary>
-        /// Gets or sets the z.
-        /// </summary>
-        /// <value>
-        /// The z.
-        /// </value>
-        public virtual float Z { get; set; }
 
         /// <summary>
         /// Gets or sets the z speed.
@@ -101,9 +84,14 @@ namespace Protogame
         /// </param>
         public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            this.X += this.XSpeed;
-            this.Y += this.YSpeed;
-            this.Z += this.ZSpeed;
+            LocalMatrix *= Matrix.CreateTranslation(XSpeed, YSpeed, ZSpeed);
+        }
+
+        public Matrix LocalMatrix { get; set; }
+
+        public Matrix GetFinalMatrix()
+        {
+            return LocalMatrix;
         }
     }
 }

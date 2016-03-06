@@ -15,7 +15,7 @@ namespace Protogame.Tests
 
         public void Unproject()
         {
-            var agent = new Agent(new TestEntity(), null, 0);
+            var agent = new Agent(null, new TestEntity(), null, 0);
             agent.Position = new Vector2(100, 100);
 
             agent.Heading = new Vector2(1, 0);
@@ -49,7 +49,7 @@ namespace Protogame.Tests
         
         public void Project()
         {
-            var agent = new Agent(new TestEntity(), null, 0);
+            var agent = new Agent(null, new TestEntity(), null, 0);
             agent.Position = new Vector2(100, 100);
 
             agent.Heading = new Vector2(1, 0);

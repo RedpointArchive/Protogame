@@ -9,7 +9,7 @@ namespace Protogame
     /// Represents a physics entity.
     /// </summary>
     /// <module>Physics</module>
-    public interface IPhysicsEntity : IHasPosition
+    public interface IPhysicsEntity : IHasMatrix
 	{
         Matrix Rotation { get; set; }
 	}

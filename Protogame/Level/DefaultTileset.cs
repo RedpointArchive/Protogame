@@ -47,29 +47,7 @@ namespace Protogame
             this.m_TilesetHeight = 0;
         }
 
-        /// <summary>
-        /// Gets or sets the x.
-        /// </summary>
-        /// <value>
-        /// The x.
-        /// </value>
-        public float X { get; set; }
-
-        /// <summary>
-        /// Gets or sets the y.
-        /// </summary>
-        /// <value>
-        /// The y.
-        /// </value>
-        public float Y { get; set; }
-
-        /// <summary>
-        /// Gets or sets the z.
-        /// </summary>
-        /// <value>
-        /// The z.
-        /// </value>
-        public float Z { get; set; }
+        
 
         /// <summary>
         /// The this.
@@ -146,6 +124,13 @@ namespace Protogame
             {
                 this.m_Entities[i].Update(gameContext, updateContext);
             }
+        }
+
+        public Matrix LocalMatrix { get; set; }
+
+        public Matrix GetFinalMatrix()
+        {
+            return LocalMatrix;
         }
     }
 }

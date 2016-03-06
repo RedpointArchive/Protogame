@@ -3,7 +3,7 @@ namespace Protogame
     /// <summary>
     /// The ServerEntity interface.
     /// </summary>
-    public interface IServerEntity : IHasPosition
+    public interface IServerEntity : IHasMatrix
     {
         /// <summary>
         /// The update.

@@ -41,7 +41,7 @@ namespace Protogame
         /// The world manager.
         /// </param>
         public DefaultGameContext(
-            IKernel kernel, 
+            IKernel kernel,
             IAnalyticsEngine analyticsEngine,
             Game game, 
             GraphicsDeviceManager graphics, 
@@ -121,6 +121,17 @@ namespace Protogame
         /// The world manager.
         /// </value>
         public IWorldManager WorldManager { get; internal set; }
+
+        /// <summary>
+        /// Gets the dependency injection hierarchy, which contains all worlds, entities and components.
+        /// </summary>
+        /// <value>
+        /// The dependency injection hierarchy, which contains all worlds, entities and components.
+        /// </value>
+        public IHierarchy Hierarchy
+        {
+            get { return this.m_Kernel.Hierarchy; }
+        }
 
         /// <summary>
         /// Gets or sets the ray representing the mouse cursor in 3D space.  This is

@@ -3,7 +3,7 @@ namespace Protogame
     /// <summary>
     /// The BoundingBox interface.
     /// </summary>
-    public interface IBoundingBox : IHasPosition, IHasSize, IHasVelocity
+    public interface IBoundingBox : IHasMatrix, IHasSize, IHasVelocity
     {
     }
 }

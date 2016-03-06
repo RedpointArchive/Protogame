@@ -542,6 +542,9 @@ namespace Protogame
             /// <param name="staticEventBinder">
             /// The static event binder.
             /// </param>
+            /// <param name="kernel">
+            /// The dependency injection kernel.
+            /// </param>
             /// <param name="filter">
             /// The filter.
             /// </param>
@@ -585,12 +588,7 @@ namespace Protogame
                             return false;
                         }
 
-                        if (gameContext.World.Entities == null)
-                        {
-                            return false;
-                        }
-
-                        var entities = gameContext.World.Entities.OfType<TEntity>().Where(this.m_EntityFilter).ToList();
+                        var entities = gameContext.World.GetEntitiesForWorld(gameContext.Hierarchy).OfType<TEntity>().Where(this.m_EntityFilter).ToList();
                         var exactMatch = entities.FirstOrDefault(x => x.GetType() == typeof(TEntity));
                         var exactOrDerivedMatch = entities.FirstOrDefault(x => x is TEntity);
                         if (exactMatch != null)
@@ -689,13 +687,9 @@ namespace Protogame
                             return false;
                         }
 
-                        if (gameContext.World.Entities == null)
-                        {
-                            return false;
-                        }
-
-                        var exactMatch = gameContext.World.Entities.FirstOrDefault(x => x.GetType() == typeof(TEntity));
-                        var exactOrDerivedMatch = gameContext.World.Entities.FirstOrDefault(x => x is TEntity);
+                        var entities = gameContext.World.GetEntitiesForWorld(gameContext.Hierarchy).ToList();
+                        var exactMatch = entities.FirstOrDefault(x => x.GetType() == typeof(TEntity));
+                        var exactOrDerivedMatch = entities.FirstOrDefault(x => x is TEntity);
                         if (exactMatch != null)
                         {
                             ((TEntity)exactMatch).Toggle(id);
@@ -755,7 +749,7 @@ namespace Protogame
             public IBindableOnTo<TEvent, TEntity> ToToggle(string id)
             {
                 var bindable = new DefaultBindableOnToTogglable<TEvent, TEntity>(
-                    this.m_StaticEventBinder, 
+                    this.m_StaticEventBinder,
                     this.m_Filter);
                 bindable.Bind(id);
                 return bindable;

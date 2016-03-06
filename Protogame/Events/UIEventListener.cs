@@ -53,7 +53,7 @@ namespace Protogame
                 }
             }
 
-            foreach (var kv in context.World.Entities.OfType<IHasCanvases>().SelectMany(x => x.Canvases))
+            foreach (var kv in context.World.GetEntitiesForWorld(context.Hierarchy).OfType<IHasCanvases>().SelectMany(x => x.Canvases))
             {
                 if (kv.Key.HandleEvent(this.m_Skin, kv.Value, context, @event))
                 {

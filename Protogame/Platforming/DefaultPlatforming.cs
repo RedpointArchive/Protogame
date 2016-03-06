@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+
 namespace Protogame
 {
     using System;
@@ -87,8 +89,7 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                X = entity.X,
-                Y = entity.Y - 1,
+                LocalMatrix = entity.GetFinalMatrix(),
                 Width = entity.Width,
                 Height = entity.Height,
                 XSpeed = 0,
@@ -147,13 +148,13 @@ namespace Protogame
             var collidableEntities = entities.Where(ground).ToArray();
             for (var x = 0; x < Math.Abs(xAmount); x++)
             {
-                entity.X += Math.Sign(xAmount);
+                entity.LocalMatrix *= Matrix.CreateTranslation(Math.Sign(xAmount), 0, 0);
                 movedX = true;
                 foreach (var other in collidableEntities)
                 {
                     if (this.m_BoundingBoxUtilities.Overlaps(entity, other))
                     {
-                        entity.X -= Math.Sign(xAmount);
+                        entity.LocalMatrix *= Matrix.CreateTranslation(-Math.Sign(xAmount), 0, 0);
                         movedX = false;
                         goto endX;
                     }
@@ -163,13 +164,13 @@ namespace Protogame
             endX:
             for (var y = 0; y < Math.Abs(yAmount); y++)
             {
-                entity.Y += Math.Sign(yAmount);
+                entity.LocalMatrix *= Matrix.CreateTranslation(0, Math.Sign(yAmount), 0);
                 movedY = true;
                 foreach (var other in collidableEntities)
                 {
                     if (this.m_BoundingBoxUtilities.Overlaps(entity, other))
                     {
-                        entity.Y -= Math.Sign(yAmount);
+                        entity.LocalMatrix *= Matrix.CreateTranslation(0, -Math.Sign(yAmount), 0);
                         movedY = false;
                         goto endY;
                     }
@@ -240,8 +241,7 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                X = entity.X, 
-                Y = entity.Y + 1, 
+                LocalMatrix = entity.LocalMatrix,
                 Width = entity.Width, 
                 Height = entity.Height, 
                 XSpeed = entity.XSpeed, 
@@ -252,7 +252,7 @@ namespace Protogame
             {
                 if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
                 {
-                    if (collidableEntity.Y > entity.Y)
+                    if (collidableEntity.LocalMatrix.Translation.Y > entity.LocalMatrix.Translation.Y)
                     {
                         return true;
                     }
@@ -281,8 +281,7 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                X = entity.X,
-                Y = entity.Y - 1,
+                LocalMatrix = entity.LocalMatrix,
                 Width = entity.Width,
                 Height = entity.Height,
                 XSpeed = entity.XSpeed,
@@ -293,7 +292,7 @@ namespace Protogame
             {
                 if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
                 {
-                    if (collidableEntity.Y < entity.Y)
+                    if (collidableEntity.LocalMatrix.Translation.Y < entity.LocalMatrix.Translation.Y)
                     {
                         return true;
                     }
@@ -333,24 +332,25 @@ namespace Protogame
             Action simulateRight)
         {
             // Perform cell alignment.
-            float rem = entity.X % cellWidth;
+            float rem = entity.LocalMatrix.Translation.X % cellWidth;
             if (rem > cellWidth - cellAlignment || rem < cellAlignment)
             {
-                float targetX = (float)Math.Round(entity.X / cellWidth) * cellWidth;
-                if (Math.Abs(targetX - entity.X) > maxAdjust)
+                float targetX = (float)Math.Round(entity.LocalMatrix.Translation.X / cellWidth) * cellWidth;
+                if (Math.Abs(targetX - entity.LocalMatrix.Translation.X) > maxAdjust)
                 {
-                    if (targetX > entity.X)
+                    if (targetX > entity.LocalMatrix.Translation.X)
                     {
                         simulateRight();
                     }
-                    else if (targetX < entity.X)
+                    else if (targetX < entity.LocalMatrix.Translation.X)
                     {
                         simulateLeft();
                     }
                 }
                 else
                 {
-                    entity.X = targetX;
+                    entity.LocalMatrix *= Matrix.CreateTranslation(
+                        new Vector3(targetX - entity.LocalMatrix.Translation.X, 0, 0));
                 }
             }
         }

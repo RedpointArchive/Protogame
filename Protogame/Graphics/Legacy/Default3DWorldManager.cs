@@ -52,7 +52,7 @@ namespace Protogame
 
             game.GameContext.World.RenderBelow(game.GameContext, game.RenderContext);
 
-            foreach (var entity in game.GameContext.World.Entities.ToList())
+            foreach (var entity in game.GameContext.World.GetEntitiesForWorld(game.GameContext.Hierarchy).ToList())
             {
                 entity.Render(game.GameContext, game.RenderContext);
             }
@@ -69,7 +69,7 @@ namespace Protogame
 
                 game.GameContext.World.RenderBelow(game.GameContext, game.RenderContext);
 
-                foreach (var entity in game.GameContext.World.Entities.OrderBy(x => x.Z))
+                foreach (var entity in game.GameContext.World.GetEntitiesForWorld(game.GameContext.Hierarchy).OrderBy(x => x.LocalMatrix.Translation.Z))
                 {
                     entity.Render(game.GameContext, game.RenderContext);
                 }
@@ -99,7 +99,7 @@ namespace Protogame
         {
             game.UpdateContext.Update(game.GameContext);
 
-            foreach (var entity in game.GameContext.World.Entities.ToList())
+            foreach (var entity in game.GameContext.World.GetEntitiesForWorld(game.GameContext.Hierarchy).ToList())
             {
                 entity.Update(game.GameContext, game.UpdateContext);
             }

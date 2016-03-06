@@ -19,7 +19,7 @@ namespace Protogame
             {
                 _renderUtilities.RenderTexture(
                     renderContext,
-                    new Vector2(entity.X, entity.Y),
+                    new Vector2(entity.LocalMatrix.Translation.X, entity.LocalMatrix.Translation.Y),
                     Texture);
             }
         }

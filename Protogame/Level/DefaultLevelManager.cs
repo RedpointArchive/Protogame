@@ -1,3 +1,5 @@
+using Protoinject;
+
 namespace Protogame
 {
     using System.IO;
@@ -17,6 +19,11 @@ namespace Protogame
         private readonly IAssetManager m_AssetManager;
 
         /// <summary>
+        /// The dependency injection hierarchy.
+        /// </summary>
+        private readonly IHierarchy _hierarchy;
+
+        /// <summary>
         /// The m_ reader.
         /// </summary>
         private readonly ILevelReader m_Reader;
@@ -24,14 +31,18 @@ namespace Protogame
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultLevelManager"/> class.
         /// </summary>
+        /// <param name="hierarchy">
+        /// The dependency injection hierarchy.
+        /// </param>
         /// <param name="reader">
         /// The reader.
         /// </param>
         /// <param name="assetManagerProvider">
         /// The asset manager provider.
         /// </param>
-        public DefaultLevelManager(ILevelReader reader, IAssetManagerProvider assetManagerProvider)
+        public DefaultLevelManager(IHierarchy hierarchy, ILevelReader reader, IAssetManagerProvider assetManagerProvider)
         {
+            _hierarchy = hierarchy;
             this.m_Reader = reader;
             this.m_AssetManager = assetManagerProvider.GetAssetManager();
         }
@@ -49,11 +60,12 @@ namespace Protogame
         {
             var levelAsset = this.m_AssetManager.Get<LevelAsset>(name);
             var levelBytes = Encoding.ASCII.GetBytes(levelAsset.Value);
+            var worldNode = _hierarchy.Lookup(world);
             using (var stream = new MemoryStream(levelBytes))
             {
                 foreach (var entity in this.m_Reader.Read(stream))
                 {
-                    world.Entities.Add(entity);
+                    _hierarchy.AddChildNode(worldNode, _hierarchy.CreateNodeForObject(entity));
                 }
             }
         }

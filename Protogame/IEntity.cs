@@ -3,7 +3,7 @@ namespace Protogame
     /// <summary>
     /// The Entity interface.
     /// </summary>
-    public interface IEntity : IHasPosition
+    public interface IEntity : IHasMatrix
     {
         /// <summary>
         /// The render.

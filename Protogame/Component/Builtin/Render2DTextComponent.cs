@@ -21,7 +21,7 @@ namespace Protogame
             {
                 _renderUtilities.RenderText(
                     renderContext,
-                    new Vector2(entity.X, entity.Y),
+                    new Vector2(entity.LocalMatrix.Translation.X, entity.LocalMatrix.Translation.Y),
                     Text,
                     Font);
             }

@@ -72,7 +72,7 @@ namespace Protogame
                 IRenderPass previousPass = null;
                 IRenderPass nextPass = null;
 
-                var entities = gameContext.World.Entities.ToArray();
+                var entities = gameContext.World.GetEntitiesForWorld(gameContext.Hierarchy).ToArray();
 
 #if !DISABLE_PIPELINE_TARGETS
                 renderContext.PushRenderTarget(_primary);

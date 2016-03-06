@@ -24,8 +24,8 @@ namespace Protogame
         /// </param>
         public static void CopyTo(this IBoundingBox boundingBox, Rectangle rectangle)
         {
-            rectangle.X = (int)boundingBox.X;
-            rectangle.Y = (int)boundingBox.Y;
+            rectangle.X = (int)boundingBox.LocalMatrix.Translation.X;
+            rectangle.Y = (int)boundingBox.LocalMatrix.Translation.Y;
             rectangle.Width = (int)boundingBox.Width;
             rectangle.Height = (int)boundingBox.Height;
         }
@@ -41,8 +41,8 @@ namespace Protogame
         /// </param>
         public static void CopyTo(this Rectangle rectangle, IBoundingBox boundingBox)
         {
-            boundingBox.X = rectangle.X;
-            boundingBox.Y = rectangle.Y;
+            boundingBox.LocalMatrix *= Matrix.CreateTranslation(
+                new Vector3(rectangle.X, rectangle.Y, 0) - boundingBox.LocalMatrix.Translation);
             boundingBox.Width = rectangle.Width;
             boundingBox.Height = rectangle.Height;
         }
@@ -60,8 +60,7 @@ namespace Protogame
         {
             return new BoundingBox
             {
-                X = rectangle.X, 
-                Y = rectangle.Y, 
+                LocalMatrix = Matrix.CreateTranslation(rectangle.X, rectangle.Y, 0),
                 Width = rectangle.Width, 
                 Height = rectangle.Height
             };
@@ -80,9 +79,7 @@ namespace Protogame
         {
             return new BoundingBox
             {
-                X = boundingBox.Min.X, 
-                Y = boundingBox.Min.Y, 
-                Z = boundingBox.Min.Z, 
+                LocalMatrix = Matrix.CreateTranslation(boundingBox.Min.X, boundingBox.Min.Y, boundingBox.Min.Z),
                 Width = (boundingBox.Max - boundingBox.Min).X, 
                 Height = (boundingBox.Max - boundingBox.Min).Y, 
                 Depth = (boundingBox.Max - boundingBox.Min).Z
@@ -101,8 +98,8 @@ namespace Protogame
         public static Rectangle ToRectangle(this IBoundingBox boundingBox)
         {
             return new Rectangle(
-                (int)boundingBox.X, 
-                (int)boundingBox.Y, 
+                (int)boundingBox.LocalMatrix.Translation.X, 
+                (int)boundingBox.LocalMatrix.Translation.Y, 
                 (int)boundingBox.Width, 
                 (int)boundingBox.Height);
         }
@@ -119,11 +116,11 @@ namespace Protogame
         public static Microsoft.Xna.Framework.BoundingBox ToXna(this IBoundingBox boundingBox)
         {
             return new Microsoft.Xna.Framework.BoundingBox(
-                new Vector3(boundingBox.X, boundingBox.Y, boundingBox.Z), 
-                new Vector3(
-                    boundingBox.X + boundingBox.Width, 
-                    boundingBox.Y + boundingBox.Height, 
-                    boundingBox.Z + boundingBox.Depth));
+                boundingBox.LocalMatrix.Translation,
+                boundingBox.LocalMatrix.Translation + new Vector3(
+                    boundingBox.Width, 
+                    boundingBox.Height, 
+                    boundingBox.Depth));
         }
     }
 }
