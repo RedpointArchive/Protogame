@@ -19,9 +19,9 @@ namespace Protogame
         private readonly IAssetManager m_AssetManager;
 
         /// <summary>
-        /// The dependency injection hierarchy.
+        /// The dependency injection kernel.
         /// </summary>
-        private readonly IHierarchy _hierarchy;
+        private readonly IKernel _kernel;
 
         /// <summary>
         /// The m_ reader.
@@ -31,8 +31,8 @@ namespace Protogame
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultLevelManager"/> class.
         /// </summary>
-        /// <param name="hierarchy">
-        /// The dependency injection hierarchy.
+        /// <param name="kernel">
+        /// The dependency injection kernel.
         /// </param>
         /// <param name="reader">
         /// The reader.
@@ -40,9 +40,9 @@ namespace Protogame
         /// <param name="assetManagerProvider">
         /// The asset manager provider.
         /// </param>
-        public DefaultLevelManager(IHierarchy hierarchy, ILevelReader reader, IAssetManagerProvider assetManagerProvider)
+        public DefaultLevelManager(IKernel kernel, ILevelReader reader, IAssetManagerProvider assetManagerProvider)
         {
-            _hierarchy = hierarchy;
+            _kernel = kernel;
             this.m_Reader = reader;
             this.m_AssetManager = assetManagerProvider.GetAssetManager();
         }
@@ -60,12 +60,23 @@ namespace Protogame
         {
             var levelAsset = this.m_AssetManager.Get<LevelAsset>(name);
             var levelBytes = Encoding.ASCII.GetBytes(levelAsset.Value);
-            var worldNode = _hierarchy.Lookup(world);
+            var worldNode = _kernel.Hierarchy.Lookup(world);
+            // TODO: This doesn't work right yet because the collision system still relies on
+            // checking the bounding boxes of entities, rather than entities having bounding box
+            // components or something of that nature.
+            //var levelGroup = _kernel.Get<EntityGroup>(worldNode, null, "LevelEntities", new IInjectionAttribute[0]);
+            //var levelNode = _kernel.Hierarchy.Lookup(levelGroup);
             using (var stream = new MemoryStream(levelBytes))
             {
                 foreach (var entity in this.m_Reader.Read(stream))
                 {
-                    _hierarchy.AddChildNode(worldNode, _hierarchy.CreateNodeForObject(entity));
+                    var existingNode = _kernel.Hierarchy.Lookup(entity);
+                    if (existingNode != null)
+                    {
+                        // Remove it from the hierarchy if it's already there.
+                        _kernel.Hierarchy.RemoveNode(existingNode);
+                    }
+                    _kernel.Hierarchy.AddChildNode(worldNode, _kernel.Hierarchy.CreateNodeForObject(entity));
                 }
             }
         }

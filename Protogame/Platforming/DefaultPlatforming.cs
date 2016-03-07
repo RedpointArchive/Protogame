@@ -89,7 +89,7 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                LocalMatrix = entity.GetFinalMatrix(),
+                LocalMatrix = entity.GetFinalMatrix() * Matrix.CreateTranslation(0, -1, 0),
                 Width = entity.Width,
                 Height = entity.Height,
                 XSpeed = 0,
@@ -241,7 +241,7 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                LocalMatrix = entity.LocalMatrix,
+                LocalMatrix = entity.LocalMatrix * Matrix.CreateTranslation(0, 1, 0),
                 Width = entity.Width, 
                 Height = entity.Height, 
                 XSpeed = entity.XSpeed, 
@@ -281,7 +281,7 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                LocalMatrix = entity.LocalMatrix,
+                LocalMatrix = entity.LocalMatrix * Matrix.CreateTranslation(0, -1, 0),
                 Width = entity.Width,
                 Height = entity.Height,
                 XSpeed = entity.XSpeed,

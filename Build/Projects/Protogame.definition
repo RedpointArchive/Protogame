@@ -225,6 +225,7 @@
     <Compile Include="DefaultTileUtilities.cs" />
     <Compile Include="DefaultUpdateContext.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="EntityGroup.cs" />
     <Compile Include="Events\ConsoleEventBinder.cs" />
     <Compile Include="Events\ConsoleEventListener.cs" />
     <Compile Include="Events\DefaultEventEngine.cs" />
@@ -300,6 +301,7 @@
     <Compile Include="Graphics\Legacy\Protogame3DIoCModule.cs" />
     <Compile Include="Graphics\RenderPipelineRenderContext.cs" />
     <Compile Include="Graphics\RenderPipelineWorldManager.cs" />
+    <Compile Include="HasMatrixExtensions.cs" />
     <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="I2DRenderUtilities.cs" />
     <Compile Include="I3DRenderUtilities.cs" />

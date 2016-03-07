@@ -72,7 +72,7 @@ namespace Protogame
                 if (a.LocalMatrix.Translation.X - Math.Abs(a.XSpeed) < bX2 + Math.Abs(b.XSpeed)
                     && aX2 + Math.Abs(a.XSpeed) > b.LocalMatrix.Translation.X - Math.Abs(b.XSpeed)
                     && a.LocalMatrix.Translation.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed)
-                    && aY2 + Math.Abs(a.YSpeed) >= b.LocalMatrix.Translation.Y - Math.Abs(b.YSpeed)
+                    && aY2 + Math.Abs(a.YSpeed) > b.LocalMatrix.Translation.Y - Math.Abs(b.YSpeed)
                     && a.LocalMatrix.Translation.Z - Math.Abs(a.ZSpeed) < bZ2 + Math.Abs(b.ZSpeed)
                     && aZ2 + Math.Abs(a.ZSpeed) > b.LocalMatrix.Translation.Z - Math.Abs(b.ZSpeed))
                 {
