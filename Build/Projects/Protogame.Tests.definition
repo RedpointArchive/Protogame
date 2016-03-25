@@ -25,6 +25,7 @@
     <Compile Include="RenderPipelineTests.cs" />
     <Compile Include="TestNetworkMessage.cs" />
     <Compile Include="TimeMachineTests.cs" />
+    <Compile Include="UnifiedShaderTests.cs" />
     <EmbeddedResource Include="effect.MakeRed-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
@@ -87,6 +88,7 @@
     <EmbeddedResource Include="texture.Player-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
+    <EmbeddedResource Include="UnifiedShaderExample.usl" />
     <None Include="effect.MakeRed.fx" />
     <None Include="texture.Player.png" />
   </Files>

@@ -1,0 +1,105 @@
+﻿#version 1
+
+cbuffers
+{
+	cbuffer MyCBuffer
+	{
+		float3 MyVariable;
+		float4 MyOtherVariable;
+	}
+	cbuffer MyOtherCBuffer
+	{
+		float4x4 MyMatrix;
+	}
+}
+
+parameters
+{
+	float3 TranslatePosition;
+	float4x4 WorldMatrix;
+}
+
+shaders
+{
+#language HLSL
+	// High level shading language
+	cbuffer MyCBuffer
+	{
+		float3 MyVariable;
+		float4 MyOtherVariable;
+	}
+
+	cbuffer MyOtherCBuffer
+	{
+		float4x4 MyMatrix;
+	}
+
+	float3 TranslatePosition;
+	float4x4 WorldMatrix;
+
+	float3 MyPixelShader(float4 input : COLOR0) : COLOR
+	{
+		return float3(input.r, input.g, input.b);
+	}
+
+	struct VS_OUTPUT
+	{
+		float4 Position : POSITION0;
+		float4 Color : COLOR0;
+		float4 WorldPosition : POSITION1;
+	}
+
+	VS_OUTPUT MyVertexShader()
+	{
+		VS_OUTPUT o;
+		return o;
+	}
+#endlanguage
+#language GLSL
+	// OpenGL shading language
+	uniform MyCBuffer
+	{
+		vec3 MyVariable;
+		vec4 MyOtherVariable;
+	}
+
+	uniform MyOtherCBuffer
+	{
+		mat4 MyMatrix;
+	}
+
+	uniform vec3 TranslatePosition;
+	uniform mat4 WorldMatrix;
+
+	void main(void) {
+#if shader_MyPixelShader
+		gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+#elif shader_MyVertexShader
+		vec4 a = gl_Vertex;
+		a.x = a.x * 0.5;
+		a.y = a.y * 0.5;
+
+		gl_Position = gl_ModelViewProjectionMatrix * a;
+#elif shader_MyGeometryShader
+#elif shader_MyDomainShader
+#elif shader_MyHullShader
+#endif
+	}
+
+#endlanguage
+#language MSL
+	// Metal shading language
+#endlanguage
+}
+
+technique ExampleTechnique
+{
+	pass ExamplePass
+	{
+		pixel MyPixelShader;
+		vertex MyVertexShader;
+		geometry MyGeometryShader;
+		domain MyDomainShader;
+		hull MyHullShader;
+	}
+}
