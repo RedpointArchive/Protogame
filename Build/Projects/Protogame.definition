@@ -56,6 +56,7 @@
     <Compile Include="Assets\CompiledAsset.cs" />
     <Compile Include="Assets\CompiledAssetSaver.cs" />
     <Compile Include="Assets\CompiledAssetSerializer.cs" />
+    <Compile Include="Assets\CompiledUnifiedShaderReader.cs" />
     <Compile Include="Assets\ConfigurationAsset.cs" />
     <Compile Include="Assets\ConfigurationAssetLoader.cs" />
     <Compile Include="Assets\ConfigurationAssetSaver.cs" />
@@ -161,6 +162,9 @@
     <Compile Include="Assets\TilesetAssetLoader.cs" />
     <Compile Include="Assets\TilesetAssetSaver.cs" />
     <Compile Include="Assets\TypeBasedRawAsset.cs" />
+    <Compile Include="Assets\UnifiedShaderAsset.cs" />
+    <Compile Include="Assets\UnifiedShaderAssetCompiler.cs" />
+    <Compile Include="Assets\UnifiedShaderAssetLoader.cs" />
     <Compile Include="Assets\VariableAsset.cs" />
     <Compile Include="Assets\VariableAssetLoader.cs" />
     <Compile Include="Assets\VariableAssetSaver.cs" />

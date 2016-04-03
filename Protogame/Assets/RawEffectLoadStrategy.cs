@@ -20,7 +20,7 @@
         {
             get
             {
-                return new[] { "fx" };
+                return new[] { "fx", "usl" };
             }
         }
 
@@ -52,30 +52,35 @@
         /// </returns>
         public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
-            var file = new FileInfo(Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".fx"));
-            if (file.Exists)
+            foreach (var ext in AssetExtensions)
             {
-                lastModified = file.LastWriteTime;
-                using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
+                var file =
+                    new FileInfo(Path.Combine(path,
+                        (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + "." + ext));
+                if (file.Exists)
                 {
-                    using (var reader = new StreamReader(fileStream))
+                    lastModified = file.LastWriteTime;
+                    using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
                     {
-                        var code = reader.ReadToEnd();
-
-                        if (file.Directory != null)
+                        using (var reader = new StreamReader(fileStream))
                         {
-                            code = this.ResolveIncludes(file.Directory, code);
-                        }
+                            var code = reader.ReadToEnd();
 
-                        return
-                            new AnonymousObjectBasedRawAsset(
-                                new
-                                {
-                                    Loader = typeof(EffectAssetLoader).FullName,
-                                    PlatformData = (PlatformData)null,
-                                    Code = code,
-                                    SourcedFromRaw = true
-                                });
+                            if (file.Directory != null)
+                            {
+                                code = this.ResolveIncludes(file.Directory, code);
+                            }
+
+                            return
+                                new AnonymousObjectBasedRawAsset(
+                                    new
+                                    {
+                                        Loader = ext == "fx" ? typeof (EffectAssetLoader).FullName : typeof(UnifiedShaderAssetLoader).FullName,
+                                        PlatformData = (PlatformData) null,
+                                        Code = code,
+                                        SourcedFromRaw = true
+                                    });
+                        }
                     }
                 }
             }
@@ -86,6 +91,7 @@
         public System.Collections.Generic.IEnumerable<string> GetPotentialPaths(string path, string name, bool noTranslate = false)
         {
             yield return Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".fx");
+            yield return Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".usl");
         }
 
         /// <summary>
