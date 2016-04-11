@@ -1,6 +1,8 @@
 Protogame v4 Beta
 ===================
 
+[![Join the chat at https://gitter.im/RedpointGames/Protogame](https://badges.gitter.im/RedpointGames/Protogame.svg)](https://gitter.im/RedpointGames/Protogame?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 **NOTE:** Version 4 is still a work-in-progress!
 
 * The latest version (version 4) is available on the `master` branch.
