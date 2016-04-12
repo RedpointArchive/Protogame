@@ -281,7 +281,7 @@ namespace Protogame
                     char? p = null;
                     if (position < input.Length)
                     {
-                        p = input[position++];
+                        p = input[position+1];
                         columnNumber++;
                     }
 
