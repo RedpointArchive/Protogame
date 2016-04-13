@@ -69,7 +69,7 @@ namespace Protogame
         private string GetEffectPrefixCode()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream("Protogame.Assets.Effects.Macros.fx");
+            var stream = assembly.GetManifestResourceStream("Protogame.Assets.Effect.Macros.fx");
 
             if (stream == null)
             {
