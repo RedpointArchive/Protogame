@@ -3,8 +3,9 @@ namespace Protogame
     using System;
 
     /// <summary>
-    /// The event.
+    /// Represents a generic event.  You need to derive this type to create your own events.
     /// </summary>
+    /// <module>Events</module>
     [Serializable]
     public abstract class Event
     {

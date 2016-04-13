@@ -1,11 +1,11 @@
 namespace Protogame
 {
-    using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Input;
 
     /// <summary>
     /// Represents an event that occurred on a game pad input device.
     /// </summary>
+    /// <module>Events</module>
     public abstract class GamePadEvent : Event
     {
         /// <summary>

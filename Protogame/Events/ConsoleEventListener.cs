@@ -3,12 +3,14 @@ namespace Protogame
     using Microsoft.Xna.Framework.Input;
 
     /// <summary>
-    /// The console event listener.
+    /// Handles incoming events and passes them to the in-game console when appropriate.
     /// </summary>
+    /// <module>Events</module>
+    /// <internal>True</internal>
     public class ConsoleEventListener : IEventListener<IGameContext>
     {
         /// <summary>
-        /// The m_ console.
+        /// The in-game console.
         /// </summary>
         private readonly IConsole m_Console;
 
@@ -16,7 +18,7 @@ namespace Protogame
         /// Initializes a new instance of the <see cref="ConsoleEventListener"/> class.
         /// </summary>
         /// <param name="console">
-        /// The console.
+        /// The in-game console.
         /// </param>
         public ConsoleEventListener(IConsole console)
         {
@@ -24,16 +26,16 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The handle.
+        /// Handles the event as appropriate for the in-game console.
         /// </summary>
         /// <param name="gameContext">
-        /// The game context.
+        /// The current game context.
         /// </param>
         /// <param name="eventEngine">
-        /// The event engine.
+        /// The current event engine.
         /// </param>
         /// <param name="event">
-        /// The event.
+        /// The event that is being handled.
         /// </param>
         /// <returns>
         /// The <see cref="bool"/>.

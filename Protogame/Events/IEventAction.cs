@@ -1,20 +1,25 @@
 namespace Protogame
 {
     /// <summary>
-    /// The EventAction interface.
+    /// Represents an action to be taken when the filter in the event binder matches an event.
+    /// <para>
+    /// You should implement this class to respond to events.
+    /// </para>
     /// </summary>
     /// <typeparam name="TContext">
+    /// The context of the event.
     /// </typeparam>
+    /// <module>Events</module>
     public interface IEventAction<TContext>
     {
         /// <summary>
-        /// The handle.
+        /// Handles the event.
         /// </summary>
         /// <param name="context">
-        /// The context.
+        /// The event context.
         /// </param>
         /// <param name="event">
-        /// The event.
+        /// The event that is being handled.
         /// </param>
         void Handle(TContext context, Event @event);
     }

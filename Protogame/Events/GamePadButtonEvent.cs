@@ -5,6 +5,7 @@ namespace Protogame
     /// <summary>
     /// Represents an event relating to a button on a game pad input device.
     /// </summary>
+    /// <module>Events</module>
     public abstract class GamePadButtonEvent : GamePadEvent
     {
         /// <summary>

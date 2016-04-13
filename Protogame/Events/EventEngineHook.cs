@@ -11,6 +11,8 @@ namespace Protogame
     /// <summary>
     /// A game engine hook that raised appropriate input events as they occur.
     /// </summary>
+    /// <module>Events</module>
+    /// <internal>True</internal>
     public class EventEngineHook : IEngineHook
     {
         /// <summary>
