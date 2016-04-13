@@ -6,10 +6,11 @@ namespace Protogame
     /// A service that provides advanced, but general purpose collision detection methods.
     /// </summary>
     /// <remarks>
-    /// Most XNA classes such as <see cref="Rectangle"/> and <see cref="Ray" /> already ship with
+    /// Most MonoGame classes such as <see cref="Rectangle"/> and <see cref="Ray" /> already ship with
     /// intersection methods.  This service provides advanced collision detection methods such as
     /// ray collisions with triangles.
     /// </remarks>
+    /// <module>Collision</module>
     public interface ICollision
     {
         /// <summary>

@@ -6,6 +6,9 @@ namespace Protogame
     /// <summary>
     /// The default implementation of <see cref="ICollision"/>.
     /// </summary>
+    /// <module>Collision</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.ICollision</interface_ref>
     public class DefaultCollision : ICollision
     {
         /// <summary>
