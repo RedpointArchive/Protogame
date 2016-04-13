@@ -3,8 +3,11 @@ using Microsoft.Xna.Framework;
 namespace Protogame
 {
     /// <summary>
-    /// The HasMatrix interface.
+    /// An interface which indicates that an object provides a local matrix and a method
+    /// for calculating the final matrix taking into account any parent objects (if the 
+    /// object resides in a hierarchy).
     /// </summary>
+    /// <module>Core API</module>
     public interface IHasMatrix
     {
         /// <summary>

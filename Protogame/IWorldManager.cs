@@ -11,8 +11,8 @@ namespace Protogame
     /// appropriate rendering contexts.
     /// </para>
     /// <para>
-    /// There is a default world manager implementation bound when loading either the
-    /// <see cref="Protogame2DIoCModule"/> or the <see cref="Protogame3DIoCModule"/>.
+    /// There is a default world manager implementation bound when loading the
+    /// <see cref="ProtogameCoreModule"/>.
     /// You can rebind this interface to perform advanced rendering or update logic.
     /// </para>
     /// </summary>
@@ -20,7 +20,7 @@ namespace Protogame
     public interface IWorldManager
     {
         /// <summary>
-        /// The main render call.  This is invoked by Protogame's <see cref="CoreGame&lt;TInitialWorld, TWorldManager&gt;"/>
+        /// The main render call.  This is invoked by Protogame's <see cref="CoreGame&lt;TInitialWorld&gt;"/>
         /// implementation.  You should prefer to implement a custom world manager and override rendering
         /// logic there than override the game's rendering logic, as the minimum setup and teardown is provided
         /// by the game itself.
@@ -34,7 +34,7 @@ namespace Protogame
         void Render<T>(T game) where T : Game, ICoreGame;
 
         /// <summary>
-        /// The main update call.  This is invoked by Protogame's <see cref="CoreGame&lt;TInitialWorld, TWorldManager&gt;"/>
+        /// The main update call.  This is invoked by Protogame's <see cref="CoreGame&lt;TInitialWorld&gt;"/>
         /// implementation.  You should prefer to implement a custom world manager and override update
         /// logic there than override the game's update logic, as the minimum setup and teardown is provided
         /// by the game itself.

@@ -1,12 +1,20 @@
 namespace Protogame
 {
     /// <summary>
-    /// The Entity interface.
+    /// Represents an entity.
+    /// <para>
+    /// For a base implementation that has the required interfaces implemented, inherit from <see cref="Entity"/>.
+    /// </para>
+    /// <para>
+    /// For a base implementation that supports components, inherit from <see cref="ComponentizedEntity"/>.
+    /// </para>
     /// </summary>
+    /// <module>Core API</module>
     public interface IEntity : IHasMatrix
     {
         /// <summary>
-        /// The render.
+        /// Called by the <see cref="IWorldManager"/> when it's time for this entity to be
+        /// rendered in the game.
         /// </summary>
         /// <param name="gameContext">
         /// The game context.
@@ -17,7 +25,8 @@ namespace Protogame
         void Render(IGameContext gameContext, IRenderContext renderContext);
 
         /// <summary>
-        /// The update.
+        /// Called by the <see cref="IWorldManager"/> when this entity's state should be
+        /// updated in the game.
         /// </summary>
         /// <param name="gameContext">
         /// The game context.

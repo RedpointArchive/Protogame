@@ -4,7 +4,9 @@ using Protoinject;
 namespace Protogame
 {
     /// <summary>
-    /// The game configuration interface.
+    /// The game configuration interface.  All of the implementations of
+    /// <see cref="IGameConfiguration"/> are instantiated at startup and are
+    /// used to configure the dependency injection system and the game.
     /// </summary>
     /// <module>Core API</module>
     public interface IGameConfiguration

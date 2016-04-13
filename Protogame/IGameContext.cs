@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Protoinject;
 
 namespace Protogame
@@ -7,7 +6,8 @@ namespace Protogame
     using Microsoft.Xna.Framework;
 
     /// <summary>
-    /// The GameContext interface.
+    /// Represents the state of the game at runtime.  This interface is frequently used, and is
+    /// passed in to <c>Render</c> and <c>Update</c> methods of all worlds and entities.
     /// </summary>
     /// <module>Core API</module>
     public interface IGameContext
@@ -125,7 +125,7 @@ namespace Protogame
         /// Creates the specified world using a given factory and returns it.
         /// </summary>
         /// <param name="creator">The method used to create the world.</param>
-        /// <typeparam name="T">
+        /// <typeparam name="TFactory">
         /// The type of the world to create.
         /// </typeparam>
         /// <returns>
@@ -172,7 +172,7 @@ namespace Protogame
         /// <param name="world">
         /// The world instance to switch to.
         /// </param>
-        /// <typeparam name="TFactory">
+        /// <typeparam name="T">
         /// The type of world to switch to.
         /// </typeparam>
         void SwitchWorld<T>(T world) where T : IWorld;

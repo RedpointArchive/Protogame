@@ -8,7 +8,7 @@ namespace Protogame
     /// </para>
     /// <para>
     /// Bind this interface in the Protoinject kernel before creating an instance
-    /// of your game, and the <see cref="CoreGame&lt;TInitialWorld, TWorldManager&gt;"/>
+    /// of your game, and the <see cref="CoreGame&lt;TInitialWorld&gt;"/>
     /// implementation will create an instance of the bound type and use it
     /// during execution.
     /// </para>
