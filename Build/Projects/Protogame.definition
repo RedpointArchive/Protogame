@@ -146,6 +146,7 @@
     <Compile Include="Assets\Model\RawModelLoadStrategy.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalTextureBlendable.cs" />
     <Compile Include="Assets\ProtogameAssetIoCModule.cs" />
+    <Compile Include="Assets\ProtogameAssetModule.cs" />
     <Compile Include="Assets\Texture\RawTextureLoadStrategy.cs" />
     <Compile Include="Assets\Texture\TextureAsset.cs" />
     <Compile Include="Assets\Texture\TextureAssetCompiler.cs" />
