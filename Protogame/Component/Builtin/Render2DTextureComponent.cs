@@ -15,7 +15,7 @@ namespace Protogame
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
-            if (!renderContext.Is3DContext && Texture != null)
+            if (!renderContext.IsCurrentRenderPass<I3DRenderPass>() && Texture != null)
             {
                 _renderUtilities.RenderTexture(
                     renderContext,

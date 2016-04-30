@@ -11,9 +11,6 @@ namespace Protogame
     /// <module>Assets</module>
     public class ProtogameAssetModule : IProtoinjectModule
     {
-        /// <summary>
-        /// The load.
-        /// </summary>
         public void Load(IKernel kernel)
         {
             kernel.Bind<IAssetLoader>().To<FontAssetLoader>();

@@ -95,7 +95,7 @@ namespace Protogame
                 this.m_DefaultFontAsset = this.m_AssetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
             }
 
-            if (!this.Open || renderContext.Is3DContext)
+            if (!this.Open || renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
                 return;
             }

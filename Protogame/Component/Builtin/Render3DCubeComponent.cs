@@ -3,13 +3,13 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class Render3DPlaneComponent : IRenderableComponent
+    public class Render3DCubeComponent : IRenderableComponent
     {
         private readonly INode _node;
 
         private readonly I3DRenderUtilities _renderUtilities;
 
-        public Render3DPlaneComponent(INode node, I3DRenderUtilities renderUtilities)
+        public Render3DCubeComponent(INode node, I3DRenderUtilities renderUtilities)
         {
             _node = node;
             _renderUtilities = renderUtilities;
@@ -27,7 +27,7 @@ namespace Protogame
                 {
                     matrix *= matrixComponent.GetFinalMatrix();
                 }
-                _renderUtilities.RenderPlane(renderContext, matrix, Color);
+                _renderUtilities.RenderCube(renderContext, matrix, Color);
             }
         }
     }

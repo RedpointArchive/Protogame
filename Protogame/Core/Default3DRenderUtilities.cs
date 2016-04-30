@@ -68,7 +68,7 @@ namespace Protogame
         /// </exception>
         public void RenderLine(IRenderContext context, Vector3 start, Vector3 end, Color color)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -115,7 +115,7 @@ namespace Protogame
             Vector2 startUV,
             Vector2 endUV)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -161,7 +161,7 @@ namespace Protogame
             Color color, 
             bool filled = false)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -232,7 +232,7 @@ namespace Protogame
             bool renderShadow = true, 
             Color? shadowColor = null)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -313,7 +313,7 @@ namespace Protogame
             bool flipVertically = false, 
             Rectangle? sourceArea = null)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -420,7 +420,7 @@ namespace Protogame
         /// </param>
         public void RenderCube(IRenderContext context, Matrix transform, Color color)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -523,7 +523,7 @@ namespace Protogame
         /// </param>
         public void RenderCube(IRenderContext context, Matrix transform, TextureAsset texture, Vector2 topLeftUV, Vector2 bottomRightUV)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -620,7 +620,7 @@ namespace Protogame
         /// </param>
         public void RenderPlane(IRenderContext context, Matrix transform, Color color)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -665,7 +665,7 @@ namespace Protogame
         public void RenderPlane(IRenderContext context, Matrix transform, TextureAsset texture, Vector2 topLeftUV,
             Vector2 bottomRightUV)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
@@ -711,7 +711,7 @@ namespace Protogame
         public void RenderCircle(IRenderContext context,
             Matrix transform, Vector2 center, int radius, Color color, bool filled = false)
         {
-            if (!context.Is3DContext)
+            if (!context.IsCurrentRenderPass<I3DRenderPass>())
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }

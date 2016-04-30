@@ -68,7 +68,7 @@
                 return;
             }
 
-            if (renderContext.Is3DContext)
+            if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
                 return;
             }

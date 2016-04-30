@@ -2,8 +2,16 @@
 
 namespace Protogame
 {
+    /// <summary>
+    /// An interface that indicates that this object or component contains
+    /// sub-components.  All hierarchial components support sub-components.
+    /// </summary>
+    /// <module>Component</module>
     public interface IContainsComponents
     {
+        /// <summary>
+        /// A list of public components that are attached to this object.
+        /// </summary>
         ReadOnlyCollection<object> PublicComponents { get; } 
     }
 }

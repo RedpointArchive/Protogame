@@ -17,7 +17,7 @@ namespace Protogame
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
-            if (!renderContext.Is3DContext && Font != null)
+            if (!renderContext.IsCurrentRenderPass<I3DRenderPass>() && Font != null)
             {
                 _renderUtilities.RenderText(
                     renderContext,

@@ -171,6 +171,9 @@
     <Compile Include="Caching\DefaultRenderCache.cs" />
     <Compile Include="Caching\IRenderCache.cs" />
     <Compile Include="Caching\ProtogameCachingIoCModule.cs" />
+    <Compile Include="Camera\FirstPersonCamera.cs" />
+    <Compile Include="Camera\IFirstPersonCamera.cs" />
+    <Compile Include="Camera\ProtogameCameraModule.cs" />
     <Compile Include="Collision\DefaultCollision.cs" />
     <Compile Include="Collision\ICollision.cs" />
     <Compile Include="Collision\ProtogameCollisionIoCModule.cs" />
@@ -179,9 +182,11 @@
     <Compile Include="Commands\GCCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Component\Builtin\AbsoluteMatrixComponent.cs" />
-    <Compile Include="Component\Builtin\IBuiltinComponentFactory.cs" />
+    <Compile Include="Component\Builtin\FirstPersonCameraComponent.cs" />
+    <Compile Include="Component\Builtin\FirstPersonInputComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextureComponent.cs" />
+    <Compile Include="Component\Builtin\Render3DCubeComponent.cs" />
     <Compile Include="Component\Builtin\Render3DPlaneComponent.cs" />
     <Compile Include="Component\ComponentizedEntity.cs" />
     <Compile Include="Component\ComponentizedObject.cs">
@@ -195,8 +200,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>IComponentCallable.tt</DependentUpon>
     </Compile>
-    <Compile Include="Component\IComponentOwner.cs" />
     <Compile Include="Component\IContainsComponents.cs" />
+    <Compile Include="Component\IEventfulComponent.cs" />
     <Compile Include="Component\IHasComponent.cs" />
     <Compile Include="Component\IHierarchialComponent.cs" />
     <Compile Include="Component\IRenderableComponent.cs" />
@@ -294,6 +299,7 @@
     <Compile Include="Events\MousePressEvent.cs" />
     <Compile Include="Events\MouseReleaseEvent.cs" />
     <Compile Include="Events\ProtogameEventsIoCModule.cs" />
+    <Compile Include="Events\ProtogameEventsModule.cs" />
     <Compile Include="Events\StaticEventBinder.cs" />
     <Compile Include="Events\TouchEvent.cs" />
     <Compile Include="Events\TouchHeldEvent.cs" />

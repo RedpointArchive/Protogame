@@ -178,6 +178,7 @@ namespace Protogame
             this.m_Current = this.m_Kernel.CreateEmptyNode("Game");
 
             this.m_GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            PrepareGraphicsDeviceManager(this.m_GraphicsDeviceManager);
             this.m_GraphicsDeviceManager.PreparingDeviceSettings +=
                 (sender, e) =>
                 {
@@ -484,6 +485,19 @@ namespace Protogame
         protected virtual void CloseRequested(out bool cancel)
         {
             cancel = false;
+        }
+
+        /// <summary>
+        /// Prepares the graphics device manager.
+        /// <para>
+        /// If you want to change the initial size of the game window on startup, this is the place
+        /// to do it.  Override this method, and then set <see cref="Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferWidth"/>
+        /// and <see cref="Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferHeight"/>.
+        /// </para>
+        /// </summary>
+        /// <param name="graphicsDeviceManager">The graphics device manager to prepare.</param>
+        protected virtual void PrepareGraphicsDeviceManager(GraphicsDeviceManager graphicsDeviceManager)
+        {
         }
 
         /// <summary>

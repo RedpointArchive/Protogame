@@ -4,6 +4,19 @@ using System.Collections.ObjectModel;
 
 namespace Protogame
 {
+	/// <summary>
+    /// The base class for objects which support having components.
+	/// <para>
+	/// Unlike <see cref="ComponentizedEntity" />, this is a generic object that
+	/// supports having components.  By default, it doesn't handle any components
+	/// that are attached to it.
+	/// </para>
+	/// <para>
+    /// You can support additional component types and callbacks through the use
+    /// of <see cref="ComponentizedObject.RegisterCallable{T}"/>.
+	/// </para>
+	/// </summary>
+    /// <module>Component</module>
 	public class ComponentizedObject : IContainsComponents
 	{
 		private List<object> _registeredComponents = new List<object>();
@@ -555,29 +568,14 @@ namespace Protogame
 		}
 
 		protected void RegisterPrivateComponent(object component)
-        {
-		    if (component is IInternalHasComponent)
-		    {
-		        _registeredComponents.Add(((IInternalHasComponent)component).Component);
-		    }
-		    else
-            {
-                _registeredComponents.Add(component);
-            }
-        }
+		{
+			_registeredComponents.Add(component);
+		}
 
 		protected void RegisterPublicComponent(object component)
 		{
-		    if (component is IInternalHasComponent)
-		    {
-		        _registeredComponents.Add(((IInternalHasComponent)component).Component);
-                _publicComponents.Add(((IInternalHasComponent)component).Component);
-            }
-		    else
-            {
-                _registeredComponents.Add(component);
-                _publicComponents.Add(component);
-            }
+			_registeredComponents.Add(component);
+			_publicComponents.Add(component);
 		}
 
 		public ReadOnlyCollection<object> PublicComponents
