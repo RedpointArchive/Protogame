@@ -46,7 +46,7 @@ namespace Protogame
                 _firstPersonCamera.Apply(
                     renderContext,
                     Vector3.Transform(HeadOffset, finalMatrix),
-                    Vector3.Transform(HeadOffset + Vector3.Forward, LocalMatrix));
+                    Vector3.Transform(HeadOffset, finalMatrix) + Vector3.Transform(Vector3.Forward, LocalMatrix));
             }
         }
 
