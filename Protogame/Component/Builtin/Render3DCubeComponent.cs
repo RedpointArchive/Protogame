@@ -27,7 +27,11 @@ namespace Protogame
                 {
                     matrix *= matrixComponent.GetFinalMatrix();
                 }
-                _renderUtilities.RenderCube(renderContext, matrix, Color);
+                _renderUtilities.RenderCube(
+                    renderContext, 
+                    Matrix.CreateTranslation(-0.5f, -0.5f, -0.5f) *
+                    matrix, 
+                    Color);
             }
         }
     }

@@ -340,7 +340,9 @@ namespace Protogame
 
             // Retrieve all engine hooks.  These can be set up by additional modules
             // to change runtime behaviour.
-            this.m_EngineHooks = this.m_Kernel.GetAll<IEngineHook>(this.m_Current).ToArray();
+            this.m_EngineHooks =
+                this.m_Kernel.GetAll<IEngineHook>(this.m_Current, null, null,
+                    new IInjectionAttribute[] {new FromGameAttribute()}).ToArray();
 
             // Set up defaults.
             this.Window.Title = "Protogame!";
@@ -454,9 +456,12 @@ namespace Protogame
                 using (this.m_Profiler.Measure("main"))
                 {
                     this.GameContext.GameTime = gameTime;
-                    foreach (var hook in this.m_EngineHooks)
+                    if (typeof(TWorldManager) != typeof(RenderPipelineWorldManager))
                     {
-                        hook.Render(this.GameContext, this.RenderContext);
+                        foreach (var hook in this.m_EngineHooks)
+                        {
+                            hook.Render(this.GameContext, this.RenderContext);
+                        }
                     }
 
                     this.GameContext.WorldManager.Render(this);

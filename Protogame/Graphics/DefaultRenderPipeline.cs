@@ -27,6 +27,8 @@ namespace Protogame
 
         private readonly IRenderTargetBackBufferUtilities _renderTargetBackBufferUtilities;
 
+        private readonly IEngineHook[] _engineHooks;
+
         private RenderTarget2D _primary;
 
         private RenderTarget2D _secondary;
@@ -37,10 +39,12 @@ namespace Protogame
 
         public DefaultRenderPipeline(
             IGraphicsBlit graphicsBlit,
-            IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities)
+            IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities,
+            [FromGame] IEngineHook[] engineHooks)
         {
             _graphicsBlit = graphicsBlit;
             _renderTargetBackBufferUtilities = renderTargetBackBufferUtilities;
+            _engineHooks = engineHooks;
             _standardRenderPasses = new List<IRenderPass>();
             _postProcessingRenderPasses = new List<IRenderPass>();
             _transientStandardRenderPasses = new List<IRenderPass>();
@@ -317,6 +321,11 @@ namespace Protogame
             }
 
             gameContext.World.RenderAbove(gameContext, renderContext);
+
+            foreach (var hook in _engineHooks)
+            {
+                hook.Render(gameContext, renderContext);
+            }
         }
 
         public IRenderPass GetCurrentRenderPass()

@@ -72,6 +72,13 @@ namespace Protogame
         I3DRenderPass Create3DRenderPass();
 
         /// <summary>
+        /// Creates a render pass in which physics object state is displayed
+        /// to the screen.
+        /// </summary>
+        /// <returns>A physics debug render pass.</returns>
+        IPhysicsDebugRenderPass CreatePhysicsDebugPass();
+
+        /// <summary>
         /// Creates a post-processing render pass which inverts all of the
         /// colors on the screen.
         /// </summary>

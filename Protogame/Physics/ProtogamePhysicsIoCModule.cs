@@ -13,7 +13,9 @@ namespace Protogame
         /// </summary>
         public void Load(IKernel kernel)
         {
-            kernel.Bind<IPhysicsEngine>().To<DefaultPhysicsEngine>();
+            kernel.Bind<IPhysicsEngine>().To<DefaultPhysicsEngine>().InSingletonScope();
+            kernel.Bind<IEngineHook>().To<PhysicsEngineHook>();
+            kernel.Bind<IPhysicsFactory>().ToFactory();
         }
     }
 }

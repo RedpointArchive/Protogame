@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Protogame
 {
@@ -20,6 +21,7 @@ namespace Protogame
         public bool Handle(ComponentizedEntity componentizedEntity, IGameContext gameContext, IEventEngine<IGameContext> eventEngine, Event @event)
         {
             var gamepadEvent = @event as GamePadEvent;
+            var keyHeldEvent = @event as KeyHeldEvent;
 
             if (gamepadEvent != null)
             {
@@ -39,6 +41,68 @@ namespace Protogame
                 componentizedEntity.LocalMatrix *= Matrix.CreateTranslation(absoluteMovementVector);
 
                 return true;
+            }
+
+            if (keyHeldEvent != null)
+            {
+                var didConsume = false;
+                if (keyHeldEvent.Key == Keys.A)
+                {
+                    _firstPersonCameraComponent.Yaw -= -1 * ThumbstickLookSensitivity;
+                    didConsume = true;
+                }
+                if (keyHeldEvent.Key == Keys.D)
+                {
+                    _firstPersonCameraComponent.Yaw -= 1 * ThumbstickLookSensitivity;
+                    didConsume = true;
+                }
+                if (keyHeldEvent.Key == Keys.W)
+                {
+                    _firstPersonCameraComponent.Pitch += -1 * ThumbstickLookSensitivity;
+                    didConsume = true;
+                }
+                if (keyHeldEvent.Key == Keys.S)
+                {
+                    _firstPersonCameraComponent.Pitch += 1 * ThumbstickLookSensitivity;
+                    didConsume = true;
+                }
+
+                var limit = MathHelper.PiOver2 - MathHelper.ToRadians(5);
+                _firstPersonCameraComponent.Pitch = MathHelper.Clamp(_firstPersonCameraComponent.Pitch, -limit, limit);
+
+                var moveX = 0;
+                var moveZ = 0;
+
+                if (keyHeldEvent.Key == Keys.Left)
+                {
+                    moveX = -1;
+                    didConsume = true;
+                }
+                if (keyHeldEvent.Key == Keys.Right)
+                {
+                    moveX = 1;
+                    didConsume = true;
+                }
+                if (keyHeldEvent.Key == Keys.Up)
+                {
+                    moveZ = 1;
+                    didConsume = true;
+                }
+                if (keyHeldEvent.Key == Keys.Down)
+                {
+                    moveZ = -1;
+                    didConsume = true;
+                }
+                var lookAt = _firstPersonCameraComponent.LocalMatrix;
+                var relativeMovementVector = new Vector3(
+                    moveX * ThumbstickMoveSensitivity,
+                    0f,
+                    -moveZ * ThumbstickMoveSensitivity);
+                var absoluteMovementVector = Vector3.Transform(relativeMovementVector, lookAt);
+
+                componentizedEntity.LocalMatrix *= Matrix.CreateTranslation(absoluteMovementVector);
+
+                return didConsume;
             }
 
             return false;

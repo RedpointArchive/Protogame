@@ -184,6 +184,7 @@
     <Compile Include="Component\Builtin\AbsoluteMatrixComponent.cs" />
     <Compile Include="Component\Builtin\FirstPersonCameraComponent.cs" />
     <Compile Include="Component\Builtin\FirstPersonInputComponent.cs" />
+    <Compile Include="Component\Builtin\Physical3DCubeComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextureComponent.cs" />
     <Compile Include="Component\Builtin\Render3DCubeComponent.cs" />
@@ -194,7 +195,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ComponentizedObject.tt</DependentUpon>
     </Compile>
+    <Compile Include="Component\FromGameAttribute.cs" />
     <Compile Include="Component\FromParentAttribute.cs" />
+    <Compile Include="Component\FromWorldAttribute.cs" />
     <Compile Include="Component\IComponentCallable.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -336,6 +339,7 @@
     <Compile Include="Graphics\IGraphicsBlit.cs" />
     <Compile Include="Graphics\IGraphicsFactory.cs" />
     <Compile Include="Graphics\IInvertPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\IPhysicsDebugRenderPass.cs" />
     <Compile Include="Graphics\IRenderPass.cs" />
     <Compile Include="Graphics\IRenderPipeline.cs" />
     <Compile Include="Graphics\IRenderTargetBackBufferUtilities.cs" />
@@ -432,8 +436,11 @@
     <Compile Include="Physics\ConversionExtensions.cs" />
     <Compile Include="Physics\DefaultPhysicsEngine.cs" />
     <Compile Include="Physics\IPhysicsEngine.cs" />
-    <Compile Include="Physics\IPhysicsEntity.cs" />
+    <Compile Include="Physics\IPhysicsFactory.cs" />
     <Compile Include="Physics\PhysicsCharacterController.cs" />
+    <Compile Include="Physics\PhysicsDebugDraw.cs" />
+    <Compile Include="Physics\PhysicsEngineHook.cs" />
+    <Compile Include="Physics\PhysicsShadowWorld.cs" />
     <Compile Include="Physics\ProtogamePhysicsIoCModule.cs" />
     <Compile Include="Platform\AndroidGameWindow.cs" />
     <Compile Include="Platform\DefaultGameWindow.cs" />
