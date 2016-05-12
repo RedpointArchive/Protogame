@@ -274,6 +274,11 @@
     <Compile Include="Core\ProtogameCoreModule.cs" />
     <Compile Include="Core\ReloadableGameAssetManagerProvider.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
+    <Compile Include="Editor\ATFLevelEditor\EditorQueryMode.cs" />
+    <Compile Include="Editor\ATFLevelEditor\IEditorQuery.cs" />
+    <Compile Include="Editor\ATFLevelEditor\LoadingEditorQuery.cs" />
+    <Compile Include="Editor\ATFLevelEditor\SpawningEditorQuery.cs" />
+    <Compile Include="Editor\ProtogameEditorRuntimeModule.cs" />
     <Compile Include="Events\ConsoleEventBinder.cs" />
     <Compile Include="Events\ConsoleEventListener.cs" />
     <Compile Include="Events\DefaultEventEngine.cs" />

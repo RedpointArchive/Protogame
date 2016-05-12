@@ -25,13 +25,18 @@
   <References>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
     <Reference Include="Mono.Cecil" />
     <Reference Include="Protogame" />
+    <Reference Include="MonoGame.Framework" />
     <Reference Include="protobuf-net-ikvm" />
     <Reference Include="protobuf-precompile" />
     <Reference Include="IKVM.Reflection" />
   </References>
   <Files>
+    <Compile Include="ATFLevelEditorBaking.cs" />
+    <Compile Include="BakingEditorQuery.cs" />
+    <Compile Include="NetworkMessageSerializer.cs" />
     <Compile Include="PreloadedAssemblyResolver.cs" />
     <Compile Include="Program.cs" />
   </Files>
