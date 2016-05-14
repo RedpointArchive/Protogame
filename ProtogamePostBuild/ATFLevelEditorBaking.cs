@@ -47,9 +47,6 @@ namespace ProtogamePostBuild
             schema.SetAttribute("xmlns", "gap");
             schema.SetAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
             xsd.AppendChild(schema);
-            var include = CreateElement(xsd, "include");
-            include.SetAttribute("schemaLocation", "gap.xsd");
-            schema.AppendChild(include);
 
             try
             {
@@ -162,15 +159,18 @@ namespace ProtogamePostBuild
                                     }
                                 }
 
-                               // var complexContent = CreateElement(xsd, "complexContent");
-                               // complexType.AppendChild(complexContent);
-                                complexType.AppendChild(CreateDescriptorAttribute(xsd, "color", "xs:int", "-1"));
-                                complexType.AppendChild(CreateDescriptorAttribute(xsd, "emissive", "xs:int", "0"));
-                                complexType.AppendChild(CreateDescriptorAttribute(xsd, "specular", "xs:int", "0"));
-                                complexType.AppendChild(CreateDescriptorAttribute(xsd, "specularPower", "xs:float", "1"));
-                                complexType.AppendChild(CreateDescriptorAttribute(xsd, "diffuse", "xs:anyURI", null));
-                                complexType.AppendChild(CreateDescriptorAttribute(xsd, "normal", "xs:anyURI", null));
-                                complexType.AppendChild(CreateDescriptorAttribute(xsd, "textureTransform", "matrixType", "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"));
+                                var complexContent = CreateElement(xsd, "complexContent");
+                                complexType.AppendChild(complexContent);
+                                var extension = CreateElement(xsd, "extension");
+                                complexContent.AppendChild(extension);
+                                extension.SetAttribute("base", "gameObjectType");
+                                extension.AppendChild(CreateDescriptorAttribute(xsd, "color", "xs:int", "-1"));
+                                extension.AppendChild(CreateDescriptorAttribute(xsd, "emissive", "xs:int", "0"));
+                                extension.AppendChild(CreateDescriptorAttribute(xsd, "specular", "xs:int", "0"));
+                                extension.AppendChild(CreateDescriptorAttribute(xsd, "specularPower", "xs:float", "1"));
+                                extension.AppendChild(CreateDescriptorAttribute(xsd, "diffuse", "xs:anyURI", null));
+                                extension.AppendChild(CreateDescriptorAttribute(xsd, "normal", "xs:anyURI", null));
+                                extension.AppendChild(CreateDescriptorAttribute(xsd, "textureTransform", "matrixType", "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"));
 
                                 foreach (var kv in bakingEditorQuery.IDToName)
                                 {
@@ -181,7 +181,7 @@ namespace ProtogamePostBuild
                                             "textureTransform"
                                         }.Contains(kv.Key))
                                     {
-                                        complexType.AppendChild(CreateDescriptorAttribute(xsd, kv.Key,
+                                        extension.AppendChild(CreateDescriptorAttribute(xsd, kv.Key,
                                             ConvertToTypeID(bakingEditorQuery.IDToType[kv.Key]), null));
                                     }
                                 }
@@ -201,7 +201,10 @@ namespace ProtogamePostBuild
                 Console.Error.WriteLine(ex);
             }
 
-            xsd.Save(Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(intermediateAssembly), "level_editor.xsd"));
+            var fi = new FileInfo(intermediateAssembly);
+            var nwe = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
+
+            xsd.Save(Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(intermediateAssembly), "bundle." + nwe + ".xsd"));
         }
 
         private string GetEditorForTypeID(Type type)
