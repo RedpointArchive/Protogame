@@ -8,11 +8,37 @@ namespace Protogame.ATFLevelEditor
     {
         public EditorQueryMode Mode => EditorQueryMode.ManuallySpawned;
 
-        public void MapMatrix(T entity, Expression<Func<T, Matrix>> matrixProperty)
+        public void MapMatrix<TTarget>(TTarget @object, Expression<Func<T, Matrix>> matrixProperty) where TTarget : T, IHasMatrix
         {
         }
 
-        public void MapCustom<T2>(T entity, string id, string name, Expression<Func<T, T2>> property)
+        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Expression<Func<T, T2>> property) where TTarget : T
+        {
+        }
+
+        public void DeclareAsComponent(T @object)
+        {
+        }
+
+        public void DeclareAsEntity<TTarget>(TTarget @object) where TTarget : T, IEntity
+        {
+        }
+
+        public void DeclareAsComponentizedEntity<TTarget>(TTarget @object) where TTarget : ComponentizedEntity, T
+        {
+        }
+
+        public void AcceptsComponentsOfType<TComponent>(T @object)
+        {
+        }
+
+        public void UsePrimitiveShapeForRendering(T @object, EditorPrimitiveShape shape)
+        {
+        }
+
+        public void MapStandardLightingModel(T @object, Expression<Func<T, Color>> colorProperty, Expression<Func<T, Color>> emissiveProperty,
+            Expression<Func<T, Color>> specularProperty, Expression<Func<T, float>> specularPowerProperty, Expression<Func<T, string>> diffuseTextureNameProperty,
+            Expression<Func<T, string>> normalTextureNameProperty, Expression<Func<T, Matrix>> textureTransformProperty)
         {
         }
     }
