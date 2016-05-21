@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.Xna.Framework;
 using Protoinject;
 
 namespace Protogame
 {
-    public class EntityGroup : IEntity
+    public class EntityGroup : IEntity, IContainsEntities
     {
         private readonly INode _node;
 

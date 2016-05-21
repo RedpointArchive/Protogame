@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using Microsoft.Xna.Framework;
-using Protogame;
 using Protogame.ATFLevelEditor;
 
 namespace ProtogamePostBuild
@@ -67,8 +66,6 @@ namespace ProtogamePostBuild
 
                             if (isEditorQueryConstructor)
                             {
-                                Console.WriteLine("Found editable entity to export: " + type.FullName);
-
                                 // Call the constructor with the editor query instance provided, but everything else
                                 // null.  We expect entity code to handle this.  We don't use full DI here.
                                 var bakingEditorQueryType = typeof(BakingEditorQuery<>).MakeGenericType(type);
@@ -99,11 +96,37 @@ namespace ProtogamePostBuild
 
                                 constructor.Invoke(arguments);
 
-                                foreach (var kv in bakingEditorQuery.IDToName)
+                                var skip = false;
+                                var nativeTypeName = string.Empty;
+                                var xsdBaseTypeName = string.Empty;
+                                switch (bakingEditorQuery.DeclaredAs)
                                 {
-                                    Console.WriteLine("  Found custom property '" + kv.Key + "' with name '" + kv.Value +
-                                                      "' and type '" + bakingEditorQuery.IDToType[kv.Key].FullName +
-                                                      "'...");
+                                    case DeclaredAs.Entity:
+                                        Console.WriteLine("Found editable entity: " + type.FullName);
+                                        nativeTypeName = type.FullName.Replace(".", "_") + "_NativeEntity";
+                                        xsdBaseTypeName = "gameObjectType";
+                                        break;
+                                    case DeclaredAs.Component:
+                                        Console.WriteLine("Found editable component: " + type.FullName);
+                                        nativeTypeName = type.FullName.Replace(".", "_") + "_NativeComponent";
+                                        if (bakingEditorQuery.HasMatrix)
+                                        {
+                                            xsdBaseTypeName = "transformComponentType";
+                                        }
+                                        else
+                                        {
+                                            xsdBaseTypeName = "gameObjectComponentType";
+                                        }
+                                        break;
+                                    default:
+                                        Console.WriteLine("Skipping unknown object (use one of the Declare* methods): " + type.FullName);
+                                        skip = true;
+                                        break;
+                                }
+
+                                if (skip)
+                                {
+                                    break;
                                 }
 
                                 var complexType = CreateElement(xsd, "complexType");
@@ -114,20 +137,49 @@ namespace ProtogamePostBuild
 
                                 var appInfo = CreateElement(xsd, "appinfo");
                                 annotation.AppendChild(appInfo);
+
+                                var protogameInfo = xsd.CreateElement("", "Protogame.Info", "gap");
+                                appInfo.AppendChild(protogameInfo);
+                                protogameInfo.SetAttribute("NeedsNativeTypeGenerated", nativeTypeName);
+                                protogameInfo.SetAttribute("DeclaredAs", bakingEditorQuery.DeclaredAs.ToString());
+                                protogameInfo.SetAttribute("RenderMode", bakingEditorQuery.RenderMode.ToString());
+                                protogameInfo.SetAttribute("PrimitiveShape", bakingEditorQuery.PrimitiveShape.ToString());
+                                protogameInfo.SetAttribute("CanContainComponents", bakingEditorQuery.CanContainComponents.ToString(CultureInfo.InvariantCulture));
+                                protogameInfo.SetAttribute("CanContainEntities", bakingEditorQuery.CanContainEntities.ToString(CultureInfo.InvariantCulture));
+                                protogameInfo.SetAttribute("HasMatrix", bakingEditorQuery.HasMatrix.ToString(CultureInfo.InvariantCulture));
+
                                 var nativeType = xsd.CreateElement("" ,"LeGe.NativeType", "gap");
-                                nativeType.SetAttribute("nativeName", "CubeGob");
+                                nativeType.SetAttribute("nativeName", nativeTypeName);
                                 appInfo.AppendChild(nativeType);
-                                appInfo.AppendChild(CreateNativeAttribute(xsd, "color", "Color", "int", "set"));
-                                appInfo.AppendChild(CreateNativeAttribute(xsd, "emissive", "Emissive", "int", "set"));
-                                appInfo.AppendChild(CreateNativeAttribute(xsd, "specular", "Specular", "int", "set"));
-                                appInfo.AppendChild(CreateNativeAttribute(xsd, "specularPower", "SpecularPower", "float", "set"));
-                                appInfo.AppendChild(CreateNativeAttribute(xsd, "diffuse", "Diffuse", "wchar_t*", "set"));
-                                appInfo.AppendChild(CreateNativeAttribute(xsd, "normal", "Normal", "wchar_t*", "set"));
-                                appInfo.AppendChild(CreateNativeAttribute(xsd, "textureTransform", "TextureTransform", "Matrix", "set"));
-                                foreach (var kv in bakingEditorQuery.IDToName)
+                                foreach (var prop in bakingEditorQuery.Properties.Values)
                                 {
-                                    // TODO Allow Protogame properties to affect C++ properties in editor.
+                                    appInfo.AppendChild(CreateNativeAttribute(
+                                        xsd,
+                                        prop.ID,
+                                        prop.CamelCaseName,
+                                        prop.NativeType,
+                                        prop.NativeAccess));
                                 }
+
+                                if (bakingEditorQuery.CanContainComponents)
+                                {
+                                    var nativeElement = xsd.CreateElement("", "LeGe.NativeElement", "gap");
+                                    nativeElement.SetAttribute("name", "component");
+                                    nativeElement.SetAttribute("nativeName", "Component");
+                                    nativeElement.SetAttribute("nativeType", "GameObjectComponent");
+                                    appInfo.AppendChild(nativeElement);
+                                }
+
+                                if (bakingEditorQuery.CanContainEntities)
+                                {
+                                    var nativeElement = xsd.CreateElement("", "LeGe.NativeElement", "gap");
+                                    nativeElement.SetAttribute("name", "gameObject");
+                                    nativeElement.SetAttribute("nativeName", "Child");
+                                    nativeElement.SetAttribute("nativeType", "GameObject");
+                                    appInfo.AppendChild(nativeElement);
+                                }
+
+                                // <LeGe.NativeElement  name="component" nativeName="Component" nativeType="GameObjectComponent" />
 
                                 var sceaEditors = xsd.CreateElement("", "scea.dom.editors", "gap");
                                 sceaEditors.SetAttribute("name", type.Name);
@@ -135,141 +187,79 @@ namespace ProtogamePostBuild
                                 sceaEditors.SetAttribute("menuText", "Entities/" + type.Name);
                                 sceaEditors.SetAttribute("description", type.FullName);
                                 appInfo.AppendChild(sceaEditors);
-                                appInfo.AppendChild(CreateEditorAttribute(xsd, "Shape", "color", "Color", "Object Color", "Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true", "Sce.Atf.Controls.PropertyEditing.IntColorConverter"));
-                                appInfo.AppendChild(CreateEditorAttribute(xsd, "Shape", "emissive", "Emissive", "Object emissive Color", "Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true", "Sce.Atf.Controls.PropertyEditing.IntColorConverter"));
-                                appInfo.AppendChild(CreateEditorAttribute(xsd, "Shape", "specular", "Specular", "Object specular Color", "Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true", "Sce.Atf.Controls.PropertyEditing.IntColorConverter"));
-                                appInfo.AppendChild(CreateEditorAttribute(xsd, "Shape", "specularPower", "Specular Power", "specular power", null, null));
-                                appInfo.AppendChild(CreateEditorAttribute(xsd, "Shape", "diffuse", "Diffuse", "diffuse texture", "Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif", null));
-                                appInfo.AppendChild(CreateEditorAttribute(xsd, "Shape", "normal", "Normal", "normal texture", "Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif", null));
-                                appInfo.AppendChild(CreateEditorAttribute(xsd, "Shape", "textureTransform", "Texture Transform", "Transform for texture coordinates", "Sce.Atf.Controls.PropertyEditing.NumericMatrixEditor,Atf.Gui.WinForms", null));
-                                foreach (var kv in bakingEditorQuery.IDToName)
+                                foreach (var prop in bakingEditorQuery.Properties.Values)
                                 {
-                                    // TODO: Make shape properties and lighting properties like available methods on the
-                                    // entity query system like MapStandardLightingModel, etc.
-                                    if (
-                                        !new[]
-                                        {
-                                            "color", "emissive", "specular", "specularPower", "diffuse", "normal",
-                                            "textureTransform"
-                                        }.Contains(kv.Key))
-                                    {
-                                        appInfo.AppendChild(CreateEditorAttribute(xsd, "Entity", kv.Key, kv.Value,
-                                            "Entity property", GetEditorForTypeID(bakingEditorQuery.IDToType[kv.Key]),
-                                            GetConverterForTypeID(bakingEditorQuery.IDToType[kv.Key])));
-                                    }
+                                    appInfo.AppendChild(CreateEditorAttribute(
+                                        xsd,
+                                        "Entity",
+                                        prop.ID,
+                                        prop.DisplayName,
+                                        prop.EditorDescription,
+                                        prop.EditorType,
+                                        prop.EditorConverterType));
                                 }
-
+                                
                                 var complexContent = CreateElement(xsd, "complexContent");
                                 complexType.AppendChild(complexContent);
                                 var extension = CreateElement(xsd, "extension");
                                 complexContent.AppendChild(extension);
-                                extension.SetAttribute("base", "gameObjectType");
-                                extension.AppendChild(CreateDescriptorAttribute(xsd, "color", "xs:int", "-1"));
-                                extension.AppendChild(CreateDescriptorAttribute(xsd, "emissive", "xs:int", "0"));
-                                extension.AppendChild(CreateDescriptorAttribute(xsd, "specular", "xs:int", "0"));
-                                extension.AppendChild(CreateDescriptorAttribute(xsd, "specularPower", "xs:float", "1"));
-                                extension.AppendChild(CreateDescriptorAttribute(xsd, "diffuse", "xs:anyURI", null));
-                                extension.AppendChild(CreateDescriptorAttribute(xsd, "normal", "xs:anyURI", null));
-                                extension.AppendChild(CreateDescriptorAttribute(xsd, "textureTransform", "matrixType", "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"));
+                                extension.SetAttribute("base", xsdBaseTypeName);
 
-                                foreach (var kv in bakingEditorQuery.IDToName)
+                                if (bakingEditorQuery.CanContainComponents)
                                 {
-                                    if (
-                                        !new[]
-                                        {
-                                            "color", "emissive", "specular", "specularPower", "diffuse", "normal",
-                                            "textureTransform"
-                                        }.Contains(kv.Key))
-                                    {
-                                        extension.AppendChild(CreateDescriptorAttribute(xsd, kv.Key,
-                                            ConvertToTypeID(bakingEditorQuery.IDToType[kv.Key]), null));
-                                    }
+                                    var sequence = CreateElement(xsd, "sequence");
+                                    extension.AppendChild(sequence);
+
+                                    var element = CreateElement(xsd, "element");
+                                    element.SetAttribute("name", "component");
+                                    element.SetAttribute("type", "gameObjectComponentType");
+                                    element.SetAttribute("minOccurs", "0");
+                                    element.SetAttribute("maxOccurs", "unbounded");
+                                    sequence.AppendChild(element);
+                                }
+
+                                if (bakingEditorQuery.CanContainEntities)
+                                {
+                                    var sequence = CreateElement(xsd, "sequence");
+                                    extension.AppendChild(sequence);
+
+                                    var element = CreateElement(xsd, "element");
+                                    element.SetAttribute("name", "component");
+                                    element.SetAttribute("type", "gameObjectType");
+                                    element.SetAttribute("minOccurs", "0");
+                                    element.SetAttribute("maxOccurs", "unbounded");
+                                    sequence.AppendChild(element);
+                                }
+
+                                foreach (var prop in bakingEditorQuery.Properties.Values)
+                                {
+                                    extension.AppendChild(CreateDescriptorAttribute(
+                                        xsd,
+                                        prop.ID,
+                                        prop.XSDType,
+                                        prop.XSDDefaultValue));
                                 }
 
                                 break;
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch (FileNotFoundException ex)
                     {
-                        Console.Error.WriteLine(ex);
+                        Console.Error.WriteLine("WARNING: Can't scan type " + type.FullName + " because the assembly " + ex.FileName + " was not available.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex);
+                Console.Error.WriteLine("ERROR: Encountered a fatal exception during processing: " + ex);
+                Environment.ExitCode = 1;
             }
 
             var fi = new FileInfo(intermediateAssembly);
             var nwe = fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
 
             xsd.Save(Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(intermediateAssembly), "bundle." + nwe + ".xsd"));
-        }
-
-        private string GetEditorForTypeID(Type type)
-        {
-            if (type == typeof (Color))
-            {
-                return "Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true";
-            }
-
-            return null;
-        }
-
-        private string GetConverterForTypeID(Type type)
-        {
-            if (type == typeof(Color))
-            {
-                return "Sce.Atf.Controls.PropertyEditing.IntColorConverter";
-            }
-
-            return null;
-        }
-
-        private string ConvertToTypeID(Type type)
-        {
-            if (type == typeof(int))
-            {
-                return "xs:int";
-            }
-            if (type == typeof (float))
-            {
-                return "xs:float";
-            }
-            if (type == typeof(string))
-            {
-                return "xs:string";
-            }
-            if (type == typeof(bool))
-            {
-                return "xs:boolean";
-            }
-            if (type == typeof(float[]))
-            {
-                return "floatListType";
-            }
-            if (type == typeof(Vector2))
-            {
-                return "vector2Type";
-            }
-            if (type == typeof(Vector3))
-            {
-                return "vector3Type";
-            }
-            if (type == typeof(Color))
-            {
-                return "xs:int";
-            }
-            if (type == typeof(Vector4))
-            {
-                return "vector4Type";
-            }
-            if (type == typeof(Matrix))
-            {
-                return "matrixType";
-            }
-            throw new Exception("Can't yet support type " + type);
         }
 
         private XmlNode CreateDescriptorAttribute(XmlDocument xsd, string name, string type, string @default)
@@ -310,11 +300,11 @@ namespace ProtogamePostBuild
             attribute.SetAttribute("description", description);
             if (editor != null)
             {
-                attribute.SetAttribute("nativeType", editor);
+                attribute.SetAttribute("editor", editor);
             }
             if (converter != null)
             {
-                attribute.SetAttribute("access", converter);
+                attribute.SetAttribute("converter", converter);
             }
             return attribute;
         }

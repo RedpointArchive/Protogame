@@ -12,7 +12,7 @@ namespace Protogame.ATFLevelEditor
         {
         }
 
-        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Expression<Func<T, T2>> property) where TTarget : T
+        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Expression<Func<T, T2>> property, T2 @default) where TTarget : T
         {
         }
 

@@ -36,7 +36,8 @@ namespace Protogame.ATFLevelEditor
         /// <param name="id">The ID of the property to use in level data.  Changing this will result in the data mapped against this ID in levels to no longer be loaded.</param>
         /// <param name="name">The name of the property to display in the editor.</param>
         /// <param name="property">The property to map onto.</param>
-        void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Expression<Func<T, T2>> property) where TTarget : T;
+        /// <param name="default"></param>
+        void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Expression<Func<T, T2>> property, T2 @default) where TTarget : T;
 
         /// <summary>
         /// Declares that this object is a component which can be added to
@@ -46,25 +47,10 @@ namespace Protogame.ATFLevelEditor
         void DeclareAsComponent(T @object);
 
         /// <summary>
-        /// Declares that this object is an entity which DOES NOT accept components
-        /// in it's hierarchy.  Use <see cref="DeclareAsComponentizedEntity{TTarget}"/>
-        /// for that.
+        /// Declares that this object is an entity.
         /// </summary>
         /// <param name="object"></param>
         void DeclareAsEntity<TTarget>(TTarget @object) where TTarget : T, IEntity;
-
-        /// <summary>
-        /// Declares that this object is an entity which accepts components in it's
-        /// hierarchy.
-        /// </summary>
-        /// <param name="object"></param>
-        void DeclareAsComponentizedEntity<TTarget>(TTarget @object) where TTarget : ComponentizedEntity, T;
-
-        /// <summary>
-        /// Declares that this object can accept components of a given type.
-        /// </summary>
-        /// <typeparam name="TComponent">The type of components that this object can accept.</typeparam>
-        void AcceptsComponentsOfType<TComponent>(T @object);
 
         /// <summary>
         /// Specifies that this object should use a primitive shape when rendered in the level editor.
