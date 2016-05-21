@@ -252,6 +252,7 @@
     <Compile Include="Core\IBoundingBoxUtilities.cs" />
     <Compile Include="Core\ICommand.cs" />
     <Compile Include="Core\IConsole.cs" />
+    <Compile Include="Core\IContainsEntities.cs" />
     <Compile Include="Core\ICoreGame.cs" />
     <Compile Include="Core\IEngineHook.cs" />
     <Compile Include="Core\IEntity.cs" />
