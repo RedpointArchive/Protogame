@@ -16,7 +16,7 @@ namespace ProtogameAssetManager
                 this.m_Asset.SourcePath = this.m_FileSelect.Path;
                 using (var stream = new StreamReader(this.m_Asset.SourcePath, Encoding.UTF8))
                 {
-                    this.m_Asset.Value = stream.ReadToEnd();
+                    this.m_Asset.LevelData = stream.ReadToEnd();
                 }
                 assetManager.Save(this.m_Asset);
             };

@@ -13,16 +13,20 @@ namespace Protogame
         /// <param name="name">
         /// The name.
         /// </param>
-        /// <param name="value">
-        /// The value.
+        /// <param name="levelData">
+        /// The raw level data.
+        /// </param>
+        /// <param name="levelDataFormat">
+        /// The format of the level data.
         /// </param>
         /// <param name="sourcePath">
         /// The source path.
         /// </param>
-        public LevelAsset(string name, string value, string sourcePath)
+        public LevelAsset(string name, string levelData, LevelDataFormat levelDataFormat, string sourcePath)
         {
             this.Name = name;
-            this.Value = value;
+            this.LevelData = levelData;
+            this.LevelDataFormat = levelDataFormat;
             this.SourcePath = sourcePath;
         }
 
@@ -71,12 +75,30 @@ namespace Protogame
         public string SourcePath { get; set; }
 
         /// <summary>
-        /// Gets or sets the value.
+        /// Gets or sets the level data.
         /// </summary>
         /// <value>
-        /// The value.
+        /// The level data.
         /// </value>
-        public string Value { get; set; }
+        [Obsolete("Use LevelData instead.", true)]
+        public string Value
+        {
+            get { return LevelData; }
+            set { LevelData = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the level data.
+        /// </summary>
+        /// <value>
+        /// The level data.
+        /// </value>
+        public string LevelData { get; set; }
+
+        /// <summary>
+        /// Gets or sets the format of the level data.
+        /// </summary>
+        public LevelDataFormat LevelDataFormat { get; set; }
 
         /// <summary>
         /// The resolve.

@@ -61,7 +61,7 @@ namespace Protogame
         /// </returns>
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
-            return new LevelAsset(name, null, string.Empty);
+            return new LevelAsset(name, null, LevelDataFormat.Unknown, string.Empty);
         }
 
         /// <summary>
@@ -81,7 +81,11 @@ namespace Protogame
         /// </returns>
         public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
-            return new LevelAsset(name, data.GetProperty<string>("Value"), data.GetProperty<string>("SourcePath"));
+            return new LevelAsset(
+                name, 
+                data.GetProperty<string>("LevelData"),
+                data.GetProperty<LevelDataFormat>("LevelDataFormat"),
+                data.GetProperty<string>("SourcePath"));
         }
     }
 }

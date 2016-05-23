@@ -18,30 +18,30 @@ namespace Protogame
         /// <summary>
         /// The m_ kernel.
         /// </summary>
-        private readonly IKernel m_Kernel;
+        private readonly IKernel _kernel;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OgmoLevelReader"/> class.
-        /// </summary>
-        /// <param name="kernel">
-        /// The kernel.
-        /// </param>
-        public OgmoLevelReader(IKernel kernel)
+        private readonly IHierarchy _hierarchy;
+
+        public OgmoLevelReader(IKernel kernel, IHierarchy hierarchy)
         {
-            this.m_Kernel = kernel;
+            this._kernel = kernel;
+            _hierarchy = hierarchy;
         }
 
         /// <summary>
-        /// The read.
+        /// Creates the entities from the stream.
         /// </summary>
-        /// <param name="stream">
-        /// The stream.
+        /// <param name="stream">The stream which contains an Ogmo Editor level.</param>
+        /// <param name="context">
+        /// The context in which entities are being spawned in the hierarchy.  This is
+        /// usually the current world, but it doesn't have to be (e.g. if you wanted to
+        /// load a level under an entity group, you would pass the entity group here).
         /// </param>
-        /// <returns>
-        /// The <see cref="IEnumerable"/>.
-        /// </returns>
-        public IEnumerable<IEntity> Read(Stream stream)
+        /// <returns>A list of entities to spawn within the world.</returns>
+        public IEnumerable<IEntity> Read(Stream stream, object context)
         {
+            var node = _hierarchy.Lookup(context);
+
             // FIXME: Store the entities in a tileset so that we 
             // can have pre-rendered tilesets.
             // var tilesetEntity = new DefaultTileset();
@@ -95,7 +95,8 @@ namespace Protogame
             {
                 // TODO: Use Protoinject.Extensions.Factory for the solid entity.
                 var entity =
-                    this.m_Kernel.Get<ISolidEntity>(
+                    this._kernel.Get<ISolidEntity>(
+                        node,
                         new NamedConstructorArgument("x", Convert.ToSingle(solid.Attribute(XName.Get("x")).Value)), 
                         new NamedConstructorArgument("y", Convert.ToSingle(solid.Attribute(XName.Get("y")).Value)), 
                         new NamedConstructorArgument("width", Convert.ToSingle(solid.Attribute(XName.Get("w")).Value)), 
@@ -107,7 +108,8 @@ namespace Protogame
             {
                 foreach (var tile in tileset.Tiles)
                 {
-                    var entity = this.m_Kernel.Get<ITileEntity>(
+                    var entity = this._kernel.Get<ITileEntity>(
+                        node,
                         tileset.Tileset, 
                         new NamedConstructorArgument("x", tile.X), 
                         new NamedConstructorArgument("y", tile.Y), 
@@ -119,7 +121,8 @@ namespace Protogame
 
             foreach (var entitydef in entitydefs)
             {
-                var entity = this.m_Kernel.Get<IEntity>(
+                var entity = this._kernel.Get<IEntity>(
+                    node,
                     entitydef.Type, 
                     new NamedConstructorArgument("name", entitydef.Type), 
                     new NamedConstructorArgument("id", entitydef.ID), 

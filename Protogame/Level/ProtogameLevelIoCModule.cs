@@ -1,21 +1,9 @@
+using System;
+
 namespace Protogame
 {
-    using Protoinject;
-
-    /// <summary>
-    /// The protogame level io c module.
-    /// </summary>
-    /// <module>Level</module>
-    public class ProtogameLevelIoCModule : IProtoinjectModule
+    [Obsolete("Load ProtogameLevelModule instead.")]
+    public class ProtogameLevelIoCModule : ProtogameLevelModule
     {
-        /// <summary>
-        /// The load.
-        /// </summary>
-        public void Load(IKernel kernel)
-        {
-            kernel.Bind<ITileset>().To<DefaultTileset>();
-            kernel.Bind<ILevelManager>().To<DefaultLevelManager>();
-            kernel.Bind<ILevelReader>().To<OgmoLevelReader>();
-        }
     }
 }

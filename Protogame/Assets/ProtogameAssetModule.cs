@@ -89,7 +89,8 @@ namespace Protogame
             kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawLevelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawATFLevelLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawOgmoEditorLevelLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawConfigurationLoadStrategy>();
 #endif

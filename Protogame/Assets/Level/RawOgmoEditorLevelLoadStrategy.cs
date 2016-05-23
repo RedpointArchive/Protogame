@@ -6,7 +6,7 @@
     /// <summary>
     /// The raw level load strategy.
     /// </summary>
-    public class RawLevelLoadStrategy : ILoadStrategy
+    public class RawOgmoEditorLevelLoadStrategy : ILoadStrategy
     {
         /// <summary>
         /// Gets the asset extensions.
@@ -64,7 +64,8 @@
                                 {
                                     Loader = typeof(LevelAssetLoader).FullName,
                                     PlatformData = (PlatformData)null,
-                                    Value = reader.ReadToEnd(),
+                                    LevelData = reader.ReadToEnd(),
+                                    LevelDataFormat = LevelDataFormat.ATF,
                                     SourcePath = (string)null,
                                     SourcedFromRaw = true
                                 });

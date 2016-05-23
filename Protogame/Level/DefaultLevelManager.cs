@@ -1,3 +1,4 @@
+using System;
 using Protoinject;
 
 namespace Protogame
@@ -13,53 +14,63 @@ namespace Protogame
     /// <interface_ref>Protogame.ILevelManager</interface_ref>
     public class DefaultLevelManager : ILevelManager
     {
-        /// <summary>
-        /// The m_ asset manager.
-        /// </summary>
-        private readonly IAssetManager m_AssetManager;
-
-        /// <summary>
-        /// The dependency injection kernel.
-        /// </summary>
         private readonly IKernel _kernel;
+        private readonly INode _currentNode;
 
-        /// <summary>
-        /// The m_ reader.
-        /// </summary>
-        private readonly ILevelReader m_Reader;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultLevelManager"/> class.
-        /// </summary>
-        /// <param name="kernel">
-        /// The dependency injection kernel.
-        /// </param>
-        /// <param name="reader">
-        /// The reader.
-        /// </param>
-        /// <param name="assetManagerProvider">
-        /// The asset manager provider.
-        /// </param>
-        public DefaultLevelManager(IKernel kernel, ILevelReader reader, IAssetManagerProvider assetManagerProvider)
+        public DefaultLevelManager(IKernel kernel, INode currentNode)
         {
             _kernel = kernel;
-            this.m_Reader = reader;
-            this.m_AssetManager = assetManagerProvider.GetAssetManager();
+            _currentNode = currentNode;
         }
 
         /// <summary>
-        /// The load.
+        /// Loads a level entity into the game hierarchy, with the specified
+        /// context as the place to load entities.  Normally you'll pass in the
+        /// game world here, but you don't have to.  For example, if you wanted to
+        /// load the level into an entity group, you would pass the entity group
+        /// as the context instead.
         /// </summary>
-        /// <param name="world">
-        /// The world.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
+        /// <param name="context">Usually the current game world, but can be any object in the hierarchy.</param>
+        /// <param name="levelAsset">The level to load.</param>
+        public void Load(object context, LevelAsset levelAsset)
+        {
+            var reader = _kernel.Get<ILevelReader>(_currentNode, levelAsset.LevelDataFormat.ToString());
+            var levelBytes = Encoding.ASCII.GetBytes(levelAsset.LevelData);
+
+            var node = _kernel.Hierarchy.Lookup(context);
+            using (var stream = new MemoryStream(levelBytes))
+            {
+                foreach (var entity in reader.Read(stream, node))
+                {
+                    var existingNode = _kernel.Hierarchy.Lookup(entity);
+                    if (existingNode != null)
+                    {
+                        // Remove it from the hierarchy if it's already there.
+                        _kernel.Hierarchy.RemoveNode(existingNode);
+                    }
+                    _kernel.Hierarchy.AddChildNode(node, _kernel.Hierarchy.CreateNodeForObject(entity));
+                }
+            }
+        }
+
+        [Obsolete("Use one of the other Load methods instead.")]
         public void Load(IWorld world, string name)
         {
-            var levelAsset = this.m_AssetManager.Get<LevelAsset>(name);
-            var levelBytes = Encoding.ASCII.GetBytes(levelAsset.Value);
+            // This legacy method only accepts a name, so lazy load the asset manager
+            // to support this old behaviour.
+            var assetManager = _kernel.Get<IAssetManagerProvider>(_currentNode).GetAssetManager();
+            var levelAsset = assetManager.Get<LevelAsset>(name);
+
+            if (levelAsset.LevelDataFormat != LevelDataFormat.OgmoEditor)
+            {
+                throw new NotSupportedException(
+                    "This method is only for legacy usage, and only " +
+                    "supports the Ogmo Editor level format.");
+            }
+
+            var levelReader = _kernel.Get<ILevelReader>(_currentNode, LevelDataFormat.OgmoEditor.ToString());
+            var levelBytes = Encoding.ASCII.GetBytes(levelAsset.LevelData);
+
             var worldNode = _kernel.Hierarchy.Lookup(world);
             // TODO: This doesn't work right yet because the collision system still relies on
             // checking the bounding boxes of entities, rather than entities having bounding box
@@ -68,7 +79,7 @@ namespace Protogame
             //var levelNode = _kernel.Hierarchy.Lookup(levelGroup);
             using (var stream = new MemoryStream(levelBytes))
             {
-                foreach (var entity in this.m_Reader.Read(stream))
+                foreach (var entity in levelReader.Read(stream, _currentNode))
                 {
                     var existingNode = _kernel.Hierarchy.Lookup(entity);
                     if (existingNode != null)

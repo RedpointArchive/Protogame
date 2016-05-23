@@ -126,7 +126,9 @@
     <Compile Include="Assets\Level\LevelAsset.cs" />
     <Compile Include="Assets\Level\LevelAssetLoader.cs" />
     <Compile Include="Assets\Level\LevelAssetSaver.cs" />
-    <Compile Include="Assets\Level\RawLevelLoadStrategy.cs" />
+    <Compile Include="Assets\Level\LevelDataFormat.cs" />
+    <Compile Include="Assets\Level\RawATFLevelLoadStrategy.cs" />
+    <Compile Include="Assets\Level\RawOgmoEditorLevelLoadStrategy.cs" />
     <Compile Include="Assets\Model\Animation.cs" />
     <Compile Include="Assets\Model\AnimationCollection.cs" />
     <Compile Include="Assets\Model\AnimationController.cs" />
@@ -380,6 +382,7 @@
     <Compile Include="ImageProcessing\ProtogameImageProcessingModule.cs" />
     <Compile Include="ImageProcessing\ThreadedColorInImageDetection.cs" />
     <Compile Include="ImageProcessing\ThreadedPointInAnalysedImageDetection.cs" />
+    <Compile Include="Level\ATFLevelReader.cs" />
     <Compile Include="Level\DefaultLevelManager.cs" />
     <Compile Include="Level\DefaultTileset.cs" />
     <Compile Include="Level\ILevelManager.cs" />
@@ -387,6 +390,7 @@
     <Compile Include="Level\ITileset.cs" />
     <Compile Include="Level\OgmoLevelReader.cs" />
     <Compile Include="Level\ProtogameLevelIoCModule.cs" />
+    <Compile Include="Level\ProtogameLevelModule.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
     <Compile Include="Network\AheadOfTimeNetworkMessageSerialization.cs" />
     <Compile Include="Network\FlowControlChangedEventArgs.cs" />
