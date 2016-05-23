@@ -43,8 +43,45 @@ namespace Protogame
             var document = new XmlDocument();
             document.Load(stream);
 
-            // TODO: Implement the level reader.
-            return new List<IEntity>();
+            if (document.DocumentElement == null)
+            {
+                throw new InvalidOperationException("The level data doesn't contain a document element.");
+            }
+
+            // Find the <gameObjectFolder> node under the root element.  This is
+            // the top of our hierarchy.
+            var gameObjectFolder =
+                document.DocumentElement.ChildNodes.OfType<XmlElement>()
+                    .FirstOrDefault(x => x.LocalName == "gameObjectFolder");
+
+            if (gameObjectFolder == null)
+            {
+                throw new InvalidOperationException("No top level game folder found in ATF level.");
+            }
+
+            // Construct the plans for the level.
+            var plansList = new List<IPlan>();
+            foreach (var element in gameObjectFolder.ChildNodes.OfType<XmlElement>())
+            {
+                var plan = ProcessElementToPlan(node, element);
+                if (plan != null)
+                {
+                    plansList.Add(plan);
+                }
+            }
+
+            // Validate the level configuration.
+            var plans = plansList.ToArray();
+            _kernel.ValidateAll(plans);
+
+            // Resolve all the plans.
+            return _kernel.ResolveAll(plans).OfType<IEntity>();
+        }
+
+        private IPlan ProcessElementToPlan(IPlan plan, XmlElement element)
+        {
+            var elementName = element.LocalName;
+            return null;
         }
     }
 }

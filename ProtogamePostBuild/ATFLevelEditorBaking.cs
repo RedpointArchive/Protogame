@@ -147,6 +147,7 @@ namespace ProtogamePostBuild
                                 protogameInfo.SetAttribute("CanContainComponents", bakingEditorQuery.CanContainComponents.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("CanContainEntities", bakingEditorQuery.CanContainEntities.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("HasMatrix", bakingEditorQuery.HasMatrix.ToString(CultureInfo.InvariantCulture));
+                                protogameInfo.SetAttribute("QualifiedName", type.AssemblyQualifiedName);
 
                                 var nativeType = xsd.CreateElement("" ,"LeGe.NativeType", "gap");
                                 nativeType.SetAttribute("nativeName", nativeTypeName);
