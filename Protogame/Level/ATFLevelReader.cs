@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using Protogame.ATFLevelEditor;
 using Protoinject;
 
 namespace Protogame
@@ -63,25 +64,117 @@ namespace Protogame
             var plansList = new List<IPlan>();
             foreach (var element in gameObjectFolder.ChildNodes.OfType<XmlElement>())
             {
-                var plan = ProcessElementToPlan(node, element);
-                if (plan != null)
-                {
-                    plansList.Add(plan);
-                }
+                ProcessElementToPlan(node, null, element, plansList, 0);
             }
 
             // Validate the level configuration.
             var plans = plansList.ToArray();
-            _kernel.ValidateAll(plans);
+            try
+            {
+                _kernel.ValidateAll(plans);
 
-            // Resolve all the plans.
-            return _kernel.ResolveAll(plans).OfType<IEntity>();
+                // Resolve all the plans.
+                return _kernel.ResolveAll(plans).OfType<IEntity>();
+            }
+            catch
+            {
+                _kernel.DiscardAll(plans);
+
+                foreach (var plan in plans)
+                {
+                    // Also detach the child nodes that were appended to the root object.
+                    _hierarchy.RemoveChildNode(node, (INode)plan);
+                }
+
+                throw;
+            }
         }
 
-        private IPlan ProcessElementToPlan(IPlan plan, XmlElement element)
+        private void ProcessElementToPlan(IPlan parentPlan, IPlan rootPlan, XmlElement currentElement, List<IPlan> rootPlans, int depth)
         {
-            var elementName = element.LocalName;
-            return null;
+            switch (currentElement.LocalName)
+            {
+                case "gameObjectFolder":
+                {
+                    foreach (var childElement in currentElement.ChildNodes.OfType<XmlElement>())
+                    {
+                        ProcessElementToPlan(parentPlan, rootPlan, childElement, rootPlans, depth);
+                    }
+                    break;
+                }
+                case "gameObject":
+                {
+                    Type targetType = null;
+
+                    var xsiType = currentElement.GetAttribute("xsi:type");
+                    if (xsiType == "gameObjectGroupType")
+                    {
+                        targetType = typeof (EntityGroup);
+                    }
+
+                    var qualifiedName = currentElement.GetAttribute("qualifiedName");
+                    if (!string.IsNullOrEmpty(qualifiedName))
+                    {
+                        targetType = Type.GetType(qualifiedName);
+                    }
+
+                    if (targetType == null)
+                    {
+                        break;
+                    }
+
+                    var queryType = typeof (IEditorQuery<>).MakeGenericType(targetType);
+                        
+                    var plan = _kernel.Plan(
+                        targetType,
+                        (INode) parentPlan,
+                        null,
+                        null,
+                        null,
+                        null,
+                        new Dictionary<Type, List<IMapping>>
+                        {
+                            {
+                                queryType, new List<IMapping>
+                                {
+                                    new DefaultMapping(
+                                        null,
+                                        ctx => ResolveEditorQueryForElement(ctx, queryType, targetType, currentElement),
+                                        false,
+                                        null,
+                                        null,
+                                        true,
+                                        null)
+                                }
+                            }
+                        });
+
+                    _hierarchy.AddChildNode(parentPlan, (INode)plan);
+
+                    if (depth == 0)
+                    {
+                        rootPlans.Add(plan);
+                    }
+
+                    foreach (var childElement in currentElement.ChildNodes.OfType<XmlElement>())
+                    {
+                        ProcessElementToPlan(plan, rootPlan, childElement, null, depth + 1);
+                    }
+
+                    if (depth > 0)
+                    {
+                        parentPlan.PlannedCreatedNodes.InsertRange(0, plan.PlannedCreatedNodes);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        private object ResolveEditorQueryForElement(IContext context, Type queryType, Type targetType, XmlElement element)
+        {
+            var loadingType = typeof (LoadingEditorQuery<>).MakeGenericType(targetType);
+            return context.Kernel.Get(loadingType, context.Parent, new NamedConstructorArgument("element", element));
         }
     }
 }

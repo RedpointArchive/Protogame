@@ -40,7 +40,7 @@ namespace Protogame
             var node = _kernel.Hierarchy.Lookup(context);
             using (var stream = new MemoryStream(levelBytes))
             {
-                foreach (var entity in reader.Read(stream, node))
+                foreach (var entity in reader.Read(stream, context))
                 {
                     var existingNode = _kernel.Hierarchy.Lookup(entity);
                     if (existingNode != null)

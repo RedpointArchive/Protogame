@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.Xna.Framework;
+using Protogame.ATFLevelEditor;
 using Protoinject;
 
 namespace Protogame
@@ -8,9 +9,16 @@ namespace Protogame
     {
         private readonly INode _node;
 
-        public EntityGroup(INode node)
+        public EntityGroup(INode node, IEditorQuery<EntityGroup> editorQuery)
         {
             _node = node;
+            
+            // EditorGroup is used to represent game groups in the editor
+            // and we need to map the transform to this object.
+            if (editorQuery.Mode == EditorQueryMode.LoadingConfiguration)
+            {
+                editorQuery.MapMatrix(this, x => this.LocalMatrix);
+            }
         }
 
         public Matrix LocalMatrix { get; set; }
