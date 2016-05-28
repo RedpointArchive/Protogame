@@ -1,15 +1,15 @@
-﻿namespace Protogame
-{
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics.PackedVector;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 
+namespace Protogame
+{
     /// <summary>
     /// Serializes and deserializes <see cref="IModel"/> for storage in a binary format.
     /// </summary>
-    public class ModelSerializer
+    public class ModelSerializerVersion1 : IModelSerializer
     {
         /// <summary>
         /// Deserialize the specified byte array into a concrete <see cref="Model"/> implementation.
@@ -261,7 +261,7 @@
             var vertexes = this.DeserializeVertexes(reader);
             var indices = this.DeserializeIndices(reader);
 
-            return new Model(animations, boneHierarchy, vertexes, indices);
+            return new Model(animations, null, boneHierarchy, vertexes, indices);
         }
 
         /// <summary>

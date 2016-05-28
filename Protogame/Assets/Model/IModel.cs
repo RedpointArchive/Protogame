@@ -19,6 +19,18 @@
         IAnimationCollection AvailableAnimations { get; }
 
         /// <summary>
+        /// Gets the material information associated with this model, if
+        /// one exists.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no material attached to this model.
+        /// </remarks>
+        /// <value>
+        /// The material associated with this model.
+        /// </value>
+        IMaterial Material { get; }
+
+        /// <summary>
         /// Gets the root bone of the model's skeleton.
         /// </summary>
         /// <remarks>

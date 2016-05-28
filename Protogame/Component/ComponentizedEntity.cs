@@ -66,7 +66,7 @@ namespace Protogame
         /// </summary>
         /// <param name="gameContext">The current game context.</param>
         /// <param name="renderContext">The current render context.</param>
-        public void Render(IGameContext gameContext, IRenderContext renderContext)
+        public virtual void Render(IGameContext gameContext, IRenderContext renderContext)
         {
             _render.Invoke(gameContext, renderContext);
         }
@@ -76,7 +76,7 @@ namespace Protogame
         /// </summary>
         /// <param name="gameContext">The current game context.</param>
         /// <param name="updateContext">The current update context.</param>
-        public void Update(IGameContext gameContext, IUpdateContext updateContext)
+        public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             _update.Invoke(gameContext, updateContext);
         }

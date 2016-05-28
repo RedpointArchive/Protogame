@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.Xna.Framework;
@@ -22,6 +23,8 @@ namespace Protogame.ATFLevelEditor
         public bool HasMatrix { get; set; }
 
         public EditorPrimitiveShape PrimitiveShape { get; set; }
+
+        public string IconAbsolutePath { get; set; }
     }
 
     public enum DeclaredAs
@@ -35,7 +38,8 @@ namespace Protogame.ATFLevelEditor
     {
         None,
         PrimitiveShape,
-        Model
+        Model,
+        Icon
     }
 
     public class PropertyEntry
@@ -351,6 +355,12 @@ namespace Protogame.ATFLevelEditor
             PrimitiveShape = shape;
         }
 
+        public void UseIconForRendering(T @object, string pngFilePathFromProjectRoot)
+        {
+            RenderMode = RenderMode.Icon;
+            IconAbsolutePath = Path.Combine(Environment.CurrentDirectory, pngFilePathFromProjectRoot);
+        }
+
         public void MapStandardLightingModel(T @object, Expression<Func<T, Color>> colorProperty, Expression<Func<T, Color>> emissiveProperty,
             Expression<Func<T, Color>> specularProperty, Expression<Func<T, float>> specularPowerProperty, Expression<Func<T, string>> diffuseTextureNameProperty,
             Expression<Func<T, string>> normalTextureNameProperty, Expression<Func<T, Matrix>> textureTransformProperty)
@@ -369,6 +379,11 @@ namespace Protogame.ATFLevelEditor
             {
                 Properties[id].EditorCategory = "StandardLightingModel";
             }
+        }
+
+        public IEnumerable<string> GetRawResourceUris()
+        {
+            return new string[0];
         }
 
         public BakingEditorQuery()

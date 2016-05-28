@@ -39,6 +39,8 @@ namespace Protogame
             kernel.Bind<IRawAssetLoader>().To<RawAssetLoader>();
             kernel.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             kernel.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
+            kernel.Bind<IModelSerializer>().To<ModelSerializerGeneric>();
+            kernel.Bind<ITextureFromHintPath>().To<TextureFromHintPath>();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             kernel.Bind<IAutomaticAssetReload>().To<DefaultAutomaticAssetReload>().InSingletonScope();

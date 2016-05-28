@@ -44,6 +44,7 @@
         /// </param>
         public Model(
             IAnimationCollection availableAnimations,
+            IMaterial material,
             IModelBone rootBone,
             VertexPositionNormalTextureBlendable[] vertexes,
             int[] indices)
@@ -52,6 +53,7 @@
             this.Root = rootBone;
             this.Vertexes = vertexes;
             this.Indices = indices;
+            this.Material = material;
 
             if (this.Root != null)
             {
@@ -67,6 +69,18 @@
         /// The available animations.
         /// </value>
         public IAnimationCollection AvailableAnimations { get; private set; }
+
+        /// <summary>
+        /// Gets the material information associated with this model, if
+        /// one exists.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no material attached to this model.
+        /// </remarks>
+        /// <value>
+        /// The material associated with this model.
+        /// </value>
+        public IMaterial Material { get; private set; }
 
         /// <summary>
         /// Gets the root bone of the model's skeleton.

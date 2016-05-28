@@ -144,10 +144,25 @@ namespace ProtogamePostBuild
                                 protogameInfo.SetAttribute("DeclaredAs", bakingEditorQuery.DeclaredAs.ToString());
                                 protogameInfo.SetAttribute("RenderMode", bakingEditorQuery.RenderMode.ToString());
                                 protogameInfo.SetAttribute("PrimitiveShape", bakingEditorQuery.PrimitiveShape.ToString());
+                                protogameInfo.SetAttribute("IconAbsolutePath", bakingEditorQuery.IconAbsolutePath ?? string.Empty);
                                 protogameInfo.SetAttribute("CanContainComponents", bakingEditorQuery.CanContainComponents.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("CanContainEntities", bakingEditorQuery.CanContainEntities.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("HasMatrix", bakingEditorQuery.HasMatrix.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("QualifiedName", type.AssemblyQualifiedName);
+
+                                // If an icon path is specified, we must read the icon data and base64-encode it.
+                                if (bakingEditorQuery.IconAbsolutePath != null)
+                                {
+                                    using (
+                                        var reader = new FileStream(bakingEditorQuery.IconAbsolutePath, FileMode.Open,
+                                            FileAccess.Read))
+                                    {
+                                        var bytes = new byte[reader.Length];
+                                        reader.Read(bytes, 0, bytes.Length);
+                                        var iconData = Convert.ToBase64String(bytes);
+                                        protogameInfo.SetAttribute("IconData", iconData);
+                                    }
+                                }
 
                                 var nativeType = xsd.CreateElement("" ,"LeGe.NativeType", "gap");
                                 nativeType.SetAttribute("nativeName", nativeTypeName);

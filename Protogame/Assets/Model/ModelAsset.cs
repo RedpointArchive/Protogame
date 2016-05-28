@@ -10,6 +10,8 @@
     /// </summary>
     public class ModelAsset : MarshalByRefObject, IAsset, IModel
     {
+        private readonly IModelSerializer _modelSerializer;
+
         /// <summary>
         /// The runtime model associated with this asset.
         /// </summary>
@@ -21,6 +23,9 @@
         /// This constructor is called by <see cref="ModelAssetLoader"/> when loading a model asset.
         /// </para>
         /// </summary>
+        /// <param name="modelSerializer">
+        /// The model serializer service.
+        /// </param>
         /// <param name="name">
         /// The name of the model asset.
         /// </param>
@@ -40,6 +45,7 @@
         /// The appropriate file extension for this model.
         /// </param>
         public ModelAsset(
+            IModelSerializer modelSerializer,
             string name, 
             byte[] rawData, 
             Dictionary<string, byte[]> rawAdditionalAnimations, 
@@ -47,6 +53,7 @@
             bool sourcedFromRaw,
             string extension)
         {
+            this._modelSerializer = modelSerializer;
             this.Name = name;
             this.RawData = rawData;
             this.RawAdditionalAnimations = rawAdditionalAnimations;
@@ -77,6 +84,24 @@
             get
             {
                 return this.m_Model.AvailableAnimations;
+            }
+        }
+
+        /// <summary>
+        /// Gets the material information associated with this model, if
+        /// one exists.
+        /// </summary>
+        /// <remarks>
+        /// This value is null if there is no material attached to this model.
+        /// </remarks>
+        /// <value>
+        /// The material associated with this model.
+        /// </value>
+        public IMaterial Material
+        {
+            get
+            {
+                return this.m_Model.Material;
             }
         }
 
@@ -363,8 +388,7 @@
         {
             if (this.PlatformData != null)
             {
-                var serializer = new ModelSerializer();
-                this.m_Model = serializer.Deserialize(this.PlatformData.Data);
+                this.m_Model = _modelSerializer.Deserialize(this.PlatformData.Data);
             }
         }
 

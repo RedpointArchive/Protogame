@@ -102,6 +102,11 @@ namespace Protogame
                     }
                     break;
                 }
+                case "resource":
+                {
+                    // This is used directly by the parent game object.
+                    break;
+                }
                 case "gameObject":
                 {
                     Type targetType = null;
@@ -110,6 +115,10 @@ namespace Protogame
                     if (xsiType == "gameObjectGroupType")
                     {
                         targetType = typeof (EntityGroup);
+                    }
+                    else if (xsiType == "locatorType")
+                    {
+                        targetType = typeof (LocatorEntity);
                     }
 
                     var qualifiedName = currentElement.GetAttribute("qualifiedName");

@@ -102,6 +102,7 @@ namespace Protogame
             VertexPositionNormalTextureBlendable[] vertexes;
             int[] indices;
             IModelBone boneHierarchy;
+            Material material = null;
 
             if (scene.MeshCount >= 1)
             {
@@ -117,6 +118,15 @@ namespace Protogame
                 boneHierarchy = this.ImportBoneHierarchy(scene.RootNode, null);
                 vertexes = new VertexPositionNormalTextureBlendable[0];
                 indices = new int[0];
+            }
+            
+            // If the scene has materials associated with it, and the mesh has
+            // a material associated with it, read in the material information.
+            if (scene.MeshCount >= 1 && scene.MaterialCount > scene.Meshes[0].MaterialIndex)
+            {
+                var assimpMaterial = scene.Materials[scene.Meshes[0].MaterialIndex];
+
+                material = ConvertMaterial(assimpMaterial);
             }
 
             // Create the list of animations, including the null animation.
@@ -140,10 +150,38 @@ namespace Protogame
 
             // Return the resulting model.
             return new Model(
-                new AnimationCollection(animations), 
+                new AnimationCollection(animations),
+                material,
                 boneHierarchy, 
                 vertexes,
                 indices);
+        }
+
+        private Material ConvertMaterial(Assimp.Material m)
+        {
+            return new Material
+            {
+                ColorAmbient = m.HasColorAmbient ? (Color?)ConvertMaterialColor(m.ColorAmbient) : null,
+                ColorDiffuse = m.HasColorDiffuse ? (Color?)ConvertMaterialColor(m.ColorDiffuse) : null,
+                ColorSpecular = m.HasColorSpecular ? (Color?)ConvertMaterialColor(m.ColorSpecular) : null,
+                ColorEmissive = m.HasColorEmissive ? (Color?)ConvertMaterialColor(m.ColorEmissive) : null,
+                ColorTransparent = m.HasColorTransparent ? (Color?)ConvertMaterialColor(m.ColorTransparent) : null,
+                ColorReflective = m.HasColorReflective ? (Color?)ConvertMaterialColor(m.ColorReflective) : null,
+                TextureDiffuse = m.HasTextureDiffuse ? ConvertMaterialTexture(m.TextureDiffuse) : null,
+            };
+        }
+
+        private IMaterialTexture ConvertMaterialTexture(TextureSlot t)
+        {
+            return new MaterialTexture
+            {
+                HintPath = t.FilePath
+            };
+        }
+
+        private Color ConvertMaterialColor(Color4D c)
+        {
+            return new Color(c.R, c.G, c.B, c.A);
         }
 
         /// <summary>

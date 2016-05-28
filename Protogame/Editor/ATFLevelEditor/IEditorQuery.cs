@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.Xna.Framework;
 
@@ -49,7 +50,6 @@ namespace Protogame.ATFLevelEditor
         /// <summary>
         /// Declares that this object is an entity.
         /// </summary>
-        /// <param name="object"></param>
         void DeclareAsEntity<TTarget>(TTarget @object) where TTarget : T, IEntity;
 
         /// <summary>
@@ -57,6 +57,12 @@ namespace Protogame.ATFLevelEditor
         /// </summary>
         /// <param name="shape">The type of shape to render as.</param>
         void UsePrimitiveShapeForRendering(T @object, EditorPrimitiveShape shape);
+
+        /// <summary>
+        /// Specifies that this object should use a 2D icon when rendering in the level editor.
+        /// </summary>
+        /// <param name="pngFilePathFromProjectRoot">The path to the PNG file, relative to the project root.</param>
+        void UseIconForRendering(T @object, string pngFilePathFromProjectRoot);
 
         /// <summary>
         /// Maps the standard lighting model properties onto this object.  The level editor uses a
@@ -80,6 +86,12 @@ namespace Protogame.ATFLevelEditor
             Expression<Func<T, string>> diffuseTextureNameProperty,
             Expression<Func<T, string>> normalTextureNameProperty,
             Expression<Func<T, Matrix>> textureTransformProperty);
+
+        /// <summary>
+        /// Returns a list of raw resource URIs that are attached to this object.
+        /// </summary>
+        /// <returns>A list of raw resource URIs.</returns>
+        IEnumerable<string> GetRawResourceUris();
     }
 
     public enum EditorPrimitiveShape

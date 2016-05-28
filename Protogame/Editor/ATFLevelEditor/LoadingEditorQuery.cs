@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -63,10 +64,21 @@ namespace Protogame.ATFLevelEditor
         {
         }
 
+        public void UseIconForRendering(T @object, string pngFilePathFromProjectRoot)
+        {
+        }
+
         public void MapStandardLightingModel(T @object, Expression<Func<T, Color>> colorProperty, Expression<Func<T, Color>> emissiveProperty,
             Expression<Func<T, Color>> specularProperty, Expression<Func<T, float>> specularPowerProperty, Expression<Func<T, string>> diffuseTextureNameProperty,
             Expression<Func<T, string>> normalTextureNameProperty, Expression<Func<T, Matrix>> textureTransformProperty)
         {
+        }
+
+        public IEnumerable<string> GetRawResourceUris()
+        {
+            return _element.ChildNodes.OfType<XmlElement>()
+                .Where(x => x.LocalName == "resource")
+                .Select(x => x.GetAttribute("uri"));
         }
     }
 }

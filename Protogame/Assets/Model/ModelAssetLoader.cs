@@ -5,6 +5,8 @@ namespace Protogame
     /// </summary>
     public class ModelAssetLoader : IAssetLoader
     {
+        private readonly IModelSerializer _modelSerializer;
+
         /// <summary>
         /// The m_ asset content manager.
         /// </summary>
@@ -13,11 +15,15 @@ namespace Protogame
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelAssetLoader"/> class.
         /// </summary>
+        /// <param name="modelSerializer">
+        /// The model serializer service.
+        /// </param>
         /// <param name="assetContentManager">
         /// The asset content manager.
         /// </param>
-        public ModelAssetLoader(IAssetContentManager assetContentManager)
+        public ModelAssetLoader(IModelSerializer modelSerializer, IAssetContentManager assetContentManager)
         {
+            _modelSerializer = modelSerializer;
             this.m_AssetContentManager = assetContentManager;
         }
 
@@ -77,7 +83,7 @@ namespace Protogame
         /// </returns>
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
-            return new ModelAsset(name, null, null, null, false, string.Empty);
+            return new ModelAsset(_modelSerializer, name, null, null, null, false, string.Empty);
         }
 
         /// <summary>
@@ -99,7 +105,7 @@ namespace Protogame
         {
             if (data is CompiledAsset)
             {
-                return new ModelAsset(name, null, null, data.GetProperty<PlatformData>("PlatformData"), false, string.Empty);
+                return new ModelAsset(_modelSerializer, name, null, null, data.GetProperty<PlatformData>("PlatformData"), false, string.Empty);
             }
 
             PlatformData platformData = null;
@@ -113,6 +119,7 @@ namespace Protogame
             }
 
             var model = new ModelAsset(
+                _modelSerializer,
                 name, 
                 ByteReader.ReadAsByteArray(data.GetProperty<object>("RawData")),
                 data.GetProperty<System.Collections.Generic.Dictionary<string, byte[]>>("RawAdditionalAnimations"), 

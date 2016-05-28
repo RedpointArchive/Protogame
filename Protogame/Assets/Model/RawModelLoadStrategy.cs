@@ -10,6 +10,13 @@
     /// </summary>
     public class RawModelLoadStrategy : ILoadStrategy
     {
+        private readonly Dictionary<string, bool> _supportedAnimationFormats = new Dictionary<string, bool>
+            {
+                { "fbx", true },
+                { "x", false },
+                { "dae", true },
+            };
+
         /// <summary>
         /// Gets the asset extensions.
         /// </summary>
@@ -20,7 +27,7 @@
         {
             get
             {
-                return new[] { "fbx", "x" };
+                return _supportedAnimationFormats.Keys.ToArray();
             }
         }
 
@@ -52,55 +59,46 @@
         /// </returns>
         public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
-            var file = new FileInfo(Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".fbx"));
+            FileInfo file = null;
 
-            if (file.Exists)
+            foreach (var kv in _supportedAnimationFormats)
             {
-                lastModified = file.LastWriteTime;
+                file =
+                    new FileInfo(Path.Combine(path,
+                        (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + "." + kv.Key));
 
-                // If there are name-anim.fbx files, read those in as additional animations.
-                var directory = file.Directory;
-                var otherAnimations = new Dictionary<string, byte[]>();
-                if (directory != null)
+                if (file.Exists)
                 {
-                    var lastComponent = name.Split('.').Last();
-                    var otherAnimationFiles = directory.GetFiles(lastComponent + "-*.fbx");
-                    otherAnimations =
-                        otherAnimationFiles.ToDictionary(
-                            key => key.Name.Split('-').Last().Split('.').First(), 
-                            value => this.ReadModelData(value.FullName));
+                    lastModified = file.LastWriteTime;
+
+                    var otherAnimations = new Dictionary<string, byte[]>();
+                    if (kv.Value)
+                    {
+                        // If there are name-anim.fbx files, read those in as additional animations.
+                        var directory = file.Directory;
+                        if (directory != null)
+                        {
+                            var lastComponent = name.Split('.').Last();
+                            var otherAnimationFiles = directory.GetFiles(lastComponent + "-*." + kv.Key);
+                            otherAnimations =
+                                otherAnimationFiles.ToDictionary(
+                                    key => key.Name.Split('-').Last().Split('.').First(),
+                                    value => this.ReadModelData(value.FullName));
+                        }
+                    }
+
+                    return
+                        new AnonymousObjectBasedRawAsset(
+                            new
+                            {
+                                Loader = typeof (ModelAssetLoader).FullName,
+                                PlatformData = (PlatformData) null,
+                                RawData = this.ReadModelData(file.FullName),
+                                RawAdditionalAnimations = otherAnimations,
+                                SourcedFromRaw = true,
+                                Extension = kv.Key
+                            });
                 }
-
-                return
-                    new AnonymousObjectBasedRawAsset(
-                        new
-                        {
-                            Loader = typeof(ModelAssetLoader).FullName,
-                            PlatformData = (PlatformData)null,
-                            RawData = this.ReadModelData(file.FullName),
-                            RawAdditionalAnimations = otherAnimations,
-                            SourcedFromRaw = true,
-                            Extension = "fbx"
-                        });
-            }
-
-            file = new FileInfo(Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".x"));
-
-            if (file.Exists)
-            {
-                lastModified = file.LastWriteTime;
-
-                return
-                    new AnonymousObjectBasedRawAsset(
-                        new
-                        {
-                            Loader = typeof(ModelAssetLoader).FullName,
-                            PlatformData = (PlatformData)null,
-                            RawData = this.ReadModelData(file.FullName),
-                            RawAdditionalAnimations = new Dictionary<string, byte[]>(),
-                            SourcedFromRaw = true,
-                            Extension = "x"
-                        });
             }
 
             return null;
@@ -108,8 +106,11 @@
 
         public System.Collections.Generic.IEnumerable<string> GetPotentialPaths(string path, string name, bool noTranslate = false)
         {
-            yield return Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".fbx");
-            yield return Path.Combine(path, name.Replace('.', Path.DirectorySeparatorChar) + ".x");
+            foreach (var ext in _supportedAnimationFormats.Keys)
+            {
+                yield return
+                    Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + "." + ext);
+            }
         }
 
         /// <summary>

@@ -8,6 +8,13 @@ namespace Protogame
     /// </summary>
     public class ModelAssetCompiler : IAssetCompiler<ModelAsset>
     {
+        private readonly IModelSerializer _modelSerializer;
+
+        public ModelAssetCompiler(IModelSerializer modelSerializer)
+        {
+            _modelSerializer = modelSerializer;
+        }
+
         /// <summary>
         /// The compile.
         /// </summary>
@@ -26,8 +33,7 @@ namespace Protogame
 
             var reader = new FbxReader();
             var model = reader.Load(asset.RawData, asset.Extension, asset.RawAdditionalAnimations);
-            var serializer = new ModelSerializer();
-            var data = serializer.Serialize(model);
+            var data = _modelSerializer.Serialize(model);
 
             asset.PlatformData = new PlatformData { Data = data, Platform = platform };
 

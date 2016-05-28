@@ -129,6 +129,10 @@
     <Compile Include="Assets\Level\LevelDataFormat.cs" />
     <Compile Include="Assets\Level\RawATFLevelLoadStrategy.cs" />
     <Compile Include="Assets\Level\RawOgmoEditorLevelLoadStrategy.cs" />
+    <Compile Include="Assets\Material\IMaterial.cs" />
+    <Compile Include="Assets\Material\ITextureFromHintPath.cs" />
+    <Compile Include="Assets\Material\Material.cs" />
+    <Compile Include="Assets\Material\TextureFromHintPath.cs" />
     <Compile Include="Assets\Model\Animation.cs" />
     <Compile Include="Assets\Model\AnimationCollection.cs" />
     <Compile Include="Assets\Model\AnimationController.cs" />
@@ -137,13 +141,16 @@
     <Compile Include="Assets\Model\IAnimationCollection.cs" />
     <Compile Include="Assets\Model\IModel.cs" />
     <Compile Include="Assets\Model\IModelBone.cs" />
+    <Compile Include="Assets\Model\IModelSerializer.cs" />
     <Compile Include="Assets\Model\Model.cs" />
     <Compile Include="Assets\Model\ModelAsset.cs" />
     <Compile Include="Assets\Model\ModelAssetCompiler.cs" />
     <Compile Include="Assets\Model\ModelAssetLoader.cs" />
     <Compile Include="Assets\Model\ModelAssetSaver.cs" />
     <Compile Include="Assets\Model\ModelBone.cs" />
-    <Compile Include="Assets\Model\ModelSerializer.cs" />
+    <Compile Include="Assets\Model\ModelSerializerGeneric.cs" />
+    <Compile Include="Assets\Model\ModelSerializerVersion1.cs" />
+    <Compile Include="Assets\Model\ModelSerializerVersion2.cs" />
     <Compile Include="Assets\Model\RawModelLoadStrategy.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalTextureBlendable.cs" />
     <Compile Include="Assets\ProtogameAssetIoCModule.cs" />
@@ -190,6 +197,7 @@
     <Compile Include="Component\Builtin\Render2DTextComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextureComponent.cs" />
     <Compile Include="Component\Builtin\Render3DCubeComponent.cs" />
+    <Compile Include="Component\Builtin\Render3DModelComponent.cs" />
     <Compile Include="Component\Builtin\Render3DPlaneComponent.cs" />
     <Compile Include="Component\ComponentizedEntity.cs" />
     <Compile Include="Component\ComponentizedObject.cs">
@@ -280,6 +288,7 @@
     <Compile Include="Editor\ATFLevelEditor\EditorQueryMode.cs" />
     <Compile Include="Editor\ATFLevelEditor\IEditorQuery.cs" />
     <Compile Include="Editor\ATFLevelEditor\LoadingEditorQuery.cs" />
+    <Compile Include="Editor\ATFLevelEditor\LocatorEntity.cs" />
     <Compile Include="Editor\ATFLevelEditor\SpawningEditorQuery.cs" />
     <Compile Include="Editor\ProtogameEditorRuntimeModule.cs" />
     <Compile Include="Events\ConsoleEventBinder.cs" />
