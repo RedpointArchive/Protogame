@@ -17,6 +17,8 @@ namespace Protogame
     /// <interface_ref>Protogame.IRenderContext</interface_ref>
     internal class LegacyRenderContext : IRenderContext
     {
+        private readonly IRenderContextImplementationUtilities _renderContextImplementationUtilities;
+
         /// <summary>
         /// The current stack of effect.
         /// </summary>
@@ -31,6 +33,11 @@ namespace Protogame
         /// The current bounding frustum.
         /// </summary>
         private BoundingFrustum m_BoundingFrustum;
+
+        public LegacyRenderContext(IRenderContextImplementationUtilities renderContextImplementationUtilities)
+        {
+            _renderContextImplementationUtilities = renderContextImplementationUtilities;
+        }
 
         /// <summary>
         /// Gets the bounding frustum for the current view and projection matrixes.
@@ -210,14 +217,7 @@ namespace Protogame
                 // Automatically copy the matrices from the outgoing effect to the current
                 // effect if applicable.  This reduces confusion when popping an effect
                 // from the stack and losing the matrices.
-                if (this.m_Effects.Peek() is IEffectMatrices && outgoing is IEffectMatrices)
-                {
-                    var outgoingMatrices = (IEffectMatrices)outgoing;
-                    var newMatrices = (IEffectMatrices)this.m_Effects.Peek();
-                    newMatrices.Projection = outgoingMatrices.Projection;
-                    newMatrices.View = outgoingMatrices.View;
-                    newMatrices.World = outgoingMatrices.World;
-                }
+                _renderContextImplementationUtilities.CopyMatricesToTargetEffect(outgoing, this.m_Effects.Peek());
 
                 return outgoing;
             }
@@ -301,14 +301,7 @@ namespace Protogame
             // Automatically copy the matrices from the current effect to the new
             // effect if applicable.  This reduces confusion when pushing a new effect
             // onto the stack and not having things render correctly.
-            if (this.m_Effects.Peek() is IEffectMatrices && effect is IEffectMatrices)
-            {
-                var existingMatrices = (IEffectMatrices)this.m_Effects.Peek();
-                var newMatrices = (IEffectMatrices)effect;
-                newMatrices.Projection = existingMatrices.Projection;
-                newMatrices.View = existingMatrices.View;
-                newMatrices.World = existingMatrices.World;
-            }
+            _renderContextImplementationUtilities.CopyMatricesToTargetEffect(this.m_Effects.Peek(), effect);
 
             this.m_Effects.Push(effect);
         }
@@ -434,16 +427,19 @@ namespace Protogame
             this.GraphicsDevice.Textures[0] = texture;
 
             var basicEffect = this.m_Effects.Peek() as BasicEffect;
-            var textureEffect = this.m_Effects.Peek() as IEffectTexture;
+            var semanticEffect = this.m_Effects.Peek() as IEffectWithSemantics;
 
             if (basicEffect != null)
             {
                 basicEffect.Texture = texture;
             }
 
-            if (textureEffect != null)
+            if (semanticEffect != null)
             {
-                textureEffect.Texture = texture;
+                if (semanticEffect.HasSemantic<ITextureEffectSemantic>())
+                {
+                    semanticEffect.GetSemantic<ITextureEffectSemantic>().Texture = texture;
+                }
             }
         }
 
@@ -459,14 +455,7 @@ namespace Protogame
         /// </returns>
         private Matrix GetEffectMatrix(Func<IEffectMatrices, Matrix> prop)
         {
-            var effectMatrices = this.m_Effects.Peek() as IEffectMatrices;
-
-            if (effectMatrices != null)
-            {
-                return prop(effectMatrices);
-            }
-
-            return Matrix.Identity;
+            return _renderContextImplementationUtilities.GetEffectMatrix(this.m_Effects.Peek(), prop);
         }
 
         /// <summary>
@@ -486,12 +475,7 @@ namespace Protogame
         /// </param>
         private void SetEffectMatrix(Action<IEffectMatrices> assign)
         {
-            var effectMatrices = this.m_Effects.Peek() as IEffectMatrices;
-
-            if (effectMatrices != null)
-            {
-                assign(effectMatrices);
-            }
+            _renderContextImplementationUtilities.SetEffectMatrix(this.m_Effects.Peek(), assign);
         }
 
         /// <summary>

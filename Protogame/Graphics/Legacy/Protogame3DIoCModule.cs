@@ -29,6 +29,9 @@ namespace Protogame
             kernel.Bind<ICommand>().To<HelpCommand>();
             kernel.Bind<ICommand>().To<GCCommand>();
             kernel.Bind<IStringSanitizer>().To<DefaultStringSanitizer>();
+            kernel.Bind<IRenderContextImplementationUtilities>()
+                .To<DefaultRenderContextImplementationUtilities>()
+                .InSingletonScope();
         }
     }
 }

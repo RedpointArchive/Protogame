@@ -23,6 +23,13 @@ namespace Protogame
     /// </summary>
     public class FbxReader
     {
+        private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
+
+        public FbxReader(IModelRenderConfiguration[] modelRenderConfigurations)
+        {
+            _modelRenderConfigurations = modelRenderConfigurations;
+        }
+
         /// <summary>
         /// Load an FBX file from an array of bytes.
         /// </summary>
@@ -38,7 +45,7 @@ namespace Protogame
         /// <returns>
         /// The loaded <see cref="IModel"/>.
         /// </returns>
-        public IModel Load(byte[] data, string extension, Dictionary<string, byte[]> rawAdditionalAnimations)
+        public IModel Load(byte[] data, string name, string extension, Dictionary<string, byte[]> rawAdditionalAnimations)
         {
             var file = Path.GetTempFileName() + "." + extension;
             using (var stream = new FileStream(file, FileMode.Create))
@@ -63,7 +70,7 @@ namespace Protogame
                 }
             }
 
-            var model = this.Load(file, additionalAnimationFiles);
+            var model = this.Load(file, name, additionalAnimationFiles);
 
             File.Delete(file);
 
@@ -87,7 +94,7 @@ namespace Protogame
         /// <returns>
         /// The loaded <see cref="IModel"/>.
         /// </returns>
-        public IModel Load(string filename, Dictionary<string, string> additionalAnimationFiles)
+        public IModel Load(string filename, string name, Dictionary<string, string> additionalAnimationFiles)
         {
             this.LoadAssimpLibrary();
 
@@ -99,7 +106,7 @@ namespace Protogame
                 ;
             var scene = importer.ImportFile(filename, ProcessFlags);
 
-            VertexPositionNormalTextureBlendable[] vertexes;
+            ModelVertex[] vertexes;
             int[] indices;
             IModelBone boneHierarchy;
             Material material = null;
@@ -116,7 +123,7 @@ namespace Protogame
             else
             {
                 boneHierarchy = this.ImportBoneHierarchy(scene.RootNode, null);
-                vertexes = new VertexPositionNormalTextureBlendable[0];
+                vertexes = new ModelVertex[0];
                 indices = new int[0];
             }
             
@@ -150,6 +157,8 @@ namespace Protogame
 
             // Return the resulting model.
             return new Model(
+                _modelRenderConfigurations,
+                name,
                 new AnimationCollection(animations),
                 material,
                 boneHierarchy, 
@@ -347,41 +356,112 @@ namespace Protogame
         /// <returns>
         /// The imported vertexes.
         /// </returns>
-        private VertexPositionNormalTextureBlendable[] ImportVertexes(
+        private ModelVertex[] ImportVertexes(
             Scene scene, 
             Dictionary<Vector3, KeyValuePair<Byte4, Vector4>> boneWeightingMap)
         {
             var mesh = scene.Meshes[0];
 
-            var vertexes = new List<VertexPositionNormalTextureBlendable>();
+            var vertexes = new List<ModelVertex>();
+
+            // Calculate channel associations.
+            var uvCount = 0;
+            var uvwCount = 0;
+            for (var c = 0; c < mesh.TextureCoordinateChannelCount; c++)
+            {
+                if (mesh.UVComponentCount[c] == 2)
+                {
+                    uvCount++;
+                }
+                else if (mesh.UVComponentCount[c] == 3)
+                {
+                    uvwCount++;
+                }
+            }
 
             // Import vertexes.
-            // TODO: What to do with multiple texture coords?
-            var uvs = mesh.TextureCoordinateChannels[0];
             for (var i = 0; i < mesh.VertexCount; i++)
             {
-                var pos = mesh.Vertices[i];
-                var normal = mesh.HasNormals ? mesh.Normals[i] : new Vector3D(0, 0, 0);
-                var uv = i < uvs.Count ? uvs[i] : new Vector3D(0, 0, 0);
+                Vector3? position, normal, tangent, bitangent;
+                Color[] colors = new Color[mesh.VertexColorChannelCount];
+                Vector2[] texCoordsUV = new Vector2[uvCount];
+                Vector3[] texCoordsUVW = new Vector3[uvwCount];
+                Byte4? boneIndices;
+                Vector4? boneWeights;
 
-                var posVector = new Vector3(pos.X, pos.Y, pos.Z);
-
-                var boneIndices = new Byte4();
-                var boneWeights = new Vector4();
-
-                if (boneWeightingMap.ContainsKey(posVector))
+                if (mesh.HasVertices)
                 {
-                    boneIndices = boneWeightingMap[posVector].Key;
-                    boneWeights = boneWeightingMap[posVector].Value;
+                    var v = mesh.Vertices[i];
+                    position = new Vector3(v.X, v.Y, v.Z);
+                }
+                else
+                {
+                    position = null;
+                }
+
+                if (mesh.HasNormals)
+                {
+                    var v = mesh.Normals[i];
+                    normal = new Vector3(v.X, v.Y, v.Z);
+                }
+                else
+                {
+                    normal = null;
+                }
+
+                if (mesh.HasTangentBasis)
+                {
+                    var v1 = mesh.Tangents[i];
+                    var v2 = mesh.BiTangents[i];
+                    tangent = new Vector3(v1.X, v1.Y, v1.Z);
+                    bitangent = new Vector3(v2.X, v2.Y, v2.Z);
+                }
+                else
+                {
+                    tangent = null;
+                    bitangent = null;
+                }
+
+                var uvCountTemp = 0;
+                var uvwCountTemp = 0;
+                for (var c = 0; c < mesh.TextureCoordinateChannelCount; c++)
+                {
+                    if (mesh.UVComponentCount[c] == 2)
+                    {
+                        var v = mesh.TextureCoordinateChannels[c][i];
+                        texCoordsUV[uvCountTemp] = new Vector2(v.X, v.Y);
+                        uvCountTemp++;
+                    }
+                    else if (mesh.UVComponentCount[c] == 3)
+                    {
+                        var v = mesh.TextureCoordinateChannels[c][i];
+                        texCoordsUVW[uvwCountTemp] = new Vector3(v.X, v.Y, v.Z);
+                        uvwCountTemp++;
+                    }
+                }
+
+                boneIndices = null;
+                boneWeights = null;
+                if (position != null)
+                {
+                    if (boneWeightingMap.ContainsKey(position.Value))
+                    {
+                        boneIndices = boneWeightingMap[position.Value].Key;
+                        boneWeights = boneWeightingMap[position.Value].Value;
+                    }
                 }
 
                 vertexes.Add(
-                    new VertexPositionNormalTextureBlendable(
-                        posVector, 
-                        new Vector3(normal.X, normal.Y, normal.Z), 
-                        new Vector2(uv.X, uv.Y), 
-                        boneWeights, 
-                        boneIndices));
+                    new ModelVertex(
+                        position,
+                        normal,
+                        tangent,
+                        bitangent,
+                        colors,
+                        texCoordsUV,
+                        texCoordsUVW,
+                        boneIndices,
+                        boneWeights));
             }
 
             return vertexes.ToArray();

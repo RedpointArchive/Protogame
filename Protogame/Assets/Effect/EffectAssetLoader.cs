@@ -1,3 +1,5 @@
+using Protoinject;
+
 namespace Protogame
 {
     /// <summary>
@@ -5,6 +7,8 @@ namespace Protogame
     /// </summary>
     public class EffectAssetLoader : IAssetLoader
     {
+        private readonly IKernel _kernel;
+
         /// <summary>
         /// The m_ asset content manager.
         /// </summary>
@@ -16,8 +20,12 @@ namespace Protogame
         /// <param name="assetContentManager">
         /// The asset content manager.
         /// </param>
-        public EffectAssetLoader(IAssetContentManager assetContentManager)
+        /// <param name="kernel">
+        /// The dependency injection kernel.
+        /// </param>
+        public EffectAssetLoader(IKernel kernel, IAssetContentManager assetContentManager)
         {
+            _kernel = kernel;
             this.m_AssetContentManager = assetContentManager;
         }
 
@@ -77,7 +85,7 @@ namespace Protogame
         /// </returns>
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
-            return new EffectAsset(this.m_AssetContentManager, name, string.Empty, null, false);
+            return new EffectAsset(_kernel, this.m_AssetContentManager, name, string.Empty, null, false);
         }
 
         /// <summary>
@@ -99,7 +107,7 @@ namespace Protogame
         {
             if (data is CompiledAsset)
             {
-                return new EffectAsset(this.m_AssetContentManager, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
+                return new EffectAsset(_kernel, this.m_AssetContentManager, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
             }
 
             PlatformData platformData = null;
@@ -113,6 +121,7 @@ namespace Protogame
             }
 
             var effect = new EffectAsset(
+                _kernel,
                 this.m_AssetContentManager, 
                 name,
                 data.GetProperty<string>("Code"), 

@@ -17,6 +17,12 @@ namespace Protogame
 
         private TextureAsset _lastCachedTexture;
 
+        private bool _useDefaultEffects;
+
+        private EffectAsset _defaultSkinnedEffectAsset;
+
+        private EffectAsset _defaultSkinnedColorEffectAsset;
+
         public Render3DModelComponent(
             INode node,
             I3DRenderUtilities renderUtilities,
@@ -35,49 +41,80 @@ namespace Protogame
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
-            if (Effect == null)
+            if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
-                Effect = _assetManager.Get<EffectAsset>("effect.Skinned");
-            }
-
-            if (Model != null)
-            {
-                var matrix = Matrix.Identity;
-                var matrixComponent = _node.Parent?.UntypedValue as IHasMatrix;
-                if (matrixComponent != null)
+                if (Effect == null)
                 {
-                    matrix *= matrixComponent.GetFinalMatrix();
-                }
-
-                if (_lastCachedModel != Model)
-                {
-                    if (Model.Material.TextureDiffuse != null)
-                    {
-                        _lastCachedTexture = _textureFromHintPath.GetTextureFromHintPath(Model.Material.TextureDiffuse);
-                    }
-                    _lastCachedModel = Model;
-                }
-
-                if (_lastCachedTexture != null)
-                {
-                    renderContext.EnableTextures();
-                    renderContext.SetActiveTexture(_lastCachedTexture.Texture);
+                    _useDefaultEffects = true;
                 }
                 else
                 {
-                    renderContext.EnableVertexColors();
+                    _useDefaultEffects = false;
                 }
 
-                renderContext.PushEffect(Effect.Effect);
-                Model.Render(
-                    renderContext,
-                    matrix);
-                renderContext.PopEffect();
-            }
-            else
-            {
-                _lastCachedModel = null;
-                _lastCachedTexture = null;
+                if (_useDefaultEffects && _defaultSkinnedEffectAsset == null)
+                {
+                    _defaultSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.Skinned");
+                    _defaultSkinnedColorEffectAsset = _assetManager.Get<EffectAsset>("effect.SkinnedColor");
+                }
+
+                if (Model != null)
+                {
+                    var matrix = Matrix.Identity;
+                    var matrixComponent = _node.Parent?.UntypedValue as IHasMatrix;
+                    if (matrixComponent != null)
+                    {
+                        matrix *= matrixComponent.GetFinalMatrix();
+                    }
+                    
+                    if (_lastCachedModel != Model)
+                    {
+                        if (Model.Material.TextureDiffuse != null)
+                        {
+                            _lastCachedTexture =
+                                _textureFromHintPath.GetTextureFromHintPath(Model.Material.TextureDiffuse);
+                        }
+                        _lastCachedModel = Model;
+                    }
+
+                    if (_lastCachedTexture != null)
+                    {
+                        if (_useDefaultEffects)
+                        {
+                            renderContext.PushEffect(_defaultSkinnedEffectAsset.Effect);
+                        }
+                        else
+                        {
+                            renderContext.PushEffect(Effect.Effect);
+                        }
+
+                        renderContext.EnableTextures();
+                        renderContext.SetActiveTexture(_lastCachedTexture.Texture);    
+                    }
+                    else
+                    {
+                        if (_useDefaultEffects)
+                        {
+                            renderContext.PushEffect(_defaultSkinnedColorEffectAsset.Effect);
+                        }
+                        else
+                        {
+                            renderContext.PushEffect(Effect.Effect);
+                        }
+
+                        renderContext.EnableVertexColors();
+                    }
+
+                    Model.Render(
+                        renderContext,
+                        matrix);
+                    renderContext.PopEffect();
+                }
+                else
+                {
+                    _lastCachedModel = null;
+                    _lastCachedTexture = null;
+                }
             }
         }
     }

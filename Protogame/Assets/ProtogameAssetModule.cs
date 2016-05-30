@@ -41,6 +41,9 @@ namespace Protogame
             kernel.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
             kernel.Bind<IModelSerializer>().To<ModelSerializerGeneric>();
             kernel.Bind<ITextureFromHintPath>().To<TextureFromHintPath>();
+            kernel.Bind<IEffectSemantic>().To<WorldViewProjectionEffectSemantic>();
+            kernel.Bind<IEffectSemantic>().To<TextureEffectSemantic>();
+            kernel.Bind<IEffectSemantic>().To<BonesEffectSemantic>();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             kernel.Bind<IAutomaticAssetReload>().To<DefaultAutomaticAssetReload>().InSingletonScope();

@@ -15,17 +15,23 @@
         /// <summary>
         /// The flattened version of the bone structures.
         /// </summary>
-        private readonly IModelBone[] m_FlattenedBones;
+        private readonly IModelBone[] _flattenedBones;
+
+        /// <summary>
+        /// The model render configurations, which inform the model how it's vertices
+        /// should be mapped to effects.
+        /// </summary>
+        private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
 
         /// <summary>
         /// The index buffer.
         /// </summary>
-        private IndexBuffer m_IndexBuffer;
+        private IndexBuffer _indexBuffer;
 
         /// <summary>
-        /// The vertex buffer.
+        /// The cached vertex buffers.
         /// </summary>
-        private VertexBuffer m_VertexBuffer;
+        private Dictionary<object, VertexBuffer> _cachedVertexBuffers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Model"/> class.
@@ -43,24 +49,36 @@
         /// The indices associated with the model.
         /// </param>
         public Model(
+            IModelRenderConfiguration[] modelRenderConfigurations,
+            string name,
             IAnimationCollection availableAnimations,
             IMaterial material,
             IModelBone rootBone,
-            VertexPositionNormalTextureBlendable[] vertexes,
+            ModelVertex[] vertexes,
             int[] indices)
         {
+            this.Name = name;
             this.AvailableAnimations = availableAnimations;
             this.Root = rootBone;
             this.Vertexes = vertexes;
             this.Indices = indices;
             this.Material = material;
 
+            _cachedVertexBuffers = new Dictionary<object, VertexBuffer>();
+            _modelRenderConfigurations = modelRenderConfigurations;
+
             if (this.Root != null)
             {
-                this.m_FlattenedBones = this.Root.Flatten();
-                this.Bones = this.m_FlattenedBones.ToDictionary(k => k.Name, v => v);
+                this._flattenedBones = this.Root.Flatten();
+                this.Bones = this._flattenedBones.ToDictionary(k => k.Name, v => v);
             }
         }
+
+        /// <summary>
+        /// The name of the model, which usually aligns to the model asset that
+        /// the model was loaded from.
+        /// </summary>
+        public string Name { get; }
 
         /// <summary>
         /// Gets the available animations.
@@ -117,12 +135,12 @@
         {
             get
             {
-                if (this.m_IndexBuffer == null)
+                if (this._indexBuffer == null)
                 {
                     throw new InvalidOperationException("Call LoadBuffers before accessing the index buffer");
                 }
 
-                return this.m_IndexBuffer;
+                return this._indexBuffer;
             }
         }
 
@@ -135,25 +153,16 @@
         public int[] Indices { get; private set; }
 
         /// <summary>
-        /// Gets the vertex buffer.
+        /// Frees any vertex buffers that are cached inside this model.
         /// </summary>
-        /// <value>
-        /// The vertex buffer.
-        /// </value>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
-        /// </exception>
-        public VertexBuffer VertexBuffer
+        public void FreeCachedVertexBuffers()
         {
-            get
+            foreach (var buffer in _cachedVertexBuffers)
             {
-                if (this.m_VertexBuffer == null)
-                {
-                    throw new InvalidOperationException("Call LoadBuffers before accessing the vertex buffer");
-                }
-
-                return this.m_VertexBuffer;
+                buffer.Value.Dispose();
             }
+
+            _cachedVertexBuffers.Clear();
         }
 
         /// <summary>
@@ -162,11 +171,10 @@
         /// <value>
         /// The vertexes of the model.
         /// </value>
-        public VertexPositionNormalTextureBlendable[] Vertexes { get; private set; }
+        public ModelVertex[] Vertexes { get; private set; }
 
         /// <summary>
-        /// Draws the model using the specified animation, calculating the appropriate frame to play
-        /// based on how much time has elapsed.
+        /// Renders the model using the specified transform and GPU mapping.
         /// </summary>
         /// <param name="renderContext">
         /// The render context.
@@ -186,24 +194,71 @@
 
             this.LoadBuffers(renderContext.GraphicsDevice);
 
-            var effectBones = renderContext.Effect as IEffectBones;
+            VertexBuffer vertexBuffer;
+            if (_cachedVertexBuffers.ContainsKey(renderContext.Effect))
+            {
+                vertexBuffer = _cachedVertexBuffers[renderContext.Effect];
+            }
+            else
+            {
+                // Find the vertex mapping configuration for this model.
+                var modelConfiguration =
+                    _modelRenderConfigurations.Select(x => x.GetVertexMappingToGPU(this, renderContext.Effect)).FirstOrDefault();
+                if (modelConfiguration == null)
+                {
+                    throw new InvalidOperationException(
+                        "No implementation of IModelRenderConfiguration could provide a vertex " +
+                        "mapping for this model.  You must implement IModelRenderConfiguration " +
+                        "and bind it in the dependency injection system, so that the engine is " +
+                        "aware of how to map vertices in models to parameters in effects.");
+                }
 
-            if (effectBones == null)
+                var mappedVerticies = Array.CreateInstance(modelConfiguration.VertexType, Vertexes.Length);
+                for (var i = 0; i < Vertexes.Length; i++)
+                {
+                    var vertex = modelConfiguration.MappingFunction(Vertexes[i]);
+                    mappedVerticies.SetValue(vertex, i);
+                }
+
+                vertexBuffer = new VertexBuffer(
+                    renderContext.GraphicsDevice,
+                    modelConfiguration.VertexDeclaration,
+                    Vertexes.Length,
+                    BufferUsage.WriteOnly);
+                vertexBuffer.GetType().GetMethods().First(x => x.Name == "SetData" && x.GetParameters().Length == 1).MakeGenericMethod(modelConfiguration.VertexType).Invoke(
+                    vertexBuffer,
+                    new [] { mappedVerticies });
+                _cachedVertexBuffers[renderContext.Effect] = vertexBuffer;
+            }
+
+            var effectSemantic = renderContext.Effect as IEffectWithSemantics;
+
+            if (effectSemantic == null)
             {
                 throw new InvalidOperationException(
-                    "The current effect on the render context does " +
-                    "not implement IEffectBones.  You can use " +
+                    "The current effect on the render context is " +
+                    "not a semantic effect.  You can use " +
                     "'effect.Skinned' for a basic model rendering effect.");
             }
 
-            foreach (var bone in this.m_FlattenedBones)
+            if (!effectSemantic.HasSemantic<IBonesEffectSemantic>())
+            {
+                throw new InvalidOperationException(
+                    "The current effect on the render context is " +
+                    "not a semantic effect that has an IBonesEffectSemantic.  " +
+                    "You can use 'effect.Skinned' for a basic model rendering effect.");
+            }
+
+            var bonesEffectSemantic = effectSemantic.GetSemantic<IBonesEffectSemantic>();
+
+            foreach (var bone in this._flattenedBones)
             {
                 if (bone.ID == -1)
                 {
                     continue;
                 }
 
-                effectBones.Bones[bone.ID] = bone.GetFinalMatrix();
+                bonesEffectSemantic.Bones[bone.ID] = bone.GetFinalMatrix();
             }
 
             // Keep a copy of the current world transformation and then apply the
@@ -213,7 +268,7 @@
 
             // Render the vertex and index buffer.
             renderContext.GraphicsDevice.Indices = this.IndexBuffer;
-            renderContext.GraphicsDevice.SetVertexBuffer(this.VertexBuffer);
+            renderContext.GraphicsDevice.SetVertexBuffer(vertexBuffer);
             foreach (var pass in renderContext.Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -221,7 +276,7 @@
                     PrimitiveType.TriangleList,
                     0,
                     0,
-                    this.VertexBuffer.VertexCount,
+                    vertexBuffer.VertexCount,
                     0,
                     this.IndexBuffer.IndexCount / 3);
             }
@@ -238,24 +293,14 @@
         /// </param>
         public void LoadBuffers(GraphicsDevice graphicsDevice)
         {
-            if (this.m_VertexBuffer == null)
+            if (this._indexBuffer == null)
             {
-                this.m_VertexBuffer = new VertexBuffer(
-                    graphicsDevice,
-                    VertexPositionNormalTextureBlendable.VertexDeclaration, 
-                    this.Vertexes.Length, 
-                    BufferUsage.WriteOnly);
-                this.m_VertexBuffer.SetData(this.Vertexes);
-            }
-
-            if (this.m_IndexBuffer == null)
-            {
-                this.m_IndexBuffer = new IndexBuffer(
+                this._indexBuffer = new IndexBuffer(
                     graphicsDevice, 
                     IndexElementSize.ThirtyTwoBits, 
                     this.Indices.Length, 
                     BufferUsage.WriteOnly);
-                this.m_IndexBuffer.SetData(this.Indices);
+                this._indexBuffer.SetData(this.Indices);
             }
         }
     }

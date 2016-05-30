@@ -1,11 +1,15 @@
-﻿namespace Protogame
+﻿using Protoinject;
+
+namespace Protogame
 {
     public class UnifiedShaderAssetLoader : IAssetLoader
     {
+        private readonly IKernel _kernel;
         private readonly IAssetContentManager _assetContentManager;
 
-        public UnifiedShaderAssetLoader(IAssetContentManager assetContentManager)
+        public UnifiedShaderAssetLoader(IKernel kernel, IAssetContentManager assetContentManager)
         {
+            _kernel = kernel;
             _assetContentManager = assetContentManager;
         }
 
@@ -26,17 +30,18 @@
 
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
-            return new UnifiedShaderAsset(_assetContentManager, name, string.Empty, null, false);
+            return new UnifiedShaderAsset(_kernel, _assetContentManager, name, string.Empty, null, false);
         }
 
         public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
             if (data is CompiledAsset)
             {
-                return new UnifiedShaderAsset(_assetContentManager, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
+                return new UnifiedShaderAsset(_kernel, _assetContentManager, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
             }
 
             return new UnifiedShaderAsset(
+                _kernel,
                 _assetContentManager,
                 name,
                 data.GetProperty<string>("Code"),

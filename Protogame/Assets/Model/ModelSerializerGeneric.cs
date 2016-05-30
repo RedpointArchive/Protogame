@@ -28,7 +28,7 @@ namespace Protogame
         /// <returns>
         /// The deserialized <see cref="Model"/>.
         /// </returns>
-        public Model Deserialize(byte[] data)
+        public Model Deserialize(string name, byte[] data)
         {
             using (var memory = new MemoryStream(data))
             {
@@ -44,14 +44,14 @@ namespace Protogame
                         switch (version)
                         {
                             case 2:
-                                return _modelSerializerVersion2.Deserialize(data);
+                                return _modelSerializerVersion2.Deserialize(name, data);
                             default:
                                 throw new InvalidOperationException("Unknown version for model format.");
                         }
                     }
 
                     // No version signature, so it must be version 1.
-                    return _modelSerializerVersion1.Deserialize(data);
+                    return _modelSerializerVersion1.Deserialize(name, data);
                 }
             }
         }

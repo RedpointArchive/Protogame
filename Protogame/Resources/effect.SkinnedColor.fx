@@ -3,7 +3,7 @@
 // to provide the minimal amount of code such that it can be built upon (for custom
 // lighting effects).
 //
-// This shader supports rendering models with a single diffuse texture.
+// This shader supports rendering models with vertex colors.
 // -----------------------------------------------------------------------------
 
 PROTOGAME_DECLARE_TEXTURE(Texture);
@@ -19,7 +19,7 @@ float4x4 Bones[MAX_BONES];
 struct VertexShaderInput
 {
     float4 Position : PROTOGAME_POSITION;
-    float2 TexCoord : PROTOGAME_TEXCOORD(0);
+    float4 Color : PROTOGAME_TARGET(0);
     float4 Normal : PROTOGAME_NORMAL(0);
     float4 BoneWeights : PROTOGAME_BLENDWEIGHT(0);
     uint4 BoneIndices : PROTOGAME_BLENDINDICES(0);
@@ -28,7 +28,7 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
     float4 Position : PROTOGAME_POSITION;
-    float2 TexCoord : PROTOGAME_TEXCOORD(0);
+	float4 Color : PROTOGAME_TARGET(0);
     float4 Normal : PROTOGAME_TEXCOORD(1);
 };
 
@@ -80,7 +80,7 @@ VertexShaderOutput DefaultVertexShader(VertexShaderInput input)
 
     output.Normal = computedNormal;
 
-    output.TexCoord = input.TexCoord;
+    output.Color = input.Color;
 
     return output;
 }
@@ -89,7 +89,7 @@ PixelShaderOutput DefaultPixelShader(VertexShaderOutput input)
 {
 	PixelShaderOutput output;
 
-	output.Color = PROTOGAME_SAMPLE_TEXTURE(Texture, input.TexCoord);
+	output.Color = input.Color;
     
     return output;
 }

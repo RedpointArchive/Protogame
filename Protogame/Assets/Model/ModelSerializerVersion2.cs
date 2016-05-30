@@ -13,6 +13,13 @@ namespace Protogame
     /// </summary>
     public class ModelSerializerVersion2 : IModelSerializer
     {
+        private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
+
+        public ModelSerializerVersion2(IModelRenderConfiguration[] modelRenderConfigurations)
+        {
+            _modelRenderConfigurations = modelRenderConfigurations;
+        }
+
         /// <summary>
         /// Deserialize the specified byte array into a concrete <see cref="Model"/> implementation.
         /// </summary>
@@ -22,13 +29,13 @@ namespace Protogame
         /// <returns>
         /// The deserialized <see cref="Model"/>.
         /// </returns>
-        public Model Deserialize(byte[] data)
+        public Model Deserialize(string name, byte[] data)
         {
             using (var memory = new MemoryStream(data))
             {
                 using (var reader = new BinaryReader(memory))
                 {
-                    return this.DeserializeModel(reader);
+                    return this.DeserializeModel(name, reader);
                 }
             }
         }
@@ -256,7 +263,7 @@ namespace Protogame
         /// <returns>
         /// The deserialized model.
         /// </returns>
-        private Model DeserializeModel(BinaryReader reader)
+        private Model DeserializeModel(string name, BinaryReader reader)
         {
             var versionedSignature = reader.ReadInt32();
             if (versionedSignature != Int32.MaxValue)
@@ -276,7 +283,7 @@ namespace Protogame
             var vertexes = this.DeserializeVertexes(reader);
             var indices = this.DeserializeIndices(reader);
 
-            return new Model(animations, material, boneHierarchy, vertexes, indices);
+            return new Model(_modelRenderConfigurations, name, animations, material, boneHierarchy, vertexes, indices);
         }
 
         /// <summary>
@@ -354,14 +361,28 @@ namespace Protogame
         {
             if (reader.ReadBoolean())
             {
-                var r = reader.ReadSingle();
-                var g = reader.ReadSingle();
-                var b = reader.ReadSingle();
-                var a = reader.ReadSingle();
-                return new Color(r, g, b, a);
+                return DeserializeColor(reader);
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Deserializes a color from binary data.
+        /// </summary>
+        /// <param name="reader">
+        /// The binary reader to read from.
+        /// </param>
+        /// <returns>
+        /// The deserialized color.
+        /// </returns>
+        private Color DeserializeColor(BinaryReader reader)
+        {
+            var r = reader.ReadSingle();
+            var g = reader.ReadSingle();
+            var b = reader.ReadSingle();
+            var a = reader.ReadSingle();
+            return new Color(r, g, b, a);
         }
 
         /// <summary>
@@ -497,20 +518,95 @@ namespace Protogame
         /// <returns>
         /// The deserialized vertexes.
         /// </returns>
-        private VertexPositionNormalTextureBlendable[] DeserializeVertexes(BinaryReader reader)
+        private ModelVertex[] DeserializeVertexes(BinaryReader reader)
         {
             var vertexCount = reader.ReadInt32();
-            var vertexes = new List<VertexPositionNormalTextureBlendable>();
+            var vertexes = new List<ModelVertex>();
 
             for (var i = 0; i < vertexCount; i++)
             {
-                var pos = this.DeserializeVector3(reader);
-                var normal = this.DeserializeVector3(reader);
-                var uv = this.DeserializeVector2(reader);
-                var weight = this.DeserializeVector4(reader);
-                var index = this.DeserializeByte4(reader);
+                Vector3? position, normal, tangent, bitangent;
+                Color[] colors;
+                Vector2[] texCoordsUV;
+                Vector3[] texCoordsUVW;
+                Byte4? boneIndices;
+                Vector4? boneWeights;
 
-                vertexes.Add(new VertexPositionNormalTextureBlendable(pos, normal, uv, weight, index));
+                if (reader.ReadBoolean())
+                {
+                    position = this.DeserializeVector3(reader);
+                }
+                else
+                {
+                    position = null;
+                }
+
+                if (reader.ReadBoolean())
+                {
+                    normal = this.DeserializeVector3(reader);
+                }
+                else
+                {
+                    normal = null;
+                }
+
+                if (reader.ReadBoolean())
+                {
+                    tangent = this.DeserializeVector3(reader);
+                    bitangent = this.DeserializeVector3(reader);
+                }
+                else
+                {
+                    tangent = null;
+                    bitangent = null;
+                }
+
+                colors = new Color[reader.ReadInt32()];
+                for (var c = 0; c < colors.Length; c++)
+                {
+                    colors[c] = this.DeserializeColor(reader);
+                }
+
+                texCoordsUV = new Vector2[reader.ReadInt32()];
+                for (var c = 0; c < texCoordsUV.Length; c++)
+                {
+                    texCoordsUV[c] = this.DeserializeVector2(reader);
+                }
+
+                texCoordsUVW = new Vector3[reader.ReadInt32()];
+                for (var c = 0; c < texCoordsUVW.Length; c++)
+                {
+                    texCoordsUVW[c] = this.DeserializeVector3(reader);
+                }
+
+                if (reader.ReadBoolean())
+                {
+                    boneIndices = this.DeserializeByte4(reader);
+                }
+                else
+                {
+                    boneIndices = null;
+                }
+
+                if (reader.ReadBoolean())
+                {
+                    boneWeights = this.DeserializeVector4(reader);
+                }
+                else
+                {
+                    boneWeights = null;
+                }
+
+                vertexes.Add(new ModelVertex(
+                    position,
+                    normal,
+                    tangent,
+                    bitangent,
+                    colors,
+                    texCoordsUV,
+                    texCoordsUVW,
+                    boneIndices,
+                    boneWeights));
             }
 
             return vertexes.ToArray();
@@ -766,11 +862,25 @@ namespace Protogame
             else
             {
                 writer.Write(true);
-                writer.Write(color.Value.R / 255f);
-                writer.Write(color.Value.G / 255f);
-                writer.Write(color.Value.B / 255f);
-                writer.Write(color.Value.A / 255f);
+                this.SerializeColor(writer, color.Value);
             }
+        }
+
+        /// <summary>
+        /// Serializes a <see cref="Color"/> to a binary stream.
+        /// </summary>
+        /// <param name="writer">
+        /// The binary writer to which the <see cref="Color"/> will be serialized.
+        /// </param>
+        /// <param name="color">
+        /// The color to serialize.
+        /// </param>
+        private void SerializeColor(BinaryWriter writer, Color color)
+        {
+            writer.Write(color.R / 255f);
+            writer.Write(color.G / 255f);
+            writer.Write(color.B / 255f);
+            writer.Write(color.A / 255f);
         }
 
         /// <summary>
@@ -891,17 +1001,82 @@ namespace Protogame
         /// <param name="vertexes">
         /// The vertexes to serialize.
         /// </param>
-        private void SerializeVertexes(BinaryWriter writer, VertexPositionNormalTextureBlendable[] vertexes)
+        private void SerializeVertexes(BinaryWriter writer, ModelVertex[] vertexes)
         {
             writer.Write(vertexes.Length);
 
             for (var i = 0; i < vertexes.Length; i++)
             {
-                this.SerializeVector3(writer, vertexes[i].Position);
-                this.SerializeVector3(writer, vertexes[i].Normal);
-                this.SerializeVector2(writer, vertexes[i].TextureCoordinate);
-                this.SerializeVector4(writer, vertexes[i].BoneWeights);
-                this.SerializeVector4(writer, vertexes[i].BoneIndices.ToVector4());
+                var v = vertexes[i];
+
+                if (v.Position != null)
+                {
+                    writer.Write(true);
+                    this.SerializeVector3(writer, v.Position.Value);
+                }
+                else
+                {
+                    writer.Write(false);
+                }
+
+                if (v.Normal != null)
+                {
+                    writer.Write(true);
+                    this.SerializeVector3(writer, v.Normal.Value);
+                }
+                else
+                {
+                    writer.Write(false);
+                }
+
+                if (v.Tangent != null && v.BiTangent != null)
+                {
+                    writer.Write(true);
+                    this.SerializeVector3(writer, v.Tangent.Value);
+                    this.SerializeVector3(writer, v.BiTangent.Value);
+                }
+                else
+                {
+                    writer.Write(false);
+                }
+
+                writer.Write(v.Colors.Length);
+                for (var c = 0; c < v.Colors.Length; c++)
+                {
+                    this.SerializeColor(writer, v.Colors[c]);
+                }
+
+                writer.Write(v.TexCoordsUV.Length);
+                for (var c = 0; c < v.TexCoordsUV.Length; c++)
+                {
+                    this.SerializeVector2(writer, v.TexCoordsUV[c]);
+                }
+
+                writer.Write(v.TexCoordsUVW.Length);
+                for (var c = 0; c < v.TexCoordsUVW.Length; c++)
+                {
+                    this.SerializeVector3(writer, v.TexCoordsUVW[c]);
+                }
+
+                if (v.BoneIndices != null)
+                {
+                    writer.Write(true);
+                    this.SerializeVector4(writer, v.BoneIndices.Value.ToVector4());
+                }
+                else
+                {
+                    writer.Write(false);
+                }
+
+                if (v.BoneWeights != null)
+                {
+                    writer.Write(true);
+                    this.SerializeVector4(writer, v.BoneWeights.Value);
+                }
+                else
+                {
+                    writer.Write(false);
+                }
             }
         }
     }

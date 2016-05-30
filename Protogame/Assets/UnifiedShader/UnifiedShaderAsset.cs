@@ -4,15 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
+using Protoinject;
 
 namespace Protogame
 {
     public class UnifiedShaderAsset : MarshalByRefObject, IAsset
     {
+        private readonly IKernel _kernel;
         private readonly IAssetContentManager _assetContentManager;
 
-        public UnifiedShaderAsset(IAssetContentManager assetContentManager, string name, string code, PlatformData platformData, bool sourcedFromRaw)
+        public UnifiedShaderAsset(
+            IKernel kernel,
+            IAssetContentManager assetContentManager, 
+            string name,
+            string code,
+            PlatformData platformData, 
+            bool sourcedFromRaw)
         {
+            _kernel = kernel;
             _assetContentManager = assetContentManager;
             Name = name;
             Code = code;
@@ -49,34 +58,9 @@ namespace Protogame
 
                 var compiledUnifiedShaderReader = new CompiledUnifiedShaderReader(this.PlatformData.Data);
 
-                // Load the effect for the first time.
-                var effect = new Effect(graphicsDevice, compiledUnifiedShaderReader);
-
-                // Determine what kind of effect class we should use.
-                var hasSeperatedMatrixes = effect.Parameters["World"] != null && effect.Parameters["View"] != null && effect.Parameters["Projection"] != null;
-                var hasMatrix = effect.Parameters["WorldViewProj"] != null || hasSeperatedMatrixes;
-                var hasTexture = effect.Parameters["Texture"] != null;
-                var hasBones = effect.Parameters["Bones"] != null;
-                if (hasMatrix && hasTexture && hasBones)
-                {
-                    this.Effect = new EffectWithMatricesAndTextureAndBones(graphicsDevice, this.PlatformData.Data, hasSeperatedMatrixes);
-                }
-                else if (hasMatrix && hasTexture)
-                {
-                    this.Effect = new EffectWithMatricesAndTexture(graphicsDevice, this.PlatformData.Data, hasSeperatedMatrixes);
-                }
-                else if (hasMatrix)
-                {
-                    this.Effect = new EffectWithMatrices(graphicsDevice, this.PlatformData.Data, hasSeperatedMatrixes);
-                }
-                else if (hasTexture)
-                {
-                    this.Effect = new EffectWithTexture(graphicsDevice, this.PlatformData.Data);
-                }
-                else
-                {
-                    this.Effect = effect;
-                }
+                // Use the new EffectWithSemantics class that allows for extensible semantics.
+                var availableSemantics = _kernel.GetAll<IEffectSemantic>();
+                this.Effect = new EffectWithSemantics(graphicsDevice, compiledUnifiedShaderReader, availableSemantics);
 
                 // Assign the asset name so we can trace it back.
                 this.Effect.Name = this.Name;

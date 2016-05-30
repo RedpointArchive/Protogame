@@ -11,6 +11,12 @@
     public interface IModel
     {
         /// <summary>
+        /// The name of the model, which usually aligns to the model asset that
+        /// the model was loaded from.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// Gets the available animations.
         /// </summary>
         /// <value>
@@ -70,17 +76,11 @@
         /// The indices of the model.
         /// </value>
         int[] Indices { get; }
-
+        
         /// <summary>
-        /// Gets the vertex buffer.
+        /// Frees any vertex buffers that are cached inside this model.
         /// </summary>
-        /// <value>
-        /// The vertex buffer.
-        /// </value>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
-        /// </exception>
-        VertexBuffer VertexBuffer { get; }
+        void FreeCachedVertexBuffers();
 
         /// <summary>
         /// Gets the vertexes of the model.
@@ -88,11 +88,10 @@
         /// <value>
         /// The vertexes of the model.
         /// </value>
-        VertexPositionNormalTextureBlendable[] Vertexes { get; }
+        ModelVertex[] Vertexes { get; }
 
         /// <summary>
-        /// Renders the model using the specified animation, calculating the appropriate frame to play
-        /// based on how much time has elapsed.
+        /// Renders the model using the specified transform.
         /// </summary>
         /// <param name="renderContext">
         /// The render context.

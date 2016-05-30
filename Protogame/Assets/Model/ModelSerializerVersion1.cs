@@ -11,6 +11,13 @@ namespace Protogame
     /// </summary>
     public class ModelSerializerVersion1 : IModelSerializer
     {
+        private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
+
+        public ModelSerializerVersion1(IModelRenderConfiguration[] modelRenderConfigurations)
+        {
+            _modelRenderConfigurations = modelRenderConfigurations;
+        }
+
         /// <summary>
         /// Deserialize the specified byte array into a concrete <see cref="Model"/> implementation.
         /// </summary>
@@ -20,13 +27,13 @@ namespace Protogame
         /// <returns>
         /// The deserialized <see cref="Model"/>.
         /// </returns>
-        public Model Deserialize(byte[] data)
+        public Model Deserialize(string name, byte[] data)
         {
             using (var memory = new MemoryStream(data))
             {
                 using (var reader = new BinaryReader(memory))
                 {
-                    return this.DeserializeModel(reader);
+                    return this.DeserializeModel(name, reader);
                 }
             }
         }
@@ -254,14 +261,14 @@ namespace Protogame
         /// <returns>
         /// The deserialized model.
         /// </returns>
-        private Model DeserializeModel(BinaryReader reader)
+        private Model DeserializeModel(string name, BinaryReader reader)
         {
             var animations = new AnimationCollection(this.DeserializeAnimations(reader));
             var boneHierarchy = this.DeserializeBoneHierarchy(reader);
             var vertexes = this.DeserializeVertexes(reader);
             var indices = this.DeserializeIndices(reader);
 
-            return new Model(animations, null, boneHierarchy, vertexes, indices);
+            return new Model(_modelRenderConfigurations, name, animations, null, boneHierarchy, vertexes, indices);
         }
 
         /// <summary>
@@ -397,10 +404,10 @@ namespace Protogame
         /// <returns>
         /// The deserialized vertexes.
         /// </returns>
-        private VertexPositionNormalTextureBlendable[] DeserializeVertexes(BinaryReader reader)
+        private ModelVertex[] DeserializeVertexes(BinaryReader reader)
         {
             var vertexCount = reader.ReadInt32();
-            var vertexes = new List<VertexPositionNormalTextureBlendable>();
+            var vertexes = new List<ModelVertex>();
 
             for (var i = 0; i < vertexCount; i++)
             {
@@ -410,7 +417,7 @@ namespace Protogame
                 var weight = this.DeserializeVector4(reader);
                 var index = this.DeserializeByte4(reader);
 
-                vertexes.Add(new VertexPositionNormalTextureBlendable(pos, normal, uv, weight, index));
+                vertexes.Add(new ModelVertex(pos, normal, null, null, new Color[0], new Vector2[] { uv }, null, index, weight));
             }
 
             return vertexes.ToArray();
@@ -691,17 +698,17 @@ namespace Protogame
         /// <param name="vertexes">
         /// The vertexes to serialize.
         /// </param>
-        private void SerializeVertexes(BinaryWriter writer, VertexPositionNormalTextureBlendable[] vertexes)
+        private void SerializeVertexes(BinaryWriter writer, ModelVertex[] vertexes)
         {
             writer.Write(vertexes.Length);
 
             for (var i = 0; i < vertexes.Length; i++)
             {
-                this.SerializeVector3(writer, vertexes[i].Position);
-                this.SerializeVector3(writer, vertexes[i].Normal);
-                this.SerializeVector2(writer, vertexes[i].TextureCoordinate);
-                this.SerializeVector4(writer, vertexes[i].BoneWeights);
-                this.SerializeVector4(writer, vertexes[i].BoneIndices.ToVector4());
+                this.SerializeVector3(writer, vertexes[i].Position ?? Vector3.Zero);
+                this.SerializeVector3(writer, vertexes[i].Normal ?? Vector3.Zero);
+                this.SerializeVector2(writer, vertexes[i].TexCoordsUV[0]);
+                this.SerializeVector4(writer, vertexes[i].BoneWeights ?? Vector4.Zero);
+                this.SerializeVector4(writer, (vertexes[i].BoneIndices ?? new Byte4()).ToVector4());
             }
         }
     }

@@ -45,18 +45,21 @@
     <Compile Include="Assets\Configuration\ConfigurationAssetLoader.cs" />
     <Compile Include="Assets\Configuration\ConfigurationAssetSaver.cs" />
     <Compile Include="Assets\Configuration\RawConfigurationLoadStrategy.cs" />
+    <Compile Include="Assets\Effect\BonesEffectSemantic.cs" />
     <Compile Include="Assets\Effect\EffectAsset.cs" />
     <Compile Include="Assets\Effect\EffectAssetCompiler.cs" />
     <Compile Include="Assets\Effect\EffectAssetLoader.cs" />
     <Compile Include="Assets\Effect\EffectAssetRemoteCompiler.cs" />
     <Compile Include="Assets\Effect\EffectAssetSaver.cs" />
-    <Compile Include="Assets\Effect\EffectWithMatrices.cs" />
-    <Compile Include="Assets\Effect\EffectWithMatricesAndTexture.cs" />
-    <Compile Include="Assets\Effect\EffectWithMatricesAndTextureAndBones.cs" />
-    <Compile Include="Assets\Effect\EffectWithTexture.cs" />
-    <Compile Include="Assets\Effect\IEffectBones.cs" />
-    <Compile Include="Assets\Effect\IEffectTexture.cs" />
+    <Compile Include="Assets\Effect\EffectWithSemantics.cs" />
+    <Compile Include="Assets\Effect\IBonesEffectSemantic.cs" />
+    <Compile Include="Assets\Effect\IEffectSemantic.cs" />
+    <Compile Include="Assets\Effect\IEffectWithSemantics.cs" />
+    <Compile Include="Assets\Effect\ITextureEffectSemantic.cs" />
+    <Compile Include="Assets\Effect\IWorldViewProjectionEffectSemantic.cs" />
     <Compile Include="Assets\Effect\RawEffectLoadStrategy.cs" />
+    <Compile Include="Assets\Effect\TextureEffectSemantic.cs" />
+    <Compile Include="Assets\Effect\WorldViewProjectionEffectSemantic.cs" />
     <Compile Include="Assets\Font\FontAsset.cs" />
     <Compile Include="Assets\Font\FontAssetCompiler.cs" />
     <Compile Include="Assets\Font\FontAssetLoader.cs" />
@@ -141,6 +144,7 @@
     <Compile Include="Assets\Model\IAnimationCollection.cs" />
     <Compile Include="Assets\Model\IModel.cs" />
     <Compile Include="Assets\Model\IModelBone.cs" />
+    <Compile Include="Assets\Model\IModelRenderConfiguration.cs" />
     <Compile Include="Assets\Model\IModelSerializer.cs" />
     <Compile Include="Assets\Model\Model.cs" />
     <Compile Include="Assets\Model\ModelAsset.cs" />
@@ -151,7 +155,10 @@
     <Compile Include="Assets\Model\ModelSerializerGeneric.cs" />
     <Compile Include="Assets\Model\ModelSerializerVersion1.cs" />
     <Compile Include="Assets\Model\ModelSerializerVersion2.cs" />
+    <Compile Include="Assets\Model\ModelVertex.cs" />
+    <Compile Include="Assets\Model\ModelVertexMapping.cs" />
     <Compile Include="Assets\Model\RawModelLoadStrategy.cs" />
+    <Compile Include="Assets\Model\VertexPositionNormalColorBlendable.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalTextureBlendable.cs" />
     <Compile Include="Assets\ProtogameAssetIoCModule.cs" />
     <Compile Include="Assets\ProtogameAssetModule.cs" />
@@ -245,6 +252,7 @@
     <Compile Include="Core\DefaultConsole.cs" />
     <Compile Include="Core\DefaultGameContext.cs" />
     <Compile Include="Core\DefaultKeyboardStringReader.cs" />
+    <Compile Include="Core\DefaultRenderContextImplementationUtilities.cs" />
     <Compile Include="Core\DefaultStringSanitizer.cs" />
     <Compile Include="Core\DefaultTileUtilities.cs" />
     <Compile Include="Core\DefaultUpdateContext.cs" />
@@ -274,6 +282,7 @@
     <Compile Include="Core\IHasVelocity.cs" />
     <Compile Include="Core\IKeyboardStringReader.cs" />
     <Compile Include="Core\IRenderContext.cs" />
+    <Compile Include="Core\IRenderContextImplementationUtilities.cs" />
     <Compile Include="Core\ISolidEntity.cs" />
     <Compile Include="Core\IStringSanitizer.cs" />
     <Compile Include="Core\ITileEntity.cs" />
@@ -747,6 +756,33 @@
     <EmbeddedResource Include="Resources\effect.Skinned-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.SkinnedColor-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\effect.Skinned-iOS.bin">
       <Platforms>iOS</Platforms>
     </EmbeddedResource>
@@ -816,6 +852,7 @@
     <None Include="Resources\effect.Color.fx" />
     <None Include="Resources\effect.Invert.fx" />
     <None Include="Resources\effect.Skinned.fx" />
+    <None Include="Resources\effect.SkinnedColor.fx" />
     <None Include="Resources\font.Default.asset" />
     <None Include="Scripting\LogicControl\Grammar.grm" />
     <None Include="Scripting\LogicControl\LogicBuiltins.tt">

@@ -14,7 +14,7 @@
         /// <returns>
         /// The deserialized <see cref="Model"/>.
         /// </returns>
-        Model Deserialize(byte[] data);
+        Model Deserialize(string name, byte[] data);
 
         /// <summary>
         /// Serializes the specified <see cref="IModel"/> into a byte array.

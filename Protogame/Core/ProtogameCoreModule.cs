@@ -35,6 +35,9 @@ namespace Protogame
             kernel.Bind<IGraphicsBlit>().To<DefaultGraphicsBlit>();
             kernel.Bind<IGraphicsFactory>().ToFactory();
             kernel.Bind<IRenderTargetBackBufferUtilities>().To<DefaultRenderTargetBackBufferUtilities>();
+            kernel.Bind<IRenderContextImplementationUtilities>()
+                .To<DefaultRenderContextImplementationUtilities>()
+                .InSingletonScope();
 
             kernel.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>();
             kernel.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>();

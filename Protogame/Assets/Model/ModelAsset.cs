@@ -171,20 +171,11 @@
         }
 
         /// <summary>
-        /// Gets the vertex buffer.
+        /// Frees any vertex buffers that are cached inside this model.
         /// </summary>
-        /// <value>
-        /// The vertex buffer.
-        /// </value>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
-        /// </exception>
-        public VertexBuffer VertexBuffer
+        public void FreeCachedVertexBuffers()
         {
-            get
-            {
-                return this.m_Model.VertexBuffer;
-            }
+            this.m_Model.FreeCachedVertexBuffers();
         }
 
         /// <summary>
@@ -193,7 +184,7 @@
         /// <value>
         /// The vertexes.
         /// </value>
-        public VertexPositionNormalTextureBlendable[] Vertexes
+        public ModelVertex[] Vertexes
         {
             get
             {
@@ -388,7 +379,7 @@
         {
             if (this.PlatformData != null)
             {
-                this.m_Model = _modelSerializer.Deserialize(this.PlatformData.Data);
+                this.m_Model = _modelSerializer.Deserialize(this.Name, this.PlatformData.Data);
             }
         }
 
