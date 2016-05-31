@@ -73,6 +73,26 @@ namespace Protogame
         {
             return new Vector3(vector.X, vector.Y, vector.Z);
         }
+
+        /// <summary>
+        /// Converts the XNA quaternion to an Jitter quaternion.
+        /// </summary>
+        /// <returns>The Jitter representation of the XNA quaternion.</returns>
+        /// <param name="quat">The XNA quaternion.</param>
+        public static JQuaternion ToJitterQuaternion(this Quaternion quat)
+        {
+            return new JQuaternion(quat.X, quat.Y, quat.Z, quat.W);
+        }
+
+        /// <summary>
+        /// Converts the Jitter quaternion to an XNA quaternion.
+        /// </summary>
+        /// <returns>The XNA representation of the Jitter quaternion.</returns>
+        /// <param name="quat">The Jitter quaternion.</param>
+        public static Quaternion ToXNAQuaternion(this JQuaternion quat)
+        {
+            return new Quaternion(quat.X, quat.Y, quat.Z, quat.W);
+        }
     }
 }
 

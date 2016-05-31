@@ -103,12 +103,12 @@ namespace ProtogamePostBuild
                                 {
                                     case DeclaredAs.Entity:
                                         Console.WriteLine("Found editable entity: " + type.FullName);
-                                        nativeTypeName = type.FullName.Replace(".", "_") + "_NativeEntity";
+                                        nativeTypeName = type.FullName.Replace(".", "_").Replace("?","") + "_NativeEntity";
                                         xsdBaseTypeName = "gameObjectType";
                                         break;
                                     case DeclaredAs.Component:
                                         Console.WriteLine("Found editable component: " + type.FullName);
-                                        nativeTypeName = type.FullName.Replace(".", "_") + "_NativeComponent";
+                                        nativeTypeName = type.FullName.Replace(".", "_").Replace("?", "") + "_NativeComponent";
                                         if (bakingEditorQuery.HasMatrix)
                                         {
                                             xsdBaseTypeName = "transformComponentType";

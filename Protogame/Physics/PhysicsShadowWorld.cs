@@ -19,6 +19,10 @@ namespace Protogame
 
         private readonly List<KeyValuePair<RigidBody, IHasMatrix>> _rigidBodyMappings;
 
+        private Dictionary<int, Quaternion> _lastFrameRotation;
+
+        private Dictionary<int, Vector3> _lastFramePosition;
+
         public PhysicsShadowWorld(IPhysicsEngine physicsEngine, IWorld world)
         {
             _gameSystemWorld = world;
@@ -33,9 +37,12 @@ namespace Protogame
             _physicsWorld.ContactSettings.MaterialCoefficientMixing =
                 ContactSettings.MaterialCoefficientMixingType.TakeMinimum;
 
-            _physicsWorld.Gravity = new JVector(0, 0.1f, 0);
+            _physicsWorld.Gravity = new JVector(0, -4f, 0);
 
             _rigidBodyMappings = new List<KeyValuePair<RigidBody, IHasMatrix>>();
+
+            _lastFramePosition = new Dictionary<int, Vector3>();
+            _lastFrameRotation = new Dictionary<int, Quaternion>();
         }
         
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
@@ -53,9 +60,45 @@ namespace Protogame
                 var pos = hasMatrix.GetFinalMatrix().Translation;
                 originalRotation[rigidBody.GetHashCode()] = rot;
                 originalPosition[rigidBody.GetHashCode()] = pos;
-                rigidBody.Orientation = Matrix.CreateFromQuaternion(rot).ToJitterMatrix();
-                rigidBody.Position = pos.ToJitterVector();
+
+                // If the position of the entity differs from what we expect, then the user
+                // probably explicitly set it and we need to sync the rigid body.
+                if (_lastFramePosition.ContainsKey(rigidBody.GetHashCode()))
+                {
+                    var lastPosition = _lastFramePosition[rigidBody.GetHashCode()];
+                    if ((lastPosition - pos).LengthSquared() > 0.0001f)
+                    {
+                        rigidBody.Position = pos.ToJitterVector();
+                    }
+                }
+                else
+                {
+                    rigidBody.Position = pos.ToJitterVector();
+                }
+
+                // If the rotation of the entity differs from what we expect, then the user
+                // probably explicitly set it and we need to sync the rigid body.
+                if (_lastFrameRotation.ContainsKey(rigidBody.GetHashCode()))
+                {
+                    var lastRotation = _lastFrameRotation[rigidBody.GetHashCode()];
+
+                    var a = Quaternion.Normalize(lastRotation);
+                    var b = Quaternion.Normalize(rot);
+                    var closeness = 1 - (a.X*b.X + a.Y*b.Y + a.Z*b.Z + a.W*b.W);
+
+                    if (closeness > 0.0001f)
+                    {
+                        rigidBody.Orientation = JMatrix.CreateFromQuaternion(rot.ToJitterQuaternion());
+                    }
+                }
+                else
+                {
+                    rigidBody.Orientation = JMatrix.CreateFromQuaternion(rot.ToJitterQuaternion());
+                }
             }
+
+            _lastFramePosition.Clear();
+            _lastFrameRotation.Clear();
 
             _physicsWorld.Step((float)gameContext.GameTime.ElapsedGameTime.TotalSeconds, true);
 
@@ -65,24 +108,25 @@ namespace Protogame
                 var hasMatrix = kv.Value;
 
                 // Calculate the changes that the physics system made in world space.
-                var oldWorldRot = originalRotation[rigidBody.GetHashCode()];
+                var oldWorldRot = Quaternion.Normalize(originalRotation[rigidBody.GetHashCode()]);
                 var oldWorldPos = originalPosition[rigidBody.GetHashCode()];
-                var newWorldRot = rigidBody.Orientation.ToXNAMatrix().Rotation;
+                var newWorldRot = Quaternion.Normalize(JQuaternion.CreateFromMatrix(rigidBody.Orientation).ToXNAQuaternion());
                 var newWorldPos = rigidBody.Position.ToXNAVector();
-
-                // Calculate the inverse matrix for this object.
-                var inverse = Matrix.Invert(hasMatrix.GetFinalMatrix());
-
-                // Determine the localised differences in position and rotation.
-                var localRot = Quaternion.Inverse(oldWorldRot) * newWorldRot;
-                var localPos = Vector3.Transform(newWorldPos, inverse) - Vector3.Transform(oldWorldPos, inverse);
+                
+                // Determine the localised differences in position.
+                var localPos = newWorldPos - oldWorldPos;
                 
                 // Reverse the old translation and rotation components of the matrix.
                 var newMatrix = hasMatrix.LocalMatrix*
                                 Matrix.CreateTranslation(-hasMatrix.LocalMatrix.Translation) *
-                                Matrix.CreateFromQuaternion(localRot)*
+                                Matrix.CreateFromQuaternion(Quaternion.Inverse(oldWorldRot)) *
+                                Matrix.CreateFromQuaternion(newWorldRot) *
                                 Matrix.CreateTranslation(hasMatrix.LocalMatrix.Translation + localPos);
                 hasMatrix.LocalMatrix = newMatrix;
+
+                // Save the current rotation / position for the next frame.
+                _lastFramePosition[rigidBody.GetHashCode()] = newMatrix.Translation;
+                _lastFrameRotation[rigidBody.GetHashCode()] = newMatrix.Rotation;
             }
         }
 

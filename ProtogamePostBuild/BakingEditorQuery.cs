@@ -75,11 +75,15 @@ namespace Protogame.ATFLevelEditor
     {
         public EditorQueryMode Mode => EditorQueryMode.BakingSchema;
 
-        public void MapMatrix<TTarget>(TTarget @object, Expression<Func<T, Matrix>> matrixProperty) where TTarget : T, IHasMatrix
+        public void MapMatrix<TTarget>(TTarget @object, Action<Matrix> matrixProperty) where TTarget : T, IHasMatrix
         {
         }
 
-        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Expression<Func<T, T2>> property, T2 @default) where TTarget : T
+        public void MapScale(T @object, Action<Vector3> setScale)
+        {
+        }
+
+        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Action<T2> setProperty, T2 @default) where TTarget : T
         {
             Properties[id] = CreatePropertyFromDeclaration(
                 id,
@@ -193,6 +197,17 @@ namespace Protogame.ATFLevelEditor
                     return ConvertObjectToNumericType<int>(o).ToString();
                 }
             }
+            if (type == typeof(bool))
+            {
+                if (o == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return o.ToString() == "true" ? "true" : "false";
+                }
+            }
             if (type == typeof(float))
             {
                 if (o == null)
@@ -249,9 +264,13 @@ namespace Protogame.ATFLevelEditor
 
         private string ConvertToNativeType(Type type)
         {
-            if (type.FullName == typeof (string).FullName)
+            if (type.FullName == typeof(string).FullName)
             {
                 return "wchar_t*";
+            }
+            if (type.FullName == typeof(bool).FullName)
+            {
+                return "bool";
             }
             if (type.FullName == typeof(int).FullName)
             {
@@ -361,9 +380,7 @@ namespace Protogame.ATFLevelEditor
             IconAbsolutePath = Path.Combine(Environment.CurrentDirectory, pngFilePathFromProjectRoot);
         }
 
-        public void MapStandardLightingModel(T @object, Expression<Func<T, Color>> colorProperty, Expression<Func<T, Color>> emissiveProperty,
-            Expression<Func<T, Color>> specularProperty, Expression<Func<T, float>> specularPowerProperty, Expression<Func<T, string>> diffuseTextureNameProperty,
-            Expression<Func<T, string>> normalTextureNameProperty, Expression<Func<T, Matrix>> textureTransformProperty)
+        public void MapStandardLightingModel(T @object, Action<Color> colorProperty, Action<Color> emissiveProperty, Action<Color> specularProperty, Action<float> specularPowerProperty, Action<string> diffuseTextureNameProperty, Action<string> normalTextureNameProperty, Action<Matrix> textureTransformProperty)
         {
             Properties["color"] = CreatePropertyFromDeclaration("color", "color", "Color", "Diffuse Color", typeof (Color), Color.White);
             Properties["emissive"] = CreatePropertyFromDeclaration("emissive", "emissive", "Emissive", "Emissive Color", typeof(Color), Color.Black);

@@ -17,7 +17,7 @@ namespace Protogame
             // and we need to map the transform to this object.
             if (editorQuery.Mode == EditorQueryMode.LoadingConfiguration)
             {
-                editorQuery.MapMatrix(this, x => this.LocalMatrix);
+                editorQuery.MapMatrix(this, x => this.LocalMatrix = x);
             }
         }
 

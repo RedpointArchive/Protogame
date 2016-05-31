@@ -20,7 +20,7 @@ namespace Protogame
                 RegisterPrivateComponent(_modelComponent);
 
                 var assetManager = assetManagerProvider.GetAssetManager();
-                editorQuery.MapMatrix(this, x => this.LocalMatrix);
+                editorQuery.MapMatrix(this, x => this.LocalMatrix = x);
 
                 var modelUri = editorQuery.GetRawResourceUris().FirstOrDefault();
                 if (modelUri != null)

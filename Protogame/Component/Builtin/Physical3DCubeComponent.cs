@@ -38,7 +38,17 @@ namespace Protogame
             }
         }
 
-        public bool Static => _rigidBody.IsStatic;
+        public bool Static
+        {
+            get { return _rigidBody.IsStatic; }
+            set { _rigidBody.IsStatic = value; }
+        }
+
+        public float Mass
+        {
+            get { return _rigidBody.Mass; }
+            set { _rigidBody.Mass = value; }
+        }
 
         private void CreateShapeFromCachedScale()
         {

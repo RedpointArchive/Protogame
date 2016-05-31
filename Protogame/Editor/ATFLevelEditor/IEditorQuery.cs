@@ -26,7 +26,16 @@ namespace Protogame.ATFLevelEditor
         /// </summary>
         /// <param name="object"></param>
         /// <param name="matrixProperty"></param>
-        void MapMatrix<TTarget>(TTarget @object, Expression<Func<T, Matrix>> matrixProperty) where TTarget : T, IHasMatrix;
+        void MapMatrix<TTarget>(TTarget @object, Action<Matrix> matrixProperty) where TTarget : T, IHasMatrix;
+
+        /// <summary>
+        /// Maps the scale of the object onto the specified property.  Often you will need to 
+        /// explicitly set the scale of physics components on entities, because they don't
+        /// automatically calculate their scale from their matrix.
+        /// </summary>
+        /// <param name="object">The object that's being mapped.</param>
+        /// <param name="setScale">The property to map scale onto.</param>
+        void MapScale(T @object, Action<Vector3> setScale);
 
         /// <summary>
         /// Maps the specified property as a custom property on the object.
@@ -36,9 +45,9 @@ namespace Protogame.ATFLevelEditor
         /// <param name="object">The object that's being mapped.</param>
         /// <param name="id">The ID of the property to use in level data.  Changing this will result in the data mapped against this ID in levels to no longer be loaded.</param>
         /// <param name="name">The name of the property to display in the editor.</param>
-        /// <param name="property">The property to map onto.</param>
+        /// <param name="setProperty"></param>
         /// <param name="default"></param>
-        void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Expression<Func<T, T2>> property, T2 @default) where TTarget : T;
+        void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Action<T2> setProperty, T2 @default) where TTarget : T;
 
         /// <summary>
         /// Declares that this object is a component which can be added to
@@ -79,13 +88,13 @@ namespace Protogame.ATFLevelEditor
         /// <param name="textureTransformProperty"></param>
         void MapStandardLightingModel(
             T @object,
-            Expression<Func<T, Color>> colorProperty,
-            Expression<Func<T, Color>> emissiveProperty,
-            Expression<Func<T, Color>> specularProperty,
-            Expression<Func<T, float>> specularPowerProperty,
-            Expression<Func<T, string>> diffuseTextureNameProperty,
-            Expression<Func<T, string>> normalTextureNameProperty,
-            Expression<Func<T, Matrix>> textureTransformProperty);
+            Action<Color> colorProperty,
+            Action<Color> emissiveProperty,
+            Action<Color> specularProperty,
+            Action<float> specularPowerProperty,
+            Action<string> diffuseTextureNameProperty,
+            Action<string> normalTextureNameProperty,
+            Action<Matrix> textureTransformProperty);
 
         /// <summary>
         /// Returns a list of raw resource URIs that are attached to this object.

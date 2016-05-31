@@ -20,7 +20,7 @@ namespace Protogame.ATFLevelEditor
             _element = element;
         }
 
-        public void MapMatrix<TTarget>(TTarget @object, Expression<Func<T, Matrix>> matrixProperty) where TTarget : T, IHasMatrix
+        public void MapMatrix<TTarget>(TTarget @object, Action<Matrix> matrixProperty) where TTarget : T, IHasMatrix
         {
             var transformRawValue =
                 _element.GetAttribute("transform").Split(' ')
@@ -34,14 +34,97 @@ namespace Protogame.ATFLevelEditor
                     matrixValue[i] = transformRawValue[i];
                 }
 
-                var memberSelectionExpession = matrixProperty.Body as MemberExpression;
-                var property = memberSelectionExpession?.Member as PropertyInfo;
-                property?.SetValue(@object, matrixValue);
+                matrixProperty(matrixValue);
             }
         }
 
-        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Expression<Func<T, T2>> property, T2 @default) where TTarget : T
+        public void MapScale(T @object, Action<Vector3> setScale)
         {
+            var scaleRawValue =
+                _element.GetAttribute("scale").Split(' ')
+                    .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
+                    .ToArray();
+            if (scaleRawValue.Length == 3)
+            {
+                var scaleValue = new Vector3(
+                    scaleRawValue[0],
+                    scaleRawValue[1],
+                    scaleRawValue[2]);
+
+                setScale(scaleValue);
+            }
+        }
+
+        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Action<T2> setProperty, T2 @default) where TTarget : T
+        {
+            var propertyRawValue = _element.GetAttribute(id);
+            object propertyValue = null;
+            if (typeof(T2) == typeof(int))
+            {
+                propertyValue = int.Parse(propertyRawValue);
+            }
+            else if (typeof(T2) == typeof(uint))
+            {
+                propertyValue = uint.Parse(propertyRawValue);
+            }
+            else if (typeof(T2) == typeof(float))
+            {
+                propertyValue = float.Parse(propertyRawValue);
+            }
+            else if (typeof(T2) == typeof(double))
+            {
+                propertyValue = double.Parse(propertyRawValue);
+            }
+            else if (typeof(T2) == typeof(string))
+            {
+                propertyValue = propertyRawValue;
+            }
+            else if (typeof(T2) == typeof(bool))
+            {
+                propertyValue = propertyRawValue == "true";
+            }
+            else if (typeof(T2) == typeof(Color))
+            {
+                var c = int.Parse(propertyRawValue);
+
+                var r = 0xFF000000 & c;
+                var g = 0x00FF0000 & c;
+                var b = 0x0000FF00 & c;
+                var a = 0x000000FF & c;
+
+                propertyValue = new Color(r, g, b, a);
+            }
+            else if (typeof(T2) == typeof(Vector3))
+            {
+                var c = propertyRawValue.Split(' ')
+                    .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
+                    .ToArray();
+
+                propertyValue = new Vector3(
+                    c[0],
+                    c[1],
+                    c[2]);
+            }
+            else if (typeof(T2) == typeof(Matrix))
+            {
+                var c = propertyRawValue.Split(' ')
+                    .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
+                    .ToArray();
+
+                var matrixValue = new Matrix();
+                for (var i = 0; i < 16; i++)
+                {
+                    matrixValue[i] = c[i];
+                }
+
+                propertyValue = matrixValue;
+            }
+            else
+            {
+                throw new NotSupportedException("Unable to load type " + typeof(T2).FullName + " from level data.");
+            }
+
+            setProperty((T2)propertyValue);
         }
 
         public void DeclareAsComponent(T @object)
@@ -68,9 +151,7 @@ namespace Protogame.ATFLevelEditor
         {
         }
 
-        public void MapStandardLightingModel(T @object, Expression<Func<T, Color>> colorProperty, Expression<Func<T, Color>> emissiveProperty,
-            Expression<Func<T, Color>> specularProperty, Expression<Func<T, float>> specularPowerProperty, Expression<Func<T, string>> diffuseTextureNameProperty,
-            Expression<Func<T, string>> normalTextureNameProperty, Expression<Func<T, Matrix>> textureTransformProperty)
+        public void MapStandardLightingModel(T @object, Action<Color> colorProperty, Action<Color> emissiveProperty, Action<Color> specularProperty, Action<float> specularPowerProperty, Action<string> diffuseTextureNameProperty, Action<string> normalTextureNameProperty, Action<Matrix> textureTransformProperty)
         {
         }
 
