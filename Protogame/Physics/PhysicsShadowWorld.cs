@@ -134,8 +134,6 @@ namespace Protogame
         {
             if (renderContext.IsCurrentRenderPass<IPhysicsDebugRenderPass>())
             {
-                var drawer = new PhysicsDebugDraw(renderContext.GraphicsDevice);
-
                 var world = renderContext.World;
                 renderContext.World = Matrix.Identity;
                 
@@ -150,6 +148,7 @@ namespace Protogame
                             kv.Key.EnableDebugDraw = true;
                         }
 
+                        var drawer = new PhysicsDebugDraw(renderContext.GraphicsDevice, !kv.Key.IsStaticOrInactive);
                         kv.Key.DebugDraw(drawer);
                     }
                 }

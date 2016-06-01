@@ -13,10 +13,12 @@ namespace Protogame
     public class PhysicsDebugDraw : IDebugDrawer
     {
         private readonly GraphicsDevice _graphicsDevice;
+        private readonly bool _isRigidBodyActive;
 
-        public PhysicsDebugDraw(GraphicsDevice graphicsDevice)
+        public PhysicsDebugDraw(GraphicsDevice graphicsDevice, bool isRigidBodyActive)
         {
             _graphicsDevice = graphicsDevice;
+            _isRigidBodyActive = isRigidBodyActive;
         }
 
         public void DrawLine(JVector start, JVector end)
@@ -35,9 +37,9 @@ namespace Protogame
                 PrimitiveType.TriangleList,
                 new[]
                 {
-                    new VertexPositionColor(pos1.ToXNAVector(), Color.Red), 
-                    new VertexPositionColor(pos2.ToXNAVector(), Color.Green),
-                    new VertexPositionColor(pos3.ToXNAVector(), Color.Blue)
+                    new VertexPositionColor(pos1.ToXNAVector(), _isRigidBodyActive ? Color.Red : Color.DarkRed), 
+                    new VertexPositionColor(pos2.ToXNAVector(), _isRigidBodyActive ? Color.Green : Color.DarkGreen),
+                    new VertexPositionColor(pos3.ToXNAVector(), _isRigidBodyActive ? Color.Blue : Color.DarkBlue)
                 },
                 0,
                 1);
