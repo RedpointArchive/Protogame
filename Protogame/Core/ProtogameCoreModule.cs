@@ -49,6 +49,10 @@ namespace Protogame
             kernel.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>();
             kernel.Bind<ICaptureCopyPostProcessingRenderPass>().To<DefaultCaptureCopyPostProcessingRenderPass>();
             kernel.Bind<ICaptureInlinePostProcessingRenderPass>().To<DefaultCaptureInlinePostProcessingRenderPass>();
+
+            kernel.Bind<ILightFactory>().ToFactory();
+            kernel.Bind<IStandardDirectionalLight>().To<DefaultStandardDirectionalLight>();
+            kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>();
         }
     }
 }

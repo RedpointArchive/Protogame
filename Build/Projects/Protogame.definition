@@ -374,6 +374,14 @@
     <Compile Include="Graphics\Legacy\LegacyRenderContext.cs" />
     <Compile Include="Graphics\Legacy\Protogame2DIoCModule.cs" />
     <Compile Include="Graphics\Legacy\Protogame3DIoCModule.cs" />
+    <Compile Include="Graphics\Lighting\DefaultLightContext.cs" />
+    <Compile Include="Graphics\Lighting\DefaultStandardDirectionalLight.cs" />
+    <Compile Include="Graphics\Lighting\DefaultStandardPointLight.cs" />
+    <Compile Include="Graphics\Lighting\ILight.cs" />
+    <Compile Include="Graphics\Lighting\ILightContext.cs" />
+    <Compile Include="Graphics\Lighting\ILightFactory.cs" />
+    <Compile Include="Graphics\Lighting\IStandardDirectionalLight.cs" />
+    <Compile Include="Graphics\Lighting\IStandardPointLight.cs" />
     <Compile Include="Graphics\RenderPipelineRenderContext.cs" />
     <Compile Include="Graphics\RenderPipelineTechniqueName.cs" />
     <Compile Include="Graphics\RenderPipelineWorldManager.cs" />
