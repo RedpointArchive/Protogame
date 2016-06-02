@@ -31,6 +31,8 @@ namespace Protogame
             }
         }
 
+        public string EffectTechniqueName { get { return RenderPipelineTechniqueName.Canvas; } }
+
         public Viewport Viewport
         {
             get

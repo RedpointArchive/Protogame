@@ -40,6 +40,15 @@ namespace Protogame
         bool IsPostProcessingPass { get; }
 
         /// <summary>
+        /// Sets the technique name that should be used when effects are used within this render pass.
+        /// Effects can have multiple techniques, each with different names.  When effects are pushed onto the 
+        /// render context, the technique that matches the name requested by the render pass is the one
+        /// selected for the effect.  This allows effects to be written that support both forward and
+        /// deferred rendering, which supply different techniques for each.
+        /// </summary>
+        string EffectTechniqueName { get; }
+
+        /// <summary>
         /// Begins the render pass.
         /// <para>
         /// During this method, the render pass implementation will configure the

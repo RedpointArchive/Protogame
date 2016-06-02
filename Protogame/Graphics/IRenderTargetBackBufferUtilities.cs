@@ -20,11 +20,32 @@ namespace Protogame
         RenderTarget2D UpdateRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext);
 
         /// <summary>
+        /// Given an existing (or null) render target, returns either the existing
+        /// render target, or disposes the existing render target and creates a new
+        /// one so that the returned render target matches the backbuffer size, with
+        /// a custom surface format and no depth buffer.
+        /// </summary>
+        /// <param name="renderTarget">The existing render target, which is either returned or disposed.</param>
+        /// <param name="gameContext">The current game context.</param>
+        /// <param name="surfaceFormat">The surface format to use.</param>
+        /// <returns>A render target that matches the backbuffer in size.</returns>
+        RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat surfaceFormat);
+
+        /// <summary>
         /// Returns whether the specified render target matches the backbuffer.
         /// </summary>
         /// <param name="renderTarget">The render target to check.</param>
         /// <param name="gameContext">The current game context.</param>
         /// <returns>Whether the specified render target matches the backbuffer.</returns>
         bool IsRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext);
+
+        /// <summary>
+        /// Returns whether the specified custom render target matches the backbuffer size and specified surface format.
+        /// </summary>
+        /// <param name="renderTarget">The render target to check.</param>
+        /// <param name="gameContext">The current game context.</param>
+        /// <param name="surfaceFormat">The surface format to use.</param>
+        /// <returns>Whether the specified render target matches the backbuffer size and specified surface format.</returns>
+        bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat surfaceFormat);
     }
 }

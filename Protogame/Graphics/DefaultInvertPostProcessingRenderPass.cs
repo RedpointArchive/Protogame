@@ -29,6 +29,8 @@ namespace Protogame
             get { return true; }
         }
 
+        public string EffectTechniqueName { get { return RenderPipelineTechniqueName.PostProcess; } }
+
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
             _graphicsBlit.Blit(renderContext, postProcessingSource, null, _invertEffect);

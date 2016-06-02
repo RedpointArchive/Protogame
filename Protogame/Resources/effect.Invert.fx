@@ -47,7 +47,7 @@ PixelShaderOutput DefaultPixelShader(VertexShaderOutput input)
 	return output;
 }
 
-technique
+technique RENDER_PASS_TYPE_POSTPROCESS
 {
 	pass
 	{

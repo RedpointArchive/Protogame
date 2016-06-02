@@ -31,6 +31,11 @@ namespace Protogame
             }
         }
 
+        public string EffectTechniqueName
+        {
+            get { return RenderPipelineTechniqueName.Batched2D; }
+        }
+
         public Viewport Viewport
         {
             get

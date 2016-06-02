@@ -23,6 +23,8 @@ namespace Protogame
             }
         }
 
+        public string EffectTechniqueName { get { return RenderPipelineTechniqueName.Direct2D; } }
+
         public Viewport Viewport
         {
             get;

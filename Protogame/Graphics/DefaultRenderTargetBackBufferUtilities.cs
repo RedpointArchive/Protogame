@@ -33,6 +33,29 @@ namespace Protogame
             return renderTarget;
         }
 
+        public RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat surfaceFormat)
+        {
+            if (IsCustomRenderTargetOutOfDate(renderTarget, gameContext, surfaceFormat))
+            {
+                if (renderTarget != null)
+                {
+                    renderTarget.Dispose();
+                }
+
+                renderTarget = new RenderTarget2D(
+                    gameContext.Graphics.GraphicsDevice,
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight,
+                    false,
+                    surfaceFormat,
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
+                    0,
+                    RenderTargetUsage.PreserveContents);
+            }
+
+            return renderTarget;
+        }
+
         public bool IsRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext)
         {
             if (renderTarget == null)
@@ -52,6 +75,38 @@ namespace Protogame
                 }
 
                 if (renderTarget.Format != gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat)
+                {
+                    return true;
+                }
+
+                if (renderTarget.DepthStencilFormat != gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat surfaceFormat)
+        {
+            if (renderTarget == null)
+            {
+                return true;
+            }
+            else
+            {
+                if (renderTarget.Width != gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth)
+                {
+                    return true;
+                }
+
+                if (renderTarget.Height != gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight)
+                {
+                    return true;
+                }
+
+                if (renderTarget.Format != surfaceFormat)
                 {
                     return true;
                 }

@@ -312,6 +312,13 @@ namespace Protogame
             // onto the stack and not having things render correctly.
             _renderContextImplementationUtilities.CopyMatricesToTargetEffect(this.m_Effects.Peek(), effect);
 
+            // Check if the effect has a technique whose name matches the current render pipeline pass'
+            // desired technique name.  If it does, set the current technique to that one.
+            if (effect.Techniques[CurrentRenderPass.EffectTechniqueName] != null)
+            {
+                effect.CurrentTechnique = effect.Techniques[CurrentRenderPass.EffectTechniqueName];
+            }
+
             this.m_Effects.Push(effect);
         }
 

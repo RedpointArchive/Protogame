@@ -375,6 +375,7 @@
     <Compile Include="Graphics\Legacy\Protogame2DIoCModule.cs" />
     <Compile Include="Graphics\Legacy\Protogame3DIoCModule.cs" />
     <Compile Include="Graphics\RenderPipelineRenderContext.cs" />
+    <Compile Include="Graphics\RenderPipelineTechniqueName.cs" />
     <Compile Include="Graphics\RenderPipelineWorldManager.cs" />
     <Compile Include="Graphics\Shader\ConstantBufferInfo.cs" />
     <Compile Include="Graphics\Shader\ParameterInfo.cs" />
@@ -388,6 +389,7 @@
     <Compile Include="Graphics\Shader\UnifiedShaderParserV1.cs" />
     <Compile Include="Graphics\Shader\UnifiedShaderParsingUnexpectedTokenException.cs" />
     <Compile Include="Graphics\Shader\UnifiedShaderVersionException.cs" />
+    <Compile Include="Graphics\Vertex\VertexPositionNormalColor.cs" />
     <Compile Include="ImageProcessing\DefaultColorInImageDetectionDebugRenderer.cs" />
     <Compile Include="ImageProcessing\IColorInImageDetection.cs" />
     <Compile Include="ImageProcessing\IColorInImageDetectionDebugRenderer.cs" />

@@ -29,7 +29,7 @@ struct PixelShaderOutput
 	float4 Color : PROTOGAME_TARGET(0);
 };
 
-VertexShaderOutput DefaultVertexShader(VertexShaderInput input)
+VertexShaderOutput ForwardVertexShader(VertexShaderInput input)
 {
     VertexShaderOutput output;
     
@@ -42,7 +42,7 @@ VertexShaderOutput DefaultVertexShader(VertexShaderInput input)
     return output;
 }
 
-PixelShaderOutput DefaultPixelShader(VertexShaderOutput input)
+PixelShaderOutput ForwardPixelShader(VertexShaderOutput input)
 {
 	PixelShaderOutput output;
 
@@ -51,11 +51,11 @@ PixelShaderOutput DefaultPixelShader(VertexShaderOutput input)
     return output;
 }
 
-technique
+technique RENDER_PASS_TYPE_FORWARD
 {
 	pass
 	{
-		VertexShader = compile PROTOGAME_VERTEX_LOW_SHADER DefaultVertexShader();
-		PixelShader = compile PROTOGAME_PIXEL_LOW_SHADER DefaultPixelShader();
+		VertexShader = compile PROTOGAME_VERTEX_LOW_SHADER ForwardVertexShader();
+		PixelShader = compile PROTOGAME_PIXEL_LOW_SHADER ForwardPixelShader();
 	}
 }

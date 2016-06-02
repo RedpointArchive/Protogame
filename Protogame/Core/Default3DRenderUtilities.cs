@@ -427,35 +427,35 @@ namespace Protogame
 
             var vertexes = new[]
             {
-                new VertexPositionColor(new Vector3(0, 0, 0), color),
-                new VertexPositionColor(new Vector3(0, 0, 1), color),
-                new VertexPositionColor(new Vector3(0, 1, 0), color),
-                new VertexPositionColor(new Vector3(0, 1, 1), color),
+                new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(-1, 0, 0), color),
+                new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(-1, 0, 0), color),
+                new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(-1, 0, 0), color),
+                new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(-1, 0, 0), color),
 
-                new VertexPositionColor(new Vector3(1, 0, 0), color),
-                new VertexPositionColor(new Vector3(1, 0, 1), color),
-                new VertexPositionColor(new Vector3(1, 1, 0), color),
-                new VertexPositionColor(new Vector3(1, 1, 1), color),
+                new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(1, 0, 0), color),
+                new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(1, 0, 0), color),
+                new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(1, 0, 0), color),
+                new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(1, 0, 0), color),
 
-                new VertexPositionColor(new Vector3(0, 0, 0), color),
-                new VertexPositionColor(new Vector3(0, 0, 1), color),
-                new VertexPositionColor(new Vector3(0, 1, 0), color),
-                new VertexPositionColor(new Vector3(0, 1, 1), color),
+                new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(0, -1, 0), color),
+                new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(0, -1, 0), color),
+                new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(0, 1, 0), color),
+                new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(0, 1, 0), color),
 
-                new VertexPositionColor(new Vector3(1, 0, 0), color),
-                new VertexPositionColor(new Vector3(1, 0, 1), color),
-                new VertexPositionColor(new Vector3(1, 1, 0), color),
-                new VertexPositionColor(new Vector3(1, 1, 1), color),
+                new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(0, -1, 0), color),
+                new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(0, -1, 0), color),
+                new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(0, 1, 0), color),
+                new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(0, 1, 0), color),
 
-                new VertexPositionColor(new Vector3(0, 0, 0), color),
-                new VertexPositionColor(new Vector3(0, 0, 1), color),
-                new VertexPositionColor(new Vector3(0, 1, 0), color),
-                new VertexPositionColor(new Vector3(0, 1, 1), color),
+                new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(0, 0, -1), color),
+                new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(0, 0, 1), color),
+                new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(0, 0, -1), color),
+                new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(0, 0, 1), color),
 
-                new VertexPositionColor(new Vector3(1, 0, 0), color),
-                new VertexPositionColor(new Vector3(1, 0, 1), color),
-                new VertexPositionColor(new Vector3(1, 1, 0), color),
-                new VertexPositionColor(new Vector3(1, 1, 1), color),
+                new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(0, 0, -1), color),
+                new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(0, 0, 1), color),
+                new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(0, 0, -1), color),
+                new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(0, 0, 1), color),
             };
 
             var indicies = new short[]

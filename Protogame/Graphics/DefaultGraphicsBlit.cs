@@ -33,7 +33,14 @@ namespace Protogame
             _blitEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Basic").Effect;
         }
 
-        public void Blit(IRenderContext renderContext, Texture2D source, RenderTarget2D destination = null, Effect shader = null, BlendState blendState = null)
+        public void Blit(
+            IRenderContext renderContext, 
+            Texture2D source, 
+            RenderTarget2D destination = null, 
+            Effect shader = null, 
+            BlendState blendState = null,
+            Vector2? offset = null,
+            Vector2? size = null)
         {
             float destWidth, destHeight;
             if (destination != null)
@@ -48,6 +55,9 @@ namespace Protogame
                 destWidth = renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth;
                 destHeight = renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight;
             }
+
+            offset = offset ?? new Vector2(0, 0);
+            size = size ?? new Vector2(1 - offset.Value.X, 1 - offset.Value.Y);
 
             if (blendState == null)
             {
@@ -83,18 +93,26 @@ namespace Protogame
             renderContext.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
             renderContext.World = Matrix.CreateScale(destWidth, destHeight, 1);
-#if PLATFORM_WINDOWS
-            renderContext.Projection = Matrix.CreateOrthographicOffCenter(0, destWidth, destHeight, 0, 0, 1);
-#else
-            renderContext.Projection = Matrix.CreateTranslation(-0.5f, -0.5f, 0) *
-                Matrix.CreateOrthographicOffCenter(0, destWidth, destHeight, 0, 0, 1);
+            renderContext.Projection =
+#if !PLATFORM_WINDOWS
+                Matrix.CreateTranslation(-0.5f, -0.5f, 0) *
 #endif
+                Matrix.CreateOrthographicOffCenter(
+                    destWidth * (-offset.Value.X / size.Value.X),
+                    destWidth * (-offset.Value.X / size.Value.X) + destWidth / size.Value.X, 
+                    destHeight * (-offset.Value.Y / size.Value.Y) + destHeight / size.Value.Y,
+                    destHeight * (-offset.Value.Y / size.Value.Y),
+                    0,
+                    1);
             renderContext.View = Matrix.Identity;
             
             renderContext.PushEffect(shader);
 
-            renderContext.EnableTextures();
-            renderContext.SetActiveTexture(source);
+            if (source != null)
+            {
+                renderContext.EnableTextures();
+                renderContext.SetActiveTexture(source);
+            }
 
             renderContext.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
             renderContext.GraphicsDevice.Indices = _indexBuffer;

@@ -17,10 +17,17 @@ namespace Protogame
 
         public Color Color { get; set; }
 
+        public EffectAsset Effect { get; set; }
+
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
+                if (Effect != null)
+                {
+                    renderContext.PushEffect(Effect.Effect);
+                }
+
                 var matrix = Matrix.Identity;
                 var matrixComponent = _node.Parent?.UntypedValue as IHasMatrix;
                 if (matrixComponent != null)
@@ -32,6 +39,11 @@ namespace Protogame
                     Matrix.CreateTranslation(-0.5f, -0.5f, -0.5f) *
                     matrix, 
                     Color);
+
+                if (Effect != null)
+                {
+                    renderContext.PopEffect();
+                }
             }
         }
     }

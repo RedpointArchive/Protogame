@@ -20,12 +20,6 @@ namespace Protogame
             _basicEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Color");
         }
 
-        public Viewport Viewport { get; set; }
-
-        public Matrix? Projection { get; set; }
-
-        public Matrix? View { get; set; }
-
         /// <summary>
         /// Gets a value indicating that this is not a post-processing render pass.
         /// </summary>
@@ -34,6 +28,8 @@ namespace Protogame
         {
             get { return false; }
         }
+
+        public string EffectTechniqueName { get { return RenderPipelineTechniqueName.Forward; } }
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {

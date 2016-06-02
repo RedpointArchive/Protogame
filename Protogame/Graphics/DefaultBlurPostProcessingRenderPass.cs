@@ -30,6 +30,8 @@ namespace Protogame
             get { return true; }
         }
 
+        public string EffectTechniqueName { get { return RenderPipelineTechniqueName.PostProcess; } }
+
         /// <summary>
         /// Gets or sets the number of blur iterations to apply.
         /// </summary>
