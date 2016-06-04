@@ -51,10 +51,7 @@
                 Console.Error.WriteLine("ERROR: Asset compilation is only supported on 64-bit machines.");
                 Environment.Exit(1);
             }
-
-            // Deploy the correct MojoShader DLL.
-            MojoShaderDeploy.Deploy();
-
+            
             switch (operation)
             {
                 case "remote":
@@ -120,10 +117,7 @@
                     "Linux",
                     "MacOSX",
                     "Ouya",
-                    "RaspberryPi",
                     "Windows",
-                    "WindowsPhone8",
-                    "WindowsStoreApp"
                 })
             {
                 Console.WriteLine("Starting compilation for " + platformName);
@@ -142,7 +136,16 @@
 
                 foreach (var asset in assetNames.Select(assetManager.GetUnresolved))
                 {
-                    assetCompiler.HandlePlatform(asset, platform, true);
+                    try
+                    {
+                        assetCompiler.HandlePlatform(asset, platform, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("ERROR: Unable to compile " + asset.Name + " for " + platform);
+                        Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
+                        continue;
+                    }
 
                     foreach (var saver in savers)
                     {

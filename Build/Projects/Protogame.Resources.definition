@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentProject Name="Protogame.Resources" ResourceType="EmbeddedResource">
+  <Source Include="Protogame.Resources" Match="*-Windows.bin" Platform="Windows" />
+  <Source Include="Protogame.Resources" Match="*-MacOSX.bin" Platform="MacOS" />
+  <Source Include="Protogame.Resources" Match="*-Linux.bin" Platform="Linux" />
+  <Source Include="Protogame.Resources" Match="*-Android.bin" Platform="Android" />
+  <Source Include="Protogame.Resources" Match="*-iOS.bin" Platform="iOS" />
+  <Source Include="Protogame.Resources" Match="*-Ouya.bin" Platform="Ouya" />
+</ContentProject>

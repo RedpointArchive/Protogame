@@ -3,7 +3,7 @@
   <Files>
     <Compile Include="Program.cs" />
     <Compile Include="GameActivity.cs">
-	  <Platforms>Android,Ouya</Platforms>
-	</Compile>
+      <Platforms>Android,Ouya</Platforms>
+    </Compile>
   </Files>
 </IncludeProject>

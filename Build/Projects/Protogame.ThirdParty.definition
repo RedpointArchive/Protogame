@@ -4,8 +4,6 @@
   <Platform Type="Windows">
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <NativeBinary Path="Protogame\libmojoshader_src_32.dll" />
-    <NativeBinary Path="Protogame\libmojoshader_src_64.dll" />
     <Binary Name="DirectShowLib-2005" Path="DirectShowLib\DirectShowLib-2005.dll" />
   </Platform>
 

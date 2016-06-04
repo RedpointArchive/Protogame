@@ -77,6 +77,7 @@ namespace ProtogameAssetTool
             return dir
                 .GetFiles("*.png")
                 .Concat(dir.GetFiles("*.fx"))
+                .Concat(dir.GetFiles("*.dae"))
                 .Concat(dir.GetFiles("*.asset"))
                 .Select(x => x.Name.Substring(0, x.Name.Length - x.Extension.Length))
                 .ToArray();
