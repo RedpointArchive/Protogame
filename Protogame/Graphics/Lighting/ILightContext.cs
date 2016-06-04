@@ -16,5 +16,11 @@ namespace Protogame
         Vector2 HalfPixel { get; }
 
         BlendState LightBlendState { get; }
+
+        RasterizerState RasterizerStateCullNone { get; }
+
+        RasterizerState RasterizerStateCullClockwiseFace { get; }
+
+        RasterizerState RasterizerStateCullCounterClockwiseFace { get; }
     }
 }

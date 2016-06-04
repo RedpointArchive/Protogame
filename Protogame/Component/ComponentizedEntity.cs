@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
@@ -25,7 +26,7 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Component</module>
-    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEntity
+    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IHasLights, IEntity
     {
         /// <summary>
         /// The component callable for handling updatable components.
@@ -43,6 +44,11 @@ namespace Protogame
         private IComponentCallable<IGameContext, IEventEngine<IGameContext>, Event, EventState> _handleEvent;
 
         /// <summary>
+        /// The component callable for retrieving lights defined by components.
+        /// </summary>
+        private IComponentCallable<List<ILight>> _getLights;
+
+        /// <summary>
         /// Initializes a new <see cref="ComponentizedEntity"/>.
         /// <para>
         /// Componentized entities are entities which automatically support the attachment
@@ -57,6 +63,7 @@ namespace Protogame
             _update = RegisterCallable<IUpdatableComponent, IGameContext, IUpdateContext>((t, g, u) => t.Update(this, g, u));
             _render = RegisterCallable<IRenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Render(this, g, r));
             _handleEvent = RegisterCallable<IEventfulComponent, IGameContext, IEventEngine<IGameContext>, Event, EventState>(EventCallback);
+            _getLights = RegisterCallable<ILightableComponent, List<ILight>>(GetLightCallback);
 
             RegisterPrivateComponent(this); // Register this as IHasMatrix.
         }
@@ -140,6 +147,28 @@ namespace Protogame
             /// Whether the event was consumed.
             /// </summary>
             public bool Consumed { get; set; }
+        }
+
+        /// <summary>
+        /// Returns lights defined on this entity and it's components.
+        /// </summary>
+        /// <returns>A list of lights to be used in rendering.</returns>
+        public virtual IEnumerable<ILight> GetLights()
+        {
+            var list = new List<ILight>();
+            _getLights.Invoke(list);
+            return list;
+        }
+
+        /// <summary>
+        /// Internally handles adding lights defined by a component to the list of lights
+        /// to return as part of <see cref="GetLights"/>.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="lightList"></param>
+        private void GetLightCallback(ILightableComponent component, List<ILight> lightList)
+        {
+            lightList.AddRange(component.GetLights());
         }
     }
 }

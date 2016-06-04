@@ -99,6 +99,16 @@ namespace Protogame
         public bool IsRendering { get; set; }
 
         /// <summary>
+        /// This property is unused in the legacy pipeline.
+        /// </summary>
+        public Vector3 CameraPosition { get; set; }
+
+        /// <summary>
+        /// This property is unused in the legacy pipeline.
+        /// </summary>
+        public Vector3 CameraLookAt { get; set; }
+
+        /// <summary>
         /// Gets or sets the projection matrix for 3D rendering.
         /// </summary>
         /// <value>

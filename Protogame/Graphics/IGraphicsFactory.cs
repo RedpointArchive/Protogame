@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using Microsoft.Xna.Framework.Graphics;
 using Protoinject;
 
 namespace Protogame
@@ -63,13 +64,21 @@ namespace Protogame
         /// </summary>
         /// <returns>A 2D render pass where canvases are rendered.</returns>
         ICanvasRenderPass CreateCanvasRenderPass();
+        
+        [Obsolete("Use Create3DForwardRenderPass instead.", true)]
+        I3DForwardRenderPass Create3DRenderPass();
 
         /// <summary>
-        /// Creates a render pass in which the view and projection matrixes
-        /// are configured if set in the render pass' settings.
+        /// Creates a render pass in which forward rendering is used.
         /// </summary>
         /// <returns>A 3D render pass.</returns>
-        I3DRenderPass Create3DRenderPass();
+        I3DForwardRenderPass Create3DForwardRenderPass();
+
+        /// <summary>
+        /// Creates a render pass in which deferred rendering is used.
+        /// </summary>
+        /// <returns>A 3D render pass.</returns>
+        I3DDeferredRenderPass Create3DDeferredRenderPass();
 
         /// <summary>
         /// Creates a render pass in which physics object state is displayed

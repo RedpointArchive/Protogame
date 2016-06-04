@@ -16,14 +16,15 @@
 #define RENDER_PASS_TYPE_CANVAS Canvas
 #define RENDER_PASS_TYPE_POSTPROCESS PostProcess
 
+// Declare macros to abstract shader models.
 #ifdef SM4
 #define PROTOGAME_VERTEX_HIGH_SHADER vs_4_0_level_9_3
 #define PROTOGAME_PIXEL_HIGH_SHADER ps_4_0_level_9_3
 #define PROTOGAME_VERTEX_LOW_SHADER vs_4_0_level_9_1
 #define PROTOGAME_PIXEL_LOW_SHADER ps_4_0_level_9_1
 #define PROTOGAME_POSITION SV_Position
-#define PROTOGAME_POSITION_INPUT SV_Position
-#define PROTOGAME_POSITION_STATE POSITION0
+#define PROTOGAME_POSITION_INPUT POSITION0
+#define PROTOGAME_POSITION_STATE SV_Position
 #define PROTOGAME_DEPTH DEPTH0
 #define PROTOGAME_TARGET(n) COLOR##n
 #define PROTOGAME_NORMAL(n) NORMAL##n
@@ -44,8 +45,8 @@
 #define PROTOGAME_SAMPLER_NAME(Name) Name##Sampler
 #define PROTOGAME_CUBEMAP_NAME(Name) Name##Sampler
 
-#define PROTOGAME_SAMPLE_TEXTURE(Name, texCoord)  Name.Sample(Name##Sampler, texCoord)
-#define PROTOGAME_SAMPLE_CUBEMAP(Name, texCoord)  Name.Sample(Name##Sampler, texCoord)
+#define PROTOGAME_SAMPLE_TEXTURE(Name, texCoord)  (Name.Sample(Name##Sampler, texCoord))
+#define PROTOGAME_SAMPLE_CUBEMAP(Name, texCoord)  (Name.Sample(Name##Sampler, texCoord))
 
 #else
 #define PROTOGAME_VERTEX_HIGH_SHADER vs_3_0
@@ -73,8 +74,7 @@
 #define PROTOGAME_SAMPLER_NAME(Name) Name
 #define PROTOGAME_CUBEMAP_NAME(Name) Name
 
-#define PROTOGAME_SAMPLE_TEXTURE(Name, texCoord)  tex2D(Name, texCoord)
-#define PROTOGAME_SAMPLE_CUBEMAP(Name, texCoord)  texCUBE(Name, texCoord)
+#define PROTOGAME_SAMPLE_TEXTURE(Name, texCoord)  (tex2D(Name, texCoord))
+#define PROTOGAME_SAMPLE_CUBEMAP(Name, texCoord)  (texCUBE(Name, texCoord))
 
 #endif
-

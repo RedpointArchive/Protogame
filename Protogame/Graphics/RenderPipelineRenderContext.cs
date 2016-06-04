@@ -39,6 +39,16 @@ namespace Protogame
         private BoundingFrustum m_BoundingFrustum;
 
         /// <summary>
+        /// Stores the last camera position.
+        /// </summary>
+        private Vector3? _lastCameraPosition;
+
+        /// <summary>
+        /// Stores the last camera look at vector.
+        /// </summary>
+        private Vector3? _lastCameraLookAt;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Protogame.RenderPipelineRenderContext"/> class.
         /// </summary>
         /// <param name="renderPipeline">The render pipeline shared with the <see cref="RenderPipelineWorldManager"/> instance.</param>
@@ -106,6 +116,62 @@ namespace Protogame
         /// like resizing the game window.
         /// </summary>
         public bool IsRendering { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last known camera position.  The value of this property is
+        /// set internally by cameras so that the camera position is known when lighting
+        /// effects are applied.  Setting this property from user code will not actually
+        /// update the camera position or modify projection parameters; it will only
+        /// impact the way lights are rendered.
+        /// </summary>
+        public Vector3 CameraPosition
+        {
+            get
+            {
+                if (_lastCameraPosition == null)
+                {
+                    throw new InvalidOperationException(
+                        "The camera position has not been set, which means this value has no " +
+                        "retrievable value.  Either use one of the builtin cameras (such as " +
+                        "IFirstPersonCamera), or set this property when you are configuring " +
+                        "the view matrix.");
+                }
+
+                return _lastCameraPosition.Value;
+            }
+            set
+            {
+                _lastCameraPosition = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the last known camera look at vector.  The value of this property is
+        /// set internally by cameras so that the camera look at vector is known when lighting
+        /// effects are applied.  Setting this property from user code will not actually
+        /// update the camera look at vector or modify projection parameters; it will only
+        /// impact the way lights are rendered.
+        /// </summary>
+        public Vector3 CameraLookAt
+        {
+            get
+            {
+                if (_lastCameraPosition == null)
+                {
+                    throw new InvalidOperationException(
+                        "The camera look at vector has not been set, which means this value has no " +
+                        "retrievable value.  Either use one of the builtin cameras (such as " +
+                        "IFirstPersonCamera), or set this property when you are configuring " +
+                        "the view matrix.");
+                }
+
+                return _lastCameraPosition.Value;
+            }
+            set
+            {
+                _lastCameraPosition = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the projection matrix for 3D rendering.

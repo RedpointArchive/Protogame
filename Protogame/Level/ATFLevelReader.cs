@@ -120,6 +120,14 @@ namespace Protogame
                     {
                         targetType = typeof (LocatorEntity);
                     }
+                    else if (xsiType == "DirLight")
+                    {
+                        targetType = typeof (DefaultDirectionalLightEntity);
+                    }
+                    else if (xsiType == "PointLight")
+                    {
+                        targetType = typeof (DefaultPointLightEntity);
+                    }
 
                     var qualifiedName = currentElement.GetAttribute("qualifiedName");
                     if (!string.IsNullOrEmpty(qualifiedName))

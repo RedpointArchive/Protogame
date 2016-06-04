@@ -17,22 +17,27 @@ namespace Protogame
         /// <param name="vertexDeclaration">The vertex declaration, usually the <c>VertexDeclaration</c> property on the original type.</param>
         /// <param name="mapping">The mapping function that maps vertices.</param>
         /// <returns>The model vertex mapping data.</returns>
-        public static ModelVertexMapping Create<TGPUVertex>(VertexDeclaration vertexDeclaration, Func<ModelVertex, TGPUVertex> mapping)
+        public static ModelVertexMapping Create<TGPUVertex>(Func<ModelVertex, TGPUVertex> mapping) where TGPUVertex : IVertexType
         {
             return new ModelVertexMapping(
                 i => mapping(i),
-                vertexDeclaration,
                 typeof(TGPUVertex));
         }
         
         private ModelVertexMapping(
-            Func<ModelVertex, object> mappingFunction,
-            VertexDeclaration vertexDeclaration,
+            Func<ModelVertex, IVertexType> mappingFunction,
             Type vertexType)
         {
             MappingFunction = mappingFunction;
-            VertexDeclaration = vertexDeclaration;
             VertexType = vertexType;
+
+            var temp = mappingFunction(new ModelVertex());
+            if (temp == null)
+            {
+                throw new InvalidOperationException("The GPU mapping function must not return null under any circumstances.");
+            }
+
+            VertexDeclaration = temp.VertexDeclaration;
         }
 
         public Func<ModelVertex, object> MappingFunction { get; } 

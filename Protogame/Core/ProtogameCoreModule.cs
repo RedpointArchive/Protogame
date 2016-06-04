@@ -38,21 +38,24 @@ namespace Protogame
             kernel.Bind<IRenderContextImplementationUtilities>()
                 .To<DefaultRenderContextImplementationUtilities>()
                 .InSingletonScope();
+            kernel.Bind<IModelRenderConfiguration>().To<DefaultModelRenderConfiguration>().InSingletonScope();
 
-            kernel.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>();
-            kernel.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>();
-            kernel.Bind<ICanvasRenderPass>().To<DefaultCanvasRenderPass>();
-            kernel.Bind<I3DRenderPass>().To<Default3DRenderPass>();
-            kernel.Bind<IPhysicsDebugRenderPass>().To<DefaultPhysicsDebugRenderPass>();
-            kernel.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>();
-            kernel.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>();
-            kernel.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>();
-            kernel.Bind<ICaptureCopyPostProcessingRenderPass>().To<DefaultCaptureCopyPostProcessingRenderPass>();
-            kernel.Bind<ICaptureInlinePostProcessingRenderPass>().To<DefaultCaptureInlinePostProcessingRenderPass>();
+            kernel.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>().AllowManyPerScope();
+            kernel.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>().AllowManyPerScope();
+            kernel.Bind<ICanvasRenderPass>().To<DefaultCanvasRenderPass>().AllowManyPerScope();
+            kernel.Bind<I3DRenderPass>().To<Default3DForwardRenderPass>().AllowManyPerScope();
+            kernel.Bind<I3DForwardRenderPass>().To<Default3DForwardRenderPass>().AllowManyPerScope();
+            kernel.Bind<I3DDeferredRenderPass>().To<Default3DDeferredRenderPass>().AllowManyPerScope();
+            kernel.Bind<IPhysicsDebugRenderPass>().To<DefaultPhysicsDebugRenderPass>().AllowManyPerScope();
+            kernel.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>().AllowManyPerScope();
+            kernel.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>().AllowManyPerScope();
+            kernel.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>().AllowManyPerScope();
+            kernel.Bind<ICaptureCopyPostProcessingRenderPass>().To<DefaultCaptureCopyPostProcessingRenderPass>().AllowManyPerScope();
+            kernel.Bind<ICaptureInlinePostProcessingRenderPass>().To<DefaultCaptureInlinePostProcessingRenderPass>().AllowManyPerScope();
 
             kernel.Bind<ILightFactory>().ToFactory();
-            kernel.Bind<IStandardDirectionalLight>().To<DefaultStandardDirectionalLight>();
-            kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>();
+            kernel.Bind<IStandardDirectionalLight>().To<DefaultStandardDirectionalLight>().AllowManyPerScope();
+            kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>().AllowManyPerScope();
         }
     }
 }

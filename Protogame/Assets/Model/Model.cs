@@ -241,24 +241,19 @@
                     "'effect.Skinned' for a basic model rendering effect.");
             }
 
-            if (!effectSemantic.HasSemantic<IBonesEffectSemantic>())
+            if (effectSemantic.HasSemantic<IBonesEffectSemantic>())
             {
-                throw new InvalidOperationException(
-                    "The current effect on the render context is " +
-                    "not a semantic effect that has an IBonesEffectSemantic.  " +
-                    "You can use 'effect.Skinned' for a basic model rendering effect.");
-            }
+                var bonesEffectSemantic = effectSemantic.GetSemantic<IBonesEffectSemantic>();
 
-            var bonesEffectSemantic = effectSemantic.GetSemantic<IBonesEffectSemantic>();
-
-            foreach (var bone in this._flattenedBones)
-            {
-                if (bone.ID == -1)
+                foreach (var bone in this._flattenedBones)
                 {
-                    continue;
-                }
+                    if (bone.ID == -1)
+                    {
+                        continue;
+                    }
 
-                bonesEffectSemantic.Bones[bone.ID] = bone.GetFinalMatrix();
+                    bonesEffectSemantic.Bones[bone.ID] = bone.GetFinalMatrix();
+                }
             }
 
             // Keep a copy of the current world transformation and then apply the

@@ -33,9 +33,9 @@ namespace Protogame
             return renderTarget;
         }
 
-        public RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat surfaceFormat)
+        public RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat)
         {
-            if (IsCustomRenderTargetOutOfDate(renderTarget, gameContext, surfaceFormat))
+            if (IsCustomRenderTargetOutOfDate(renderTarget, gameContext, surfaceFormat, depthFormat))
             {
                 if (renderTarget != null)
                 {
@@ -47,8 +47,8 @@ namespace Protogame
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight,
                     false,
-                    surfaceFormat,
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
+                    surfaceFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat,
+                    depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
                     0,
                     RenderTargetUsage.PreserveContents);
             }
@@ -88,7 +88,7 @@ namespace Protogame
             return false;
         }
 
-        public bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat surfaceFormat)
+        public bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat)
         {
             if (renderTarget == null)
             {
@@ -106,12 +106,12 @@ namespace Protogame
                     return true;
                 }
 
-                if (renderTarget.Format != surfaceFormat)
+                if (renderTarget.Format != (surfaceFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat))
                 {
                     return true;
                 }
 
-                if (renderTarget.DepthStencilFormat != gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat)
+                if (renderTarget.DepthStencilFormat != (depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat))
                 {
                     return true;
                 }

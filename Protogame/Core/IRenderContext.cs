@@ -61,6 +61,24 @@ namespace Protogame
         bool IsRendering { get; set; }
 
         /// <summary>
+        /// Gets or sets the last known camera position.  The value of this property is
+        /// set internally by cameras so that the camera position is known when lighting
+        /// effects are applied.  Setting this property from user code will not actually
+        /// update the camera position or modify projection parameters; it will only
+        /// impact the way lights are rendered.
+        /// </summary>
+        Vector3 CameraPosition { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last known camera look at vector.  The value of this property is
+        /// set internally by cameras so that the camera look at vector is known when lighting
+        /// effects are applied.  Setting this property from user code will not actually
+        /// update the camera look at vector or modify projection parameters; it will only
+        /// impact the way lights are rendered.
+        /// </summary>
+        Vector3 CameraLookAt { get; set; }
+
+        /// <summary>
         /// Gets or sets the projection matrix for 3D rendering.
         /// </summary>
         /// <value>

@@ -9,7 +9,7 @@ float4x4 Projection;
 
 float4 ShadowMapVertexShader(float4 vertexPosition : POSITION) : SV_POSITION
 {
-	float4x4 modelViewProjectionMatrix = mul(world, mul(view, proj));
+	float4x4 modelViewProjectionMatrix = mul(World, mul(View, Projection));
 	return mul(vertexPosition, modelViewProjectionMatrix);
 }
 

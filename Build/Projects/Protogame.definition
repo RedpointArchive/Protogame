@@ -139,6 +139,7 @@
     <Compile Include="Assets\Model\Animation.cs" />
     <Compile Include="Assets\Model\AnimationCollection.cs" />
     <Compile Include="Assets\Model\AnimationController.cs" />
+    <Compile Include="Assets\Model\DefaultModelRenderConfiguration.cs" />
     <Compile Include="Assets\Model\FbxReader.cs" />
     <Compile Include="Assets\Model\IAnimation.cs" />
     <Compile Include="Assets\Model\IAnimationCollection.cs" />
@@ -206,6 +207,8 @@
     <Compile Include="Component\Builtin\Render3DCubeComponent.cs" />
     <Compile Include="Component\Builtin\Render3DModelComponent.cs" />
     <Compile Include="Component\Builtin\Render3DPlaneComponent.cs" />
+    <Compile Include="Component\Builtin\StandardDirectionalLightComponent.cs" />
+    <Compile Include="Component\Builtin\StandardPointLightComponent.cs" />
     <Compile Include="Component\ComponentizedEntity.cs" />
     <Compile Include="Component\ComponentizedObject.cs">
       <AutoGen>True</AutoGen>
@@ -224,6 +227,7 @@
     <Compile Include="Component\IEventfulComponent.cs" />
     <Compile Include="Component\IHasComponent.cs" />
     <Compile Include="Component\IHierarchialComponent.cs" />
+    <Compile Include="Component\ILightableComponent.cs" />
     <Compile Include="Component\IRenderableComponent.cs" />
     <Compile Include="Component\IUpdatableComponent.cs" />
     <Compile Include="Compression\CRC.cs" />
@@ -294,6 +298,8 @@
     <Compile Include="Core\ProtogameCoreModule.cs" />
     <Compile Include="Core\ReloadableGameAssetManagerProvider.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
+    <Compile Include="Editor\ATFLevelEditor\DefaultDirectionalLightEntity.cs" />
+    <Compile Include="Editor\ATFLevelEditor\DefaultPointLightEntity.cs" />
     <Compile Include="Editor\ATFLevelEditor\EditorQueryMode.cs" />
     <Compile Include="Editor\ATFLevelEditor\IEditorQuery.cs" />
     <Compile Include="Editor\ATFLevelEditor\LoadingEditorQuery.cs" />
@@ -344,7 +350,8 @@
     <Compile Include="Extensions\VectorExtensions.cs" />
     <Compile Include="Graphics\Default2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\Default2DDirectRenderPass.cs" />
-    <Compile Include="Graphics\Default3DRenderPass.cs" />
+    <Compile Include="Graphics\Default3DDeferredRenderPass.cs" />
+    <Compile Include="Graphics\Default3DForwardRenderPass.cs" />
     <Compile Include="Graphics\DefaultBlurPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultCanvasRenderPass.cs" />
     <Compile Include="Graphics\DefaultCaptureCopyPostProcessingRenderPass.cs" />
@@ -356,6 +363,8 @@
     <Compile Include="Graphics\DefaultRenderTargetBackBufferUtilities.cs" />
     <Compile Include="Graphics\I2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\I2DDirectRenderPass.cs" />
+    <Compile Include="Graphics\I3DDeferredRenderPass.cs" />
+    <Compile Include="Graphics\I3DForwardRenderPass.cs" />
     <Compile Include="Graphics\I3DRenderPass.cs" />
     <Compile Include="Graphics\IBlurPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\ICanvasRenderPass.cs" />
@@ -377,6 +386,7 @@
     <Compile Include="Graphics\Lighting\DefaultLightContext.cs" />
     <Compile Include="Graphics\Lighting\DefaultStandardDirectionalLight.cs" />
     <Compile Include="Graphics\Lighting\DefaultStandardPointLight.cs" />
+    <Compile Include="Graphics\Lighting\IHasLights.cs" />
     <Compile Include="Graphics\Lighting\ILight.cs" />
     <Compile Include="Graphics\Lighting\ILightContext.cs" />
     <Compile Include="Graphics\Lighting\ILightFactory.cs" />
@@ -655,33 +665,6 @@
       <LastGenOutput>IComponentCallable.cs</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Assets\Effect\Macros.fx" />
-    <EmbeddedResource Include="Resources\effect.Basic-Android.bin">
-      <Platforms>Android</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Basic-iOS.bin">
-      <Platforms>iOS</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Basic-Linux.bin">
-      <Platforms>Linux</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Basic-MacOSX.bin">
-      <Platforms>MacOS</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Basic-Ouya.bin">
-      <Platforms>Ouya</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Basic-RaspberryPi.bin">
-      <Platforms>RaspberryPi</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Basic-Windows.bin">
-      <Platforms>Windows</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Basic-WindowsPhone8.bin">
-      <Platforms>WindowsPhone</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Basic-WindowsStoreApp.bin">
-      <Platforms>Windows8</Platforms>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\effect.Blur-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
@@ -727,6 +710,33 @@
     <EmbeddedResource Include="Resources\effect.Color-RaspberryPi.bin">
       <Platforms>RaspberryPi</Platforms>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-Windows.bin">
+      <Platforms>Windows</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-WindowsPhone8.bin">
+      <Platforms>WindowsPhone</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.ColorSkinned-WindowsStoreApp.bin">
+      <Platforms>Windows8</Platforms>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\effect.Color-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
@@ -763,58 +773,58 @@
     <EmbeddedResource Include="Resources\effect.Invert-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-Android.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-Android.bin">
       <Platforms>Android</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-Android.bin">
-      <Platforms>Android</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-iOS.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-iOS.bin">
       <Platforms>iOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-Linux.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-Linux.bin">
       <Platforms>Linux</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-MacOSX.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-MacOSX.bin">
       <Platforms>MacOS</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-Ouya.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-Ouya.bin">
       <Platforms>Ouya</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-RaspberryPi.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-RaspberryPi.bin">
       <Platforms>RaspberryPi</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-Windows.bin">
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-Android.bin">
+      <Platforms>Android</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-iOS.bin">
+      <Platforms>iOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-Linux.bin">
+      <Platforms>Linux</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-MacOSX.bin">
+      <Platforms>MacOS</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-Ouya.bin">
+      <Platforms>Ouya</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-RaspberryPi.bin">
+      <Platforms>RaspberryPi</Platforms>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-WindowsPhone8.bin">
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.SkinnedColor-WindowsStoreApp.bin">
+    <EmbeddedResource Include="Resources\effect.TextureSkinned-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-iOS.bin">
-      <Platforms>iOS</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-Linux.bin">
-      <Platforms>Linux</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-MacOSX.bin">
-      <Platforms>MacOS</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-Ouya.bin">
-      <Platforms>Ouya</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-RaspberryPi.bin">
-      <Platforms>RaspberryPi</Platforms>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-Windows.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-Windows.bin">
       <Platforms>Windows</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-WindowsPhone8.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-WindowsPhone8.bin">
       <Platforms>WindowsPhone</Platforms>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\effect.Skinned-WindowsStoreApp.bin">
+    <EmbeddedResource Include="Resources\effect.Texture-WindowsStoreApp.bin">
       <Platforms>Windows8</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\font.Default-Android.bin">
@@ -857,12 +867,12 @@
       <Platforms>Xbox360</Platforms>
     </EmbeddedResource>
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
-    <None Include="Resources\effect.Basic.fx" />
     <None Include="Resources\effect.Blur.fx" />
     <None Include="Resources\effect.Color.fx" />
+    <None Include="Resources\effect.ColorSkinned.fx" />
     <None Include="Resources\effect.Invert.fx" />
-    <None Include="Resources\effect.Skinned.fx" />
-    <None Include="Resources\effect.SkinnedColor.fx" />
+    <None Include="Resources\effect.Texture.fx" />
+    <None Include="Resources\effect.TextureSkinned.fx" />
     <None Include="Resources\font.Default.asset" />
     <None Include="Scripting\LogicControl\Grammar.grm" />
     <None Include="Scripting\LogicControl\LogicBuiltins.tt">

@@ -29,7 +29,7 @@ namespace Protogame
         /// <param name="gameContext">The current game context.</param>
         /// <param name="surfaceFormat">The surface format to use.</param>
         /// <returns>A render target that matches the backbuffer in size.</returns>
-        RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat surfaceFormat);
+        RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat);
 
         /// <summary>
         /// Returns whether the specified render target matches the backbuffer.
@@ -46,6 +46,6 @@ namespace Protogame
         /// <param name="gameContext">The current game context.</param>
         /// <param name="surfaceFormat">The surface format to use.</param>
         /// <returns>Whether the specified render target matches the backbuffer size and specified surface format.</returns>
-        bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat surfaceFormat);
+        bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat);
     }
 }

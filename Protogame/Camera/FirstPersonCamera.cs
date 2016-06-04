@@ -23,6 +23,8 @@ namespace Protogame
             var aspectRatio = viewport.BackBufferWidth / viewport.BackBufferHeight;
 
             up = up ?? Vector3.Up;
+            renderContext.CameraPosition = position;
+            renderContext.CameraLookAt = lookAt;
             renderContext.View = Matrix.CreateLookAt(position, lookAt, up.Value);
             renderContext.Projection = Matrix.CreatePerspective(
                 fieldOfView,

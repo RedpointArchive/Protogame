@@ -37,9 +37,9 @@ namespace Protogame
                 PrimitiveType.TriangleList,
                 new[]
                 {
-                    new VertexPositionColor(pos1.ToXNAVector(), _isRigidBodyActive ? Color.Red : Color.DarkRed), 
-                    new VertexPositionColor(pos2.ToXNAVector(), _isRigidBodyActive ? Color.Green : Color.DarkGreen),
-                    new VertexPositionColor(pos3.ToXNAVector(), _isRigidBodyActive ? Color.Blue : Color.DarkBlue)
+                    new VertexPositionNormalColor(pos1.ToXNAVector(), Vector3.Zero, _isRigidBodyActive ? Color.Red : Color.DarkRed), 
+                    new VertexPositionNormalColor(pos2.ToXNAVector(), Vector3.Zero, _isRigidBodyActive ? Color.Green : Color.DarkGreen),
+                    new VertexPositionNormalColor(pos3.ToXNAVector(), Vector3.Zero, _isRigidBodyActive ? Color.Blue : Color.DarkBlue)
                 },
                 0,
                 1);
