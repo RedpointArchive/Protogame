@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Protogame
@@ -22,6 +23,7 @@ namespace Protogame
         {
             var gamepadEvent = @event as GamePadEvent;
             var keyHeldEvent = @event as KeyHeldEvent;
+            var mouseEvent = @event as MouseEvent;
 
             if (gamepadEvent != null)
             {
@@ -40,55 +42,46 @@ namespace Protogame
 
                 componentizedEntity.LocalMatrix *= Matrix.CreateTranslation(absoluteMovementVector);
 
+                Console.WriteLine("FPS: gamepad");
+
+                return true;
+            }
+
+            if (mouseEvent != null)
+            {
+                var centerX = gameContext.Window.ClientBounds.Width/2;
+                var centerY = gameContext.Window.ClientBounds.Height/2;
+
+                _firstPersonCameraComponent.Yaw += (centerX - mouseEvent.MouseState.X) / 1000f;
+                _firstPersonCameraComponent.Pitch += (centerY - mouseEvent.MouseState.Y) / 1000f;
+
+                Mouse.SetPosition(centerX, centerY);
+
                 return true;
             }
 
             if (keyHeldEvent != null)
             {
                 var didConsume = false;
-                if (keyHeldEvent.Key == Keys.A)
-                {
-                    _firstPersonCameraComponent.Yaw -= -1 * ThumbstickLookSensitivity;
-                    didConsume = true;
-                }
-                if (keyHeldEvent.Key == Keys.D)
-                {
-                    _firstPersonCameraComponent.Yaw -= 1 * ThumbstickLookSensitivity;
-                    didConsume = true;
-                }
-                if (keyHeldEvent.Key == Keys.W)
-                {
-                    _firstPersonCameraComponent.Pitch += -1 * ThumbstickLookSensitivity;
-                    didConsume = true;
-                }
-                if (keyHeldEvent.Key == Keys.S)
-                {
-                    _firstPersonCameraComponent.Pitch += 1 * ThumbstickLookSensitivity;
-                    didConsume = true;
-                }
-
-                var limit = MathHelper.PiOver2 - MathHelper.ToRadians(5);
-                _firstPersonCameraComponent.Pitch = MathHelper.Clamp(_firstPersonCameraComponent.Pitch, -limit, limit);
-
                 var moveX = 0;
                 var moveZ = 0;
 
-                if (keyHeldEvent.Key == Keys.Left)
+                if (keyHeldEvent.Key == Keys.A)
                 {
                     moveX = -1;
                     didConsume = true;
                 }
-                if (keyHeldEvent.Key == Keys.Right)
+                if (keyHeldEvent.Key == Keys.D)
                 {
                     moveX = 1;
                     didConsume = true;
                 }
-                if (keyHeldEvent.Key == Keys.Up)
+                if (keyHeldEvent.Key == Keys.W)
                 {
                     moveZ = 1;
                     didConsume = true;
                 }
-                if (keyHeldEvent.Key == Keys.Down)
+                if (keyHeldEvent.Key == Keys.S)
                 {
                     moveZ = -1;
                     didConsume = true;
