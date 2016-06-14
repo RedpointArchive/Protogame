@@ -46,21 +46,13 @@ namespace Protogame
                 {
                     return;
                 }
-
-                //var finalMatrix = this.GetFinalMatrix();
-
+                
+                var lookAtLocal = HeadOffset + Vector3.Transform(Vector3.Forward, Transform.LocalMatrix);
                 _firstPersonCamera.Apply(
                     renderContext,
                     Vector3.Transform(HeadOffset, parentFinalTransform.AbsoluteMatrix),
-                    Vector3.Transform(HeadOffset, parentFinalTransform.AbsoluteMatrix) + Vector3.Transform(Vector3.Forward, Transform.LocalMatrix));
-
-                /*
-                _firstPersonCamera.Apply(
-                    renderContext,
-                    Vector3.Transform(HeadOffset, finalMatrix),
-                    Vector3.Transform(HeadOffset, finalMatrix) + (Vector3.Transform(Vector3.Forward, finalMatrix) - Vector3.Transform(Vector3.Zero, finalMatrix)),
-                    Vector3.Transform(Vector3.Up, finalMatrix) - Vector3.Transform(Vector3.Zero, finalMatrix));
-                    */
+                    Vector3.Transform(lookAtLocal, parentFinalTransform.AbsoluteMatrix),
+                    Vector3.Transform(Vector3.Up, parentFinalTransform.AbsoluteMatrix) - Vector3.Transform(Vector3.Zero, parentFinalTransform.AbsoluteMatrix));
             }
         }
 
@@ -74,7 +66,7 @@ namespace Protogame
             }
             set
             {
-                throw new NotSupportedException("Configure the local matrix of a FirstPersonCameraComponent by using the Pitch, Yaw and Roll properties.");
+                throw new NotSupportedException("Configure the transform of a FirstPersonCameraComponent by using the Pitch, Yaw and Roll properties.");
             }
         }
 

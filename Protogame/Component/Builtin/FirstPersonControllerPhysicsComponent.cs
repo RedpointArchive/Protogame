@@ -132,8 +132,6 @@ namespace Protogame
 
             public override void PrepareForIteration(float timestep)
             {
-                Console.WriteLine("physics: prepare for iteration");
-
                 RigidBody resultingBody = null;
                 JVector normal;
                 float frac;
@@ -157,7 +155,6 @@ namespace Protogame
             
             public override void Iterate()
             {
-                Console.WriteLine("physics: iterate");
                 _deltaVelocity = TargetVelocity - Body1.LinearVelocity;
                 _deltaVelocity.Y = 0.0f;
 
