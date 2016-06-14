@@ -61,10 +61,10 @@ namespace Protogame
                 if (Model != null)
                 {
                     var matrix = Matrix.Identity;
-                    var matrixComponent = _node.Parent?.UntypedValue as IHasMatrix;
+                    var matrixComponent = _node.Parent?.UntypedValue as IHasTransform;
                     if (matrixComponent != null)
                     {
-                        matrix *= matrixComponent.GetFinalMatrix();
+                        matrix *= matrixComponent.FinalTransform.AbsoluteMatrix;
                     }
                     
                     if (_lastCachedModel != Model)

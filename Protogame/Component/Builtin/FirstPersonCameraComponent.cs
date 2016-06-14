@@ -4,7 +4,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class FirstPersonCameraComponent : IRenderableComponent, IHasMatrix
+    public class FirstPersonCameraComponent : IRenderableComponent, IHasTransform
     {
         private readonly INode _node;
 
@@ -14,7 +14,7 @@ namespace Protogame
         {
             _node = node;
             _firstPersonCamera = firstPersonCamera;
-            HeadOffset = new Vector3(0, 5f, 0);
+            HeadOffset = new Vector3(0, 0, 0);
         }
 
         /// <summary>
@@ -41,21 +41,36 @@ namespace Protogame
         {
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
-                var finalMatrix = entity.GetFinalMatrix();
+                var parentFinalTransform = (_node?.Parent?.UntypedValue as IHasTransform)?.FinalTransform;
+                if (parentFinalTransform == null)
+                {
+                    return;
+                }
+
+                //var finalMatrix = this.GetFinalMatrix();
 
                 _firstPersonCamera.Apply(
                     renderContext,
+                    Vector3.Transform(HeadOffset, parentFinalTransform.AbsoluteMatrix),
+                    Vector3.Transform(HeadOffset, parentFinalTransform.AbsoluteMatrix) + Vector3.Transform(Vector3.Forward, Transform.LocalMatrix));
+
+                /*
+                _firstPersonCamera.Apply(
+                    renderContext,
                     Vector3.Transform(HeadOffset, finalMatrix),
-                    Vector3.Transform(HeadOffset, finalMatrix) + Vector3.Transform(Vector3.Forward, LocalMatrix));
+                    Vector3.Transform(HeadOffset, finalMatrix) + (Vector3.Transform(Vector3.Forward, finalMatrix) - Vector3.Transform(Vector3.Zero, finalMatrix)),
+                    Vector3.Transform(Vector3.Up, finalMatrix) - Vector3.Transform(Vector3.Zero, finalMatrix));
+                    */
             }
         }
 
-        public Matrix LocalMatrix
+        public ITransform Transform
         {
             get
             {
-                return
-                    Matrix.CreateFromYawPitchRoll(Yaw, Pitch, Roll);
+                var transform = new DefaultTransform();
+                transform.SetFromCustomMatrix(Matrix.CreateFromYawPitchRoll(Yaw, Pitch, Roll));
+                return transform;
             }
             set
             {
@@ -63,9 +78,9 @@ namespace Protogame
             }
         }
 
-        public Matrix GetFinalMatrix()
+        public IFinalTransform FinalTransform
         {
-            return this.GetDefaultFinalMatrixImplementation(_node);
+            get { return this.GetAttachedFinalTransformImplementation(_node); }
         }
     }
 }

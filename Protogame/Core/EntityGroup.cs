@@ -17,15 +17,15 @@ namespace Protogame
             // and we need to map the transform to this object.
             if (editorQuery.Mode == EditorQueryMode.LoadingConfiguration)
             {
-                editorQuery.MapMatrix(this, x => this.LocalMatrix = x);
+                editorQuery.MapTransform(this, x => this.Transform = x);
             }
         }
 
-        public Matrix LocalMatrix { get; set; }
+        public ITransform Transform { get; set; }
 
-        public Matrix GetFinalMatrix()
+        public IFinalTransform FinalTransform
         {
-            return this.GetDefaultFinalMatrixImplementation(_node);
+            get { return this.GetAttachedFinalTransformImplementation(_node); }
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)

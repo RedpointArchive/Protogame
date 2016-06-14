@@ -10,7 +10,7 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Core API</module>
-    public interface IEntity : IHasMatrix
+    public interface IEntity : IHasTransform
     {
         /// <summary>
         /// Called by the <see cref="IWorldManager"/> when it's time for this entity to be

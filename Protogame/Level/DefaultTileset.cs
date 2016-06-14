@@ -126,11 +126,11 @@ namespace Protogame
             }
         }
 
-        public Matrix LocalMatrix { get; set; }
+        public ITransform Transform { get; set; }
 
-        public Matrix GetFinalMatrix()
+        public IFinalTransform FinalTransform
         {
-            return LocalMatrix;
+            get { return this.GetDetachedFinalTransformImplementation(); }
         }
     }
 }

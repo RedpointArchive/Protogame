@@ -34,13 +34,13 @@ namespace Protogame
         {
             get
             {
-                return new Vector2(this.Entity.LocalMatrix.Translation.X, this.Entity.LocalMatrix.Translation.Y);
+                return new Vector2(this.Entity.Transform.LocalPosition.X, this.Entity.Transform.LocalPosition.Y);
             }
 
             set
             {
-                this.Entity.LocalMatrix *= Matrix.CreateTranslation(
-                    new Vector3(value.X, value.Y, 0) - this.Entity.LocalMatrix.Translation);
+                this.Entity.Transform.LocalPosition += 
+                    new Vector3(value.X, value.Y, 0) - this.Entity.Transform.LocalPosition;
             }
         }
 
@@ -92,7 +92,7 @@ namespace Protogame
         public bool CanSee(IGameContext gameContext, IEntity other)
         {
             // Agents can't see behind themselves.
-            if (this.Unproject(new Vector2(other.LocalMatrix.Translation.X, other.LocalMatrix.Translation.Y)).X < 0)
+            if (this.Unproject(new Vector2(other.Transform.LocalPosition.X, other.Transform.LocalPosition.Y)).X < 0)
             {
                 return false;
             }
@@ -103,7 +103,7 @@ namespace Protogame
             float? closestIntersection;
             if (this.Raycast(
                 gameContext,
-                new Vector2(other.LocalMatrix.Translation.X, other.LocalMatrix.Translation.Y) - this.Position,
+                new Vector2(other.Transform.LocalPosition.X, other.Transform.LocalPosition.Y) - this.Position,
                 out closestEntity,
                 out closestIntersection,
                 out collisionPoint))
@@ -189,7 +189,7 @@ namespace Protogame
 
             var matrix = Matrix.Identity;
             matrix *= Matrix.CreateRotationY(-(float)Math.Atan2(heading.Value.Y, heading.Value.X));
-            matrix *= Matrix.CreateTranslation(new Vector3(this.Entity.LocalMatrix.Translation.X, 0, this.Entity.LocalMatrix.Translation.Y));
+            matrix *= Matrix.CreateTranslation(new Vector3(this.Entity.Transform.LocalPosition.X, 0, this.Entity.Transform.LocalPosition.Y));
 
             var projected = Vector3.Transform(new Vector3(local.X, 0, local.Y), matrix);
             return new Vector2(projected.X, projected.Z);
@@ -254,7 +254,7 @@ namespace Protogame
             heading = heading ?? this.Heading;
 
             var matrix = Matrix.Identity;
-            matrix *= Matrix.CreateTranslation(new Vector3(-this.Entity.LocalMatrix.Translation.X, 0, -this.Entity.LocalMatrix.Translation.Y));
+            matrix *= Matrix.CreateTranslation(new Vector3(-this.Entity.Transform.LocalPosition.X, 0, -this.Entity.Transform.LocalPosition.Y));
             matrix *= Matrix.CreateRotationY((float)Math.Atan2(heading.Value.Y, heading.Value.X));
 
             var unprojected = Vector3.Transform(new Vector3(world.X, 0, world.Y), matrix);
@@ -347,7 +347,7 @@ namespace Protogame
         private Vector2 UnprojectFeeler(Vector2 world, Vector2 feeler)
         {
             var matrix = Matrix.Identity;
-            matrix *= Matrix.CreateTranslation(new Vector3(-this.Entity.LocalMatrix.Translation.X, 0, -this.Entity.LocalMatrix.Translation.Y));
+            matrix *= Matrix.CreateTranslation(new Vector3(-this.Entity.Transform.LocalPosition.X, 0, -this.Entity.Transform.LocalPosition.Y));
             matrix *= Matrix.CreateRotationY((float)Math.Atan2(this.Heading.Y, this.Heading.X));
             matrix *= Matrix.CreateRotationY((float)Math.Atan2(feeler.Y, feeler.X));
 

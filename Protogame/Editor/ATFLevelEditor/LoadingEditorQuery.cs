@@ -11,20 +11,54 @@ namespace Protogame.ATFLevelEditor
 {
     public class LoadingEditorQuery<T> : IEditorQuery<T> where T : IEntity
     {
+        private readonly ITransformUtilities _transformUtilities;
         private readonly XmlElement _element;
 
         public EditorQueryMode Mode => EditorQueryMode.LoadingConfiguration;
 
-        public LoadingEditorQuery(XmlElement element)
+        public LoadingEditorQuery(ITransformUtilities transformUtilities, XmlElement element)
         {
+            _transformUtilities = transformUtilities;
             _element = element;
         }
 
-        public void MapMatrix<TTarget>(TTarget @object, Action<Matrix> matrixProperty) where TTarget : T, IHasMatrix
+        public void MapTransform<TTarget>(TTarget @object, Action<ITransform> setTransform) where TTarget : T, IHasTransform
         {
+            var scaleRawValue =
+                _element.GetAttribute("scale").Split(' ')
+                    .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
+                    .ToArray();
+            var rotateRawValue =
+                _element.GetAttribute("rotate").Split(' ')
+                    .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
+                    .ToArray();
+            var translateRawValue =
+                _element.GetAttribute("translate").Split(' ')
+                    .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
+                    .ToArray();
+            if (scaleRawValue.Length == 3 && rotateRawValue.Length == 3 && translateRawValue.Length == 3)
+            {
+                var scaleValue = new Vector3(
+                    scaleRawValue[0],
+                    scaleRawValue[1],
+                    scaleRawValue[2]);
+                var rotateValue = (
+                    Matrix.CreateRotationX(rotateRawValue[0]) *
+                    Matrix.CreateRotationX(rotateRawValue[1]) *
+                    Matrix.CreateRotationX(rotateRawValue[2])).Rotation;
+                var translateValue = new Vector3(
+                    translateRawValue[0],
+                    translateRawValue[1],
+                    translateRawValue[2]);
+                var transform = _transformUtilities.CreateFromSRTMatrix(scaleValue, rotateValue, translateValue);
+                setTransform(transform);
+
+                return;
+            }
+
             var transformRawValue =
                 _element.GetAttribute("transform").Split(' ')
-                    .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
+                 .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
                     .ToArray();
             if (transformRawValue.Length == 16)
             {
@@ -34,24 +68,8 @@ namespace Protogame.ATFLevelEditor
                     matrixValue[i] = transformRawValue[i];
                 }
 
-                matrixProperty(matrixValue);
-            }
-        }
-
-        public void MapScale(T @object, Action<Vector3> setScale)
-        {
-            var scaleRawValue =
-                _element.GetAttribute("scale").Split(' ')
-                    .Select(x => float.Parse(x, CultureInfo.InvariantCulture))
-                    .ToArray();
-            if (scaleRawValue.Length == 3)
-            {
-                var scaleValue = new Vector3(
-                    scaleRawValue[0],
-                    scaleRawValue[1],
-                    scaleRawValue[2]);
-
-                setScale(scaleValue);
+                var transform = _transformUtilities.CreateFromCustomMatrix(matrixValue);
+                setTransform(transform);
             }
         }
 

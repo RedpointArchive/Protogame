@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Jitter;
 using Jitter.Dynamics;
-using Protoinject;
 
 namespace Protogame
 {
@@ -34,14 +30,19 @@ namespace Protogame
             _shadowWorld.Update(gameContext, updateContext);
         }
 
-        public void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasMatrix hasMatrix)
+        public void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform)
         {
-            _shadowWorld.RegisterRigidBodyForHasMatrix(rigidBody, hasMatrix);
+            _shadowWorld.RegisterRigidBodyForHasMatrix(rigidBody, hasTransform);
         }
 
         public void DebugRender(IGameContext gameContext, IRenderContext renderContext)
         {
             _shadowWorld.Render(gameContext, renderContext);
+        }
+
+        public JitterWorld GetInternalPhysicsWorld()
+        {
+            return _shadowWorld.GetJitterWorld();
         }
     }
 }

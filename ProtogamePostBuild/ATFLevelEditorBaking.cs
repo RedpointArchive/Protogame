@@ -109,7 +109,7 @@ namespace ProtogamePostBuild
                                     case DeclaredAs.Component:
                                         Console.WriteLine("Found editable component: " + type.FullName);
                                         nativeTypeName = type.FullName.Replace(".", "_").Replace("?", "") + "_NativeComponent";
-                                        if (bakingEditorQuery.HasMatrix)
+                                        if (bakingEditorQuery.HasTransform)
                                         {
                                             xsdBaseTypeName = "transformComponentType";
                                         }
@@ -147,7 +147,7 @@ namespace ProtogamePostBuild
                                 protogameInfo.SetAttribute("IconAbsolutePath", bakingEditorQuery.IconAbsolutePath ?? string.Empty);
                                 protogameInfo.SetAttribute("CanContainComponents", bakingEditorQuery.CanContainComponents.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("CanContainEntities", bakingEditorQuery.CanContainEntities.ToString(CultureInfo.InvariantCulture));
-                                protogameInfo.SetAttribute("HasMatrix", bakingEditorQuery.HasMatrix.ToString(CultureInfo.InvariantCulture));
+                                protogameInfo.SetAttribute("HasTransform", bakingEditorQuery.HasTransform.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("QualifiedName", type.AssemblyQualifiedName);
 
                                 // If an icon path is specified, we must read the icon data and base64-encode it.

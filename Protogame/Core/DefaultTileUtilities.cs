@@ -44,7 +44,7 @@ namespace Protogame
         public void InitializeTile(ITileEntity entity, string tilesetAssetName)
         {
             entity.Tileset = this.m_AssetManager.Get<TilesetAsset>(tilesetAssetName);
-            entity.LocalMatrix *= Matrix.CreateScale(entity.Tileset.CellWidth, entity.Tileset.CellHeight, 1);
+            entity.Transform.LocalScale *= new Vector3(entity.Tileset.CellWidth, entity.Tileset.CellHeight, 1);
             entity.Width = entity.Tileset.CellWidth;
             entity.Height = entity.Tileset.CellHeight;
         }
@@ -62,7 +62,7 @@ namespace Protogame
         {
             this.m_RenderUtilities.RenderTexture(
                 renderContext, 
-                new Vector2(entity.LocalMatrix.Translation.X, entity.LocalMatrix.Translation.Y), 
+                new Vector2(entity.Transform.LocalPosition.X, entity.Transform.LocalPosition.Y), 
                 entity.Tileset.Texture, 
                 new Vector2(entity.Width, entity.Height), 
                 sourceArea:

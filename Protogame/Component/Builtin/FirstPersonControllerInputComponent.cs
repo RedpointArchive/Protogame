@@ -4,13 +4,18 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Protogame
 {
-    public class FirstPersonInputComponent : IEventfulComponent
+    public class FirstPersonControllerInputComponent : IEventfulComponent
     {
         private readonly FirstPersonCameraComponent _firstPersonCameraComponent;
+        private readonly FirstPersonControllerPhysicsComponent _firstPersonControllerPhysicsComponent;
 
-        public FirstPersonInputComponent([FromParent] FirstPersonCameraComponent firstPersonCameraComponent)
+        public FirstPersonControllerInputComponent(
+            [FromParent] FirstPersonCameraComponent firstPersonCameraComponent,
+            [FromParent] FirstPersonControllerPhysicsComponent firstPersonControllerPhysicsComponent)
         {
             _firstPersonCameraComponent = firstPersonCameraComponent;
+            _firstPersonControllerPhysicsComponent = firstPersonControllerPhysicsComponent;
+
             ThumbstickLookSensitivity = 1/100f;
             ThumbstickMoveSensitivity = 1/20f;
         }
@@ -19,7 +24,8 @@ namespace Protogame
 
         public float ThumbstickMoveSensitivity { get; set; }
 
-        public bool Handle(ComponentizedEntity componentizedEntity, IGameContext gameContext, IEventEngine<IGameContext> eventEngine, Event @event)
+        public bool Handle(ComponentizedEntity componentizedEntity, IGameContext gameContext,
+            IEventEngine<IGameContext> eventEngine, Event @event)
         {
             var gamepadEvent = @event as GamePadEvent;
             var keyHeldEvent = @event as KeyHeldEvent;
@@ -27,22 +33,23 @@ namespace Protogame
 
             if (gamepadEvent != null)
             {
-                _firstPersonCameraComponent.Yaw -= gamepadEvent.GamePadState.ThumbSticks.Right.X * ThumbstickLookSensitivity;
-                _firstPersonCameraComponent.Pitch += gamepadEvent.GamePadState.ThumbSticks.Right.Y * ThumbstickLookSensitivity;
+                _firstPersonCameraComponent.Yaw -= gamepadEvent.GamePadState.ThumbSticks.Right.X*
+                                                   ThumbstickLookSensitivity;
+                _firstPersonCameraComponent.Pitch += gamepadEvent.GamePadState.ThumbSticks.Right.Y*
+                                                     ThumbstickLookSensitivity;
 
                 var limit = MathHelper.PiOver2 - MathHelper.ToRadians(5);
                 _firstPersonCameraComponent.Pitch = MathHelper.Clamp(_firstPersonCameraComponent.Pitch, -limit, limit);
 
-                var lookAt = _firstPersonCameraComponent.LocalMatrix;
+                var lookAt = _firstPersonCameraComponent.Transform.LocalMatrix;
                 var relativeMovementVector = new Vector3(
-                    gamepadEvent.GamePadState.ThumbSticks.Left.X * ThumbstickMoveSensitivity,
+                    gamepadEvent.GamePadState.ThumbSticks.Left.X*ThumbstickMoveSensitivity,
                     0f,
-                    -gamepadEvent.GamePadState.ThumbSticks.Left.Y * ThumbstickMoveSensitivity);
+                    -gamepadEvent.GamePadState.ThumbSticks.Left.Y*ThumbstickMoveSensitivity);
+
                 var absoluteMovementVector = Vector3.Transform(relativeMovementVector, lookAt);
 
-                componentizedEntity.LocalMatrix *= Matrix.CreateTranslation(absoluteMovementVector);
-
-                Console.WriteLine("FPS: gamepad");
+                _firstPersonControllerPhysicsComponent.TargetVelocity = absoluteMovementVector;
 
                 return true;
             }
@@ -52,10 +59,10 @@ namespace Protogame
                 var centerX = gameContext.Window.ClientBounds.Width/2;
                 var centerY = gameContext.Window.ClientBounds.Height/2;
 
-                _firstPersonCameraComponent.Yaw += (centerX - mouseEvent.MouseState.X) / 1000f;
-                _firstPersonCameraComponent.Pitch += (centerY - mouseEvent.MouseState.Y) / 1000f;
+                _firstPersonCameraComponent.Yaw += (centerX - mouseEvent.MouseState.X)/1000f;
+                _firstPersonCameraComponent.Pitch += (centerY - mouseEvent.MouseState.Y)/1000f;
 
-                Mouse.SetPosition(centerX, centerY);
+                //Mouse.SetPosition(centerX, centerY);
 
                 return true;
             }
@@ -86,14 +93,14 @@ namespace Protogame
                     moveZ = -1;
                     didConsume = true;
                 }
-                var lookAt = _firstPersonCameraComponent.LocalMatrix;
+                var lookAt = _firstPersonCameraComponent.Transform.LocalMatrix;
                 var relativeMovementVector = new Vector3(
-                    moveX * ThumbstickMoveSensitivity,
+                    moveX*ThumbstickMoveSensitivity,
                     0f,
-                    -moveZ * ThumbstickMoveSensitivity);
+                    -moveZ*ThumbstickMoveSensitivity);
                 var absoluteMovementVector = Vector3.Transform(relativeMovementVector, lookAt);
 
-                componentizedEntity.LocalMatrix *= Matrix.CreateTranslation(absoluteMovementVector);
+                _firstPersonControllerPhysicsComponent.TargetVelocity = absoluteMovementVector;
 
                 return didConsume;
             }

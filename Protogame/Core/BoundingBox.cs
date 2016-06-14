@@ -9,7 +9,7 @@ namespace Protogame
     {
         public BoundingBox()
         {
-            LocalMatrix = Matrix.Identity;
+            Transform = new DefaultTransform();
         }
 
         /// <summary>
@@ -61,13 +61,13 @@ namespace Protogame
         public float ZSpeed { get; set; }
 
         /// <summary>
-        /// Gets the matrix.  For bounding boxes, this currently is only used for translation.
+        /// Gets the local transform.  For bounding boxes, this currently is only used for translation.
         /// </summary>
-        public Matrix LocalMatrix { get; set; }
-        
-        public Matrix GetFinalMatrix()
+        public ITransform Transform { get; set; }
+
+        public IFinalTransform FinalTransform
         {
-            return LocalMatrix;
+            get { return this.GetDetachedFinalTransformImplementation(); }
         }
     }
 }

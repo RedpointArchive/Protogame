@@ -68,9 +68,6 @@ namespace ProtogameAssetManager
                 Console.WriteLine("Try `ProtogameAssetManager.exe --help` for more information.");
                 return;
             }
-
-            // Deploy the correct MojoShader DLL.
-            MojoShaderDeploy.Deploy();
             
             var kernel = new StandardKernel();
             kernel.Load<Protogame2DIoCModule>();

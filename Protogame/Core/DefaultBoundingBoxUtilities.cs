@@ -33,12 +33,12 @@ namespace Protogame
                     return false;
                 }
 
-                var aX2 = a.LocalMatrix.Translation.X + a.Width;
-                var aY2 = a.LocalMatrix.Translation.Y + a.Height;
-                var aZ2 = a.LocalMatrix.Translation.Z + a.Depth;
-                var bX2 = b.LocalMatrix.Translation.X + b.Width;
-                var bY2 = b.LocalMatrix.Translation.Y + b.Height;
-                var bZ2 = b.LocalMatrix.Translation.Z + b.Depth;
+                var aX2 = a.Transform.LocalPosition.X + a.Width;
+                var aY2 = a.Transform.LocalPosition.Y + a.Height;
+                var aZ2 = a.Transform.LocalPosition.Z + a.Depth;
+                var bX2 = b.Transform.LocalPosition.X + b.Width;
+                var bY2 = b.Transform.LocalPosition.Y + b.Height;
+                var bZ2 = b.Transform.LocalPosition.Z + b.Depth;
                 if (a.Width == 0)
                 {
                     aX2++;
@@ -69,12 +69,12 @@ namespace Protogame
                     bZ2++;
                 }
 
-                if (a.LocalMatrix.Translation.X - Math.Abs(a.XSpeed) < bX2 + Math.Abs(b.XSpeed)
-                    && aX2 + Math.Abs(a.XSpeed) > b.LocalMatrix.Translation.X - Math.Abs(b.XSpeed)
-                    && a.LocalMatrix.Translation.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed)
-                    && aY2 + Math.Abs(a.YSpeed) > b.LocalMatrix.Translation.Y - Math.Abs(b.YSpeed)
-                    && a.LocalMatrix.Translation.Z - Math.Abs(a.ZSpeed) < bZ2 + Math.Abs(b.ZSpeed)
-                    && aZ2 + Math.Abs(a.ZSpeed) > b.LocalMatrix.Translation.Z - Math.Abs(b.ZSpeed))
+                if (a.Transform.LocalPosition.X - Math.Abs(a.XSpeed) < bX2 + Math.Abs(b.XSpeed)
+                    && aX2 + Math.Abs(a.XSpeed) > b.Transform.LocalPosition.X - Math.Abs(b.XSpeed)
+                    && a.Transform.LocalPosition.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed)
+                    && aY2 + Math.Abs(a.YSpeed) > b.Transform.LocalPosition.Y - Math.Abs(b.YSpeed)
+                    && a.Transform.LocalPosition.Z - Math.Abs(a.ZSpeed) < bZ2 + Math.Abs(b.ZSpeed)
+                    && aZ2 + Math.Abs(a.ZSpeed) > b.Transform.LocalPosition.Z - Math.Abs(b.ZSpeed))
                 {
                     return true;
                 }
@@ -89,12 +89,12 @@ namespace Protogame
                         continue;
                     }
 
-                    var aX2 = a.LocalMatrix.Translation.X + a.Width;
-                    var aY2 = a.LocalMatrix.Translation.Y + a.Height;
-                    var aZ2 = a.LocalMatrix.Translation.Z + a.Depth;
-                    var bX2 = b.LocalMatrix.Translation.X + b.Width;
-                    var bY2 = b.LocalMatrix.Translation.Y + b.Height;
-                    var bZ2 = b.LocalMatrix.Translation.Z + b.Depth;
+                    var aX2 = a.Transform.LocalPosition.X + a.Width;
+                    var aY2 = a.Transform.LocalPosition.Y + a.Height;
+                    var aZ2 = a.Transform.LocalPosition.Z + a.Depth;
+                    var bX2 = b.Transform.LocalPosition.X + b.Width;
+                    var bY2 = b.Transform.LocalPosition.Y + b.Height;
+                    var bZ2 = b.Transform.LocalPosition.Z + b.Depth;
                     if (a.Width == 0)
                     {
                         aX2++;
@@ -125,12 +125,12 @@ namespace Protogame
                         bZ2++;
                     }
 
-                    if (a.LocalMatrix.Translation.X - Math.Abs(a.XSpeed) < bX2 + Math.Abs(b.XSpeed)
-                        && aX2 + Math.Abs(a.XSpeed) > b.LocalMatrix.Translation.X - Math.Abs(b.XSpeed)
-                        && a.LocalMatrix.Translation.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed)
-                        && aY2 + Math.Abs(a.YSpeed) > b.LocalMatrix.Translation.Y - Math.Abs(b.YSpeed)
-                        && a.LocalMatrix.Translation.Z - Math.Abs(a.ZSpeed) < bZ2 + Math.Abs(b.ZSpeed)
-                        && aZ2 + Math.Abs(a.ZSpeed) > b.LocalMatrix.Translation.Z - Math.Abs(b.ZSpeed))
+                    if (a.Transform.LocalPosition.X - Math.Abs(a.XSpeed) < bX2 + Math.Abs(b.XSpeed)
+                        && aX2 + Math.Abs(a.XSpeed) > b.Transform.LocalPosition.X - Math.Abs(b.XSpeed)
+                        && a.Transform.LocalPosition.Y - Math.Abs(a.YSpeed) < bY2 + Math.Abs(b.YSpeed)
+                        && aY2 + Math.Abs(a.YSpeed) > b.Transform.LocalPosition.Y - Math.Abs(b.YSpeed)
+                        && a.Transform.LocalPosition.Z - Math.Abs(a.ZSpeed) < bZ2 + Math.Abs(b.ZSpeed)
+                        && aZ2 + Math.Abs(a.ZSpeed) > b.Transform.LocalPosition.Z - Math.Abs(b.ZSpeed))
                     {
                         return true;
                     }

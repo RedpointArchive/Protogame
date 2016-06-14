@@ -69,7 +69,7 @@ namespace Protogame
 
                 game.GameContext.World.RenderBelow(game.GameContext, game.RenderContext);
 
-                foreach (var entity in game.GameContext.World.GetEntitiesForWorld(game.GameContext.Hierarchy).OrderBy(x => x.LocalMatrix.Translation.Z))
+                foreach (var entity in game.GameContext.World.GetEntitiesForWorld(game.GameContext.Hierarchy).OrderBy(x => x.Transform.LocalPosition.Z))
                 {
                     entity.Render(game.GameContext, game.RenderContext);
                 }

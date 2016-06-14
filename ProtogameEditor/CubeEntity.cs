@@ -19,7 +19,7 @@ namespace ProtogameEditor
             {
                 _renderUtilities.RenderCube(
                     renderContext,
-                    GetFinalMatrix(),
+                    FinalTransform.AbsoluteMatrix,
                     new Color(194, 194, 194));
             }
         }

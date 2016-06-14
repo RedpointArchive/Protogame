@@ -9,11 +9,7 @@ namespace Protogame.ATFLevelEditor
     {
         public EditorQueryMode Mode => EditorQueryMode.ManuallySpawned;
 
-        public void MapMatrix<TTarget>(TTarget @object, Action<Matrix> matrixProperty) where TTarget : T, IHasMatrix
-        {
-        }
-
-        public void MapScale(T @object, Action<Vector3> setScale)
+        public void MapTransform<TTarget>(TTarget @object, Action<ITransform> setTransform) where TTarget : T, IHasTransform
         {
         }
 

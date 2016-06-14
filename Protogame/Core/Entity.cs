@@ -9,7 +9,7 @@ namespace Protogame
     {
         public Entity()
         {
-            LocalMatrix = Matrix.Identity;
+            Transform = new DefaultTransform();
         }
 
         /// <summary>
@@ -84,14 +84,17 @@ namespace Protogame
         /// </param>
         public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            LocalMatrix *= Matrix.CreateTranslation(XSpeed, YSpeed, ZSpeed);
+            Transform.LocalPosition += new Vector3(XSpeed, YSpeed, ZSpeed);
         }
 
-        public Matrix LocalMatrix { get; set; }
+        public ITransform Transform { get; set; }
 
-        public Matrix GetFinalMatrix()
+        public IFinalTransform FinalTransform
         {
-            return LocalMatrix;
+            get
+            {
+                return this.GetDetachedFinalTransformImplementation();
+            }
         }
     }
 }

@@ -2,13 +2,13 @@
 
 namespace Protogame
 {
-    public class AbsoluteMatrixComponent : IHasMatrix
+    public class AbsoluteMatrixComponent : IHasTransform
     {
-        public Matrix LocalMatrix { get; set; }
+        public ITransform Transform { get; set; }
 
-        public Matrix GetFinalMatrix()
+        public IFinalTransform FinalTransform
         {
-            return LocalMatrix;
+            get { return this.GetDetachedFinalTransformImplementation(); }
         }
     }
 }

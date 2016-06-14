@@ -20,7 +20,7 @@ namespace Protogame.ATFLevelEditor
 
         public bool CanContainEntities { get; set; }
 
-        public bool HasMatrix { get; set; }
+        public bool HasTransform { get; set; }
 
         public EditorPrimitiveShape PrimitiveShape { get; set; }
 
@@ -75,11 +75,15 @@ namespace Protogame.ATFLevelEditor
     {
         public EditorQueryMode Mode => EditorQueryMode.BakingSchema;
 
-        public void MapMatrix<TTarget>(TTarget @object, Action<Matrix> matrixProperty) where TTarget : T, IHasMatrix
+        public void MapTransform<TTarget>(TTarget @object, Action<ITransform> matrixProperty) where TTarget : T, IHasTransform
         {
         }
 
         public void MapScale(T @object, Action<Vector3> setScale)
+        {
+        }
+
+        public void MapRotation(T @object, Action<Quaternion> setRotation)
         {
         }
 
@@ -348,7 +352,7 @@ namespace Protogame.ATFLevelEditor
         {
             DeclaredAs = DeclaredAs.Component;
 
-            HasMatrix = @object is IHasMatrix;
+            HasTransform = @object is IHasTransform;
         }
 
         public void DeclareAsEntity<TTarget>(TTarget @object) where TTarget : T, IEntity
@@ -365,7 +369,7 @@ namespace Protogame.ATFLevelEditor
                 CanContainEntities = true;
             }
 
-            HasMatrix = true;
+            HasTransform = true;
         }
         
         public void UsePrimitiveShapeForRendering(T @object, EditorPrimitiveShape shape)
@@ -408,7 +412,7 @@ namespace Protogame.ATFLevelEditor
             Properties = new Dictionary<string, PropertyEntry>();
             RenderMode = RenderMode.None;
             DeclaredAs = DeclaredAs.Unknown;
-            HasMatrix = false;
+            HasTransform = false;
         }
     }
 }

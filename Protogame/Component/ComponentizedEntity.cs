@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Protoinject;
 
 namespace Protogame
 {
@@ -58,7 +59,7 @@ namespace Protogame
         /// </summary>
         public ComponentizedEntity()
         {
-            LocalMatrix = Matrix.Identity;
+            Transform = new DefaultTransform();
 
             _update = RegisterCallable<IUpdatableComponent, IGameContext, IUpdateContext>((t, g, u) => t.Update(this, g, u));
             _render = RegisterCallable<IRenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Render(this, g, r));
@@ -89,17 +90,13 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The local entity matrix.
+        /// The local transform.
         /// </summary>
-        public Matrix LocalMatrix { get; set; }
+        public ITransform Transform { get; set; }
 
-        /// <summary>
-        /// The final matrix of this object (returns the local matrix for entities).
-        /// </summary>
-        /// <returns>The local matrix.</returns>
-        public Matrix GetFinalMatrix()
+        public IFinalTransform FinalTransform
         {
-            return LocalMatrix;
+            get { return this.GetDetachedFinalTransformImplementation(); }
         }
 
         /// <summary>

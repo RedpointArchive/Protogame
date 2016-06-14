@@ -17,7 +17,7 @@ namespace Protogame.Tests
         {
             return new BoundingBox
             {
-                LocalMatrix = Matrix.CreateTranslation(x, y, 0),
+                Transform = new DefaultTransform { LocalPosition = new Vector3(x, y, 0) },
                 Width = width,
                 Height = height,
                 XSpeed = xspeed,
@@ -29,7 +29,7 @@ namespace Protogame.Tests
         {
             return new BoundingBox
             {
-                LocalMatrix = Matrix.CreateTranslation(x, y, z),
+                Transform = new DefaultTransform { LocalPosition = new Vector3(x, y, z) },
                 Width = width,
                 Height = height,
                 Depth = depth,

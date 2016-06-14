@@ -46,10 +46,10 @@ namespace Protogame
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
             var matrix = Matrix.Identity;
-            var matrixComponent = _node.Parent?.UntypedValue as IHasMatrix;
+            var matrixComponent = _node.Parent?.UntypedValue as IHasTransform;
             if (matrixComponent != null)
             {
-                matrix *= matrixComponent.GetFinalMatrix();
+                matrix *= matrixComponent.FinalTransform.AbsoluteMatrix;
             }
 
             _standardPointLight.LightPosition = Vector3.Transform(Vector3.Zero, matrix);

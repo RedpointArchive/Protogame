@@ -1,3 +1,4 @@
+using Jitter;
 using Jitter.Dynamics;
 
 namespace Protogame
@@ -6,8 +7,10 @@ namespace Protogame
     {
         void Update(IGameContext gameContext, IUpdateContext updateContext);
 
-        void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasMatrix hasMatrix);
+        void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform);
 
         void DebugRender(IGameContext gameContext, IRenderContext renderContext);
+
+        JitterWorld GetInternalPhysicsWorld();
     }
 }

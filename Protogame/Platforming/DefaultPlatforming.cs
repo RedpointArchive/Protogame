@@ -11,20 +11,25 @@ namespace Protogame
     /// </summary>
     internal class DefaultPlatforming : IPlatforming
     {
-        /// <summary>
-        /// The m_ bounding box utilities.
-        /// </summary>
-        private readonly IBoundingBoxUtilities m_BoundingBoxUtilities;
+        private readonly ITransformUtilities _transformUtilities;
+        
+        private readonly IBoundingBoxUtilities _boundingBoxUtilities;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultPlatforming"/> class.
         /// </summary>
+        /// <param name="transformUtilities">
+        /// The transform utilities.
+        /// </param>
         /// <param name="boundingBoxUtilities">
         /// The bounding box utilities.
         /// </param>
-        public DefaultPlatforming(IBoundingBoxUtilities boundingBoxUtilities)
+        public DefaultPlatforming(
+            ITransformUtilities transformUtilities,
+            IBoundingBoxUtilities boundingBoxUtilities)
         {
-            this.m_BoundingBoxUtilities = boundingBoxUtilities;
+            _transformUtilities = transformUtilities;
+            _boundingBoxUtilities = boundingBoxUtilities;
         }
 
         /// <summary>
@@ -89,7 +94,11 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                LocalMatrix = entity.GetFinalMatrix() * Matrix.CreateTranslation(0, -1, 0),
+                Transform = _transformUtilities.CreateFromModifiedSRTFinalTransform(
+                    entity.FinalTransform,
+                    Vector3.One,
+                    Quaternion.Identity,
+                    new Vector3(0, -1, 0)),
                 Width = entity.Width,
                 Height = entity.Height,
                 XSpeed = 0,
@@ -98,7 +107,7 @@ namespace Protogame
             var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
             foreach (var collidableEntity in collidableEntities)
             {
-                if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
+                if (this._boundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
                 {
                     if (bounce)
                     {
@@ -148,13 +157,13 @@ namespace Protogame
             var collidableEntities = entities.Where(ground).ToArray();
             for (var x = 0; x < Math.Abs(xAmount); x++)
             {
-                entity.LocalMatrix *= Matrix.CreateTranslation(Math.Sign(xAmount), 0, 0);
+                entity.Transform.LocalPosition += new Vector3(Math.Sign(xAmount), 0, 0);
                 movedX = true;
                 foreach (var other in collidableEntities)
                 {
-                    if (this.m_BoundingBoxUtilities.Overlaps(entity, other))
+                    if (this._boundingBoxUtilities.Overlaps(entity, other))
                     {
-                        entity.LocalMatrix *= Matrix.CreateTranslation(-Math.Sign(xAmount), 0, 0);
+                        entity.Transform.LocalPosition += new Vector3(-Math.Sign(xAmount), 0, 0);
                         movedX = false;
                         goto endX;
                     }
@@ -164,13 +173,13 @@ namespace Protogame
             endX:
             for (var y = 0; y < Math.Abs(yAmount); y++)
             {
-                entity.LocalMatrix *= Matrix.CreateTranslation(0, Math.Sign(yAmount), 0);
+                entity.Transform.LocalPosition += new Vector3(0, Math.Sign(yAmount), 0);
                 movedY = true;
                 foreach (var other in collidableEntities)
                 {
-                    if (this.m_BoundingBoxUtilities.Overlaps(entity, other))
+                    if (this._boundingBoxUtilities.Overlaps(entity, other))
                     {
-                        entity.LocalMatrix *= Matrix.CreateTranslation(0, -Math.Sign(yAmount), 0);
+                        entity.Transform.LocalPosition += new Vector3(0, -Math.Sign(yAmount), 0);
                         movedY = false;
                         goto endY;
                     }
@@ -241,7 +250,11 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                LocalMatrix = entity.LocalMatrix * Matrix.CreateTranslation(0, 1, 0),
+                Transform = _transformUtilities.CreateFromModifiedSRTTransform(
+                    entity.Transform,
+                    Vector3.One,
+                    Quaternion.Identity,
+                    new Vector3(0, 1, 0)),
                 Width = entity.Width, 
                 Height = entity.Height, 
                 XSpeed = entity.XSpeed, 
@@ -250,9 +263,9 @@ namespace Protogame
             var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
             foreach (var collidableEntity in collidableEntities)
             {
-                if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
+                if (this._boundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
                 {
-                    if (collidableEntity.LocalMatrix.Translation.Y > entity.LocalMatrix.Translation.Y)
+                    if (collidableEntity.Transform.LocalPosition.Y > entity.Transform.LocalPosition.Y)
                     {
                         return true;
                     }
@@ -281,7 +294,11 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                LocalMatrix = entity.LocalMatrix * Matrix.CreateTranslation(0, -1, 0),
+                Transform = _transformUtilities.CreateFromModifiedSRTTransform(
+                    entity.Transform,
+                    Vector3.One,
+                    Quaternion.Identity,
+                    new Vector3(0, -1, 0)),
                 Width = entity.Width,
                 Height = entity.Height,
                 XSpeed = entity.XSpeed,
@@ -290,9 +307,9 @@ namespace Protogame
             var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
             foreach (var collidableEntity in collidableEntities)
             {
-                if (this.m_BoundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
+                if (this._boundingBoxUtilities.Overlaps(entityExtended, collidableEntity))
                 {
-                    if (collidableEntity.LocalMatrix.Translation.Y < entity.LocalMatrix.Translation.Y)
+                    if (collidableEntity.Transform.LocalPosition.Y < entity.Transform.LocalPosition.Y)
                     {
                         return true;
                     }
@@ -332,25 +349,25 @@ namespace Protogame
             Action simulateRight)
         {
             // Perform cell alignment.
-            float rem = entity.LocalMatrix.Translation.X % cellWidth;
+            float rem = entity.Transform.LocalPosition.X % cellWidth;
             if (rem > cellWidth - cellAlignment || rem < cellAlignment)
             {
-                float targetX = (float)Math.Round(entity.LocalMatrix.Translation.X / cellWidth) * cellWidth;
-                if (Math.Abs(targetX - entity.LocalMatrix.Translation.X) > maxAdjust)
+                float targetX = (float)Math.Round(entity.Transform.LocalPosition.X / cellWidth) * cellWidth;
+                if (Math.Abs(targetX - entity.Transform.LocalPosition.X) > maxAdjust)
                 {
-                    if (targetX > entity.LocalMatrix.Translation.X)
+                    if (targetX > entity.Transform.LocalPosition.X)
                     {
                         simulateRight();
                     }
-                    else if (targetX < entity.LocalMatrix.Translation.X)
+                    else if (targetX < entity.Transform.LocalPosition.X)
                     {
                         simulateLeft();
                     }
                 }
                 else
                 {
-                    entity.LocalMatrix *= Matrix.CreateTranslation(
-                        new Vector3(targetX - entity.LocalMatrix.Translation.X, 0, 0));
+                    entity.Transform.LocalPosition += 
+                        new Vector3(targetX - entity.Transform.LocalPosition.X, 0, 0);
                 }
             }
         }

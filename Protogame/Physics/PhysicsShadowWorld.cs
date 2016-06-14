@@ -17,7 +17,7 @@ namespace Protogame
 
         private readonly IWorld _gameSystemWorld;
 
-        private readonly List<KeyValuePair<RigidBody, IHasMatrix>> _rigidBodyMappings;
+        private readonly List<KeyValuePair<RigidBody, IHasTransform>> _rigidBodyMappings;
 
         private Dictionary<int, Quaternion> _lastFrameRotation;
 
@@ -39,7 +39,7 @@ namespace Protogame
 
             _physicsWorld.Gravity = new JVector(0, -4f, 0);
 
-            _rigidBodyMappings = new List<KeyValuePair<RigidBody, IHasMatrix>>();
+            _rigidBodyMappings = new List<KeyValuePair<RigidBody, IHasTransform>>();
 
             _lastFramePosition = new Dictionary<int, Vector3>();
             _lastFrameRotation = new Dictionary<int, Quaternion>();
@@ -56,8 +56,8 @@ namespace Protogame
                 var hasMatrix = kv.Value;
 
                 // Sync game world to physics system.
-                var rot = hasMatrix.GetFinalMatrix().Rotation;
-                var pos = hasMatrix.GetFinalMatrix().Translation;
+                var rot = hasMatrix.FinalTransform.AbsoluteRotation;
+                var pos = hasMatrix.FinalTransform.AbsolutePosition;
                 originalRotation[rigidBody.GetHashCode()] = rot;
                 originalPosition[rigidBody.GetHashCode()] = pos;
 
@@ -66,7 +66,7 @@ namespace Protogame
                 if (_lastFramePosition.ContainsKey(rigidBody.GetHashCode()))
                 {
                     var lastPosition = _lastFramePosition[rigidBody.GetHashCode()];
-                    if ((lastPosition - pos).LengthSquared() > 0.0001f)
+                    if ((lastPosition - hasMatrix.Transform.LocalPosition).LengthSquared() > 0.0001f)
                     {
                         rigidBody.Position = pos.ToJitterVector();
                     }
@@ -83,12 +83,12 @@ namespace Protogame
                     var lastRotation = _lastFrameRotation[rigidBody.GetHashCode()];
 
                     var a = Quaternion.Normalize(lastRotation);
-                    var b = Quaternion.Normalize(rot);
+                    var b = Quaternion.Normalize(hasMatrix.Transform.LocalRotation);
                     var closeness = 1 - (a.X*b.X + a.Y*b.Y + a.Z*b.Z + a.W*b.W);
 
                     if (closeness > 0.0001f)
                     {
-                        rigidBody.Orientation = JMatrix.CreateFromQuaternion(rot.ToJitterQuaternion());
+                       rigidBody.Orientation = JMatrix.CreateFromQuaternion(rot.ToJitterQuaternion());
                     }
                 }
                 else
@@ -116,17 +116,15 @@ namespace Protogame
                 // Determine the localised differences in position.
                 var localPos = newWorldPos - oldWorldPos;
                 
-                // Reverse the old translation and rotation components of the matrix.
-                var newMatrix = hasMatrix.LocalMatrix*
-                                Matrix.CreateTranslation(-hasMatrix.LocalMatrix.Translation) *
-                                Matrix.CreateFromQuaternion(Quaternion.Inverse(oldWorldRot)) *
-                                Matrix.CreateFromQuaternion(newWorldRot) *
-                                Matrix.CreateTranslation(hasMatrix.LocalMatrix.Translation + localPos);
-                hasMatrix.LocalMatrix = newMatrix;
+                // Update the local components of the transform.
+                hasMatrix.Transform.LocalPosition += localPos;
+                hasMatrix.Transform.LocalRotation *= (
+                    Matrix.CreateFromQuaternion(Quaternion.Inverse(oldWorldRot))*
+                    Matrix.CreateFromQuaternion(newWorldRot)).Rotation;
 
                 // Save the current rotation / position for the next frame.
-                _lastFramePosition[rigidBody.GetHashCode()] = newMatrix.Translation;
-                _lastFrameRotation[rigidBody.GetHashCode()] = newMatrix.Rotation;
+                _lastFramePosition[rigidBody.GetHashCode()] = hasMatrix.Transform.LocalPosition;
+                _lastFrameRotation[rigidBody.GetHashCode()] = hasMatrix.Transform.LocalRotation;
             }
         }
 
@@ -162,10 +160,15 @@ namespace Protogame
             
         }
 
-        public void RegisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasMatrix hasMatrix)
+        public void RegisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform)
         {
-            _rigidBodyMappings.Add(new KeyValuePair<RigidBody, IHasMatrix>(rigidBody, hasMatrix));
+            _rigidBodyMappings.Add(new KeyValuePair<RigidBody, IHasTransform>(rigidBody, hasTransform));
             _physicsWorld.AddBody(rigidBody);
+        }
+
+        public JitterWorld GetJitterWorld()
+        {
+            return _physicsWorld;
         }
     }
 }

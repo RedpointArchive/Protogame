@@ -22,7 +22,7 @@
             this.m_2DRenderUtilities = twoDRenderUtilities;
             this.DebugRenderWallColor = Color.Black;
             this.DebugRenderWallNormalColor = Color.DarkGray;
-            LocalMatrix = Matrix.Identity;
+            Transform = new DefaultTransform();
         }
 
         public Vector2 Start { get; set; }
@@ -105,10 +105,11 @@
         {
         }
 
-        public Matrix LocalMatrix { get; set; }
-        public Matrix GetFinalMatrix()
+        public ITransform Transform { get; set; }
+
+        public IFinalTransform FinalTransform
         {
-            return LocalMatrix;
+            get { return this.GetDetachedFinalTransformImplementation(); }
         }
     }
 }

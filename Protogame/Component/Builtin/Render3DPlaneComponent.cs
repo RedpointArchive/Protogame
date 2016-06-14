@@ -22,10 +22,10 @@ namespace Protogame
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
                 var matrix = Matrix.Identity;
-                var matrixComponent = _node.Parent?.UntypedValue as IHasMatrix;
+                var matrixComponent = _node.Parent?.UntypedValue as IHasTransform;
                 if (matrixComponent != null)
                 {
-                    matrix *= matrixComponent.GetFinalMatrix();
+                    matrix *= matrixComponent.FinalTransform.AbsoluteMatrix;
                 }
                 _renderUtilities.RenderPlane(renderContext, matrix, Color);
             }

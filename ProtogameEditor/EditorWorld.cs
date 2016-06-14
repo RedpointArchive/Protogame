@@ -35,7 +35,7 @@ namespace ProtogameEditor
             this._count = 0;
 
             var entity = kernel.Get<CubeEntity>();
-            entity.LocalMatrix = Matrix.CreateTranslation(3.05f, 0, 2.1f);
+            entity.Transform.LocalPosition = new Vector3(3.05f, 0, 2.1f);
             this.Entities.Add(entity);
         }
 

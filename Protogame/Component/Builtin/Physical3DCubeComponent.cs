@@ -1,12 +1,10 @@
-﻿using Jitter;
-using Jitter.Collision.Shapes;
+﻿using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
-using Microsoft.Xna.Framework;
 using Protoinject;
 
 namespace Protogame
 {
-    public class Physical3DCubeComponent : IUpdatableComponent
+    public class Physical3DCubeComponent : IUpdatableComponent, IPhysicalComponent
     {
         private readonly INode _node;
         private readonly IPhysicsEngine _physicsEngine;
@@ -15,27 +13,16 @@ namespace Protogame
 
         private RigidBody _rigidBody;
 
-        private Vector3 _cachedScale;
-
         private bool _addedRigidBody;
+
+        private bool _hasSetRotationOnRigidBody;
 
         public Physical3DCubeComponent(INode node, IPhysicsEngine physicsEngine)
         {
             _node = node;
             _physicsEngine = physicsEngine;
-            _cachedScale = new Vector3(1, 1, 1);
             _addedRigidBody = false;
-            CreateShapeFromCachedScale();
-        }
-
-        public Vector3 Scale
-        {
-            get { return _cachedScale; }
-            set
-            {
-                _cachedScale = value;
-                CreateShapeFromCachedScale();
-            }
+            UpdateRigidBodyShape(new DefaultTransform());
         }
 
         public bool Static
@@ -50,9 +37,9 @@ namespace Protogame
             set { _rigidBody.Mass = value; }
         }
 
-        private void CreateShapeFromCachedScale()
+        private void UpdateRigidBodyShape(ITransform localTransform)
         {
-            _boxShape = new BoxShape(_cachedScale.ToJitterVector());
+            _boxShape = new BoxShape(localTransform.LocalScale.ToJitterVector());
             if (_rigidBody == null)
             {
                 _rigidBody = new RigidBody(_boxShape);
@@ -66,15 +53,22 @@ namespace Protogame
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
             // Update the parent node's matrix based on the rigid body's state.
-            var matrixComponent = _node.Parent?.UntypedValue as IHasMatrix;
-            if (matrixComponent != null)
+            var transformComponent = _node.Parent?.UntypedValue as IHasTransform;
+            if (transformComponent != null)
             {
                 if (!_addedRigidBody)
                 {
-                    _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, matrixComponent);
+                    UpdateRigidBodyShape(transformComponent.Transform);
+
+                    _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent);
                     _addedRigidBody = true;
                 }
             }
+        }
+
+        public RigidBody[] RigidBodies
+        {
+            get { return new[] {_rigidBody}; }
         }
     }
 }

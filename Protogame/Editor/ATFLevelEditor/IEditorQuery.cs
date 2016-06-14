@@ -22,20 +22,11 @@ namespace Protogame.ATFLevelEditor
         EditorQueryMode Mode { get; }
 
         /// <summary>
-        /// Maps the specified property as the matrix for the object in the hierarchy.
+        /// Maps the specified property as the transform for the object in the hierarchy.
         /// </summary>
         /// <param name="object"></param>
         /// <param name="matrixProperty"></param>
-        void MapMatrix<TTarget>(TTarget @object, Action<Matrix> matrixProperty) where TTarget : T, IHasMatrix;
-
-        /// <summary>
-        /// Maps the scale of the object onto the specified property.  Often you will need to 
-        /// explicitly set the scale of physics components on entities, because they don't
-        /// automatically calculate their scale from their matrix.
-        /// </summary>
-        /// <param name="object">The object that's being mapped.</param>
-        /// <param name="setScale">The property to map scale onto.</param>
-        void MapScale(T @object, Action<Vector3> setScale);
+        void MapTransform<TTarget>(TTarget @object, Action<ITransform> setTransform) where TTarget : T, IHasTransform;
 
         /// <summary>
         /// Maps the specified property as a custom property on the object.

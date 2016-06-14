@@ -56,6 +56,10 @@ namespace Protogame
             kernel.Bind<ILightFactory>().ToFactory();
             kernel.Bind<IStandardDirectionalLight>().To<DefaultStandardDirectionalLight>().AllowManyPerScope();
             kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>().AllowManyPerScope();
+
+            kernel.Bind<IPhysicalComponent>().To<Physical3DCubeComponent>().AllowManyPerScope();
+
+            kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
         }
     }
 }
