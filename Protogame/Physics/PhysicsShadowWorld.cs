@@ -118,9 +118,7 @@ namespace Protogame
                 
                 // Update the local components of the transform.
                 hasMatrix.Transform.LocalPosition += localPos;
-                hasMatrix.Transform.LocalRotation *= (
-                    Matrix.CreateFromQuaternion(Quaternion.Inverse(oldWorldRot))*
-                    Matrix.CreateFromQuaternion(newWorldRot)).Rotation;
+                hasMatrix.Transform.LocalRotation *= Quaternion.Inverse(oldWorldRot)*newWorldRot;
 
                 // Save the current rotation / position for the next frame.
                 _lastFramePosition[rigidBody.GetHashCode()] = hasMatrix.Transform.LocalPosition;

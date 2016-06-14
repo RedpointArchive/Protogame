@@ -94,13 +94,7 @@ namespace Protogame
                     -moveZ*ThumbstickMoveSensitivity);
                 var absoluteMovementVector = Vector3.Transform(relativeMovementVector, lookAt);
 
-                Console.WriteLine("Look At: " + lookAt);
-                Console.WriteLine("Abs. Movement Vector: " + absoluteMovementVector);
-                Console.WriteLine("Current Vector: " + componentizedEntity.Transform.LocalPosition);
-
                 componentizedEntity.Transform.LocalPosition += absoluteMovementVector;
-
-                Console.WriteLine("New Vector: " + componentizedEntity.Transform.LocalPosition);
 
                 return didConsume;
             }
