@@ -91,8 +91,8 @@ namespace Protogame.ATFLevelEditor
         {
             Properties[id] = CreatePropertyFromDeclaration(
                 id,
-                (id.Substring(0, 1).ToLowerInvariant() + name.Substring(1)).Replace(" ", ""),
-                (id.Substring(0, 1).ToUpperInvariant() + name.Substring(1)).Replace(" ", ""),
+                (id.Substring(0, 1).ToLowerInvariant() + name.Substring(1)).Replace(" ", "").Replace("?", ""),
+                (id.Substring(0, 1).ToUpperInvariant() + name.Substring(1)).Replace(" ", "").Replace("?", ""),
                 name, 
                 typeof(T2),
                 @default);

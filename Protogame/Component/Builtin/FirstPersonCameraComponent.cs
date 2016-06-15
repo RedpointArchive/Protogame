@@ -15,6 +15,7 @@ namespace Protogame
             _node = node;
             _firstPersonCamera = firstPersonCamera;
             HeadOffset = new Vector3(0, 0, 0);
+            Enabled = true;
         }
 
         /// <summary>
@@ -37,22 +38,30 @@ namespace Protogame
         /// </summary>
         public float Roll { get; set; }
 
+        /// <summary>
+        /// Whether or not this camera will configure the current render matrices.
+        /// </summary>
+        public bool Enabled { get; set; }
+
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
-            if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
+            if (Enabled && renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
                 var parentFinalTransform = (_node?.Parent?.UntypedValue as IHasTransform)?.FinalTransform;
                 if (parentFinalTransform == null)
                 {
                     return;
                 }
-                
+
+                var sourceLocal = HeadOffset;
                 var lookAtLocal = HeadOffset + Vector3.Transform(Vector3.Forward, Transform.LocalMatrix);
+                var upLocal = HeadOffset + Vector3.Up;
                 _firstPersonCamera.Apply(
                     renderContext,
-                    Vector3.Transform(HeadOffset, parentFinalTransform.AbsoluteMatrix),
+                    Vector3.Transform(sourceLocal, parentFinalTransform.AbsoluteMatrix),
                     Vector3.Transform(lookAtLocal, parentFinalTransform.AbsoluteMatrix),
-                    Vector3.Transform(Vector3.Up, parentFinalTransform.AbsoluteMatrix) - Vector3.Transform(Vector3.Zero, parentFinalTransform.AbsoluteMatrix));
+                    Vector3.Transform(upLocal, parentFinalTransform.AbsoluteMatrix) - Vector3.Transform(sourceLocal, parentFinalTransform.AbsoluteMatrix));/*
+                    Vector3.Transform(Vector3.Up, parentFinalTransform.AbsoluteMatrix) - Vector3.Transform(Vector3.Zero, parentFinalTransform.AbsoluteMatrix));*/
             }
         }
 
@@ -73,6 +82,48 @@ namespace Protogame
         public IFinalTransform FinalTransform
         {
             get { return this.GetAttachedFinalTransformImplementation(_node); }
+        }
+
+        /// <summary>
+        /// Returns the world space directional vector that indicates the direction in which the camera will looking.  This
+        /// roughly translates to what is "forward" for the player.
+        /// <para>
+        /// If the camera is angled upward, this vector will include that upward component.  For a value more suited towards
+        /// movement calculations, see <see cref="GetWorldSpaceLateralLookAtVector"/>.
+        /// </para>
+        /// </summary>
+        /// <returns>The world space look at vector.</returns>
+        public Vector3 GetWorldSpaceLookAtVector()
+        {
+            var parentFinalTransform = (_node?.Parent?.UntypedValue as IHasTransform)?.FinalTransform;
+            if (parentFinalTransform == null)
+            {
+                return Vector3.Forward;
+            }
+
+            var sourceLocal = HeadOffset;
+            var lookAtLocal = HeadOffset + Vector3.Transform(Vector3.Forward, Transform.LocalMatrix);
+            return Vector3.Transform(lookAtLocal, parentFinalTransform.AbsoluteMatrix) -
+                   Vector3.Transform(sourceLocal, parentFinalTransform.AbsoluteMatrix);
+        }
+
+        /// <summary>
+        /// Returns the world space directional vector that indicates the direction in which the camera will looking, ignoring
+        /// pitch and roll aspects of the camera.  This roughly translates to what is "forward" for the player.
+        /// </summary>
+        /// <returns>The world space look at vector, without pitch and roll.</returns>
+        public Vector3 GetWorldSpaceLateralLookAtVector()
+        {
+            var parentFinalTransform = (_node?.Parent?.UntypedValue as IHasTransform)?.FinalTransform;
+            if (parentFinalTransform == null)
+            {
+                return Vector3.Forward;
+            }
+
+            var sourceLocal = HeadOffset;
+            var lookAtLocal = HeadOffset + Vector3.Transform(Vector3.Forward, Matrix.CreateFromYawPitchRoll(Yaw, 0, 0));
+            return Vector3.Transform(lookAtLocal, parentFinalTransform.AbsoluteMatrix) -
+                   Vector3.Transform(sourceLocal, parentFinalTransform.AbsoluteMatrix);
         }
     }
 }

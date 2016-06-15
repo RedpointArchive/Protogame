@@ -56,6 +56,9 @@ namespace Protogame
                 _firstPersonCameraComponent.Yaw += (centerX - mouseEvent.MouseState.X)/1000f;
                 _firstPersonCameraComponent.Pitch += (centerY - mouseEvent.MouseState.Y)/1000f;
 
+                var limit = MathHelper.PiOver2 - MathHelper.ToRadians(5);
+                _firstPersonCameraComponent.Pitch = MathHelper.Clamp(_firstPersonCameraComponent.Pitch, -limit, limit);
+
                 Mouse.SetPosition(centerX, centerY);
 
                 return true;
