@@ -160,7 +160,7 @@ namespace Protogame
         /// <param name="kernel">
         /// The dependency injection kernel.
         /// </param>
-        protected CoreGame(IKernel kernel) : base(Prestart(kernel.TryGet<IEmbedContext>()))
+        protected CoreGame(IKernel kernel)
         {
 #if PLATFORM_MACOS
             // On Mac, the MonoGame launcher changes the current working
@@ -515,15 +515,6 @@ namespace Protogame
         /// <param name="deviceInformation">The device information.</param>
         protected virtual void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)
 		{
-#if PLATFORM_WINDOWS
-			var embedContext = this.m_Kernel.TryGet<IEmbedContext>();
-			if (embedContext != null && embedContext.WindowHandle != IntPtr.Zero)
-			{
-				deviceInformation.PresentationParameters.DeviceWindowHandle = 
-					embedContext.WindowHandle;
-			}
-#endif
-
             deviceInformation.PresentationParameters.RenderTargetUsage =
                 RenderTargetUsage.PreserveContents;
 
@@ -564,14 +555,11 @@ namespace Protogame
         /// <summary>
         /// Runs code before MonoGame performs any initialization logic.
         /// </summary>
-        /// <param name="passthrough">The value to passthrough.</param>
-        private static IEmbedContext Prestart(IEmbedContext passthrough)
+        static CoreGame()
         {
 #if PLATFORM_LINUX
             LoadPrimusRunPathForDualGPUDevices();
 #endif
-
-            return passthrough;
         }
 
 #if PLATFORM_LINUX
