@@ -32,6 +32,8 @@ namespace Protogame
             kernel.Bind<IRenderContextImplementationUtilities>()
                 .To<DefaultRenderContextImplementationUtilities>()
                 .InSingletonScope();
+
+            kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
         }
     }
 }
