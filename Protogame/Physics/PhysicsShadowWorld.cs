@@ -10,6 +10,7 @@ namespace Protogame
     public class PhysicsShadowWorld
     {
         private readonly IPhysicsEngine _physicsEngine;
+        private readonly IDebugRenderer _debugRenderer;
 
         private readonly CollisionSystemPersistentSAP _collisionSystem;
 
@@ -23,11 +24,12 @@ namespace Protogame
 
         private Dictionary<int, Vector3> _lastFramePosition;
 
-        public PhysicsShadowWorld(IPhysicsEngine physicsEngine, IWorld world)
+        public PhysicsShadowWorld(IPhysicsEngine physicsEngine, IDebugRenderer debugRenderer, IWorld world)
         {
             _gameSystemWorld = world;
 
             _physicsEngine = physicsEngine;
+            _debugRenderer = debugRenderer;
             _collisionSystem = new CollisionSystemPersistentSAP
             {
                 EnableSpeculativeContacts = true
@@ -128,7 +130,7 @@ namespace Protogame
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            if (renderContext.IsCurrentRenderPass<IPhysicsDebugRenderPass>())
+            if (renderContext.IsCurrentRenderPass<IDebugRenderPass>())
             {
                 var world = renderContext.World;
                 renderContext.World = Matrix.Identity;
@@ -144,7 +146,7 @@ namespace Protogame
                             kv.Key.EnableDebugDraw = true;
                         }
 
-                        var drawer = new PhysicsDebugDraw(renderContext.GraphicsDevice, !kv.Key.IsStaticOrInactive);
+                        var drawer = new PhysicsDebugDraw(renderContext, _debugRenderer, !kv.Key.IsStaticOrInactive);
                         kv.Key.DebugDraw(drawer);
                     }
                 }

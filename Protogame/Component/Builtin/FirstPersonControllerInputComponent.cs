@@ -11,6 +11,9 @@ namespace Protogame
 
         private bool _didSetVelocityLastFrame = false;
 
+        private float _cumulativeMoveX = 0;
+        private float _cumulativeMoveZ = 0;
+
         public FirstPersonControllerInputComponent(
             [FromParent] FirstPersonCameraComponent firstPersonCameraComponent,
             [FromParent] FirstPersonControllerPhysicsComponent firstPersonControllerPhysicsComponent)
@@ -34,6 +37,8 @@ namespace Protogame
             }
 
             _didSetVelocityLastFrame = false;
+            _cumulativeMoveX = 0;
+            _cumulativeMoveZ = 0;
         }
 
         public bool Handle(ComponentizedEntity componentizedEntity, IGameContext gameContext,
@@ -58,10 +63,11 @@ namespace Protogame
                     gamepadEvent.GamePadState.ThumbSticks.Left.X*ThumbstickMoveSensitivity,
                     0f,
                     -gamepadEvent.GamePadState.ThumbSticks.Left.Y*ThumbstickMoveSensitivity);
+                
+                var absoluteMovementVector =
+                    _firstPersonCameraComponent.ComputeWorldSpaceVectorFromLocalSpace(relativeMovementVector);
 
-                var absoluteMovementVector = Vector3.Transform(relativeMovementVector, lookAt);
-
-                _firstPersonControllerPhysicsComponent.TargetVelocity = relativeMovementVector;
+                _firstPersonControllerPhysicsComponent.TargetVelocity = absoluteMovementVector;
                 _didSetVelocityLastFrame = true;
 
                 return true;
@@ -72,8 +78,8 @@ namespace Protogame
                 var centerX = gameContext.Window.ClientBounds.Width/2;
                 var centerY = gameContext.Window.ClientBounds.Height/2;
 
-                //_firstPersonCameraComponent.Yaw += (centerX - mouseEvent.MouseState.X)/1000f;
-                //_firstPersonCameraComponent.Pitch += (centerY - mouseEvent.MouseState.Y)/1000f;
+                _firstPersonCameraComponent.Yaw += (centerX - mouseEvent.MouseState.X)/1000f;
+                _firstPersonCameraComponent.Pitch += (centerY - mouseEvent.MouseState.Y)/1000f;
 
                 var limit = MathHelper.PiOver2 - MathHelper.ToRadians(5);
                 _firstPersonCameraComponent.Pitch = MathHelper.Clamp(_firstPersonCameraComponent.Pitch, -limit, limit);
@@ -91,33 +97,31 @@ namespace Protogame
 
                 if (keyHeldEvent.Key == Keys.A)
                 {
-                    moveX = -1;
+                    _cumulativeMoveX -= 1;
                     didConsume = true;
                 }
                 if (keyHeldEvent.Key == Keys.D)
                 {
-                    moveX = 1;
+                    _cumulativeMoveX += 1;
                     didConsume = true;
                 }
                 if (keyHeldEvent.Key == Keys.W)
                 {
-                    moveZ = 1;
+                    _cumulativeMoveZ += 1;
                     didConsume = true;
                 }
                 if (keyHeldEvent.Key == Keys.S)
                 {
-                    moveZ = -1;
+                    _cumulativeMoveZ -= 1;
                     didConsume = true;
                 }
-                var lookAt = Matrix.CreateLookAt(
-                    Vector3.Zero,
-                    _firstPersonCameraComponent.GetWorldSpaceLateralLookAtVector(),
-                    Vector3.Up);
+
                 var relativeMovementVector = new Vector3(
-                    moveX*ThumbstickMoveSensitivity,
+                    _cumulativeMoveX * ThumbstickMoveSensitivity,
                     0f,
-                    -moveZ*ThumbstickMoveSensitivity);
-                var absoluteMovementVector = Vector3.Transform(relativeMovementVector, lookAt);
+                    -_cumulativeMoveZ * ThumbstickMoveSensitivity);
+                var absoluteMovementVector =
+                    _firstPersonCameraComponent.ComputeWorldSpaceVectorFromLocalSpace(relativeMovementVector);
 
                 _firstPersonControllerPhysicsComponent.TargetVelocity = absoluteMovementVector;
                 _didSetVelocityLastFrame = true;

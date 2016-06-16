@@ -307,6 +307,10 @@
     <Compile Include="Core\ProtogameCoreModule.cs" />
     <Compile Include="Core\ReloadableGameAssetManagerProvider.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
+    <Compile Include="Debug\DefaultDebugRenderer.cs" />
+    <Compile Include="Debug\IDebugRenderer.cs" />
+    <Compile Include="Debug\NullDebugRenderer.cs" />
+    <Compile Include="Debug\ProtogameDebugModule.cs" />
     <Compile Include="Editor\ATFLevelEditor\DefaultDirectionalLightEntity.cs" />
     <Compile Include="Editor\ATFLevelEditor\DefaultPointLightEntity.cs" />
     <Compile Include="Editor\ATFLevelEditor\EditorQueryMode.cs" />
@@ -366,6 +370,7 @@
     <Compile Include="Graphics\DefaultCaptureCopyPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultCaptureInlinePostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultCustomPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\DefaultDebugRenderPass.cs" />
     <Compile Include="Graphics\DefaultGraphicsBlit.cs" />
     <Compile Include="Graphics\DefaultInvertPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultRenderPipeline.cs" />
@@ -380,10 +385,10 @@
     <Compile Include="Graphics\ICaptureCopyPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\ICaptureInlinePostProcessingRenderPass.cs" />
     <Compile Include="Graphics\ICustomPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\IDebugRenderPass.cs" />
     <Compile Include="Graphics\IGraphicsBlit.cs" />
     <Compile Include="Graphics\IGraphicsFactory.cs" />
     <Compile Include="Graphics\IInvertPostProcessingRenderPass.cs" />
-    <Compile Include="Graphics\IPhysicsDebugRenderPass.cs" />
     <Compile Include="Graphics\IRenderPass.cs" />
     <Compile Include="Graphics\IRenderPipeline.cs" />
     <Compile Include="Graphics\IRenderTargetBackBufferUtilities.cs" />

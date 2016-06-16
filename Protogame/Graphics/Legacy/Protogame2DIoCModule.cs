@@ -33,6 +33,7 @@ namespace Protogame
                 .InSingletonScope();
 
             kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
+            kernel.Bind<IDebugRenderer>().To<NullDebugRenderer>().InSingletonScope();
         }
     }
 }

@@ -11,9 +11,10 @@ using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
-    public class FirstPersonControllerPhysicsComponent : IUpdatableComponent
+    public class FirstPersonControllerPhysicsComponent : IUpdatableComponent, IRenderableComponent
     {
         private readonly IPhysicsEngine _physicsEngine;
+        private readonly IDebugRenderer _debugRenderer;
         private readonly IPhysicalComponent _physicalComponent;
 
         private JitterWorld _jitterWorld;
@@ -21,9 +22,11 @@ namespace Protogame
 
         public FirstPersonControllerPhysicsComponent(
             IPhysicsEngine physicsEngine,
+            IDebugRenderer debugRenderer,
             [FromParent] IPhysicalComponent physicalComponent)
         {
             _physicsEngine = physicsEngine;
+            _debugRenderer = debugRenderer;
             _physicalComponent = physicalComponent;
         }
 
@@ -183,6 +186,19 @@ namespace Protogame
                         BodyWalkingOn.ApplyImpulse(-1.0f * JumpVelocity * JVector.Up * Body1.Mass);
                     }
                 }
+            }
+        }
+
+        public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
+        {
+            if (_physicsControllerConstraint != null && _physicalComponent.RigidBodies.Length > 0)
+            {
+                _debugRenderer.RenderDebugLine(
+                    renderContext,
+                    _physicalComponent.RigidBodies[0].Position.ToXNAVector(),
+                    _physicalComponent.RigidBodies[0].Position.ToXNAVector() + TargetVelocity,
+                    Color.Yellow,
+                    Color.Yellow);
             }
         }
     }

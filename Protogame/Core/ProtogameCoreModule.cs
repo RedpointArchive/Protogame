@@ -46,7 +46,7 @@ namespace Protogame
             kernel.Bind<I3DRenderPass>().To<Default3DForwardRenderPass>().AllowManyPerScope();
             kernel.Bind<I3DForwardRenderPass>().To<Default3DForwardRenderPass>().AllowManyPerScope();
             kernel.Bind<I3DDeferredRenderPass>().To<Default3DDeferredRenderPass>().AllowManyPerScope();
-            kernel.Bind<IPhysicsDebugRenderPass>().To<DefaultPhysicsDebugRenderPass>().AllowManyPerScope();
+            kernel.Bind<IDebugRenderPass>().To<DefaultDebugRenderPass>().AllowManyPerScope();
             kernel.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>().AllowManyPerScope();
             kernel.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>().AllowManyPerScope();
             kernel.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>().AllowManyPerScope();
@@ -60,6 +60,7 @@ namespace Protogame
             kernel.Bind<IPhysicalComponent>().To<Physical3DCubeComponent>().AllowManyPerScope();
 
             kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
+            kernel.Bind<IDebugRenderer>().To<NullDebugRenderer>().InSingletonScope();
         }
     }
 }

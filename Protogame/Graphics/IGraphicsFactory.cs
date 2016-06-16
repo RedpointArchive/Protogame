@@ -85,7 +85,7 @@ namespace Protogame
         /// to the screen.
         /// </summary>
         /// <returns>A physics debug render pass.</returns>
-        IPhysicsDebugRenderPass CreatePhysicsDebugPass();
+        IDebugRenderPass CreatePhysicsDebugPass();
 
         /// <summary>
         /// Creates a post-processing render pass which inverts all of the
