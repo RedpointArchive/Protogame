@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Protoinject;
 
 namespace Protogame
 {
@@ -15,8 +16,8 @@ namespace Protogame
         private float _cumulativeMoveZ = 0;
 
         public FirstPersonControllerInputComponent(
-            [FromParent] FirstPersonCameraComponent firstPersonCameraComponent,
-            [FromParent] FirstPersonControllerPhysicsComponent firstPersonControllerPhysicsComponent)
+            [FromParent, RequireExisting] FirstPersonCameraComponent firstPersonCameraComponent,
+            [FromParent, RequireExisting] FirstPersonControllerPhysicsComponent firstPersonControllerPhysicsComponent)
         {
             _firstPersonCameraComponent = firstPersonCameraComponent;
             _firstPersonControllerPhysicsComponent = firstPersonControllerPhysicsComponent;

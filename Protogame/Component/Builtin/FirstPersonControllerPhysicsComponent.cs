@@ -8,6 +8,7 @@ using Jitter.Dynamics;
 using Jitter.Dynamics.Constraints;
 using Jitter.LinearMath;
 using Microsoft.Xna.Framework;
+using Protoinject;
 
 namespace Protogame
 {
@@ -23,7 +24,7 @@ namespace Protogame
         public FirstPersonControllerPhysicsComponent(
             IPhysicsEngine physicsEngine,
             IDebugRenderer debugRenderer,
-            [FromParent] IPhysicalComponent physicalComponent)
+            [FromParent, RequireExisting] IPhysicalComponent physicalComponent)
         {
             _physicsEngine = physicsEngine;
             _debugRenderer = debugRenderer;

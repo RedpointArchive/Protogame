@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Protoinject;
 
 namespace Protogame
 {
@@ -8,7 +9,8 @@ namespace Protogame
     {
         private readonly FirstPersonCameraComponent _firstPersonCameraComponent;
 
-        public FlyAroundInputComponent([FromParent] FirstPersonCameraComponent firstPersonCameraComponent)
+        public FlyAroundInputComponent(
+            [FromParent, RequireExisting] FirstPersonCameraComponent firstPersonCameraComponent)
         {
             _firstPersonCameraComponent = firstPersonCameraComponent;
             ThumbstickLookSensitivity = 1/100f;

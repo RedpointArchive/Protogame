@@ -203,6 +203,7 @@
     <Compile Include="Component\Builtin\FirstPersonControllerInputComponent.cs" />
     <Compile Include="Component\Builtin\FirstPersonControllerPhysicsComponent.cs" />
     <Compile Include="Component\Builtin\FlyAroundInputComponent.cs" />
+    <Compile Include="Component\Builtin\Physical3DCapsuleComponent.cs" />
     <Compile Include="Component\Builtin\Physical3DCubeComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextureComponent.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="Component\Builtin\Render3DPlaneComponent.cs" />
     <Compile Include="Component\Builtin\StandardDirectionalLightComponent.cs" />
     <Compile Include="Component\Builtin\StandardPointLightComponent.cs" />
+    <Compile Include="Component\ComponentExtensions.cs" />
     <Compile Include="Component\ComponentizedEntity.cs" />
     <Compile Include="Component\ComponentizedObject.cs">
       <AutoGen>True</AutoGen>
@@ -369,6 +371,7 @@
     <Compile Include="Graphics\DefaultCanvasRenderPass.cs" />
     <Compile Include="Graphics\DefaultCaptureCopyPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultCaptureInlinePostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\DefaultConsoleRenderPass.cs" />
     <Compile Include="Graphics\DefaultCustomPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultDebugRenderPass.cs" />
     <Compile Include="Graphics\DefaultGraphicsBlit.cs" />
@@ -384,6 +387,7 @@
     <Compile Include="Graphics\ICanvasRenderPass.cs" />
     <Compile Include="Graphics\ICaptureCopyPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\ICaptureInlinePostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\IConsoleRenderPass.cs" />
     <Compile Include="Graphics\ICustomPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\IDebugRenderPass.cs" />
     <Compile Include="Graphics\IGraphicsBlit.cs" />
