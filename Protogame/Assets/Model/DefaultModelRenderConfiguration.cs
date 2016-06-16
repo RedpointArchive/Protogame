@@ -26,6 +26,13 @@ namespace Protogame
                             (src.Colors != null && src.Colors.Length >= 1) ? src.Colors[0]: new Color(),
                             src.BoneWeights ?? Vector4.Zero,
                             src.BoneIndices ?? new Byte4(0, 0, 0, 0)));
+                case "effect.DiffuseSkinned":
+                    return ModelVertexMapping.Create(
+                        src => new VertexPositionNormalBlendable(
+                            src.Position ?? Vector3.Zero,
+                            src.Normal ?? Vector3.Zero,
+                            src.BoneWeights ?? Vector4.Zero,
+                            src.BoneIndices ?? new Byte4(0, 0, 0, 0)));
                 case "effect.Texture":
                     return ModelVertexMapping.Create(
                         src => new VertexPositionNormalTexture(
@@ -38,6 +45,11 @@ namespace Protogame
                             src.Position ?? Vector3.Zero,
                             src.Normal ?? Vector3.Zero,
                             (src.Colors != null && src.Colors.Length >= 1) ? src.Colors[0] : new Color()));
+                case "effect.Diffuse":
+                    return ModelVertexMapping.Create(
+                        src => new VertexPositionNormal(
+                            src.Position ?? Vector3.Zero,
+                            src.Normal ?? Vector3.Zero));
                 case "effect.PointLight":
                     return ModelVertexMapping.Create(
                         src => new VertexPosition(src.Position ?? Vector3.Zero));

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Protoinject;
 
 namespace Protogame
@@ -19,9 +20,13 @@ namespace Protogame
 
         private bool _useDefaultEffects;
 
-        private EffectAsset _defaultSkinnedEffectAsset;
+        private EffectAsset _defaultTextureSkinnedEffectAsset;
 
-        private EffectAsset _defaultSkinnedColorEffectAsset;
+        private EffectAsset _defaultColorSkinnedEffectAsset;
+
+        private EffectAsset _defaultDiffuseSkinnedEffectAsset;
+
+        private string _mode;
 
         public Render3DModelComponent(
             INode node,
@@ -52,10 +57,11 @@ namespace Protogame
                     _useDefaultEffects = false;
                 }
 
-                if (_useDefaultEffects && _defaultSkinnedEffectAsset == null)
+                if (_useDefaultEffects && _defaultTextureSkinnedEffectAsset == null)
                 {
-                    _defaultSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureSkinned");
-                    _defaultSkinnedColorEffectAsset = _assetManager.Get<EffectAsset>("effect.ColorSkinned");
+                    _defaultTextureSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureSkinned");
+                    _defaultColorSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.ColorSkinned");
+                    _defaultDiffuseSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.DiffuseSkinned");
                 }
 
                 if (Model != null)
@@ -66,43 +72,72 @@ namespace Protogame
                     {
                         matrix *= matrixComponent.FinalTransform.AbsoluteMatrix;
                     }
-                    
+
                     if (_lastCachedModel != Model)
                     {
                         if (Model.Material.TextureDiffuse != null)
                         {
                             _lastCachedTexture =
                                 _textureFromHintPath.GetTextureFromHintPath(Model.Material.TextureDiffuse);
+                            _mode = "texture";
+                        }
+                        else if (Model.Material.ColorDiffuse != null)
+                        {
+                            _mode = "diffuse";
+                        }
+                        else
+                        {
+                            _mode = "color";
                         }
                         _lastCachedModel = Model;
                     }
 
-                    if (_lastCachedTexture != null)
+                    switch (_mode)
                     {
-                        if (_useDefaultEffects)
-                        {
-                            renderContext.PushEffect(_defaultSkinnedEffectAsset.Effect);
-                        }
-                        else
-                        {
-                            renderContext.PushEffect(Effect.Effect);
-                        }
+                        case "texture":
+                            if (_useDefaultEffects)
+                            {
+                                renderContext.PushEffect(_defaultTextureSkinnedEffectAsset.Effect);
+                            }
+                            else
+                            {
+                                renderContext.PushEffect(Effect.Effect);
+                            }
+                            
+                            renderContext.SetActiveTexture(_lastCachedTexture.Texture);
+                            break;
+                        case "color":
+                            if (_useDefaultEffects)
+                            {
+                                renderContext.PushEffect(_defaultColorSkinnedEffectAsset.Effect);
+                            }
+                            else
+                            {
+                                renderContext.PushEffect(Effect.Effect);
+                            }
+                            
+                            break;
+                        case "diffuse":
+                            Effect targetEffect;
+                            if (_useDefaultEffects)
+                            {
+                                targetEffect = _defaultDiffuseSkinnedEffectAsset.Effect;
+                            }
+                            else
+                            {
+                                targetEffect = Effect.Effect;
+                            }
 
-                        renderContext.EnableTextures();
-                        renderContext.SetActiveTexture(_lastCachedTexture.Texture);    
-                    }
-                    else
-                    {
-                        if (_useDefaultEffects)
-                        {
-                            renderContext.PushEffect(_defaultSkinnedColorEffectAsset.Effect);
-                        }
-                        else
-                        {
-                            renderContext.PushEffect(Effect.Effect);
-                        }
+                            var semanticEffect = targetEffect as EffectWithSemantics;
+                            if (semanticEffect != null)
+                            {
+                                semanticEffect.GetSemantic<IColorDiffuseEffectSemantic>().Diffuse =
+                                    Model.Material.ColorDiffuse.Value;
+                            }
 
-                        renderContext.EnableVertexColors();
+                            renderContext.PushEffect(targetEffect);
+                            
+                            break;
                     }
 
                     Model.Render(

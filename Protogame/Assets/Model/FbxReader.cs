@@ -102,6 +102,7 @@ namespace Protogame
             var importer = new AssimpContext();
             const PostProcessSteps ProcessFlags = 0
                 | PostProcessSteps.FlipUVs
+                | PostProcessSteps.Triangulate
                 | PostProcessSteps.FlipWindingOrder
                 ;
             var scene = importer.ImportFile(filename, ProcessFlags);
@@ -114,10 +115,11 @@ namespace Protogame
             if (scene.MeshCount >= 1)
             {
                 var boneWeightingMap = this.BuildBoneWeightingMap(scene);
+                var staticTransformMap = this.BuildStaticTransformMap(scene);
 
                 boneHierarchy = this.ImportBoneHierarchy(scene.RootNode, scene.Meshes[0]);
 
-                vertexes = this.ImportVertexes(scene, boneWeightingMap);
+                vertexes = this.ImportVertexes(scene, boneWeightingMap, staticTransformMap);
                 indices = this.ImportIndices(scene);
             }
             else
@@ -329,6 +331,63 @@ namespace Protogame
         }
 
         /// <summary>
+        /// Builds the static transform map.  This is used by vertexes which do not have bones to
+        /// weight them.  When there are no bone weights available, we transform the vertexes based
+        /// on the scene hierarchy directly on import.
+        /// </summary>
+        /// <param name="scene">The scene to process.</param>
+        /// <returns>
+        /// A map of meshes to transform matrices.  Because this importer can only 
+        /// handle a single mesh per scene, this will only contain one entry.
+        /// </returns>
+        private Dictionary<Mesh, Matrix> BuildStaticTransformMap(Scene scene)
+        {
+            var matrix = this.GetStaticTransformMatrixForFirstMesh(scene.RootNode);
+
+            if (matrix != null)
+            {
+                return new Dictionary<Mesh, Matrix>
+                {
+                    {scene.Meshes[0], matrix.Value}
+                };
+            }
+
+            return new Dictionary<Mesh, Matrix>();
+        }
+
+        /// <summary>
+        /// Returns the cumulative transformation matrix if the specified node or one of it's
+        /// descendants specifies the transformation matrix for the first mesh in the scene
+        /// (the only one that this importer processes).
+        /// </summary>
+        /// <param name="node">The node to inspect.</param>
+        /// <returns>A matrix, or null.</returns>
+        private Matrix? GetStaticTransformMatrixForFirstMesh(Node node)
+        {
+            if (node.MeshCount > 0 && node.MeshIndices[0] == 0 /* is this for the first mesh? */)
+            {
+                return this.MatrixFromAssImpMatrix(node.Transform);
+            }
+
+            if (node.ChildCount > 0)
+            {
+                foreach (var child in node.Children)
+                {
+                    var result = GetStaticTransformMatrixForFirstMesh(child);
+                    if (result != null)
+                    {
+                        // We have to return a matrix which is this node's transformation
+                        // matrix, multiplied by the child matrix.
+                        var ourMatrix = this.MatrixFromAssImpMatrix(node.Transform);
+                        return ourMatrix*result.Value;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Imports the mesh indices from the scene.
         /// </summary>
         /// <param name="scene">
@@ -348,17 +407,16 @@ namespace Protogame
         /// Imports the mesh vertexes from the scene and adds the appropriate bone weighting data to each vertex.
         /// </summary>
         /// <param name="scene">
-        /// The scene that contains the mesh.
+        ///     The scene that contains the mesh.
         /// </param>
         /// <param name="boneWeightingMap">
-        /// The bone weighting map.
+        ///     The bone weighting map.
         /// </param>
+        /// <param name="staticTransformMap"></param>
         /// <returns>
         /// The imported vertexes.
         /// </returns>
-        private ModelVertex[] ImportVertexes(
-            Scene scene, 
-            Dictionary<Vector3, KeyValuePair<Byte4, Vector4>> boneWeightingMap)
+        private ModelVertex[] ImportVertexes(Scene scene, Dictionary<Vector3, KeyValuePair<Byte4, Vector4>> boneWeightingMap, Dictionary<Mesh, Matrix> staticTransformMap)
         {
             var mesh = scene.Meshes[0];
 
@@ -448,6 +506,17 @@ namespace Protogame
                     {
                         boneIndices = boneWeightingMap[position.Value].Key;
                         boneWeights = boneWeightingMap[position.Value].Value;
+                    }
+                    else if (staticTransformMap.ContainsKey(mesh))
+                    {
+                        // Transform the position by the world matrix on import.
+                        position = Vector3.Transform(position.Value, staticTransformMap[mesh]);
+
+                        // Also transform the normal by the world matrix, if it's present.
+                        if (normal.HasValue)
+                        {
+                            normal = Vector3.Transform(normal.Value, staticTransformMap[mesh]);
+                        }
                     }
                 }
 

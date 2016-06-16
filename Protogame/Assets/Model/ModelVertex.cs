@@ -95,5 +95,15 @@ namespace Protogame
         /// or this vertex isn't affected by bones, this value is null.
         /// </summary>
         public Vector4? BoneWeights { get; }
+
+        /// <summary>
+        /// Provides a very basic representation of the vertex (just the
+        /// position information).
+        /// </summary>
+        /// <returns>A string representation of the model vertex.</returns>
+        public override string ToString()
+        {
+            return Position?.ToString() ?? "(no position)";
+        }
     }
 }

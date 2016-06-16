@@ -47,6 +47,7 @@
     <Compile Include="Assets\Configuration\ConfigurationAssetSaver.cs" />
     <Compile Include="Assets\Configuration\RawConfigurationLoadStrategy.cs" />
     <Compile Include="Assets\Effect\BonesEffectSemantic.cs" />
+    <Compile Include="Assets\Effect\ColorDiffuseEffectSemantic.cs" />
     <Compile Include="Assets\Effect\EffectAsset.cs" />
     <Compile Include="Assets\Effect\EffectAssetCompiler.cs" />
     <Compile Include="Assets\Effect\EffectAssetLoader.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Assets\Effect\EffectAssetSaver.cs" />
     <Compile Include="Assets\Effect\EffectWithSemantics.cs" />
     <Compile Include="Assets\Effect\IBonesEffectSemantic.cs" />
+    <Compile Include="Assets\Effect\IColorDiffuseEffectSemantic.cs" />
     <Compile Include="Assets\Effect\IEffectSemantic.cs" />
     <Compile Include="Assets\Effect\IEffectWithSemantics.cs" />
     <Compile Include="Assets\Effect\ITextureEffectSemantic.cs" />
@@ -159,6 +161,8 @@
     <Compile Include="Assets\Model\ModelVertex.cs" />
     <Compile Include="Assets\Model\ModelVertexMapping.cs" />
     <Compile Include="Assets\Model\RawModelLoadStrategy.cs" />
+    <Compile Include="Assets\Model\VertexPositionNormal.cs" />
+    <Compile Include="Assets\Model\VertexPositionNormalBlendable.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalColorBlendable.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalTextureBlendable.cs" />
     <Compile Include="Assets\ProtogameAssetIoCModule.cs" />

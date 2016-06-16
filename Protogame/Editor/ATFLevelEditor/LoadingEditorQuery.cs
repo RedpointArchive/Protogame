@@ -44,8 +44,8 @@ namespace Protogame.ATFLevelEditor
                     scaleRawValue[2]);
                 var rotateValue = (
                     Matrix.CreateRotationX(rotateRawValue[0]) *
-                    Matrix.CreateRotationX(rotateRawValue[1]) *
-                    Matrix.CreateRotationX(rotateRawValue[2])).Rotation;
+                    Matrix.CreateRotationY(rotateRawValue[1]) *
+                    Matrix.CreateRotationZ(rotateRawValue[2])).Rotation;
                 var translateValue = new Vector3(
                     translateRawValue[0],
                     translateRawValue[1],

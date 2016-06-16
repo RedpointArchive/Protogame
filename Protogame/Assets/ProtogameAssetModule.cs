@@ -44,6 +44,7 @@ namespace Protogame
             kernel.Bind<IEffectSemantic>().To<WorldViewProjectionEffectSemantic>();
             kernel.Bind<IEffectSemantic>().To<TextureEffectSemantic>();
             kernel.Bind<IEffectSemantic>().To<BonesEffectSemantic>();
+            kernel.Bind<IEffectSemantic>().To<ColorDiffuseEffectSemantic>();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             kernel.Bind<IAutomaticAssetReload>().To<DefaultAutomaticAssetReload>().InSingletonScope();
