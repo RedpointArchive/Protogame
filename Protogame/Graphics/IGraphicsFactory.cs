@@ -9,8 +9,8 @@ namespace Protogame
     /// before they are added to the render pipeline.
     /// <para>
     /// Use these methods to construct render passes with the appropriate
-    /// settings, and pass the resulting value into <see cref="IRenderPipeline.AddRenderPass"/>
-    /// or <see cref="IRenderPipeline.AppendRenderPass"/>.
+    /// settings, and pass the resulting value into <see cref="IRenderPipeline.AddFixedRenderPass"/>
+    /// or <see cref="IRenderPipeline.AppendTransientRenderPass"/>.
     /// </para>
     /// </summary>
     /// <module>Graphics</module>
@@ -81,11 +81,19 @@ namespace Protogame
         I3DDeferredRenderPass Create3DDeferredRenderPass();
 
         /// <summary>
-        /// Creates a render pass in which physics object state is displayed
-        /// to the screen.
+        /// Creates a render pass in which calls to <see cref="IDebugRenderer"/> and
+        /// the state of physics objects are rendered to the screen.
         /// </summary>
-        /// <returns>A physics debug render pass.</returns>
-        IDebugRenderPass CreatePhysicsDebugPass();
+        /// <returns>A debug render pass.</returns>
+        IDebugRenderPass CreateDebugRenderPass();
+
+        /// <summary>
+        /// Creates a render pass which handles an in-game console.  You need to
+        /// include a console render pass if you want custom commands with
+        /// <see cref="ICommand"/> to work.
+        /// </summary>
+        /// <returns>A console render pass.</returns>
+        IConsoleRenderPass CreateConsoleRenderPass();
 
         /// <summary>
         /// Creates a post-processing render pass which inverts all of the

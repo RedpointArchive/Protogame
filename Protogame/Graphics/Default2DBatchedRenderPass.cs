@@ -18,23 +18,13 @@ namespace Protogame
         public Default2DBatchedRenderPass()
         {
         }
-
-        /// <summary>
-        /// Gets a value indicating that this is not a post-processing render pass.
-        /// </summary>
-        /// <value>Always false.</value>
-        public bool IsPostProcessingPass
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public string EffectTechniqueName
-        {
-            get { return RenderPipelineTechniqueName.Batched2D; }
-        }
+        
+        public bool IsPostProcessingPass => false;
+        public bool SkipWorldRenderBelow => false;
+        public bool SkipWorldRenderAbove => false;
+        public bool SkipEntityRender => false;
+        public bool SkipEngineHookRender => false;
+        public string EffectTechniqueName => RenderPipelineTechniqueName.Batched2D;
 
         public Viewport Viewport
         {

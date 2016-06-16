@@ -11,19 +11,12 @@ namespace Protogame
     /// <interface_ref>Protogame.I2DDirectRenderPass</interface_ref>
     public class Default2DDirectRenderPass : I2DDirectRenderPass
     {
-        /// <summary>
-        /// Gets a value indicating that this is not a post-processing render pass.
-        /// </summary>
-        /// <value>Always false.</value>
-        public bool IsPostProcessingPass
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public string EffectTechniqueName { get { return RenderPipelineTechniqueName.Direct2D; } }
+        public bool IsPostProcessingPass => false;
+        public bool SkipWorldRenderBelow => false;
+        public bool SkipWorldRenderAbove => false;
+        public bool SkipEntityRender => false;
+        public bool SkipEngineHookRender => false;
+        public string EffectTechniqueName => RenderPipelineTechniqueName.Direct2D;
 
         public Viewport Viewport
         {

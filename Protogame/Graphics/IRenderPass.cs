@@ -40,6 +40,34 @@ namespace Protogame
         bool IsPostProcessingPass { get; }
 
         /// <summary>
+        /// Gets a value indicating whether the call to <see cref="IWorld.RenderBelow"/> should be skipped
+        /// in this render pipeline.  This value is ignored for post-processing render passes, which never
+        /// call <see cref="IWorld.RenderBelow"/>.
+        /// </summary>
+        bool SkipWorldRenderBelow { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the call to <see cref="IEntity.Render"/> should be skipped
+        /// in this render pipeline.  This value is ignored for post-processing render passes, which never
+        /// call <see cref="IEntity.Render"/>.
+        /// </summary>
+        bool SkipEntityRender { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the call to <see cref="IWorld.RenderAbove"/> should be skipped
+        /// in this render pipeline.  This value is ignored for post-processing render passes, which never
+        /// call <see cref="IWorld.RenderAbove"/>.
+        /// </summary>
+        bool SkipWorldRenderAbove { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the call to <see cref="IEngineHook.Render"/> should be skipped
+        /// in this render pipeline.  This value is ignored for post-processing render passes, which never
+        /// call <see cref="IEngineHook.Render"/>.
+        /// </summary>
+        bool SkipEngineHookRender { get; }
+
+        /// <summary>
         /// Sets the technique name that should be used when effects are used within this render pass.
         /// Effects can have multiple techniques, each with different names.  When effects are pushed onto the 
         /// render context, the technique that matches the name requested by the render pass is the one

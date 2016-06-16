@@ -20,17 +20,13 @@ namespace Protogame
             _blurEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Blur").Effect;
             _graphicsBlit = graphicsBlit;
         }
-
-        /// <summary>
-        /// Gets a value indicating that this is a post-processing render pass.
-        /// </summary>
-        /// <value>Always true.</value>
-        public bool IsPostProcessingPass
-        {
-            get { return true; }
-        }
-
-        public string EffectTechniqueName { get { return RenderPipelineTechniqueName.PostProcess; } }
+        
+        public bool IsPostProcessingPass => true;
+        public bool SkipWorldRenderBelow => true;
+        public bool SkipWorldRenderAbove => true;
+        public bool SkipEntityRender => true;
+        public bool SkipEngineHookRender => true;
+        public string EffectTechniqueName => RenderPipelineTechniqueName.PostProcess;
 
         /// <summary>
         /// Gets or sets the number of blur iterations to apply.

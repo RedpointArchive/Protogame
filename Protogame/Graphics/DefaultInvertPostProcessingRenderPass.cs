@@ -20,16 +20,12 @@ namespace Protogame
             _graphicsBlit = graphicsBlit;
         }
 
-        /// <summary>
-        /// Gets a value indicating that this is a post-processing render pass.
-        /// </summary>
-        /// <value>Always true.</value>
-        public bool IsPostProcessingPass
-        {
-            get { return true; }
-        }
-
-        public string EffectTechniqueName { get { return RenderPipelineTechniqueName.PostProcess; } }
+        public bool IsPostProcessingPass => true;
+        public bool SkipWorldRenderBelow => true;
+        public bool SkipWorldRenderAbove => true;
+        public bool SkipEntityRender => true;
+        public bool SkipEngineHookRender => true;
+        public string EffectTechniqueName => RenderPipelineTechniqueName.PostProcess;
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {

@@ -57,15 +57,15 @@ namespace Protogame
             _gbufferCombineEffect =
                 assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.GBufferCombine");
         }
-
+        
         public bool IsPostProcessingPass => false;
+        public bool SkipWorldRenderBelow => false;
+        public bool SkipWorldRenderAbove => false;
+        public bool SkipEntityRender => false;
+        public bool SkipEngineHookRender => false;
+        public string EffectTechniqueName => RenderPipelineTechniqueName.Deferred;
 
         public bool DebugGBuffer { get; set; }
-
-        public string EffectTechniqueName
-        {
-            get { return RenderPipelineTechniqueName.Deferred; }
-        }
 
         public void BeginRenderPass(
             IGameContext gameContext,
