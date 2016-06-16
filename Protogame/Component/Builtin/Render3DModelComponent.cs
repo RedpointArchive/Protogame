@@ -54,8 +54,8 @@ namespace Protogame
 
                 if (_useDefaultEffects && _defaultSkinnedEffectAsset == null)
                 {
-                    _defaultSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.Skinned");
-                    _defaultSkinnedColorEffectAsset = _assetManager.Get<EffectAsset>("effect.SkinnedColor");
+                    _defaultSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureSkinned");
+                    _defaultSkinnedColorEffectAsset = _assetManager.Get<EffectAsset>("effect.ColorSkinned");
                 }
 
                 if (Model != null)

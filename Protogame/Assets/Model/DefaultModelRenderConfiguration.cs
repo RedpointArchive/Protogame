@@ -15,7 +15,7 @@ namespace Protogame
                         src => new VertexPositionNormalTextureBlendable(
                             src.Position ?? Vector3.Zero,
                             src.Normal ?? Vector3.Zero,
-                            src.TexCoordsUV.Length >= 1 ? src.TexCoordsUV[0] : Vector2.Zero,
+                            (src.TexCoordsUV != null && src.TexCoordsUV.Length >= 1) ? src.TexCoordsUV[0] : Vector2.Zero,
                             src.BoneWeights ?? Vector4.Zero,
                             src.BoneIndices ?? new Byte4(0, 0, 0, 0)));
                 case "effect.ColorSkinned":
@@ -23,7 +23,7 @@ namespace Protogame
                         src => new VertexPositionNormalColorBlendable(
                             src.Position ?? Vector3.Zero,
                             src.Normal ?? Vector3.Zero,
-                            src.Colors.Length >= 1 ? src.Colors[0]: new Color(),
+                            (src.Colors != null && src.Colors.Length >= 1) ? src.Colors[0]: new Color(),
                             src.BoneWeights ?? Vector4.Zero,
                             src.BoneIndices ?? new Byte4(0, 0, 0, 0)));
                 case "effect.Texture":
@@ -31,13 +31,13 @@ namespace Protogame
                         src => new VertexPositionNormalTexture(
                             src.Position ?? Vector3.Zero,
                             src.Normal ?? Vector3.Zero,
-                            src.TexCoordsUV.Length >= 1 ? src.TexCoordsUV[0] : Vector2.Zero));
+                            (src.TexCoordsUV != null && src.TexCoordsUV.Length >= 1) ? src.TexCoordsUV[0] : Vector2.Zero));
                 case "effect.Color":
                     return ModelVertexMapping.Create(
                         src => new VertexPositionNormalColor(
                             src.Position ?? Vector3.Zero,
                             src.Normal ?? Vector3.Zero,
-                            src.Colors.Length >= 1 ? src.Colors[0] : new Color()));
+                            (src.Colors != null && src.Colors.Length >= 1) ? src.Colors[0] : new Color()));
                 case "effect.PointLight":
                     return ModelVertexMapping.Create(
                         src => new VertexPosition(src.Position ?? Vector3.Zero));

@@ -238,7 +238,7 @@
                 throw new InvalidOperationException(
                     "The current effect on the render context is " +
                     "not a semantic effect.  You can use " +
-                    "'effect.Skinned' for a basic model rendering effect.");
+                    "'effect.TextureSkinned' for a basic model rendering effect.");
             }
 
             if (effectSemantic.HasSemantic<IBonesEffectSemantic>())
