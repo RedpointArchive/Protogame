@@ -100,6 +100,12 @@ namespace Protogame
                     _physicalComponent.RigidBodies[0]);
                 _jitterWorld.AddConstraint(_physicsControllerConstraint);
             }
+
+            if (TargetVelocity.LengthSquared() > 0f)
+            {
+                // Wake up the rigid body.
+                _physicalComponent.RigidBodies[0].IsActive = true;
+            }
         }
 
         private class PhysicsControllerConstraint : Constraint
