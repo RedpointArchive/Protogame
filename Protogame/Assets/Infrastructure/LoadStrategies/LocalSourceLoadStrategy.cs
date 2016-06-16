@@ -53,10 +53,32 @@
         /// </returns>
         public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
-            var file = new FileInfo(Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset"));
+            var file1 = new FileInfo(Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset"));
+            var attempt1 = this.AttemptLoadOfFile(file1);
+            if (attempt1 != null)
+            {
+                lastModified = file1.LastWriteTime;
+                return attempt1;
+            }
+
+            var file2 = new FileInfo(Path.Combine(
+                path,
+                TargetPlatformUtility.GetExecutingPlatform().ToString(),
+                (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".asset"));
+            var attempt2 = this.AttemptLoadOfFile(file2);
+            if (attempt2 != null)
+            {
+                lastModified = file2.LastWriteTime;
+                return attempt2;
+            }
+
+            return null;
+        }
+
+        private DictionaryBasedRawAsset AttemptLoadOfFile(FileInfo file)
+        {
             if (file.Exists)
             {
-                lastModified = file.LastWriteTime;
                 using (var reader = new StreamReader(file.FullName, Encoding.UTF8))
                 {
                     return
