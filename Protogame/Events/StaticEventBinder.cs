@@ -652,7 +652,7 @@ namespace Protogame
                         var entitiesMatchingType = allEntities.OfType<TComponentizedEntity>();
 
                         return onlyFirst ? 
-                            entitiesMatchingType.First().Handle(gameContext, gameEventEngine, @event) : 
+                            (entitiesMatchingType.FirstOrDefault()?.Handle(gameContext, gameEventEngine, @event) ?? false) : 
                             entitiesMatchingType.Select(entity => entity.Handle(gameContext, gameEventEngine, @event)).Any(handled => handled);
                     });
             }
