@@ -24,11 +24,14 @@ namespace Protogame
 
             ThumbstickLookSensitivity = 1/100f;
             ThumbstickMoveSensitivity = 5f;
+            MovementSpeed = 1f;
         }
 
         public float ThumbstickLookSensitivity { get; set; }
 
         public float ThumbstickMoveSensitivity { get; set; }
+
+        public float MovementSpeed { get; set; }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
@@ -61,9 +64,9 @@ namespace Protogame
 
                 var lookAt = _firstPersonCameraComponent.Transform.LocalMatrix;
                 var relativeMovementVector = new Vector3(
-                    gamepadEvent.GamePadState.ThumbSticks.Left.X*ThumbstickMoveSensitivity,
+                    gamepadEvent.GamePadState.ThumbSticks.Left.X*ThumbstickMoveSensitivity* MovementSpeed,
                     0f,
-                    -gamepadEvent.GamePadState.ThumbSticks.Left.Y*ThumbstickMoveSensitivity);
+                    -gamepadEvent.GamePadState.ThumbSticks.Left.Y*ThumbstickMoveSensitivity * MovementSpeed);
                 
                 var absoluteMovementVector =
                     _firstPersonCameraComponent.ComputeWorldSpaceVectorFromLocalSpace(relativeMovementVector);
@@ -118,9 +121,9 @@ namespace Protogame
                 }
 
                 var relativeMovementVector = new Vector3(
-                    _cumulativeMoveX * ThumbstickMoveSensitivity,
+                    _cumulativeMoveX * ThumbstickMoveSensitivity * MovementSpeed,
                     0f,
-                    -_cumulativeMoveZ * ThumbstickMoveSensitivity);
+                    -_cumulativeMoveZ * ThumbstickMoveSensitivity * MovementSpeed);
                 var absoluteMovementVector =
                     _firstPersonCameraComponent.ComputeWorldSpaceVectorFromLocalSpace(relativeMovementVector);
 

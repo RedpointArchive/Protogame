@@ -205,6 +205,7 @@
     <Compile Include="Component\Builtin\FlyAroundInputComponent.cs" />
     <Compile Include="Component\Builtin\Physical3DCapsuleComponent.cs" />
     <Compile Include="Component\Builtin\Physical3DCubeComponent.cs" />
+    <Compile Include="Component\Builtin\PhysicalRotationConstraintComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextureComponent.cs" />
     <Compile Include="Component\Builtin\Render3DCubeComponent.cs" />

@@ -29,59 +29,48 @@ namespace Protogame
             _physicsEngine = physicsEngine;
             _debugRenderer = debugRenderer;
             _physicalComponent = physicalComponent;
+
+            TargetVelocity = Vector3.Zero;
+            TryJump = false;
+            JumpVelocity = 0.5f;
+            Stiffness = 0.02f;
         }
 
         /// <summary>
         /// The target velocity that this controller should attempt to achieve.
         /// </summary>
-        public Vector3 TargetVelocity
-        {
-            get { return _physicsControllerConstraint.TargetVelocity.ToXNAVector(); }
-            set { _physicsControllerConstraint.TargetVelocity = value.ToJitterVector(); }
-        }
+        public Vector3 TargetVelocity { get; set; }
 
         /// <summary>
         /// Whether the controller should attempt to jump.
         /// </summary>
-        public bool TryJump
-        {
-            get { return _physicsControllerConstraint.TryJump; }
-            set { _physicsControllerConstraint.TryJump = value; }
-        }
+        public bool TryJump { get; set; }
 
         /// <summary>
         /// The rigid body that the controller is currently walking on, or null.
         /// </summary>
         public RigidBody BodyWalkingOn
         {
-            get { return _physicsControllerConstraint.BodyWalkingOn; }
+            get { return _physicsControllerConstraint?.BodyWalkingOn; }
         }
 
         /// <summary>
         /// The jump velocity to apply when jumping.
         /// </summary>
-        public float JumpVelocity
-        {
-            get { return _physicsControllerConstraint.JumpVelocity; }
-            set { _physicsControllerConstraint.JumpVelocity = value; }
-        }
+        public float JumpVelocity { get; set; }
 
         /// <summary>
         /// The amount of stiffness there is to increasing acceleration as the
         /// controller starts walking.
         /// </summary>
-        public float Stiffness
-        {
-            get { return _physicsControllerConstraint.Stiffness; }
-            set { _physicsControllerConstraint.Stiffness = value; }
-        }
+        public float Stiffness { get; set; }
 
         /// <summary>
         /// Whether the controller is currently touching the floor.
         /// </summary>
         public bool OnFloor
         {
-            get { return _physicsControllerConstraint.OnFloor; }
+            get { return _physicsControllerConstraint?.OnFloor ?? false; }
         }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
@@ -105,6 +94,11 @@ namespace Protogame
                 _jitterWorld.AddConstraint(_physicsControllerConstraint);
             }
 
+            _physicsControllerConstraint.TargetVelocity = TargetVelocity.ToJitterVector();
+            _physicsControllerConstraint.TryJump = TryJump;
+            _physicsControllerConstraint.JumpVelocity = JumpVelocity;
+            _physicsControllerConstraint.Stiffness = Stiffness;
+
             if (TargetVelocity.LengthSquared() > 0f)
             {
                 // Wake up the rigid body.
@@ -122,9 +116,6 @@ namespace Protogame
             public PhysicsControllerConstraint(JitterWorld world, RigidBody body) : base(body, null)
             {
                 _world = world;
-
-                JumpVelocity = 0.5f;
-                Stiffness = 0.02f;
 
                 var vec = JVector.Down;
                 var result = JVector.Zero;
