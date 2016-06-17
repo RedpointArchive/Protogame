@@ -10,5 +10,10 @@ namespace Protogame
         {
             return hierarchy.Lookup(world).Children.Select(x => x.UntypedValue).OfType<IEntity>();
         }
+
+        public static IEnumerable<IServerEntity> GetEntitiesForWorld(this IServerWorld world, IHierarchy hierarchy)
+        {
+            return hierarchy.Lookup(world).Children.Select(x => x.UntypedValue).OfType<IServerEntity>();
+        }
     }
 }

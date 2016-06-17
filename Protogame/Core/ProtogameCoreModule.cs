@@ -8,14 +8,16 @@ namespace Protogame
     /// for Protogame to work.
     /// </summary>
     /// <module>Core API</module>
-    public class ProtogameCoreModule : IProtoinjectModule
+    public class ProtogameCoreModule : ProtogameBaseModule
     {
         /// <summary>
-        /// You should call <see cref="ModuleLoadExtensions.Load{ProtogameCoreModule}"/> 
+        /// You should call <see cref="Protoinject.StandardKernel.Load{ProtogameCoreModule}"/> 
         /// instead of calling this method directly.
         /// </summary>
-        public void Load(IKernel kernel)
+        public override void Load(IKernel kernel)
         {
+            base.Load(kernel);
+
             kernel.Bind<I2DRenderUtilities>().To<Default2DRenderUtilities>();
             kernel.Bind<I3DRenderUtilities>().To<Default3DRenderUtilities>();
             kernel.Bind<IAudioUtilities>().To<DefaultAudioUtilities>();
@@ -57,8 +59,7 @@ namespace Protogame
             kernel.Bind<ILightFactory>().ToFactory();
             kernel.Bind<IStandardDirectionalLight>().To<DefaultStandardDirectionalLight>().AllowManyPerScope();
             kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>().AllowManyPerScope();
-
-            kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
+            
             kernel.Bind<IDebugRenderer>().To<NullDebugRenderer>().InSingletonScope();
         }
     }

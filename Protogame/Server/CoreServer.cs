@@ -3,6 +3,33 @@ namespace Protogame
     using System;
     using Protoinject;
 
+    /// <summary>
+    /// The core Protogame server implementation.  You should derive your server class from this
+    /// implementation.
+    /// </summary>
+    /// <typeparam name="TInitialServerWorld">The initial server world class to start the server with.</typeparam>
+    /// <module>Server</module>
+    public class CoreServer<TInitialServerWorld> : CoreServer<TInitialServerWorld, DefaultServerWorldManager>,
+        ICoreServer, IDisposable
+        where TInitialServerWorld : IServerWorld
+    {
+        public CoreServer(IKernel kernel) : base(kernel)
+        {
+        }
+    }
+
+    /// <summary>
+    /// The implementation of Protogame's base server class.  In previous versions of Protogame, this
+    /// acted as the base class for the developer's Game class.  However newer games written in
+    /// Protogame should use <see cref="CoreServer{TInitialWorld}"/> instead, as this correctly
+    /// sets games to use the default server world manager, which sets TWorldManager to be
+    /// <see cref="DefaultServerWorldManager"/> automatically.
+    /// </summary>
+    /// <typeparam name="TInitialServerWorld">The initial server world class to start the server with.</typeparam>
+    /// <typeparam name="TServerWorldManager">The server world manager class for this game.</typeparam>
+    /// <module>Server</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.CoreServer{TInitialServerWorld}</interface_ref>
     public class CoreServer<TInitialServerWorld, TServerWorldManager> : Server, ICoreServer, IDisposable
         where TInitialServerWorld : IServerWorld where TServerWorldManager : IServerWorldManager
     {

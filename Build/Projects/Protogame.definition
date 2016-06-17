@@ -316,6 +316,7 @@
     <Compile Include="Core\IWorld.cs" />
     <Compile Include="Core\IWorldManager.cs" />
     <Compile Include="Core\KernelExtensions.cs" />
+    <Compile Include="Core\ProtogameBaseModule.cs" />
     <Compile Include="Core\ProtogameCoreModule.cs" />
     <Compile Include="Core\ReloadableGameAssetManagerProvider.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
@@ -625,6 +626,7 @@
     <Compile Include="Server\DefaultTickRegulator.cs" />
     <Compile Include="Server\DefaultUniqueIdentifierAllocator.cs" />
     <Compile Include="Server\ICoreServer.cs" />
+    <Compile Include="Server\IServerConfiguration.cs" />
     <Compile Include="Server\IServerContext.cs" />
     <Compile Include="Server\IServerEntity.cs" />
     <Compile Include="Server\IServerWorld.cs" />
@@ -632,6 +634,7 @@
     <Compile Include="Server\ITickRegulator.cs" />
     <Compile Include="Server\IUniqueIdentifierAllocator.cs" />
     <Compile Include="Server\ProtogameServerIoCModule.cs" />
+    <Compile Include="Server\ProtogameServerModule.cs" />
     <Compile Include="Server\Server.cs" />
     <Compile Include="Structure\PositionOctree.cs">
       <DependentUpon>PositionOctreeNode.cs</DependentUpon>

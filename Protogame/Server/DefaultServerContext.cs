@@ -53,6 +53,11 @@ namespace Protogame
             internal set;
         }
 
+        public IHierarchy Hierarchy
+        {
+            get { return this.m_Kernel.Hierarchy; }
+        }
+
         /// <summary>
         /// The create world.
         /// </summary>

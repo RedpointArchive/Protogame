@@ -75,7 +75,7 @@ namespace Protogame
     /// </typeparam>
     /// <module>Core API</module>
     /// <internal>True</internal>
-    /// <interface_ref>Protogame.Core{TInitialWorld}</interface_ref>
+    /// <interface_ref>Protogame.CoreGame{TInitialWorld}</interface_ref>
     public abstract class CoreGame<TInitialWorld, TWorldManager> : Game, ICoreGame
         where TInitialWorld : IWorld where TWorldManager : IWorldManager
     {

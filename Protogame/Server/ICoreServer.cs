@@ -19,6 +19,21 @@ namespace Protogame
         /// The update context.
         /// </value>
         IUpdateContext UpdateContext { get; }
+
+        /// <summary>
+        /// Whether the server is currently running.
+        /// </summary>
+        bool Running { get; }
+
+        /// <summary>
+        /// Starts the server in the current thread.
+        /// </summary>
+        void Run();
+
+        /// <summary>
+        /// Stops the server, ending the main loop in the <see cref="Run"/> method.
+        /// </summary>
+        void Stop();
     }
 }
 

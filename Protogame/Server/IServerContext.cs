@@ -1,3 +1,5 @@
+using Protoinject;
+
 namespace Protogame
 {
     using System;
@@ -48,6 +50,14 @@ namespace Protogame
         /// </summary>
         /// <value>The world manager.</value>
         IServerWorldManager WorldManager { get; }
+
+        /// <summary>
+        /// Gets the dependency injection hierarchy, which contains all worlds, entities and components.
+        /// </summary>
+        /// <value>
+        /// The dependency injection hierarchy, which contains all worlds, entities and components.
+        /// </value>
+        IHierarchy Hierarchy { get; }
 
         /// <summary>
         /// The create world.
