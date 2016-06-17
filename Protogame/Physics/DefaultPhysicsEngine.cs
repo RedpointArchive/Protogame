@@ -7,6 +7,7 @@ namespace Protogame
     {
         private readonly IPhysicsFactory _physicsFactory;
         private IWorld _currentWorld;
+        private IServerWorld _currentServerWorld;
         private PhysicsShadowWorld _shadowWorld;
 
         public DefaultPhysicsEngine(IPhysicsFactory physicsFactory)
@@ -23,11 +24,27 @@ namespace Protogame
                     _shadowWorld.Dispose();
                 }
 
-                _shadowWorld = _physicsFactory.CreateShadowWorld(gameContext.World);
+                _shadowWorld = _physicsFactory.CreateShadowWorld();
                 _currentWorld = gameContext.World;
             }
 
             _shadowWorld.Update(gameContext, updateContext);
+        }
+
+        public void Update(IServerContext serverContext, IUpdateContext updateContext)
+        {
+            if (serverContext.World != _currentServerWorld || _shadowWorld == null)
+            {
+                if (_shadowWorld != null)
+                {
+                    _shadowWorld.Dispose();
+                }
+
+                _shadowWorld = _physicsFactory.CreateShadowWorld();
+                _currentServerWorld = serverContext.World;
+            }
+
+            _shadowWorld.Update(serverContext, updateContext);
         }
 
         public void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform)

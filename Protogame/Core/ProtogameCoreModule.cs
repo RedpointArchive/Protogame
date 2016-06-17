@@ -21,8 +21,6 @@ namespace Protogame
             kernel.Bind<I2DRenderUtilities>().To<Default2DRenderUtilities>();
             kernel.Bind<I3DRenderUtilities>().To<Default3DRenderUtilities>();
             kernel.Bind<IAudioUtilities>().To<DefaultAudioUtilities>();
-            kernel.Bind<ITileUtilities>().To<DefaultTileUtilities>();
-            kernel.Bind<IBoundingBoxUtilities>().To<DefaultBoundingBoxUtilities>();
             kernel.Bind<IGameContext>().To<DefaultGameContext>();
             kernel.Bind<IUpdateContext>().To<DefaultUpdateContext>();
             kernel.Bind<IKeyboardStringReader>().To<DefaultKeyboardStringReader>();
@@ -30,7 +28,6 @@ namespace Protogame
             kernel.Bind<ICommand>().To<ExitCommand>();
             kernel.Bind<ICommand>().To<HelpCommand>();
             kernel.Bind<ICommand>().To<GCCommand>();
-            kernel.Bind<IStringSanitizer>().To<DefaultStringSanitizer>();
 
             kernel.Bind<IRenderContext>().To<RenderPipelineRenderContext>();
             kernel.Bind<IRenderPipeline>().To<DefaultRenderPipeline>();

@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+
 namespace Protogame
 {
     using System;
@@ -17,7 +19,8 @@ namespace Protogame
             this.Server = server;
             this.World = world;
             this.WorldManager = worldManager;
-
+            
+            this.GameTime = new GameTime();
             this.Tick = 0;
         }
 
@@ -57,6 +60,8 @@ namespace Protogame
         {
             get { return this.m_Kernel.Hierarchy; }
         }
+
+        public GameTime GameTime { get; set; }
 
         /// <summary>
         /// The create world.

@@ -1,3 +1,6 @@
+using System.Linq;
+using Microsoft.Xna.Framework;
+
 namespace Protogame
 {
     using System;
@@ -37,6 +40,8 @@ namespace Protogame
 
         private readonly IProfiler m_Profiler;
 
+        private readonly INode _current;
+
         /// <summary>
         /// The current analytics engine instance.
         /// </summary>
@@ -49,38 +54,46 @@ namespace Protogame
 
         private readonly ITickRegulator m_TickRegulator;
 
+        /// <summary>
+        /// An array of the engine hooks that are loaded.
+        /// </summary>
+        private IEngineHook[] _engineHooks;
+
         private bool m_HasSetup;
 
         private bool m_Stopping;
 
+        private DateTime? _lastFrameEnd;
+
         public CoreServer(IKernel kernel)
         {
             this.m_Kernel = kernel;
+            _current = this.m_Kernel.CreateEmptyNode("Server");
 
-            this.m_Profiler = kernel.TryGet<IProfiler>();
+            this.m_Profiler = kernel.TryGet<IProfiler>(_current);
             if (this.m_Profiler == null)
             {
                 kernel.Bind<IProfiler>().To<NullProfiler>();
-                this.m_Profiler = kernel.Get<IProfiler>();
+                this.m_Profiler = kernel.Get<IProfiler>(_current);
             }
 
-            this.m_AnalyticsEngine = kernel.TryGet<IAnalyticsEngine>();
+            this.m_AnalyticsEngine = kernel.TryGet<IAnalyticsEngine>(_current);
             if (this.m_AnalyticsEngine == null)
             {
                 kernel.Bind<IAnalyticsEngine>().To<NullAnalyticsEngine>();
-                this.m_AnalyticsEngine = kernel.Get<IAnalyticsEngine>();
+                this.m_AnalyticsEngine = kernel.Get<IAnalyticsEngine>(_current);
             }
 
-            this.m_AnalyticsInitializer = kernel.TryGet<IAnalyticsInitializer>();
+            this.m_AnalyticsInitializer = kernel.TryGet<IAnalyticsInitializer>(_current);
             if (this.m_AnalyticsInitializer == null)
             {
                 kernel.Bind<IAnalyticsInitializer>().To<NullAnalyticsInitializer>();
-                this.m_AnalyticsInitializer = kernel.Get<IAnalyticsInitializer>();
+                this.m_AnalyticsInitializer = kernel.Get<IAnalyticsInitializer>(_current);
             }
 
             this.m_AnalyticsInitializer.Initialize(this.m_AnalyticsEngine);
 
-            this.m_TickRegulator = this.m_Kernel.Get<ITickRegulator>();
+            this.m_TickRegulator = this.m_Kernel.Get<ITickRegulator>(_current);
         }
 
         public IServerContext ServerContext
@@ -120,11 +133,20 @@ namespace Protogame
         {
             using (this.m_Profiler.Measure("tick"))
             {
+                var now = DateTime.Now;
+                var spanSinceStart = now - this.ServerContext.StartTime;
+                var spanSinceLastFrame = _lastFrameEnd == null ? TimeSpan.Zero : (now - _lastFrameEnd.Value);
+
+                this.ServerContext.GameTime.TotalGameTime = spanSinceStart;
+                this.ServerContext.GameTime.ElapsedGameTime = spanSinceLastFrame;
+
                 this.ServerContext.TimeTick = (int)(DateTime.Now - this.ServerContext.StartTime).TotalMilliseconds;
 
                 this.ServerContext.WorldManager.Update(this);
 
                 this.ServerContext.Tick++;
+
+                _lastFrameEnd = DateTime.Now;
             }
         }
 
@@ -148,6 +170,11 @@ namespace Protogame
             {
                 this.m_TickRegulator.WaitUntilReady();
 
+                foreach (var hook in _engineHooks)
+                {
+                    hook.Update(this.ServerContext, this.UpdateContext);
+                }
+
                 this.Update();
             }
         }
@@ -169,20 +196,27 @@ namespace Protogame
             // after they've been constructed.
             this.m_Kernel.Bind<IServerWorld>().To<TInitialServerWorld>();
             this.m_Kernel.Bind<IServerWorldManager>().To<TServerWorldManager>();
-            var world = this.m_Kernel.Get<IServerWorld>();
-            var worldManager = this.m_Kernel.Get<IServerWorldManager>();
+            var world = this.m_Kernel.Get<IServerWorld>(_current);
+            var worldManager = this.m_Kernel.Get<IServerWorldManager>(_current);
             this.m_Kernel.Unbind<IServerWorld>();
             this.m_Kernel.Unbind<IServerWorldManager>();
 
             // Create the game context.
             this.ServerContext = this.m_Kernel.Get<IServerContext>(
+                _current,
                 new NamedConstructorArgument("server", this), 
                 new NamedConstructorArgument("world", world), 
                 new NamedConstructorArgument("worldManager", worldManager));
             this.ServerContext.StartTime = DateTime.Now;
 
             // Create the update context.
-            this.UpdateContext = this.m_Kernel.Get<IUpdateContext>();
+            this.UpdateContext = this.m_Kernel.Get<IUpdateContext>(_current);
+
+            // Retrieve all engine hooks.  These can be set up by additional modules
+            // to change runtime behaviour.
+            _engineHooks =
+                this.m_Kernel.GetAll<IEngineHook>(_current, null, null,
+                    new IInjectionAttribute[] { new FromServerAttribute() }).ToArray();
         }
     }
 }

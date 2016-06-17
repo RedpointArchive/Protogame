@@ -3,7 +3,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class PhysicalRotationConstraintComponent : IUpdatableComponent
+    public class PhysicalRotationConstraintComponent : IUpdatableComponent, IServerUpdatableComponent
     {
         private readonly IPhysicalComponent _physicalComponent;
         private bool _wasEnabled = false;
@@ -19,6 +19,16 @@ namespace Protogame
         public bool Enabled { get; set; }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
+        {
+            Update();
+        }
+
+        public void Update(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext)
+        {
+            Update();
+        }
+
+        private void Update()
         {
             if (Enabled)
             {

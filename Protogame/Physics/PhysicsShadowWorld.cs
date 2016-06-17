@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Jitter;
 using Jitter.Collision;
@@ -16,18 +17,14 @@ namespace Protogame
 
         private readonly JitterWorld _physicsWorld;
 
-        private readonly IWorld _gameSystemWorld;
-
         private readonly List<KeyValuePair<RigidBody, IHasTransform>> _rigidBodyMappings;
 
         private Dictionary<int, Quaternion> _lastFrameRotation;
 
         private Dictionary<int, Vector3> _lastFramePosition;
 
-        public PhysicsShadowWorld(IPhysicsEngine physicsEngine, IDebugRenderer debugRenderer, IWorld world)
+        public PhysicsShadowWorld(IPhysicsEngine physicsEngine, IDebugRenderer debugRenderer)
         {
-            _gameSystemWorld = world;
-
             _physicsEngine = physicsEngine;
             _debugRenderer = debugRenderer;
             _collisionSystem = new CollisionSystemPersistentSAP
@@ -46,8 +43,18 @@ namespace Protogame
             _lastFramePosition = new Dictionary<int, Vector3>();
             _lastFrameRotation = new Dictionary<int, Quaternion>();
         }
-        
+
+        public void Update(IServerContext serverContext, IUpdateContext updateContext)
+        {
+            Update((float)serverContext.GameTime.ElapsedGameTime.TotalSeconds);
+        }
+
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
+        {
+            Update((float) gameContext.GameTime.ElapsedGameTime.TotalSeconds);
+        }
+
+        private void Update(float totalSecondsElapsed)
         {
             var originalRotation = new Dictionary<int, Quaternion>();
             var originalPosition = new Dictionary<int, Vector3>();
@@ -102,7 +109,7 @@ namespace Protogame
             _lastFramePosition.Clear();
             _lastFrameRotation.Clear();
 
-            _physicsWorld.Step((float)gameContext.GameTime.ElapsedGameTime.TotalSeconds, true);
+            _physicsWorld.Step(totalSecondsElapsed, true);
 
             foreach (var kv in _rigidBodyMappings)
             {

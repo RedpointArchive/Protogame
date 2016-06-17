@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Protoinject;
 
 namespace Protogame
 {
@@ -27,12 +25,17 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Component</module>
-    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IHasLights, IEntity
+    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IHasLights, IEntity, IServerEntity
     {
         /// <summary>
         /// The component callable for handling updatable components.
         /// </summary>
         private IComponentCallable<IGameContext, IUpdateContext> _update;
+
+        /// <summary>
+        /// The component callable for handling server-side updatable components.
+        /// </summary>
+        private IComponentCallable<IServerContext, IUpdateContext> _serverUpdate;
 
         /// <summary>
         /// The component callable for handling renderable components.
@@ -62,6 +65,7 @@ namespace Protogame
             Transform = new DefaultTransform();
 
             _update = RegisterCallable<IUpdatableComponent, IGameContext, IUpdateContext>((t, g, u) => t.Update(this, g, u));
+            _serverUpdate = RegisterCallable<IServerUpdatableComponent, IServerContext, IUpdateContext>((t, s, u) => t.Update(this, s, u));
             _render = RegisterCallable<IRenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Render(this, g, r));
             _handleEvent = RegisterCallable<IEventfulComponent, IGameContext, IEventEngine<IGameContext>, Event, EventState>(EventCallback);
             _getLights = RegisterCallable<ILightableComponent, List<ILight>>(GetLightCallback);
@@ -87,6 +91,16 @@ namespace Protogame
         public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             _update.Invoke(gameContext, updateContext);
+        }
+
+        /// <summary>
+        /// Updates the entity on the server.
+        /// </summary>
+        /// <param name="serverContext">The current server context.</param>
+        /// <param name="updateContext">The current update context.</param>
+        public void Update(IServerContext serverContext, IUpdateContext updateContext)
+        {
+            _serverUpdate.Invoke(serverContext, updateContext);
         }
 
         /// <summary>

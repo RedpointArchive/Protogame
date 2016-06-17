@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Protoinject;
 
@@ -15,36 +16,100 @@ namespace Protogame
             ILightFactory lightFactory)
         {
             _node = node;
-            _standardPointLight = lightFactory.CreateStandardPointLight(
-                Vector3.Zero,
-                Color.White,
-                1,
-                1);
-            _standardPointLightArray = new ILight[] {_standardPointLight};
+
+            try
+            {
+                _standardPointLight = lightFactory.CreateStandardPointLight(
+                    Vector3.Zero,
+                    Color.White,
+                    1,
+                    1);
+                _standardPointLightArray = new ILight[] {_standardPointLight};
+            }
+            catch (NotSupportedException)
+            {
+                _standardPointLight = null;
+                _standardPointLightArray = new ILight[0];
+            }
         }
         
         public IEnumerable<ILight> GetLights() => _standardPointLightArray;
         
         public Color LightColor
         {
-            get { return _standardPointLight.LightColor; }
-            set { _standardPointLight.LightColor = value; }
+            get
+            {
+                if (_standardPointLight == null)
+                {
+                    return Color.Black;
+                }
+
+                return _standardPointLight.LightColor;
+            }
+            set
+            {
+                if (_standardPointLight == null)
+                {
+                    return;
+                }
+
+                _standardPointLight.LightColor = value;
+            }
         }
 
         public float LightRadius
         {
-            get { return _standardPointLight.LightRadius; }
-            set { _standardPointLight.LightRadius = value; }
+            get
+            {
+                if (_standardPointLight == null)
+                {
+                    return 0f;
+                }
+
+                return _standardPointLight.LightRadius;
+            }
+            set
+            {
+                if (_standardPointLight == null)
+                {
+                    return;
+                }
+
+                _standardPointLight.LightRadius = value;
+            }
         }
 
         public float LightIntensity
         {
-            get { return _standardPointLight.LightIntensity; }
-            set { _standardPointLight.LightIntensity = value; }
+            get
+            {
+                if (_standardPointLight == null)
+                {
+                    return 0f;
+                }
+
+                return _standardPointLight.LightIntensity;
+            }
+            set
+            {
+                if (_standardPointLight == null)
+                {
+                    return;
+                }
+
+                _standardPointLight.LightIntensity = value;
+            }
         }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
+            if (_standardPointLight == null)
+            {
+                throw new InvalidOperationException(
+                    "The light was null (presumably because this code is executing on a server), " +
+                    "but the Update method that accepts a game context was called.");
+            }
+
             var matrix = Matrix.Identity;
             var matrixComponent = _node.Parent?.UntypedValue as IHasTransform;
             if (matrixComponent != null)

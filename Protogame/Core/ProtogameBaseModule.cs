@@ -18,6 +18,9 @@ namespace Protogame
         /// </summary>
         public virtual void Load(IKernel kernel)
         {
+            kernel.Bind<ITileUtilities>().To<DefaultTileUtilities>();
+            kernel.Bind<IBoundingBoxUtilities>().To<DefaultBoundingBoxUtilities>();
+            kernel.Bind<IStringSanitizer>().To<DefaultStringSanitizer>();
             kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
         }
     }

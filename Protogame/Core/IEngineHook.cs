@@ -31,5 +31,17 @@ namespace Protogame
         /// The update context.
         /// </param>
         void Update(IGameContext gameContext, IUpdateContext updateContext);
+
+        /// <summary>
+        /// The update callback for the engine hook on a server.  This is triggered right before the update of the
+        /// world manager.
+        /// </summary>
+        /// <param name="serverContext">
+        /// The server context.
+        /// </param>
+        /// <param name="updateContext">
+        /// The update context.
+        /// </param>
+        void Update(IServerContext serverContext, IUpdateContext updateContext);
     }
 }

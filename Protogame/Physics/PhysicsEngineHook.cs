@@ -18,5 +18,10 @@
         {
             _physicsEngine.Update(gameContext, updateContext);
         }
+
+        public void Update(IServerContext serverContext, IUpdateContext updateContext)
+        {
+            _physicsEngine.Update(serverContext, updateContext);
+        }
     }
 }

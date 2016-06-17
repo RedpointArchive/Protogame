@@ -4,6 +4,6 @@ namespace Protogame
 {
     public interface IPhysicsFactory : IGenerateFactory
     {
-        PhysicsShadowWorld CreateShadowWorld(IWorld world);
+        PhysicsShadowWorld CreateShadowWorld();
     }
 }

@@ -105,6 +105,10 @@ namespace Protogame
 #endif
         }
 
+        public void Update(IServerContext serverContext, IUpdateContext updateContext)
+        {
+        }
+
         /// <summary>
         /// Iterates through all of the connected game pads, updates their state and fires input events.
         /// </summary>

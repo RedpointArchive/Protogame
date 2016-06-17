@@ -24,5 +24,9 @@
         {
             _sensorEngine.Update(gameContext, updateContext);
         }
+
+        public void Update(IServerContext serverContext, IUpdateContext updateContext)
+        {
+        }
     }
 }

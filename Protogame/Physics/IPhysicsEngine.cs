@@ -7,6 +7,8 @@ namespace Protogame
     {
         void Update(IGameContext gameContext, IUpdateContext updateContext);
 
+        void Update(IServerContext serverContext, IUpdateContext updateContext);
+
         void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform);
 
         void DebugRender(IGameContext gameContext, IRenderContext renderContext);

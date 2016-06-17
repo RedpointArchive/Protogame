@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using Protoinject;
 
 namespace Protogame
@@ -58,6 +59,14 @@ namespace Protogame
         /// The dependency injection hierarchy, which contains all worlds, entities and components.
         /// </value>
         IHierarchy Hierarchy { get; }
+        
+        /// <summary>
+        /// Gets the amount of game time elapsed since the last update step.
+        /// </summary>
+        /// <value>
+        /// The elapsed game time since the last update step.
+        /// </value>
+        GameTime GameTime { get; set; }
 
         /// <summary>
         /// The create world.
