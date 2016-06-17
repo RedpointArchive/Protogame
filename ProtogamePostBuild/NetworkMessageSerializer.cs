@@ -127,7 +127,20 @@ namespace ProtogamePostBuild
                 if (instruction.Operand is FieldReference)
                 {
                     var f = (FieldReference) instruction.Operand;
-                    instruction.Operand = targetType.Fields.First(x => x.Name == f.Name);
+                    if (f.DeclaringType == method.DeclaringType)
+                    {
+                        instruction.Operand = targetType.Fields.FirstOrDefault(x => x.Name == f.Name);
+                    }
+                    else
+                    {
+                        instruction.Operand =
+                            targetType.Module.GetType(f.DeclaringType.FullName)
+                                .Fields.FirstOrDefault(x => x.Name == f.Name);
+                    }
+                    if (instruction.Operand == null)
+                    {
+                        Console.WriteLine("WARNING: Unable to resolve field " + f.Name + " in new type.  The network serializer will probably crash :(");
+                    }
                 }
                 else if (instruction.Operand is ParameterReference)
                 {

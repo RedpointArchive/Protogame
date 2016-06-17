@@ -99,13 +99,15 @@ namespace Protogame
 
         private void InternalSerialize<T>(T message, Stream stream)
         {
-            Serializer.Serialize(stream, message);
-            //_typeToSerializer[message.GetType()].Serialize(stream, message);
+            //Serializer.Serialize(stream, message);
+            _typeToSerializer[message.GetType()].Serialize(stream, message);
         }
 
         private object InternalDeserialize(Stream message, Type type)
         {
             var obj = Activator.CreateInstance(type);
+            //var typeModel = RuntimeTypeModel.Create();
+            //var result = typeModel.Deserialize(message, obj, type);
             var result = _typeToSerializer[type].Deserialize(message, obj, type);
             return result;
         }
