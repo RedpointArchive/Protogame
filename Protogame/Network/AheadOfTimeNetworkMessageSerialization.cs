@@ -29,7 +29,7 @@ namespace Protogame
             _stringToType = mapped.ToDictionary(k => k.Attribute.MessageType, v => v.Type);
             _typeToString = mapped.ToDictionary(k => k.Type, v => v.Attribute.MessageType);
 
-            var assembliesToSerializers = networkMessages.Select(x => x.GetType().Assembly)
+            var assembliesToSerializers = networkMessages.Select(x => x.GetType().Assembly).Distinct()
                 .ToDictionary(
                     k => k,
                     v => (TypeModel) Activator.CreateInstance(

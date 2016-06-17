@@ -2,17 +2,18 @@ namespace Protogame
 {
     using System;
     using System.Threading;
-    using Protoinject;
 
     /// <summary>
     /// The default implementation for tick regulation on a game server.
     /// </summary>
     public class DefaultTickRegulator : ITickRegulator
     {
-        private readonly int m_TicksPerSecond;
+        private readonly int _ticksPerSecond;
 
-        private DateTime? m_StartTime;
-        
+        private DateTime? _processedTime;
+
+        private DateTime? _lastActualTime;
+
         public DefaultTickRegulator()
         {
             // The default tick amount aligns with MonoGame's 60 FPS target.
@@ -21,41 +22,53 @@ namespace Protogame
             // will be applying velocities at a slower rate than clients (and thus
             // you will need to multiply velocities so the server moves further in
             // each tick).
-            this.m_TicksPerSecond = 60;
+            _ticksPerSecond = 60;
         }
 
         protected DefaultTickRegulator(int ticksPerSecond)
         {
-            this.m_TicksPerSecond = ticksPerSecond;
+            _ticksPerSecond = ticksPerSecond;
         }
 
         public void WaitUntilReady()
         {
-            if (this.m_StartTime == null)
+            var now = DateTime.Now;
+
+            if (_processedTime == null)
             {
                 // First tick, mark the start time for the next update
                 // and return immediately.
-                this.m_StartTime = DateTime.Now;
+                _processedTime = now;
                 return;
             }
 
-            var amount = (1000f / this.m_TicksPerSecond) - (DateTime.Now - this.m_StartTime.Value).TotalMilliseconds;
+            var amount = (1000f / _ticksPerSecond) - (now - _processedTime.Value).TotalMilliseconds;
             if (amount > 0)
             {
                 Thread.Sleep((int)amount);
-                this.m_StartTime = DateTime.Now;
+                _processedTime = now;
             }
             else
             {
-                Console.WriteLine(
-                    "WARNING: Tick took " + (int)(DateTime.Now - this.m_StartTime.Value).TotalMilliseconds
-                    + "ms, which is longer than " + (1000f / this.m_TicksPerSecond) + "ms.");
+                if (_lastActualTime != null)
+                {
+                    Console.WriteLine(
+                        "WARNING: Tick took " + (int) (now - _lastActualTime.Value).TotalMilliseconds
+                        + "ms, which is longer than " + (1000f/_ticksPerSecond) + "ms (currently behind by " + -amount + "ms).");
+                }
+                else
+                {
+                    Console.WriteLine(
+                        "WARNING: Tick took longer than " + (1000f / _ticksPerSecond) + "ms (currently behind by " + -amount + "ms).");
+                }
 
                 // Adjust the next start time so that we wait less.  This allows us to "catch up" on ticks, ensuring
                 // that the same number of ticks occur for a given time period, regardless of how long an update
                 // takes (assuming that some of those updates are short and allow it to catch up).
-                this.m_StartTime = DateTime.Now.AddMilliseconds(amount);
+                _processedTime = now.AddMilliseconds(amount);
             }
+
+            _lastActualTime = now;
         }
     }
 }

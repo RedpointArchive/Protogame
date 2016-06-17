@@ -183,11 +183,12 @@
                 this, 
                 endpoint, 
                 this.m_UdpClient);
-            this.OnClientConnected(this.m_MxClients[endpoint]);
             this.RegisterForEvents(this.m_MxClients[endpoint]);
 
             this.m_Reliabilities[endpoint] = new MxReliability(this.m_MxClients[endpoint]);
             this.RegisterForEvents(this.m_Reliabilities[endpoint]);
+
+            this.OnClientConnected(this.m_MxClients[endpoint]);
         }
 
         /// <summary>
