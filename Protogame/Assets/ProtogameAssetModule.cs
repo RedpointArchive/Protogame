@@ -25,6 +25,7 @@ namespace Protogame
             kernel.Bind<IAssetLoader>().To<TextureAtlasAssetLoader>();
             kernel.Bind<IAssetLoader>().To<VariableAssetLoader>();
             kernel.Bind<IAssetLoader>().To<ConfigurationAssetLoader>();
+            kernel.Bind<IAssetLoader>().To<UserInterfaceAssetLoader>();
             kernel.Bind<IAssetSaver>().To<FontAssetSaver>();
             kernel.Bind<IAssetSaver>().To<LanguageAssetSaver>();
             kernel.Bind<IAssetSaver>().To<TextureAssetSaver>();
@@ -36,6 +37,7 @@ namespace Protogame
             kernel.Bind<IAssetSaver>().To<TextureAtlasAssetSaver>();
             kernel.Bind<IAssetSaver>().To<VariableAssetSaver>();
             kernel.Bind<IAssetSaver>().To<ConfigurationAssetSaver>();
+            kernel.Bind<IAssetSaver>().To<UserInterfaceAssetSaver>();
             kernel.Bind<IRawAssetLoader>().To<RawAssetLoader>();
             kernel.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             kernel.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
@@ -99,6 +101,7 @@ namespace Protogame
             kernel.Bind<ILoadStrategy>().To<RawOgmoEditorLevelLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<RawConfigurationLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawUserInterfaceLoadStrategy>();
 #endif
         }
     }
