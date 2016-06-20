@@ -575,7 +575,7 @@ namespace ProtogameDocsTool
 
         static string GetGenericTypeInstanceXmlName(Type type)
         {
-            var tmpName = type.FullName;
+            var tmpName = (type.Namespace == null ? string.Empty : (type.Namespace + ".")) + type.Name;
 
             if (type.IsGenericType)
             {
