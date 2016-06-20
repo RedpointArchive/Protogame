@@ -1,7 +1,7 @@
 namespace Protogame
 {
     /// <summary>
-    /// An interface which indicates that an object has a velocity assocated with it.
+    /// An interface which indicates that an object has a velocity associated with it.
     /// </summary>
     /// <remarks>
     /// This interface is currently only used by the platforming module, and may be deprecated in the future.
@@ -10,26 +10,26 @@ namespace Protogame
     public interface IHasVelocity
     {
         /// <summary>
-        /// Gets or sets the x speed.
+        /// Gets or sets the X speed.
         /// </summary>
         /// <value>
-        /// The x speed.
+        /// The X speed.
         /// </value>
         float XSpeed { get; set; }
 
         /// <summary>
-        /// Gets or sets the y speed.
+        /// Gets or sets the Y speed.
         /// </summary>
         /// <value>
-        /// The y speed.
+        /// The Y speed.
         /// </value>
         float YSpeed { get; set; }
 
         /// <summary>
-        /// Gets or sets the z speed.
+        /// Gets or sets the Z speed.
         /// </summary>
         /// <value>
-        /// The z speed.
+        /// The Z speed.
         /// </value>
         float ZSpeed { get; set; }
     }

@@ -1,13 +1,18 @@
 using System;
-using System.Runtime.CompilerServices;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics;
-
     /// <summary>
-    /// The RenderContext interface.
+    /// An interface which provides the current context in which rendering is
+    /// being performed.  This is passed to all <c>Render</c> methods by the engine.
+    /// <para>
+    /// You should avoid performing calls to MonoGame's rendering APIs unless you
+    /// have an accessible instance of <see cref="IRenderContext"/>.  Without having
+    /// an instance of <see cref="IRenderContext"/>, it's possible that the code you
+    /// are writing will be invoked outside of the standard rendering loop.
+    /// </para>
     /// </summary>
     /// <module>Core API</module>
     public interface IRenderContext
