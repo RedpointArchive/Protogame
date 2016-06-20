@@ -1,12 +1,9 @@
 namespace Protogame
 {
-    using System;
-    using System.Diagnostics;
     using Protoinject;
 #if FALSE
 	using Protoinject.Extensions.Interception.Infrastructure.Language;
 #endif
-    using Protoinject;
 
     /// <summary>
     /// The protogame performance io c module.

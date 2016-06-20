@@ -1,5 +1,4 @@
-﻿using System;
-using Jitter.Collision.Shapes;
+﻿using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Protoinject;
 

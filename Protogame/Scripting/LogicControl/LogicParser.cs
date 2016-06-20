@@ -6,7 +6,6 @@ namespace LogicControl
     using System.Globalization;
     using System.IO;
     using System.Reflection;
-    using System.Runtime.InteropServices;
     using GOLD;
 
     public class LogicParser

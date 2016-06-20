@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Protogame
+﻿namespace Protogame
 {
     public interface IHasDesiredSize
     {

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Name="ProtogamePostBuild" Path="ProtogamePostBuild" Type="Console" Platforms="Linux,MacOS,Windows" PostBuildHook="True">
+<Project Name="ProtogamePostGameBuild" Path="ProtogamePostGameBuild" Type="Console" Platforms="Linux,MacOS,Windows" PostBuildHook="True">
   <Properties>
     <Property Name="MonoDevelopPoliciesFile" Value="Build\Redpoint.appliedpolicy" />
     <PostBuildHookExcludes>
@@ -8,7 +8,7 @@
       <Project Name="ProtogameAssetTool" />
       <Project Name="ProtogameDocsTool" />
       <Project Name="ProtogameEditor" />
-      <Project Name="ProtogameEditor" />
+      <Project Name="ProtogamePostLibBuild" />
       <Project Name="protobuf-net-ikvm" />
       <Project Name="protobuf-precompile" />
       <Project Name="IKVM.Reflection" />
@@ -36,8 +36,6 @@
   <Files>
     <Compile Include="ATFLevelEditorBaking.cs" />
     <Compile Include="BakingEditorQuery.cs" />
-    <Compile Include="NetworkMessageSerializer.cs" />
-    <Compile Include="PreloadedAssemblyResolver.cs" />
     <Compile Include="Program.cs" />
   </Files>
 </Project>

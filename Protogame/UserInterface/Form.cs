@@ -4,7 +4,6 @@ namespace Protogame
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Input;
 
     /// <summary>
     /// The form.

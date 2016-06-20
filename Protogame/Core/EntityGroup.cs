@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Microsoft.Xna.Framework;
 using Protogame.ATFLevelEditor;
 using Protoinject;
 

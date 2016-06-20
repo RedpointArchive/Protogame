@@ -2,7 +2,6 @@ namespace Protogame
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Input;
 #if PLATFORM_ANDROID || PLATFORM_OUYA
 	using Microsoft.Xna.Framework.Input.Touch;

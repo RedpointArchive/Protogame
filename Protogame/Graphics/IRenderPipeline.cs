@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Protogame
+﻿namespace Protogame
 {
     /// <summary>
     /// The interface for the rendering pipeline.

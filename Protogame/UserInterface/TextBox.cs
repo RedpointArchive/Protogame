@@ -3,9 +3,8 @@ namespace Protogame
     using System;
     using System.Text;
     using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Input;
 
-    #if PLATFORM_ANDROID
+#if PLATFORM_ANDROID
     using Android.Content;
     using Android.Views.InputMethods;
     #endif

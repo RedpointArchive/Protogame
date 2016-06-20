@@ -1,7 +1,5 @@
 ﻿#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 
-using System;
-using Protogame;
 using System.IO;
 using System.Collections.Generic;
 

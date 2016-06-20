@@ -61,6 +61,8 @@ namespace Protogame
             IBindableTo<TEvent, TComponentizedEntity> ToComponentizedEntity<TComponentizedEntity>(bool onlyFirst) where TComponentizedEntity : ComponentizedEntity;
 
             void ToNothing();
+
+            IBindableTo<TEvent, ComponentizedEntity> ToAllComponentizedEntities();
         }
         
         protected interface IBindableOn<TEvent, TEntity>
@@ -237,6 +239,13 @@ namespace Protogame
             {
                 var bindable = new DefaultBindableTo<T, TComponentizedEntity>(_kernel, this.m_StaticEventBinder, this.m_Filter);
                 bindable.BindAsComponentizedEntity<TComponentizedEntity>(onlyFirst);
+                return bindable;
+            }
+
+            public IBindableTo<T, ComponentizedEntity> ToAllComponentizedEntities()
+            {
+                var bindable = new DefaultBindableTo<T, ComponentizedEntity>(_kernel, this.m_StaticEventBinder, this.m_Filter);
+                bindable.BindAsComponentizedEntity<ComponentizedEntity>(false);
                 return bindable;
             }
 

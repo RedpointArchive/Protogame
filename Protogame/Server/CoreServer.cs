@@ -1,5 +1,4 @@
 using System.Linq;
-using Microsoft.Xna.Framework;
 
 namespace Protogame
 {

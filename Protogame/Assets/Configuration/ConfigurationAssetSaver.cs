@@ -3,8 +3,6 @@ using System.Linq;
 
 namespace Protogame
 {
-    using System;
-
     /// <summary>
     /// The configuration asset saver.
     /// </summary>

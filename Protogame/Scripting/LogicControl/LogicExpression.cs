@@ -1,6 +1,5 @@
 namespace LogicControl
 {
-    using System;
     using System.Linq.Expressions;
 
     public abstract class LogicExpression

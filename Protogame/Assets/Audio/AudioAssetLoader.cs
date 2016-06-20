@@ -1,7 +1,5 @@
 namespace Protogame
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// The audio asset loader.
     /// </summary>

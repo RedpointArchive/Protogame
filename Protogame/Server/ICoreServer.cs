@@ -1,7 +1,5 @@
 namespace Protogame
 {
-    using System;
-
     public interface ICoreServer
     {
         /// <summary>

@@ -2,7 +2,6 @@ namespace Protogame
 {
     using System;
     using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Input;
 
     /// <summary>
     /// The link.

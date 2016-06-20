@@ -5,8 +5,6 @@ namespace Protogame
 	using System.Windows.Forms;
 #endif
     using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Input;
-	using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
     /// <summary>
     /// The file select.

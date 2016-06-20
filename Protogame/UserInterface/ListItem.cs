@@ -1,7 +1,6 @@
 ﻿namespace Protogame
 {
     using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Input;
 
     /// <summary>
     /// The list item.

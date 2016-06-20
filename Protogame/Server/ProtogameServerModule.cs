@@ -21,7 +21,6 @@ namespace Protogame
             base.Load(kernel);
 
             kernel.Bind<ITickRegulator>().To<DefaultTickRegulator>().InSingletonScope();
-            kernel.Bind<IUniqueIdentifierAllocator>().To<DefaultUniqueIdentifierAllocator>().InSingletonScope();
 
             kernel.Bind<IServerContext>().To<DefaultServerContext>();
             kernel.Bind<IUpdateContext>().To<DefaultUpdateContext>();

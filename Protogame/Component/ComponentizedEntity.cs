@@ -25,7 +25,7 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Component</module>
-    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IHasLights, IEntity, IServerEntity
+    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable
     {
         /// <summary>
         /// The component callable for handling updatable components.
@@ -48,6 +48,26 @@ namespace Protogame
         private IComponentCallable<IGameContext, IEventEngine<IGameContext>, Event, EventState> _handleEvent;
 
         /// <summary>
+        /// The component callable for handling network messages recieved on a client.
+        /// </summary>
+        private IComponentCallable<IGameContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState> _handleMessageRecievedClient;
+
+        /// <summary>
+        /// The component callable for handling network messages recieved on a server.
+        /// </summary>
+        private IComponentCallable<IServerContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState> _handleMessageRecievedServer;
+
+        /// <summary>
+        /// The component callable for handling the creation of an entity from the server.
+        /// </summary>
+        private IComponentCallable<IGameContext, IUpdateContext, int> _networkIdentifiableClient;
+
+        /// <summary>
+        /// The component callable for handling the creation of a predicted entity from the client.
+        /// </summary>
+        private IComponentCallable<IServerContext, IUpdateContext, MxClient, int> _networkIdentifiableServer;
+
+        /// <summary>
         /// The component callable for retrieving lights defined by components.
         /// </summary>
         private IComponentCallable<List<ILight>> _getLights;
@@ -68,9 +88,11 @@ namespace Protogame
             _serverUpdate = RegisterCallable<IServerUpdatableComponent, IServerContext, IUpdateContext>((t, s, u) => t.Update(this, s, u));
             _render = RegisterCallable<IRenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Render(this, g, r));
             _handleEvent = RegisterCallable<IEventfulComponent, IGameContext, IEventEngine<IGameContext>, Event, EventState>(EventCallback);
+            _handleMessageRecievedClient = RegisterCallable<INetworkedComponent, IGameContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState>(ClientMessageCallback);
+            _handleMessageRecievedServer = RegisterCallable<INetworkedComponent, IServerContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState>(ServerMessageCallback);
+            _networkIdentifiableClient = RegisterCallable<INetworkIdentifiable, IGameContext, IUpdateContext, int>((c, g, u, i) => c.ReceiveNetworkIDFromServer(g, u, i));
+            _networkIdentifiableServer = RegisterCallable<INetworkIdentifiable, IServerContext, IUpdateContext, MxClient, int>((c, s, u, mc, i) => c.ReceivePredictedNetworkIDFromClient(s, u, mc, i));
             _getLights = RegisterCallable<ILightableComponent, List<ILight>>(GetLightCallback);
-
-            RegisterPrivateComponent(this); // Register this as IHasMatrix.
         }
 
         /// <summary>
@@ -180,6 +202,144 @@ namespace Protogame
         private void GetLightCallback(ILightableComponent component, List<ILight> lightList)
         {
             lightList.AddRange(component.GetLights());
+        }
+
+        /// <summary>
+        /// Handles network events from an event engine.  This implementation propagates events through the
+        /// component hierarchy to components that implement <see cref="INetworkedComponent"/>.
+        /// </summary>
+        /// <param name="context">The current game context.</param>
+        /// <param name="eventEngine">The event engine from which the event was fired.</param>
+        /// <param name="event">The network event that is to be handled.</param>
+        /// <returns>Whether or not the event was consumed.</returns>
+        public bool Handle(INetworkEventContext context, IEventEngine<INetworkEventContext> eventEngine, Event @event)
+        {
+            var networkEvent = @event as NetworkMessageReceivedEvent;
+            if (networkEvent == null)
+            {
+                return false;
+            }
+            
+            var state = new EventState
+            {
+                Consumed = false
+            };
+
+            if (networkEvent.GameContext != null)
+            {
+                _handleMessageRecievedClient.Invoke(
+                    networkEvent.GameContext,
+                    networkEvent.UpdateContext,
+                    networkEvent.Dispatcher,
+                    networkEvent.Client,
+                    networkEvent.Payload,
+                    networkEvent.ProtocolID,
+                    state);
+            }
+
+            if (networkEvent.ServerContext != null && !state.Consumed)
+            {
+                _handleMessageRecievedServer.Invoke(
+                    networkEvent.ServerContext,
+                    networkEvent.UpdateContext,
+                    networkEvent.Dispatcher,
+                    networkEvent.Client,
+                    networkEvent.Payload,
+                    networkEvent.ProtocolID,
+                    state);
+            }
+
+            return state.Consumed;
+        }
+
+        /// <summary>
+        /// Internally handles propagating network messages to the networked components on the server.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="serverContext"></param>
+        /// <param name="updateContext"></param>
+        /// <param name="dispatcher"></param>
+        /// <param name="client"></param>
+        /// <param name="payload"></param>
+        /// <param name="protocolId"></param>
+        /// <param name="eventState"></param>
+        private void ServerMessageCallback(
+            INetworkedComponent component,
+            IServerContext serverContext,
+            IUpdateContext updateContext, 
+            MxDispatcher dispatcher,
+            MxClient client,
+            byte[] payload,
+            uint protocolId,
+            EventState eventState)
+        {
+            if (!eventState.Consumed)
+            {
+                eventState.Consumed = component.ReceiveMessage(
+                    serverContext,
+                    updateContext,
+                    dispatcher,
+                    client,
+                    payload,
+                    protocolId);
+            }
+        }
+
+        /// <summary>
+        /// Internally handles propagating network messages to the networked components on the client.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="gameContext"></param>
+        /// <param name="updateContext"></param>
+        /// <param name="dispatcher"></param>
+        /// <param name="client"></param>
+        /// <param name="payload"></param>
+        /// <param name="protocolId"></param>
+        /// <param name="eventState"></param>
+        private void ClientMessageCallback(
+            INetworkedComponent component,
+            IGameContext gameContext,
+            IUpdateContext updateContext,
+            MxDispatcher dispatcher,
+            MxClient client,
+            byte[] payload,
+            uint protocolId,
+            EventState eventState)
+        {
+            if (!eventState.Consumed)
+            {
+                eventState.Consumed = component.ReceiveMessage(
+                    gameContext,
+                    updateContext,
+                    dispatcher,
+                    client,
+                    payload,
+                    protocolId);
+            }
+        }
+
+        /// <summary>
+        /// Called by the network engine when this entity is spawned with an <see cref="EntityCreateMessage"/>.
+        /// </summary>
+        /// <param name="gameContext"></param>
+        /// <param name="updateContext"></param>
+        /// <param name="identifier"></param>
+        public void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier)
+        {
+            _networkIdentifiableClient.Invoke(gameContext, updateContext, identifier);
+        }
+
+        /// <summary>
+        /// Called by the network engine when this entity is spawned with an <see cref="EntityPredictMessage"/>.
+        /// </summary>
+        /// <param name="serverContext"></param>
+        /// <param name="updateContext"></param>
+        /// <param name="client"></param>
+        /// <param name="predictedIdentifier"></param>
+        public void ReceivePredictedNetworkIDFromClient(IServerContext serverContext, IUpdateContext updateContext, MxClient client,
+            int predictedIdentifier)
+        {
+            _networkIdentifiableServer.Invoke(serverContext, updateContext, client, predictedIdentifier);
         }
     }
 }

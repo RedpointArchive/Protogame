@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
-    public class PhysicsShadowWorld
+    public class PhysicsShadowWorld : IDisposable
     {
         private readonly IPhysicsEngine _physicsEngine;
         private readonly IDebugRenderer _debugRenderer;

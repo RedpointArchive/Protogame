@@ -1,6 +1,5 @@
 namespace Protogame
 {
-    using System;
     using System.Collections.Generic;
     using System.Security.Cryptography;
     using Microsoft.Xna.Framework;

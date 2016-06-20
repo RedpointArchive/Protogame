@@ -1,18 +1,12 @@
 ﻿#if PLATFORM_WINDOWS || PLATFORM_LINUX
 
 using System;
-using System.Drawing;
 using System.IO;
 using Microsoft.Xna.Framework.Content.Pipeline;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using MonoGame.Framework.Content.Pipeline.Builder;
 
 namespace Protogame
 {
-    using System.Drawing.Imaging;
-    using System.Reflection;
-    using Microsoft.Xna.Framework;
-
     /// <summary>
     /// The texture asset compiler.
     /// </summary>

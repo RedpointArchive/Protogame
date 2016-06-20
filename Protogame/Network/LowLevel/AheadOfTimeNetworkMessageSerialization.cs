@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ProtoBuf;
 using ProtoBuf.Meta;
 
 namespace Protogame
@@ -99,15 +98,26 @@ namespace Protogame
 
         private void InternalSerialize<T>(T message, Stream stream)
         {
-            //Serializer.Serialize(stream, message);
+            if (!_typeToSerializer.ContainsKey(message.GetType()))
+            {
+                throw new InvalidOperationException(
+                    "Type is not registered for network serialization '" + message.GetType().FullName + "'. " +
+                    "Did you forget to bind it in a dependency injection module?");
+            }
+
             _typeToSerializer[message.GetType()].Serialize(stream, message);
         }
 
         private object InternalDeserialize(Stream message, Type type)
         {
+            if (!_typeToSerializer.ContainsKey(type))
+            {
+                throw new InvalidOperationException(
+                    "Type is not registered for network serialization '" + type.FullName + "'. " +
+                    "Did you forget to bind it in a dependency injection module?");
+            }
+            
             var obj = Activator.CreateInstance(type);
-            //var typeModel = RuntimeTypeModel.Create();
-            //var result = typeModel.Deserialize(message, obj, type);
             var result = _typeToSerializer[type].Deserialize(message, obj, type);
             return result;
         }

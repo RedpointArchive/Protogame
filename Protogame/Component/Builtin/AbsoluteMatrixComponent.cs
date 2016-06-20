@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace Protogame
+﻿namespace Protogame
 {
     public class AbsoluteMatrixComponent : IHasTransform
     {

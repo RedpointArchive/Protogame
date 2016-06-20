@@ -1,9 +1,6 @@
-using Protoinject;
-
 namespace Protogame
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// The World interface.

@@ -1,7 +1,6 @@
 ﻿namespace Protogame
 {
     using System;
-    using System.Collections.Generic;
     using Protoinject;
 
     /// <summary>
