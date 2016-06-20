@@ -10,5 +10,8 @@ namespace Protogame
 
         [ProtoMember(2)]
         public string EntityType;
+
+        [ProtoMember(3)]
+        public NetworkTransform InitialTransform;
     }
 }

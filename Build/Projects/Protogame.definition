@@ -320,6 +320,7 @@
     <Compile Include="Core\IWorld.cs" />
     <Compile Include="Core\IWorldManager.cs" />
     <Compile Include="Core\KernelExtensions.cs" />
+    <Compile Include="Core\NetworkTransform.cs" />
     <Compile Include="Core\ProtogameBaseModule.cs" />
     <Compile Include="Core\ProtogameCoreModule.cs" />
     <Compile Include="Core\ReloadableGameAssetManagerProvider.cs" />

@@ -27,6 +27,8 @@ namespace Protogame
             _clientsEntityIsKnownOn = new List<IPEndPoint>();
         }
 
+        public bool ServerOnly { get; set; }
+
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
             
@@ -37,6 +39,11 @@ namespace Protogame
             if (_uniqueIdentifierForEntity == null)
             {
                 _uniqueIdentifierForEntity = _uniqueIdentifierAllocator.Allocate();
+            }
+
+            if (ServerOnly)
+            {
+                return;
             }
 
             foreach (var dispatcher in _networkEngine.CurrentDispatchers)
@@ -50,7 +57,8 @@ namespace Protogame
                         var createMessage = new EntityCreateMessage
                         {
                             EntityID = _uniqueIdentifierForEntity.Value,
-                            EntityType = entity.GetType().AssemblyQualifiedName
+                            EntityType = entity.GetType().AssemblyQualifiedName,
+                            InitialTransform = entity.Transform.SerializeToNetwork(),
                         };
                         dispatcher.Send(
                             endpoint,

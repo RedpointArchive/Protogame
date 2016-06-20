@@ -185,6 +185,44 @@ namespace Protogame
             _srtLocalScale = localScale;
         }
 
+        public NetworkTransform SerializeToNetwork()
+        {
+            if (IsSRTMatrix)
+            {
+                var pos = LocalPosition;
+                var rot = LocalRotation;
+                var scale = LocalScale;
+
+                return new NetworkTransform
+                {
+                    IsSRTMatrix = true,
+                    SRTLocalPosition = new[] { pos.X, pos.Y, pos.Z },
+                    SRTLocalRotation = new[] { rot.X, rot.Y, rot.Z, rot.W },
+                    SRTLocalScale = new[] { scale.X, scale.Y, scale.Z },
+                    CustomLocalMatrix = null
+                };
+            }
+            else
+            {
+                var mat = LocalMatrix;
+
+                return new NetworkTransform
+                {
+                    IsSRTMatrix = false,
+                    SRTLocalPosition = null,
+                    SRTLocalRotation = null,
+                    SRTLocalScale = null,
+                    CustomLocalMatrix = new[]
+                    {
+                        mat[0], mat[1], mat[2], mat[3],
+                        mat[4], mat[5], mat[6], mat[7],
+                        mat[8], mat[9], mat[10], mat[11],
+                        mat[12], mat[13], mat[14], mat[15],
+                    }
+                };
+            }
+        }
+
         public void ResetAsCustomMatrix()
         {
             _isSRTMatrix = false;

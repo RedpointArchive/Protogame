@@ -40,7 +40,12 @@ namespace Protogame
                     var world = networkReceiveEvent.GameContext.World;
                     var spawnedEntity = _kernel.Get(
                         Type.GetType(createEntityMessage.EntityType),
-                        _hierarchy.Lookup(world));
+                        _hierarchy.Lookup(world)) as IEntity;
+
+                    if (spawnedEntity != null)
+                    {
+                        spawnedEntity.Transform = createEntityMessage.InitialTransform.DeserializeFromNetwork();
+                    }
 
                     var networkIdentifiableEntity = spawnedEntity as INetworkIdentifiable;
                     if (networkIdentifiableEntity != null)
