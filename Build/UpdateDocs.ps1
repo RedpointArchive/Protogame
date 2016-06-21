@@ -44,10 +44,7 @@ git checkout -fB master origin/master
 if ($LastExitCode -ne 0) { popd; exit 1 }
 Copy-Item -Force $root\ProtogameDocsTool\bin\Windows\AnyCPU\Debug\Protogame.combined.xml $root\Protogame.Docs\Protogame.combined.xml
 git add Protogame.combined.xml
-if ($LastExitCode -ne 0) { popd; exit 1 }
 git commit -m "Automatic update of generated documentation by build server"
-if ($LastExitCode -ne 0) { popd; exit 1 }
 git push
-if ($LastExitCode -ne 0) { popd; exit 1 }
 popd
 exit 0
