@@ -175,6 +175,8 @@ namespace Protogame
             _srtLocalPosition = Vector3.Zero;
             _srtLocalRotation = Quaternion.Identity;
             _srtLocalScale = Vector3.One;
+            _isCachedSRTLocalMatrixUpToDate = false;
+            _isCachedRTLocalMatrixUpToDate = false;
         }
 
         public void SetFromSRTMatrix(Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
@@ -183,6 +185,8 @@ namespace Protogame
             _srtLocalPosition = localPosition;
             _srtLocalRotation = localRotation;
             _srtLocalScale = localScale;
+            _isCachedSRTLocalMatrixUpToDate = false;
+            _isCachedRTLocalMatrixUpToDate = false;
         }
 
         public NetworkTransform SerializeToNetwork()
@@ -277,5 +281,15 @@ namespace Protogame
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            if (IsSRTMatrix)
+            {
+                return "T SRT P: " + LocalPosition + " R: " + LocalRotation + " S: " + LocalScale;
+            }
+
+            return "T CUS M: " + LocalMatrix;
+        }
     }
 }

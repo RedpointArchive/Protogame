@@ -62,5 +62,18 @@ namespace Protogame
         {
             get { return AbsoluteMatrixWithoutScale.Rotation; }
         }
+
+        public override string ToString()
+        {
+            if (_child.Transform.IsSRTMatrix)
+            {
+                if ((_parent != null && _parent.Transform.IsSRTMatrix) || _parent == null)
+                {
+                    return "AT SRT P: " + AbsolutePosition + " R: " + AbsoluteRotation + " M: " + AbsoluteMatrix;
+                }
+            }
+
+            return "AT CUS M: " + AbsoluteMatrix;
+        }
     }
 }
