@@ -1,6 +1,7 @@
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Protogame;
@@ -66,7 +67,17 @@ public class Program : UIApplicationDelegate
 #else
 public static class Program
 {
+    private static IKernel _kernel;
+    private static Game _game;
+    private static ICoreServer _server;
+
     public static void Main(string[] args)
+    {
+        ErrorProtection.RunEarly(() => ProtectedStartup(args));
+        ErrorProtection.RunMain(_kernel.TryGet<IErrorReport>(), ProtectedRun);
+    }
+
+    private static void ProtectedStartup(string[] args)
     {
 #endif
         var kernel = new StandardKernel();
@@ -162,7 +173,14 @@ public static class Program
             }
         }
 
-        if (game == null && server == null)
+        _kernel = kernel;
+        _game = game;
+        _server = server;
+    }
+
+    private static void ProtectedRun()
+    { 
+        if (_game == null && _server == null)
         {
             throw new InvalidOperationException(
                 "No implementation of IGameConfiguration provided " +
@@ -171,7 +189,7 @@ public static class Program
                 "a server instance from ConstructServer.");
         }
 
-        if (game != null && server != null)
+        if (_game != null && _server != null)
         {
             throw new InvalidOperationException(
                 "An implementation of IGameConfiguration provided " +
@@ -185,7 +203,7 @@ public static class Program
 
 #else
 
-        if (game == null)
+        if (_game == null)
         {
             throw new InvalidOperationException(
                 "No implementation of IGameConfiguration provided " +
@@ -195,14 +213,14 @@ public static class Program
 #endif
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-        if (game != null)
+        if (_game != null)
         {
 #endif
 
 #if PLATFORM_MACOS || PLATFORM_IOS
-		game.Run();
+		_game.Run();
 #else
-        using (var runningGame = game)
+        using (var runningGame = _game)
         {
             runningGame.Run();
         }
@@ -210,9 +228,9 @@ public static class Program
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
         }
-        else if (server != null)
+        else if (_server != null)
         {
-            server.Run();
+            _server.Run();
         }
 #endif
     }

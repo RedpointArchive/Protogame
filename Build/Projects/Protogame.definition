@@ -338,6 +338,14 @@
     <Compile Include="Editor\ATFLevelEditor\LocatorEntity.cs" />
     <Compile Include="Editor\ATFLevelEditor\SpawningEditorQuery.cs" />
     <Compile Include="Editor\ProtogameEditorRuntimeModule.cs" />
+    <Compile Include="ErrorReport\ConsoleErrorReportOutput.cs" />
+    <Compile Include="ErrorReport\DefaultErrorReport.cs" />
+    <Compile Include="ErrorReport\ErrorProtection.cs" />
+    <Compile Include="ErrorReport\IErrorReport.cs" />
+    <Compile Include="ErrorReport\IErrorReportOutput.cs" />
+    <Compile Include="ErrorReport\NullErrorReportOutput.cs" />
+    <Compile Include="ErrorReport\ProtogameErrorReportModule.cs" />
+    <Compile Include="ErrorReport\WindowsFormsErrorReportOutput.cs" />
     <Compile Include="Events\ConsoleEventBinder.cs" />
     <Compile Include="Events\ConsoleEventListener.cs" />
     <Compile Include="Events\DefaultEventEngine.cs" />
