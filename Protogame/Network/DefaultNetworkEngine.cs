@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Protogame
 {
@@ -16,6 +18,8 @@ namespace Protogame
 
         private readonly MxDispatcher[] _currentDispatchers;
 
+        private readonly Dictionary<int, WeakReference> _objectReferences;
+
         public DefaultNetworkEngine(INetworkFactory networkFactory)
         {
             _networkFactory = networkFactory;
@@ -24,6 +28,7 @@ namespace Protogame
             _dispatcherChanged = new Dictionary<IWorld, bool>();
             _serverDispatcherChanged = new Dictionary<IServerWorld, bool>();
             _currentDispatchers = new MxDispatcher[1];
+            _objectReferences = new Dictionary<int, WeakReference>();
         }
 
         public void AttachDispatcher(IWorld world, MxDispatcher dispatcher)
@@ -87,5 +92,31 @@ namespace Protogame
         }
 
         public MxDispatcher[] CurrentDispatchers => _currentDispatchers;
+
+        public IEnumerable<KeyValuePair<int, object>> ListObjectsByNetworkId()
+        {
+            return _objectReferences.Where(v => v.Value.Target != null)
+                .Select(x => new KeyValuePair<int, object>(x.Key, x.Value.Target));
+        }
+
+        public T FindObjectByNetworkId<T>(int id)
+        {
+            return (T)(_objectReferences[id].Target);
+        }
+
+        public object FindObjectByNetworkId(int id)
+        {
+            return _objectReferences[id].Target;
+        }
+
+        public void RegisterObjectAsNetworkId(int id, object obj)
+        {
+            _objectReferences[id] = new WeakReference(obj);
+        }
+
+        public void DeregisterObjectFromNetworkId(int id)
+        {
+            _objectReferences.Remove(id);
+        }
     }
 }

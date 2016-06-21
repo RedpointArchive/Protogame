@@ -9,6 +9,7 @@ namespace Protogame
         private IKernel _kernel;
         private IHierarchy _hierarchy;
         private INetworkMessageSerialization _networkMessageSerialization;
+        private INetworkEngine _networkEngine;
 
         public int Priority => 150;
 
@@ -17,6 +18,7 @@ namespace Protogame
             _kernel = kernel;
             _hierarchy = kernel.Hierarchy;
             _networkMessageSerialization = kernel.Get<INetworkMessageSerialization>();
+            _networkEngine = kernel.Get<INetworkEngine>();
         }
 
         public bool Handle(INetworkEventContext context, IEventEngine<INetworkEventContext> eventEngine, Event @event)
@@ -41,6 +43,10 @@ namespace Protogame
                     var spawnedEntity = _kernel.Get(
                         Type.GetType(createEntityMessage.EntityType),
                         _hierarchy.Lookup(world)) as IEntity;
+
+                    _networkEngine.RegisterObjectAsNetworkId(
+                        createEntityMessage.EntityID,
+                        spawnedEntity);
 
                     if (spawnedEntity != null)
                     {

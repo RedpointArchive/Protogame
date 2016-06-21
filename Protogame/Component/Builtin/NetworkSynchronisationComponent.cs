@@ -39,6 +39,7 @@ namespace Protogame
             if (_uniqueIdentifierForEntity == null)
             {
                 _uniqueIdentifierForEntity = _uniqueIdentifierAllocator.Allocate();
+                _networkEngine.RegisterObjectAsNetworkId(_uniqueIdentifierForEntity.Value, entity);
             }
 
             if (ServerOnly)

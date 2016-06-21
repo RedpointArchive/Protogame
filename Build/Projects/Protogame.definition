@@ -207,6 +207,7 @@
     <Compile Include="Commands\ExitCommand.cs" />
     <Compile Include="Commands\GCCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
+    <Compile Include="Commands\NetIDCommand.cs" />
     <Compile Include="Component\Builtin\AbsoluteMatrixComponent.cs" />
     <Compile Include="Component\Builtin\FirstPersonCameraComponent.cs" />
     <Compile Include="Component\Builtin\FirstPersonControllerInputComponent.cs" />

@@ -28,6 +28,7 @@ namespace Protogame
             kernel.Bind<ICommand>().To<ExitCommand>();
             kernel.Bind<ICommand>().To<HelpCommand>();
             kernel.Bind<ICommand>().To<GCCommand>();
+            kernel.Bind<ICommand>().To<NetIDCommand>();
 
             kernel.Bind<IRenderContext>().To<RenderPipelineRenderContext>();
             kernel.Bind<IRenderPipeline>().To<DefaultRenderPipeline>();
