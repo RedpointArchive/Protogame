@@ -25,18 +25,8 @@ namespace Protogame
             _kernel = kernel;
             _hierarchy = hierarchy;
         }
-
-        /// <summary>
-        /// Creates the entities from the stream.
-        /// </summary>
-        /// <param name="stream">The stream which contains an ATF level.</param>
-        /// <param name="context">
-        /// The context in which entities are being spawned in the hierarchy.  This is
-        /// usually the current world, but it doesn't have to be (e.g. if you wanted to
-        /// load a level under an entity group, you would pass the entity group here).
-        /// </param>
-        /// <returns>A list of entities to spawn within the world.</returns>
-        public IEnumerable<IEntity> Read(Stream stream, object context)
+        
+        public IEnumerable<IEntity> Read(Stream stream, object context, Func<IPlan, object, bool> filter)
         {
             var node = _hierarchy.Lookup(context);
 
@@ -63,7 +53,7 @@ namespace Protogame
             var plansList = new List<IPlan>();
             foreach (var element in gameObjectFolder.ChildNodes.OfType<XmlElement>())
             {
-                ProcessElementToPlan(node, null, element, plansList, 0);
+                ProcessElementToPlan(node, null, element, plansList, 0, filter);
             }
 
             // Validate the level configuration.
@@ -89,7 +79,12 @@ namespace Protogame
             }
         }
 
-        private void ProcessElementToPlan(IPlan parentPlan, IPlan rootPlan, XmlElement currentElement, List<IPlan> rootPlans, int depth)
+        public IEnumerable<IEntity> Read(Stream stream, object context)
+        {
+            return Read(stream, context, null);
+        }
+
+        private void ProcessElementToPlan(IPlan parentPlan, IPlan rootPlan, XmlElement currentElement, List<IPlan> rootPlans, int depth, Func<IPlan, object, bool> filter)
         {
             switch (currentElement.LocalName)
             {
@@ -97,7 +92,7 @@ namespace Protogame
                 {
                     foreach (var childElement in currentElement.ChildNodes.OfType<XmlElement>())
                     {
-                        ProcessElementToPlan(parentPlan, rootPlan, childElement, rootPlans, depth);
+                        ProcessElementToPlan(parentPlan, rootPlan, childElement, rootPlans, depth, filter);
                     }
                     break;
                 }
@@ -165,21 +160,29 @@ namespace Protogame
                             }
                         });
 
-                    _hierarchy.AddChildNode(parentPlan, (INode)plan);
-
-                    if (depth == 0)
+                    if (filter != null && !filter(plan, currentElement))
                     {
-                        rootPlans.Add(plan);
+                        // Discard this plan; it has been filtered out.
+                        _kernel.Discard(plan);
                     }
-
-                    foreach (var childElement in currentElement.ChildNodes.OfType<XmlElement>())
+                    else
                     {
-                        ProcessElementToPlan(plan, rootPlan, childElement, null, depth + 1);
-                    }
+                        _hierarchy.AddChildNode(parentPlan, (INode) plan);
 
-                    if (depth > 0)
-                    {
-                        parentPlan.PlannedCreatedNodes.InsertRange(0, plan.PlannedCreatedNodes);
+                        if (depth == 0)
+                        {
+                            rootPlans.Add(plan);
+                        }
+
+                        foreach (var childElement in currentElement.ChildNodes.OfType<XmlElement>())
+                        {
+                            ProcessElementToPlan(plan, rootPlan, childElement, null, depth + 1, filter);
+                        }
+
+                        if (depth > 0)
+                        {
+                            parentPlan.PlannedCreatedNodes.InsertRange(0, plan.PlannedCreatedNodes);
+                        }
                     }
 
                     break;

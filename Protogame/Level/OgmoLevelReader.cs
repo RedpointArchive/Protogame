@@ -27,6 +27,17 @@ namespace Protogame
             this._kernel = kernel;
             _hierarchy = hierarchy;
         }
+        
+        public IEnumerable<IEntity> Read(Stream stream, object context, Func<IPlan, object, bool> filter)
+        {
+            if (filter != null)
+            {
+                throw new NotSupportedException(
+                    "Ogmo level loading does not support entity filtering.");
+            }
+
+            return Read(stream, context);
+        }
 
         /// <summary>
         /// Creates the entities from the stream.

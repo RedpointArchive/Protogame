@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Protoinject;
 
 namespace Protogame
@@ -34,13 +35,18 @@ namespace Protogame
         /// <param name="levelAsset">The level to load.</param>
         public void Load(object context, LevelAsset levelAsset)
         {
+            Load(context, levelAsset, null);
+        }
+
+        public void Load(object context, LevelAsset levelAsset, Func<IPlan, object, bool> filter)
+        {
             var reader = _kernel.Get<ILevelReader>(_currentNode, levelAsset.LevelDataFormat.ToString());
             var levelBytes = Encoding.ASCII.GetBytes(levelAsset.LevelData);
 
             var node = _kernel.Hierarchy.Lookup(context);
             using (var stream = new MemoryStream(levelBytes))
             {
-                foreach (var entity in reader.Read(stream, context))
+                foreach (var entity in reader.Read(stream, context, filter))
                 {
                     var existingNode = _kernel.Hierarchy.Lookup(entity);
                     if (existingNode != null)
@@ -51,6 +57,18 @@ namespace Protogame
                     _kernel.Hierarchy.AddChildNode(node, _kernel.Hierarchy.CreateNodeForObject(entity));
                 }
             }
+        }
+
+        public Task LoadAsync(object context, LevelAsset levelAsset)
+        {
+            Load(context, levelAsset);
+            return new Task(() => { });
+        }
+
+        public Task LoadAsync(object context, LevelAsset levelAsset, Func<IPlan, object, bool> filter)
+        {
+            Load(context, levelAsset, filter);
+            return new Task(() => { });
         }
 
         [Obsolete("Use one of the other Load methods instead.")]

@@ -1,3 +1,7 @@
+using System;
+using System.Collections;
+using Protoinject;
+
 namespace Protogame
 {
     using System.Collections.Generic;
@@ -21,5 +25,21 @@ namespace Protogame
         /// </param>
         /// <returns>A list of entities to spawn within the world.</returns>
         IEnumerable<IEntity> Read(Stream stream, object context);
+
+        /// <summary>
+        /// Read the specified stream and return a list of constructed entities, filtering
+        /// the entities during loading.
+        /// </summary>
+        /// <param name="stream">The stream which contains level data.</param>
+        /// <param name="context">
+        /// The context in which entities are being spawned in the hierarchy.  This is
+        /// usually the current world, but it doesn't have to be (e.g. if you wanted to
+        /// load a level under an entity group, you would pass the entity group here).
+        /// </param>
+        /// <param name="filter">
+        /// A filter to apply to the dependency injection plans before they are resolved.
+        /// </param>
+        /// <returns>A list of entities to spawn within the world.</returns>
+        IEnumerable<IEntity> Read(Stream stream, object context, Func<IPlan, object, bool> filter);
     }
 }
