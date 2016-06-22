@@ -86,7 +86,8 @@ namespace Protogame
             synchronisationApi.Synchronise("static", 60, Static, x => Static = x);
             synchronisationApi.Synchronise("mass", 60, Mass, x => Mass = x);
             synchronisationApi.Synchronise("active", 60, _rigidBody.IsActive, x => _rigidBody.IsActive = x);
-            //synchronisationApi.Synchronise("active", 60, _rigidBody., x => _rigidBody.IsActive = x);
+            synchronisationApi.Synchronise("linvel", 60, _rigidBody.LinearVelocity.ToXNAVector(), x => _rigidBody.LinearVelocity = x.ToJitterVector());
+            synchronisationApi.Synchronise("angvel", 60, _rigidBody.AngularVelocity.ToXNAVector(), x => _rigidBody.AngularVelocity = x.ToJitterVector());
         }
     }
 }
