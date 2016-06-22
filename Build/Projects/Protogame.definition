@@ -214,6 +214,11 @@
     <Compile Include="Component\Builtin\FirstPersonControllerPhysicsComponent.cs" />
     <Compile Include="Component\Builtin\FlyAroundInputComponent.cs" />
     <Compile Include="Component\Builtin\NetworkSynchronisationComponent.cs" />
+    <Compile Include="Component\Builtin\NetworkSynchronisationComponentGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NetworkSynchronisationComponentGenerated.tt</DependentUpon>
+    </Compile>
     <Compile Include="Component\Builtin\Physical3DCapsuleComponent.cs" />
     <Compile Include="Component\Builtin\Physical3DCubeComponent.cs" />
     <Compile Include="Component\Builtin\PhysicalRotationConstraintComponent.cs" />
@@ -517,6 +522,7 @@
     <Compile Include="Network\LowLevel\NetworkTagAttribute.cs" />
     <Compile Include="Network\LowLevel\TimeMachine.cs" />
     <Compile Include="Network\Message\EntityCreateMessage.cs" />
+    <Compile Include="Network\Message\EntityPropertiesMessage.cs" />
     <Compile Include="Network\NetworkClientConnectedEvent.cs" />
     <Compile Include="Network\NetworkClientDisconnectedEvent.cs" />
     <Compile Include="Network\NetworkEngineHook.cs" />
@@ -726,6 +732,10 @@
     <Compile Include="UserInterface\VerticalAlign.cs" />
     <Compile Include="UserInterface\VerticalContainer.cs" />
     <Compile Include="UserInterface\Window.cs" />
+    <Content Include="Component\Builtin\NetworkSynchronisationComponentGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NetworkSynchronisationComponentGenerated.cs</LastGenOutput>
+    </Content>
     <Content Include="Component\ComponentizedObject.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ComponentizedObject.cs</LastGenOutput>

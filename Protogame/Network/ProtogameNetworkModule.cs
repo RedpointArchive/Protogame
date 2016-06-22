@@ -17,6 +17,7 @@ namespace Protogame
             kernel.Bind<INetworkEngine>().To<DefaultNetworkEngine>().InSingletonScope();
 
             kernel.Bind<INetworkMessage>().To<EntityCreateMessage>().AllowManyPerScope();
+            kernel.Bind<INetworkMessage>().To<EntityPropertiesMessage>().AllowManyPerScope();
         }
     }
 }

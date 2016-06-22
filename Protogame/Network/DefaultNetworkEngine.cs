@@ -101,11 +101,21 @@ namespace Protogame
 
         public T FindObjectByNetworkId<T>(int id)
         {
+            if (!_objectReferences.ContainsKey(id))
+            {
+                return default(T);
+            }
+
             return (T)(_objectReferences[id].Target);
         }
 
         public object FindObjectByNetworkId(int id)
         {
+            if (!_objectReferences.ContainsKey(id))
+            {
+                return null;
+            }
+
             return _objectReferences[id].Target;
         }
 

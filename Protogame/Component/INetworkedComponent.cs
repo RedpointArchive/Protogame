@@ -3,6 +3,7 @@
     public interface INetworkedComponent
     {
         bool ReceiveMessage(
+            ComponentizedEntity entity,
             IGameContext gameContext, 
             IUpdateContext updateContext,
             MxDispatcher dispatcher,
@@ -11,6 +12,7 @@
             uint protocolId);
 
         bool ReceiveMessage(
+            ComponentizedEntity entity,
             IServerContext serverContext,
             IUpdateContext updateContext,
             MxDispatcher dispatcher,

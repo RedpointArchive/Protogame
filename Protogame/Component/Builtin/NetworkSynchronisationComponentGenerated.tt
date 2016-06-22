@@ -1,0 +1,252 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+<#
+	var supportedTypes = new SyncTypeInfo[]
+	{
+		new SyncTypeInfo("String", "string", false),
+		new SyncTypeInfo("Int16", "short", false),
+		new SyncTypeInfo("Int32", "int", false),
+		new SyncTypeInfo("Single", "float", false),
+		new SyncTypeInfo("Double", "double", false),
+		new SyncTypeInfo("Boolean", "bool", false),
+		new SyncTypeInfo("Vector2", "Microsoft.Xna.Framework.Vector2", true, "float", "SingleArray", 2),
+		new SyncTypeInfo("Vector3", "Microsoft.Xna.Framework.Vector3", true, "float", "SingleArray", 3),
+		new SyncTypeInfo("Vector4", "Microsoft.Xna.Framework.Vector4", true, "float", "SingleArray", 4),
+		new SyncTypeInfo("Quaternion", "Microsoft.Xna.Framework.Quaternion", true, "float", "SingleArray", 4),
+		new SyncTypeInfo("Matrix", "Microsoft.Xna.Framework.Matrix", true, "float", "SingleArray", 16),
+		new SyncTypeInfo("Transform", "Protogame.ITransform", true, "Protogame.NetworkTransform")
+	};
+#>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Protogame
+{
+	public partial class NetworkSynchronisationComponent 
+	{
+		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message)
+		{
+			<#
+			foreach (var type in supportedTypes.GroupBy(x => x.StorageLocation))
+			{
+			#>
+
+			var total<#=type.Key#> = 0;
+			var current<#=type.Key#> = 0;
+			
+			<#
+			}
+			#>
+			
+			var typeLookup = new Dictionary<int, int>();
+            for (var i = 0; i < dataList.Count; i++)
+            {
+				if (dataList[i].CurrentValue == null)
+				{
+					typeLookup[i] = EntityPropertiesMessage.PropertyTypeNull;
+					continue;
+				}
+
+				<#
+				foreach (var type in supportedTypes)
+				{
+				#>
+				
+				else if (dataList[i].CurrentValue is <#=type.RealTypeName#>)
+				{
+					typeLookup[i] = EntityPropertiesMessage.PropertyType<#=type.PropertyName#>;
+					total<#=type.StorageLocation#> += <#=(type.PackedArraySize == 0 ? 1 : type.PackedArraySize)#>;
+				}
+
+				<#
+				}
+				#>
+
+				else
+				{
+					throw new NotSupportedException("The type " + dataList[i].CurrentValue + " can not be synchronised as a network property.");
+				}
+			}
+
+			<#
+			foreach (var type in supportedTypes.GroupBy(x => x.StorageLocation))
+			{
+			#>
+			if (total<#=type.Key#> > 0)
+			{
+				message.PropertyValues<#=type.Key#> = new <#=type.First().StorageType#>[total<#=type.Key#>];
+			}
+			<#
+			}
+			#>
+
+            for (var ix = 0; ix < dataList.Count; ix++)
+            {
+				message.PropertyNames[ix] = dataList[ix].Name;
+				message.PropertyTypes[ix] = typeLookup[ix];
+
+				switch (typeLookup[ix])
+				{
+					case EntityPropertiesMessage.PropertyTypeNull:
+						// Do nothing.
+						break;
+				<#
+				foreach (var type in supportedTypes)
+				{
+				#>
+					case EntityPropertiesMessage.PropertyType<#=type.PropertyName#>:
+					{
+					<#
+					if (type.IsCustomConversion)
+					{
+					#>
+						var value = ConvertTo<#=type.PropertyName#>(dataList[ix].CurrentValue);
+					<#
+					}
+					else
+					{
+					#>
+						<#=type.StorageType#><#=type.PackedArraySize > 0 ? "[]" : ""#> value = (<#=type.StorageType#><#=type.PackedArraySize > 0 ? "[]" : ""#>)dataList[ix].CurrentValue;
+					<#
+					}
+
+					if (type.PackedArraySize == 0)
+					{
+					#>
+					message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>++] = value;
+					<#
+					}
+					else
+					{
+						for (var ii = 0; ii < type.PackedArraySize; ii++)
+						{
+					#>
+						message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>++] = value[<#=ii#>];
+					<#
+						}
+					}
+					#>
+					}
+						break;
+				<#
+				}
+				#>
+				}
+			}
+		}
+		
+		private void AssignMessageToSyncData(EntityPropertiesMessage message, Dictionary<string, SynchronisedData> fullDataList)
+		{
+			<#
+			foreach (var type in supportedTypes.GroupBy(x => x.StorageLocation))
+			{
+			#>
+
+			var current<#=type.Key#> = 0;
+			
+			<#
+			}
+			#>
+
+			for (var i = 0; i < message.PropertyNames.Length; i++)
+			{
+				if (!fullDataList.ContainsKey(message.PropertyNames[i]))
+				{
+					continue;
+				}
+
+				var syncData = fullDataList[message.PropertyNames[i]];
+
+				switch (message.PropertyTypes[i])
+				{
+					case EntityPropertiesMessage.PropertyTypeNone:
+						break;
+					case EntityPropertiesMessage.PropertyTypeNull:
+						syncData.SetValueDelegate(null);
+						break;
+					<#
+					foreach (var type in supportedTypes)
+					{
+					#>
+					case EntityPropertiesMessage.PropertyType<#=type.PropertyName#>:
+					{
+					<#
+					if (type.IsCustomConversion)
+					{
+						if (type.PackedArraySize == 0)
+						{
+					#>
+						syncData.SetValueDelegate(ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>]));
+						current<#=type.StorageLocation#>++;
+					<#
+						}
+						else
+						{
+					#>
+						syncData.SetValueDelegate(ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>, current<#=type.StorageLocation#>));
+						current<#=type.StorageLocation#> += <#=type.PackedArraySize#>;
+					<#
+						}
+					}
+					else
+					{
+						if (type.PackedArraySize == 0)
+						{
+					#>
+						syncData.SetValueDelegate(message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>]);
+						current<#=type.StorageLocation#>++;
+					<#
+						}
+						else
+						{
+							throw new System.InvalidOperationException("not supported");
+						}
+					}
+					#>
+						break;
+					}
+					<#
+					}
+					#>
+				}
+
+			}
+		}
+	}
+}
+
+<#+
+
+private class SyncTypeInfo
+{
+	public SyncTypeInfo(string propName, string realTypeName, bool isCustomConversion, string storageType = null, string storageLocation = null, int? packedArraySize = null)
+	{
+		PropertyName = propName;
+		RealTypeName = realTypeName;
+		IsCustomConversion = isCustomConversion;
+		StorageType = storageType ?? realTypeName;
+		StorageLocation = storageLocation ?? propName;
+		PackedArraySize = packedArraySize ?? 0;
+	}
+
+	public string PropertyName;
+
+	public string RealTypeName;
+
+	public bool IsCustomConversion;
+
+	public string StorageType;
+
+	public string StorageLocation;
+
+	public int PackedArraySize;
+}
+
+#>

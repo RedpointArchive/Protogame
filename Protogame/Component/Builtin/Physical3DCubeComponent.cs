@@ -4,7 +4,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class Physical3DCubeComponent : IUpdatableComponent, IPhysicalComponent, IServerUpdatableComponent
+    public class Physical3DCubeComponent : IUpdatableComponent, IPhysicalComponent, IServerUpdatableComponent, ISynchronisedObject
     {
         private readonly INode _node;
         private readonly IPhysicsEngine _physicsEngine;
@@ -79,6 +79,14 @@ namespace Protogame
                     _addedRigidBody = true;
                 }
             }
+        }
+
+        public void DeclareSynchronisedProperties(ISynchronisationApi synchronisationApi)
+        {
+            synchronisationApi.Synchronise("static", 60, Static, x => Static = x);
+            synchronisationApi.Synchronise("mass", 60, Mass, x => Mass = x);
+            synchronisationApi.Synchronise("active", 60, _rigidBody.IsActive, x => _rigidBody.IsActive = x);
+            //synchronisationApi.Synchronise("active", 60, _rigidBody., x => _rigidBody.IsActive = x);
         }
     }
 }

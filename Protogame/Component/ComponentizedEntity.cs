@@ -25,7 +25,7 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Component</module>
-    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable
+    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject
     {
 
         /// <summary>
@@ -276,8 +276,7 @@ namespace Protogame
         {
             if (!eventState.Consumed)
             {
-                eventState.Consumed = component.ReceiveMessage(
-                    serverContext,
+                eventState.Consumed = component.ReceiveMessage(this, serverContext,
                     updateContext,
                     dispatcher,
                     client,
@@ -309,8 +308,7 @@ namespace Protogame
         {
             if (!eventState.Consumed)
             {
-                eventState.Consumed = component.ReceiveMessage(
-                    gameContext,
+                eventState.Consumed = component.ReceiveMessage(this, gameContext,
                     updateContext,
                     dispatcher,
                     client,
@@ -341,6 +339,16 @@ namespace Protogame
             int predictedIdentifier)
         {
             _networkIdentifiableServer.Invoke(serverContext, updateContext, client, predictedIdentifier);
+        }
+
+        /// <summary>
+        /// Declares the synchronised properties for network synchronised objects.  By default this synchronises
+        /// the local transform of the entity.
+        /// </summary>
+        /// <param name="synchronisationApi">The synchronisation API.</param>
+        public virtual void DeclareSynchronisedProperties(ISynchronisationApi synchronisationApi)
+        {
+            synchronisationApi.Synchronise("transform", 5, Transform, x => Transform = x);
         }
     }
 }
