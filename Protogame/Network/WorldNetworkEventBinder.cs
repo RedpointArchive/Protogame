@@ -44,6 +44,12 @@ namespace Protogame
                         Type.GetType(createEntityMessage.EntityType),
                         _hierarchy.Lookup(world)) as IEntity;
 
+                    if (_networkEngine.FindObjectByNetworkId(createEntityMessage.EntityID) != null)
+                    {
+                        // This entity was already created on the client, so we ignore it.
+                        return true;
+                    }
+
                     _networkEngine.RegisterObjectAsNetworkId(
                         createEntityMessage.EntityID,
                         spawnedEntity);
