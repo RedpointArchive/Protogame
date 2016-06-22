@@ -7,7 +7,7 @@ namespace Protogame
     {
         public static T GetPublicComponent<T>(this ComponentizedObject componentizedObject)
         {
-            var components = componentizedObject.PublicComponents.OfType<T>().ToArray();
+            var components = componentizedObject.Components.OfType<T>().ToArray();
 
             if (components.Length == 0)
             {
@@ -25,7 +25,7 @@ namespace Protogame
 
         public static object GetPublicComponent(this ComponentizedObject componentizedObject, Type componentType)
         {
-            var components = componentizedObject.PublicComponents.Where(componentType.IsInstanceOfType).ToArray();
+            var components = componentizedObject.Components.Where(componentType.IsInstanceOfType).ToArray();
 
             if (components.Length == 0)
             {

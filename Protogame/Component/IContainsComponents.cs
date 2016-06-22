@@ -10,8 +10,8 @@ namespace Protogame
     public interface IContainsComponents
     {
         /// <summary>
-        /// A list of public components that are attached to this object.
+        /// A list of components that are attached to this object.
         /// </summary>
-        ReadOnlyCollection<object> PublicComponents { get; } 
+        ReadOnlyCollection<object> Components { get; } 
     }
 }

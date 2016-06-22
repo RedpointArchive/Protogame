@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Protoinject;
 
 namespace Protogame
 {
@@ -23,12 +25,82 @@ namespace Protogame
 	/// </para>
 	/// </summary>
     /// <module>Component</module>
+    [InjectFieldsForBaseObjectInProtectedConstructor]
 	public class ComponentizedObject : IContainsComponents
 	{
-		private List<object> _registeredComponents = new List<object>();
+#pragma warning disable 169
+        /// <summary>
+        /// The node associated with this object.  This field is directly set by the kernel due to [InjectFieldsForBaseObjectInProtectedConstructor].
+        /// </summary>
+        private readonly INode _node;
 
-		private List<object> _publicComponents = new List<object>(); 
+        /// <summary>
+        /// The dependency injection hierarchy.  This field is directly set by the kernel due to [InjectFieldsForBaseObjectInProtectedConstructor].
+        /// </summary>
+        private readonly IHierarchy _hierarchy;
+#pragma warning restore 169
+
+		/// <summary>
+		/// When the componentized object has not been initialized by a dependency
+		/// injection system, _node and _hierarchy will be null.  In this scenario,
+		/// we use an private list to store components rather than the hierarchy
+		/// system.
+		/// </summary>
+		private List<object> _nonHierarchyComponents = new List<object>();
+
+		protected ComponentizedObject()
+		{
+		}
+
+        public ComponentizedObject(IHierarchy hierarchy, INode node)
+        {
+            _hierarchy = hierarchy;
+            _node = node;
+        }
 	
+		protected void RegisterComponent(object component)
+		{
+			if (_node == null || _hierarchy == null)
+			{
+				// No hierarchy, always use private list.
+				_nonHierarchyComponents.Add(component);
+			}
+			else
+			{
+				// Check if the component is underneath this hierarchy, if node, add it.
+				if (_node.Children.All(x => x.UntypedValue != component))
+				{
+					// It is not underneath the hierarchy; add it.
+					var childNode = _hierarchy.Lookup(component) ?? _hierarchy.CreateNodeForObject(component);
+
+				    _hierarchy.AddChildNode(_node, childNode);
+				}
+			}
+		}
+
+		public ReadOnlyCollection<object> Components
+		{
+			get
+			{
+				if (_node == null || _hierarchy == null)
+				{
+					return _nonHierarchyComponents.AsReadOnly();
+				}
+				else
+				{
+					return _node.Children.Select(x => x.UntypedValue).ToList().AsReadOnly();
+				}
+			}
+		}
+
+		public bool AreComponentsStoredInHierarchy
+		{
+			get
+			{
+				return !(_node == null || _hierarchy == null);
+			}
+		}
+
 <#
 	for (var i = 0; i < 16; i++)
 	{
@@ -71,7 +143,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T<#=typeArgumentsAppended#>>(Action<T<#=typeArgumentsAppended#>> method<#=typeParametersAppended#>) <#=typeConstraints#>
 		{
-			foreach (var component in _registeredComponents)
+			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
+
+			foreach (var component in collectionSource)
 			{
 				var targetable = component as T;
 				if (targetable != null)
@@ -84,23 +158,5 @@ namespace Protogame
 <#
 	}
 #>
-		protected void RegisterPrivateComponent(object component)
-		{
-			_registeredComponents.Add(component);
-		}
-
-		protected void RegisterPublicComponent(object component)
-		{
-			_registeredComponents.Add(component);
-			_publicComponents.Add(component);
-		}
-
-		public ReadOnlyCollection<object> PublicComponents
-		{
-			get
-			{
-				return _publicComponents.AsReadOnly();
-			}
-		}
 	}
 }

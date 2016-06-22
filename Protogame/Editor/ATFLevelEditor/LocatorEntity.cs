@@ -16,7 +16,7 @@ namespace Protogame
             if (editorQuery.Mode != EditorQueryMode.BakingSchema)
             {
                 _modelComponent = modelComponent;
-                RegisterPrivateComponent(_modelComponent);
+                RegisterComponent(_modelComponent);
 
                 var assetManager = assetManagerProvider.GetAssetManager();
                 editorQuery.MapTransform(this, x => this.Transform = x);

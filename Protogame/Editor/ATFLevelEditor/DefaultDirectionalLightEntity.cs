@@ -11,7 +11,7 @@ namespace Protogame
         {
             if (editorQuery.Mode != EditorQueryMode.BakingSchema)
             {
-                RegisterPrivateComponent(standardDirectionalLightComponent);
+                RegisterComponent(standardDirectionalLightComponent);
 
                 editorQuery.MapTransform(this, x => this.Transform = x);
                 editorQuery.MapCustom(this, "diffuse", "diffuse", x => standardDirectionalLightComponent.LightColor = x, Color.White);

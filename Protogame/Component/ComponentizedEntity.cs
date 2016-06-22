@@ -27,50 +27,51 @@ namespace Protogame
     /// <module>Component</module>
     public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable
     {
+
         /// <summary>
         /// The component callable for handling updatable components.
         /// </summary>
-        private IComponentCallable<IGameContext, IUpdateContext> _update;
+        private readonly IComponentCallable<IGameContext, IUpdateContext> _update;
 
         /// <summary>
         /// The component callable for handling server-side updatable components.
         /// </summary>
-        private IComponentCallable<IServerContext, IUpdateContext> _serverUpdate;
+        private readonly IComponentCallable<IServerContext, IUpdateContext> _serverUpdate;
 
         /// <summary>
         /// The component callable for handling renderable components.
         /// </summary>
-        private IComponentCallable<IGameContext, IRenderContext> _render;
+        private readonly IComponentCallable<IGameContext, IRenderContext> _render;
 
         /// <summary>
         /// The component callable for handling event handling components.
         /// </summary>
-        private IComponentCallable<IGameContext, IEventEngine<IGameContext>, Event, EventState> _handleEvent;
+        private readonly IComponentCallable<IGameContext, IEventEngine<IGameContext>, Event, EventState> _handleEvent;
 
         /// <summary>
         /// The component callable for handling network messages recieved on a client.
         /// </summary>
-        private IComponentCallable<IGameContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState> _handleMessageRecievedClient;
+        private readonly IComponentCallable<IGameContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState> _handleMessageRecievedClient;
 
         /// <summary>
         /// The component callable for handling network messages recieved on a server.
         /// </summary>
-        private IComponentCallable<IServerContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState> _handleMessageRecievedServer;
+        private readonly IComponentCallable<IServerContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState> _handleMessageRecievedServer;
 
         /// <summary>
         /// The component callable for handling the creation of an entity from the server.
         /// </summary>
-        private IComponentCallable<IGameContext, IUpdateContext, int> _networkIdentifiableClient;
+        private readonly IComponentCallable<IGameContext, IUpdateContext, int> _networkIdentifiableClient;
 
         /// <summary>
         /// The component callable for handling the creation of a predicted entity from the client.
         /// </summary>
-        private IComponentCallable<IServerContext, IUpdateContext, MxClient, int> _networkIdentifiableServer;
+        private readonly IComponentCallable<IServerContext, IUpdateContext, MxClient, int> _networkIdentifiableServer;
 
         /// <summary>
         /// The component callable for retrieving lights defined by components.
         /// </summary>
-        private IComponentCallable<List<ILight>> _getLights;
+        private readonly IComponentCallable<List<ILight>> _getLights;
 
         /// <summary>
         /// Initializes a new <see cref="ComponentizedEntity"/>.
@@ -80,7 +81,7 @@ namespace Protogame
         /// <see cref="IRenderableComponent"/> respectively).
         /// </para>
         /// </summary>
-        public ComponentizedEntity()
+        protected ComponentizedEntity()
         {
             Transform = new DefaultTransform();
 
