@@ -29,6 +29,11 @@ namespace Protogame
 
         [ProtoMember(12)] public NetworkTransform[] PropertyValuesTransform;
 
+        /// <summary>
+        /// This value is not trusted by any code, but is useful for debugging purposes.
+        /// </summary>
+        [ProtoMember(13)] public bool IsClientMessage;
+
         public const int PropertyTypeNone = 0;
 
         public const int PropertyTypeNull = 1;

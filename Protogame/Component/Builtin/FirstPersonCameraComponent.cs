@@ -4,7 +4,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class FirstPersonCameraComponent : IRenderableComponent, IHasTransform
+    public class FirstPersonCameraComponent : IPrerenderableComponent, IHasTransform
     {
         private readonly INode _node;
         private readonly IDebugRenderer _debugRenderer;
@@ -54,7 +54,7 @@ namespace Protogame
         /// </summary>
         public bool DebugEnabled { get; set; }
 
-        public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
+        public void Prerender(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
             var enabled = Enabled && renderContext.IsCurrentRenderPass<I3DRenderPass>();
             var debugEnabled = DebugEnabled && renderContext.IsCurrentRenderPass<IDebugRenderPass>();

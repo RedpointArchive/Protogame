@@ -252,6 +252,7 @@
     <Compile Include="Component\ILightableComponent.cs" />
     <Compile Include="Component\INetworkedComponent.cs" />
     <Compile Include="Component\IPhysicalComponent.cs" />
+    <Compile Include="Component\IPrerenderableComponent.cs" />
     <Compile Include="Component\IRenderableComponent.cs" />
     <Compile Include="Component\IServerUpdatableComponent.cs" />
     <Compile Include="Component\IUpdatableComponent.cs" />
@@ -314,6 +315,7 @@
     <Compile Include="Core\IHasTransform.cs" />
     <Compile Include="Core\IHasVelocity.cs" />
     <Compile Include="Core\IKeyboardStringReader.cs" />
+    <Compile Include="Core\IPrerenderableEntity.cs" />
     <Compile Include="Core\IRenderContext.cs" />
     <Compile Include="Core\IRenderContextImplementationUtilities.cs" />
     <Compile Include="Core\ISolidEntity.cs" />
@@ -478,6 +480,7 @@
     <Compile Include="Level\ProtogameLevelIoCModule.cs" />
     <Compile Include="Level\ProtogameLevelModule.cs" />
     <Compile Include="Math\CircumcentreSolver.cs" />
+    <Compile Include="Network\ClientAuthoritiveMode.cs" />
     <Compile Include="Network\DefaultNetworkEngine.cs" />
     <Compile Include="Network\DefaultNetworkEventContext.cs" />
     <Compile Include="Network\DefaultSynchronisationApi.cs" />

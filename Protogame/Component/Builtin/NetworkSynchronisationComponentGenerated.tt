@@ -31,8 +31,10 @@ namespace Protogame
 {
 	public partial class NetworkSynchronisationComponent 
 	{
-		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick)
+		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick, out bool mustBeReliable)
 		{
+			mustBeReliable = false;
+
 			<#
 			foreach (var type in supportedTypes.GroupBy(x => x.StorageLocation))
 			{
@@ -92,8 +94,14 @@ namespace Protogame
 				message.PropertyNames[ix] = dataList[ix].Name;
 				message.PropertyTypes[ix] = typeLookup[ix];
 
-				// Update last frame ticked.
+				// Update synchronisation data.
 				dataList[ix].LastFrameSynced = frameTick;
+
+				if (!dataList[ix].HasPerformedInitialSync)
+				{
+					dataList[ix].HasPerformedInitialSync = true;
+					mustBeReliable = true;
+				}
 
 				switch (typeLookup[ix])
 				{
@@ -173,6 +181,7 @@ namespace Protogame
 						break;
 					case EntityPropertiesMessage.PropertyTypeNull:
 						syncData.SetValueDelegate(null);
+						syncData.HasReceivedInitialSync = true;
 						break;
 					<#
 					foreach (var type in supportedTypes)
@@ -187,6 +196,7 @@ namespace Protogame
 						{
 					#>
 						syncData.SetValueDelegate(ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>]));
+						syncData.HasReceivedInitialSync = true;
 						current<#=type.StorageLocation#>++;
 					<#
 						}
@@ -194,6 +204,7 @@ namespace Protogame
 						{
 					#>
 						syncData.SetValueDelegate(ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>, current<#=type.StorageLocation#>));
+						syncData.HasReceivedInitialSync = true;
 						current<#=type.StorageLocation#> += <#=type.PackedArraySize#>;
 					<#
 						}
@@ -204,6 +215,7 @@ namespace Protogame
 						{
 					#>
 						syncData.SetValueDelegate(message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>]);
+						syncData.HasReceivedInitialSync = true;
 						current<#=type.StorageLocation#>++;
 					<#
 						}

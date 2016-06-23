@@ -6,7 +6,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class EntityGroup : IContainsEntities, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject
+    public class EntityGroup : IContainsEntities, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject, IPrerenderableEntity
     {
         private readonly INode _node;
 
@@ -42,6 +42,14 @@ namespace Protogame
             foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IEntity>())
             {
                 child.Render(gameContext, renderContext);
+            }
+        }
+
+        public void Prerender(IGameContext gameContext, IRenderContext renderContext)
+        {
+            foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IPrerenderableEntity>())
+            {
+                child.Prerender(gameContext, renderContext);
             }
         }
 

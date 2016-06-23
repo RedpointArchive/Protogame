@@ -25,9 +25,8 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Component</module>
-    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject
+    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject, IPrerenderableEntity
     {
-
         /// <summary>
         /// The component callable for handling updatable components.
         /// </summary>
@@ -37,6 +36,11 @@ namespace Protogame
         /// The component callable for handling server-side updatable components.
         /// </summary>
         private readonly IComponentCallable<IServerContext, IUpdateContext> _serverUpdate;
+
+        /// <summary>
+        /// The component callable for handling prerenderable components.
+        /// </summary>
+        private readonly IComponentCallable<IGameContext, IRenderContext> _prerender;
 
         /// <summary>
         /// The component callable for handling renderable components.
@@ -87,6 +91,7 @@ namespace Protogame
 
             _update = RegisterCallable<IUpdatableComponent, IGameContext, IUpdateContext>((t, g, u) => t.Update(this, g, u));
             _serverUpdate = RegisterCallable<IServerUpdatableComponent, IServerContext, IUpdateContext>((t, s, u) => t.Update(this, s, u));
+            _prerender = RegisterCallable<IPrerenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Prerender(this, g, r));
             _render = RegisterCallable<IRenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Render(this, g, r));
             _handleEvent = RegisterCallable<IEventfulComponent, IGameContext, IEventEngine<IGameContext>, Event, EventState>(EventCallback);
             _handleMessageRecievedClient = RegisterCallable<INetworkedComponent, IGameContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState>(ClientMessageCallback);
@@ -104,6 +109,16 @@ namespace Protogame
         public virtual void Render(IGameContext gameContext, IRenderContext renderContext)
         {
             _render.Invoke(gameContext, renderContext);
+        }
+
+        /// <summary>
+        /// Prerenders the entity.
+        /// </summary>
+        /// <param name="gameContext">The current game context.</param>
+        /// <param name="renderContext">The current render context.</param>
+        public void Prerender(IGameContext gameContext, IRenderContext renderContext)
+        {
+            _prerender.Invoke(gameContext, renderContext);
         }
 
         /// <summary>

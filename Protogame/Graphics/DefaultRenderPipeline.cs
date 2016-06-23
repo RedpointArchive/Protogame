@@ -71,8 +71,6 @@ namespace Protogame
 
                 var standardRenderPasses = _standardRenderPasses.ToArray();
                 var postProcessingRenderPasses = _postProcessingRenderPasses.ToArray();
-                //IRenderPass[] transientStandardRenderPasses;
-                //IRenderPass[] transientPostProcessingRenderPasses;
                 IRenderPass previousPass = null;
                 IRenderPass nextPass = null;
 
@@ -314,6 +312,11 @@ namespace Protogame
         private void RenderPass(IGameContext gameContext, IRenderContext renderContext, IEntity[] entities)
         {
             gameContext.World.RenderBelow(gameContext, renderContext);
+
+            foreach (var entity in entities.OfType<IPrerenderableEntity>())
+            {
+                entity.Prerender(gameContext, renderContext);
+            }
 
             foreach (var entity in entities)
             {

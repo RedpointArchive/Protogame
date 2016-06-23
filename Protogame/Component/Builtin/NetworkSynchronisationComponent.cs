@@ -21,6 +21,8 @@ namespace Protogame
         private readonly List<SynchronisedData> _synchronisedDataToTransmit;
         private ISynchronisedObject _synchronisationContext;
 
+        private int _localTick;
+
         public NetworkSynchronisationComponent(
             INetworkEngine networkEngine,
             IUniqueIdentifierAllocator uniqueIdentifierAllocator,
@@ -35,10 +37,60 @@ namespace Protogame
             _synchronisedDataToTransmit = new List<SynchronisedData>();
         }
 
+        /// <summary>
+        /// Whether this entity and it's components only exist on the server.  If this
+        /// is set to true, no data is sent to clients about this entity.
+        /// </summary>
         public bool ServerOnly { get; set; }
+
+        /// <summary>
+        /// Whether this entity only exists on the server and the authoritive client.  If
+        /// clients have no authority over this entity, this option has no effect.  If this
+        /// option is false, then all clients are made aware of a client authoritive entity
+        /// (even clients who do not control it).
+        /// </summary>
+        public bool OnlySendToAuthoritiveClient { get; set; }
+
+        /// <summary>
+        /// The client which owns this entity.  If <see cref="ClientAuthoritiveMode"/> is
+        /// anything other than <c>None</c>, then this indicates which clients can modify
+        /// information about this entity on the server.  If this is <c>null</c> while
+        /// <see cref="ClientAuthoritiveMode"/> is anything other than <c>None</c>, then any
+        /// client can modify this entity.
+        /// </summary>
+        public IPEndPoint ClientOwnership { get; set; }
+
+        /// <summary>
+        /// The authority level given to clients over this entity.
+        /// </summary>
+        public ClientAuthoritiveMode ClientAuthoritiveMode { get; set; }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
+            _localTick++;
+
+            if (!_uniqueIdentifierForEntity.HasValue)
+            {
+                // TODO: Support predicted entities here.
+                // We don't have an identifier provided by the server, so skip all this logic.
+                return;
+            }
+
+            if (ClientAuthoritiveMode != ClientAuthoritiveMode.None)
+            {
+                // This client has some level of authority over the entity, so send data that's important.
+                switch (ClientAuthoritiveMode)
+                {
+                    case ClientAuthoritiveMode.TrustClient:
+                        PrepareAndTransmitSynchronisation(entity, _localTick, true, ClientAuthoritiveMode);
+                        break;
+                    case ClientAuthoritiveMode.ReplayInputs:
+                        throw new NotSupportedException("Replaying inputs provided by clients is not yet supported.");
+                    default:
+                        throw new InvalidOperationException("Unknown client authoritivity mode: " + ClientAuthoritiveMode);
+                }
+
+            }
         }
 
         public void Update(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext)
@@ -60,6 +112,18 @@ namespace Protogame
                 // TODO: Tracking clients by endpoint almost certainly needs to change...
                 foreach (var endpoint in dispatcher.Endpoints)
                 {
+                    if (ClientAuthoritiveMode != ClientAuthoritiveMode.None &&
+                        ClientOwnership != null && 
+                        OnlySendToAuthoritiveClient)
+                    {
+                        if (!ClientOwnership.Equals(endpoint))
+                        {
+                            // This client doesn't own the entity, and this entity is only
+                            // synchronised with clients that own it.
+                            continue;
+                        }
+                    }
+
                     if (!_clientsEntityIsKnownOn.Contains(endpoint))
                     {
                         // Send an entity creation message to the client.
@@ -78,78 +142,8 @@ namespace Protogame
                     }
                 }
             }
-
-            // If the entity is a synchronised entity, collect properties of the synchronised object
-            // directly.
-            var synchronisedEntity = entity as ISynchronisedObject;
-            if (synchronisedEntity != null)
-            {
-                _synchronisationContext = synchronisedEntity;
-                _synchronisationContext.DeclareSynchronisedProperties(this);
-            }
-
-            // Iterate through all the components on the entity and get their synchronisation data as well.
-            foreach (var synchronisedComponent in entity.Components.OfType<ISynchronisedObject>())
-            {
-                _synchronisationContext = synchronisedComponent;
-                _synchronisationContext.DeclareSynchronisedProperties(this);
-            }
-
-            if (_synchronisedData.Count > 0)
-            {
-                // Now calculate the delta to transmit over the network.
-                var currentTick = serverContext.Tick; // TODO: Use TimeTick
-                _synchronisedDataToTransmit.Clear();
-                foreach (var data in _synchronisedData.Values)
-                {
-                    var needsSync = false;
-                    if (!data.HasPerformedInitialSync)
-                    {
-                        needsSync = true;
-                    }
-                    if (data.LastValue != data.CurrentValue)
-                    {
-                        if (data.LastFrameSynced > currentTick + data.FrameInterval)
-                        {
-                            needsSync = true;
-                        }
-                    }
-
-                    if (needsSync)
-                    {
-                        _synchronisedDataToTransmit.Add(data);
-                    }
-                }
-
-                if (_synchronisedDataToTransmit.Count > 0)
-                {
-                    // Build up the synchronisation message.
-                    var message = new EntityPropertiesMessage();
-                    message.EntityID = _uniqueIdentifierForEntity.Value;
-                    message.FrameTick = currentTick;
-                    message.PropertyNames = new string[_synchronisedDataToTransmit.Count];
-                    message.PropertyTypes = new int[_synchronisedDataToTransmit.Count];
-
-                    AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick);
-
-                    // Sync properties to each client.
-                    foreach (var dispatcher in _networkEngine.CurrentDispatchers)
-                    {
-                        // TODO: Tracking clients by endpoint almost certainly needs to change...
-                        foreach (var endpoint in dispatcher.Endpoints)
-                        {
-                            if (_clientsEntityIsKnownOn.Contains(endpoint))
-                            {
-                                // Send an entity properties message to the client.
-                                dispatcher.Send(
-                                    endpoint,
-                                    _networkMessageSerialization.Serialize(message),
-                                    false);
-                            }
-                        }
-                    }
-                }
-            }
+            
+            PrepareAndTransmitSynchronisation(entity, serverContext.Tick, false, ClientAuthoritiveMode);
         }
 
         public bool ReceiveMessage(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext, MxDispatcher dispatcher, MxClient server,
@@ -189,6 +183,59 @@ namespace Protogame
 
         public bool ReceiveMessage(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext, MxDispatcher dispatcher, MxClient client, byte[] payload, uint protocolId)
         {
+            if (_uniqueIdentifierForEntity == null)
+            {
+                return false;
+            }
+
+            // See what kind of messages we accept, based on the client authority.
+            switch (ClientAuthoritiveMode)
+            {
+                case ClientAuthoritiveMode.None:
+                    // We don't accept any client data about this entity, so ignore it.
+                    return false;
+                case ClientAuthoritiveMode.TrustClient:
+                    {
+                        // Check to see if the message is coming from a client that has authority.
+                        if (ClientOwnership != null && !ClientOwnership.Equals(client.Endpoint))
+                        {
+                            // We don't trust this message.
+                            return false;
+                        }
+
+                        // We trust the client, so process this information like a client would.
+                        var propertyMessage = _networkMessageSerialization.Deserialize(payload) as EntityPropertiesMessage;
+
+                        if (propertyMessage == null || propertyMessage.EntityID != _uniqueIdentifierForEntity.Value)
+                        {
+                            return false;
+                        }
+
+                        // If the entity is a synchronised entity, collect properties of the synchronised object
+                        // directly.
+                        var synchronisedEntity = entity as ISynchronisedObject;
+                        if (synchronisedEntity != null)
+                        {
+                            _synchronisationContext = synchronisedEntity;
+                            _synchronisationContext.DeclareSynchronisedProperties(this);
+                        }
+
+                        // Iterate through all the components on the entity and get their synchronisation data as well.
+                        foreach (var synchronisedComponent in entity.Components.OfType<ISynchronisedObject>())
+                        {
+                            _synchronisationContext = synchronisedComponent;
+                            _synchronisationContext.DeclareSynchronisedProperties(this);
+                        }
+
+                        AssignMessageToSyncData(propertyMessage, _synchronisedData);
+                        return true;
+                    }
+                case ClientAuthoritiveMode.ReplayInputs:
+                    // We don't implement this yet, but we don't want to allow client packets to cause
+                    // a server error, so silently consume it.
+                    return false;
+            }
+
             return false;
         }
 
@@ -258,7 +305,125 @@ namespace Protogame
             public Action<object> SetValueDelegate;
 
             public bool IsActiveInSynchronisation;
+
+            public bool HasReceivedInitialSync;
         }
+
+        #region Synchronisation Preperation
+        
+        private void PrepareAndTransmitSynchronisation(ComponentizedEntity entity, int tick, bool isFromClient, ClientAuthoritiveMode clientAuthoritiveMode)
+        {
+            if (!_uniqueIdentifierForEntity.HasValue)
+            {
+                throw new InvalidOperationException("PrepareAndTransmit should not be called without an entity ID!");
+            }
+
+            // If the entity is a synchronised entity, collect properties of the synchronised object
+            // directly.
+            var synchronisedEntity = entity as ISynchronisedObject;
+            if (synchronisedEntity != null)
+            {
+                _synchronisationContext = synchronisedEntity;
+                _synchronisationContext.DeclareSynchronisedProperties(this);
+            }
+
+            // Iterate through all the components on the entity and get their synchronisation data as well.
+            foreach (var synchronisedComponent in entity.Components.OfType<ISynchronisedObject>())
+            {
+                _synchronisationContext = synchronisedComponent;
+                _synchronisationContext.DeclareSynchronisedProperties(this);
+            }
+
+            if (_synchronisedData.Count > 0)
+            {
+                // Now calculate the delta to transmit over the network.
+                var currentTick = tick; // TODO: Use TimeTick
+                _synchronisedDataToTransmit.Clear();
+                foreach (var data in _synchronisedData.Values)
+                {
+                    var needsSync = false;
+
+                    // If we're on the client and we haven't had an initial piece of data from the server,
+                    // we never synchronise because we don't know what the initial value is.
+                    if (isFromClient && !data.HasReceivedInitialSync)
+                    {
+                        continue;
+                    }
+
+                    // If we haven't performed the initial synchronisation, we always transmit the data.
+                    if (!data.HasPerformedInitialSync)
+                    {
+                        needsSync = true;
+                    }
+
+                    // If we are on the client (i.e. the client assumes it's authoritive), or if the 
+                    // server knows that the client does not have authority, then allow this next section.
+                    // Or to put it another way, if we're not on the client and we know the client has
+                    // authority, only transmit data for the first time because the client will make 
+                    // decisions from that point onwards.
+                    if (isFromClient || clientAuthoritiveMode != ClientAuthoritiveMode.TrustClient)
+                    {
+                        if (data.LastValue != data.CurrentValue)
+                        {
+                            if (data.LastFrameSynced + data.FrameInterval < currentTick)
+                            {
+                                needsSync = true;
+                            }
+                        }
+                    }
+
+                    if (needsSync)
+                    {
+                        _synchronisedDataToTransmit.Add(data);
+                    }
+                }
+
+                if (_synchronisedDataToTransmit.Count > 0)
+                {
+                    // Build up the synchronisation message.
+                    var message = new EntityPropertiesMessage();
+                    message.EntityID = _uniqueIdentifierForEntity.Value;
+                    message.FrameTick = currentTick;
+                    message.PropertyNames = new string[_synchronisedDataToTransmit.Count];
+                    message.PropertyTypes = new int[_synchronisedDataToTransmit.Count];
+                    message.IsClientMessage = isFromClient;
+
+                    bool reliable;
+                    AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick, out reliable);
+
+                    // Sync properties to each client.
+                    foreach (var dispatcher in _networkEngine.CurrentDispatchers)
+                    {
+                        // TODO: Tracking clients by endpoint almost certainly needs to change...
+                        foreach (var endpoint in dispatcher.Endpoints)
+                        {
+                            if (ClientAuthoritiveMode != ClientAuthoritiveMode.None &&
+                                ClientOwnership != null &&
+                                OnlySendToAuthoritiveClient)
+                            {
+                                if (!ClientOwnership.Equals(endpoint))
+                                {
+                                    // This client doesn't own the entity, and this entity is only
+                                    // synchronised with clients that own it.
+                                    continue;
+                                }
+                            }
+                            
+                            if (isFromClient || _clientsEntityIsKnownOn.Contains(endpoint))
+                            {
+                                // Send an entity properties message to the client.
+                                dispatcher.Send(
+                                    endpoint,
+                                    _networkMessageSerialization.Serialize(message),
+                                    reliable);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
 
         #region Conversion Methods
 
