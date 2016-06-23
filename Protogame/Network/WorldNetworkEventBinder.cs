@@ -38,17 +38,17 @@ namespace Protogame
                 var createEntityMessage = @object as EntityCreateMessage;
                 if (createEntityMessage != null)
                 {
-                    // Spawn an entity in the world...
-                    var world = networkReceiveEvent.GameContext.World;
-                    var spawnedEntity = _kernel.Get(
-                        Type.GetType(createEntityMessage.EntityType),
-                        _hierarchy.Lookup(world)) as IEntity;
-
                     if (_networkEngine.FindObjectByNetworkId(createEntityMessage.EntityID) != null)
                     {
                         // This entity was already created on the client, so we ignore it.
                         return true;
                     }
+
+                    // Spawn an entity in the world...
+                    var world = networkReceiveEvent.GameContext.World;
+                    var spawnedEntity = _kernel.Get(
+                        Type.GetType(createEntityMessage.EntityType),
+                        _hierarchy.Lookup(world)) as IEntity;
 
                     _networkEngine.RegisterObjectAsNetworkId(
                         createEntityMessage.EntityID,
