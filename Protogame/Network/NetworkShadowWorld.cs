@@ -145,7 +145,7 @@ namespace Protogame
 
             while (_clientsDisconnected.Count > 0)
             {
-                var @event = _clientsConnected.Dequeue();
+                var @event = _clientsDisconnected.Dequeue();
 
                 _networkEventEngine.Fire(
                     new DefaultNetworkEventContext(),
