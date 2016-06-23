@@ -6,9 +6,13 @@ namespace Protogame
 {
     public class DefaultDebugRenderPass : IDebugRenderPass
     {
-        private RasterizerState _oldState;
+        private RasterizerState _oldRasterizerState;
 
-        private RasterizerState _debugState;
+        private RasterizerState _debugRasterizerState;
+
+        private DepthStencilState _oldDepthState;
+
+        private DepthStencilState _debugDepthState;
 
         private EffectAsset _basicEffect;
 
@@ -17,6 +21,7 @@ namespace Protogame
             _basicEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Color");
             Lines = new List<VertexPositionNormalColor>();
             Triangles = new List<VertexPositionNormalColor>();
+            Enabled = true;
         }
 
         public bool IsPostProcessingPass => false;
@@ -26,30 +31,48 @@ namespace Protogame
         public bool SkipEngineHookRender => false;
         public string EffectTechniqueName => RenderPipelineTechniqueName.Forward;
 
+        public bool Enabled { get; set; }
+
         public List<VertexPositionNormalColor> Lines { get; }
 
         public List<VertexPositionNormalColor> Triangles { get; }
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
-            _oldState = renderContext.GraphicsDevice.RasterizerState;
-
-            if (_debugState == null)
+            if (!Enabled)
             {
-                _debugState = new RasterizerState()
+                return;
+            }
+
+            _oldRasterizerState = renderContext.GraphicsDevice.RasterizerState;
+            _oldDepthState = renderContext.GraphicsDevice.DepthStencilState;
+
+            if (_debugRasterizerState == null)
+            {
+                _debugRasterizerState = new RasterizerState()
                 {
                     CullMode = CullMode.None,
                     FillMode = FillMode.WireFrame,
-                    DepthBias = _oldState.DepthBias,
+                    DepthBias = _oldRasterizerState.DepthBias,
                     DepthClipEnable = true,
                     MultiSampleAntiAlias = false,
                     Name = "PhysicsDebugRasterizerState",
                     ScissorTestEnable = false,
-                    SlopeScaleDepthBias = _oldState.SlopeScaleDepthBias
+                    SlopeScaleDepthBias = _oldRasterizerState.SlopeScaleDepthBias
                 };
             }
 
-            renderContext.GraphicsDevice.RasterizerState = _debugState;
+            if (_debugDepthState == null)
+            {
+                _debugDepthState = new DepthStencilState()
+                {
+                    DepthBufferEnable = false,
+                    DepthBufferWriteEnable = false
+                };
+            }
+
+            renderContext.GraphicsDevice.RasterizerState = _debugRasterizerState;
+            renderContext.GraphicsDevice.DepthStencilState = _debugDepthState;
             renderContext.PushEffect(_basicEffect.Effect);
 
             Lines.Clear();
@@ -58,6 +81,11 @@ namespace Protogame
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             var world = renderContext.World;
             renderContext.World = Matrix.Identity;
 
@@ -97,7 +125,8 @@ namespace Protogame
             renderContext.World = world;
 
             renderContext.PopEffect();
-            renderContext.GraphicsDevice.RasterizerState = _oldState;
+            renderContext.GraphicsDevice.RasterizerState = _oldRasterizerState;
+            renderContext.GraphicsDevice.DepthStencilState = _oldDepthState;
         }
     }
 }
