@@ -121,7 +121,7 @@ namespace Protogame
         /// </summary>
         /// <param name="serverContext">The current server context.</param>
         /// <param name="updateContext">The current update context.</param>
-        public void Update(IServerContext serverContext, IUpdateContext updateContext)
+        public virtual void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
             _serverUpdate.Invoke(serverContext, updateContext);
         }
@@ -144,7 +144,7 @@ namespace Protogame
         /// <param name="eventEngine">The event engine from which the event was fired.</param>
         /// <param name="event">The event that is to be handled.</param>
         /// <returns>Whether or not the event was consumed.</returns>
-        public bool Handle(IGameContext context, IEventEngine<IGameContext> eventEngine, Event @event)
+        public virtual bool Handle(IGameContext context, IEventEngine<IGameContext> eventEngine, Event @event)
         {
             var state = new EventState
             {
@@ -213,7 +213,7 @@ namespace Protogame
         /// <param name="eventEngine">The event engine from which the event was fired.</param>
         /// <param name="event">The network event that is to be handled.</param>
         /// <returns>Whether or not the event was consumed.</returns>
-        public bool Handle(INetworkEventContext context, IEventEngine<INetworkEventContext> eventEngine, Event @event)
+        public virtual bool Handle(INetworkEventContext context, IEventEngine<INetworkEventContext> eventEngine, Event @event)
         {
             var networkEvent = @event as NetworkMessageReceivedEvent;
             if (networkEvent == null)
@@ -323,7 +323,7 @@ namespace Protogame
         /// <param name="gameContext"></param>
         /// <param name="updateContext"></param>
         /// <param name="identifier"></param>
-        public void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier)
+        public virtual void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier)
         {
             _networkIdentifiableClient.Invoke(gameContext, updateContext, identifier);
         }
@@ -335,7 +335,7 @@ namespace Protogame
         /// <param name="updateContext"></param>
         /// <param name="client"></param>
         /// <param name="predictedIdentifier"></param>
-        public void ReceivePredictedNetworkIDFromClient(IServerContext serverContext, IUpdateContext updateContext, MxClient client,
+        public virtual void ReceivePredictedNetworkIDFromClient(IServerContext serverContext, IUpdateContext updateContext, MxClient client,
             int predictedIdentifier)
         {
             _networkIdentifiableServer.Invoke(serverContext, updateContext, client, predictedIdentifier);
@@ -348,7 +348,7 @@ namespace Protogame
         /// <param name="synchronisationApi">The synchronisation API.</param>
         public virtual void DeclareSynchronisedProperties(ISynchronisationApi synchronisationApi)
         {
-            synchronisationApi.Synchronise("transform", 5, Transform, x => Transform = x);
+            synchronisationApi.Synchronise("transform", 30, Transform, x => Transform = x);
         }
     }
 }
