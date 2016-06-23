@@ -24,6 +24,7 @@ namespace Protogame
             ThumbstickLookSensitivity = 1/100f;
             ThumbstickMoveSensitivity = 5f;
             MovementSpeed = 1f;
+            MouseLock = true;
         }
 
         public float ThumbstickLookSensitivity { get; set; }
@@ -31,6 +32,8 @@ namespace Protogame
         public float ThumbstickMoveSensitivity { get; set; }
 
         public float MovementSpeed { get; set; }
+
+        public bool MouseLock { get; set; }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
@@ -76,7 +79,7 @@ namespace Protogame
                 return true;
             }
 
-            if (mouseEvent != null)
+            if (mouseEvent != null && MouseLock)
             {
                 var centerX = gameContext.Window.ClientBounds.Width/2;
                 var centerY = gameContext.Window.ClientBounds.Height/2;
