@@ -8,7 +8,7 @@ namespace Protogame
 {
 	public partial class NetworkSynchronisationComponent 
 	{
-		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message)
+		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick)
 		{
 			
 			var totalString = 0;
@@ -180,6 +180,9 @@ namespace Protogame
             {
 				message.PropertyNames[ix] = dataList[ix].Name;
 				message.PropertyTypes[ix] = typeLookup[ix];
+
+				// Update last frame ticked.
+				dataList[ix].LastFrameSynced = frameTick;
 
 				switch (typeLookup[ix])
 				{

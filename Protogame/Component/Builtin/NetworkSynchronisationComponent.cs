@@ -109,7 +109,7 @@ namespace Protogame
                     }
                     if (data.LastValue != data.CurrentValue)
                     {
-                        if (currentTick + data.FrameInterval < data.LastFrameSynced)
+                        if (data.LastFrameSynced > currentTick + data.FrameInterval)
                         {
                             needsSync = true;
                         }
@@ -130,7 +130,7 @@ namespace Protogame
                     message.PropertyNames = new string[_synchronisedDataToTransmit.Count];
                     message.PropertyTypes = new int[_synchronisedDataToTransmit.Count];
 
-                    AssignSyncDataToMessage(_synchronisedDataToTransmit, message);
+                    AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick);
 
                     // Sync properties to each client.
                     foreach (var dispatcher in _networkEngine.CurrentDispatchers)
@@ -144,7 +144,7 @@ namespace Protogame
                                 dispatcher.Send(
                                     endpoint,
                                     _networkMessageSerialization.Serialize(message),
-                                    true);
+                                    false);
                             }
                         }
                     }
