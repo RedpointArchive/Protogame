@@ -77,19 +77,27 @@ namespace Protogame.ATFLevelEditor
             object propertyValue = null;
             if (typeof(T2) == typeof(int))
             {
-                propertyValue = int.Parse(propertyRawValue);
+                int v = (int)(object)@default;
+                int.TryParse(propertyRawValue, out v);
+                propertyValue = v;
             }
             else if (typeof(T2) == typeof(uint))
             {
-                propertyValue = uint.Parse(propertyRawValue);
+                uint v = (uint)(object)@default;
+                uint.TryParse(propertyRawValue, out v);
+                propertyValue = v;
             }
             else if (typeof(T2) == typeof(float))
             {
-                propertyValue = float.Parse(propertyRawValue);
+                float v = (float)(object)@default;
+                float.TryParse(propertyRawValue, out v);
+                propertyValue = v;
             }
             else if (typeof(T2) == typeof(double))
             {
-                propertyValue = double.Parse(propertyRawValue);
+                double v = (double)(object)@default;
+                double.TryParse(propertyRawValue, out v);
+                propertyValue = v;
             }
             else if (typeof(T2) == typeof(string))
             {

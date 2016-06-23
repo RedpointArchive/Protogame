@@ -10,6 +10,19 @@ namespace ProtogamePostBuild
 {
     public class ATFLevelEditorBaking
     {
+        private string MakeSafeIdentifier(string name)
+        {
+            string safe = string.Empty;
+            for (var i = 0; i < name.Length; i++)
+            {
+                if (name[i] == '_' || (name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z') || (safe.Length > 0 && name[i] >= '0' && name[i] <= '9'))
+                {
+                    safe += "" + name[i];
+                }
+            }
+            return safe;
+        }
+
         public void BakeOutSchemaFile(string intermediateAssembly, string[] referencedAssemblies)
         {
             if (!referencedAssemblies.Any(x => x.EndsWith("Protogame.dll")))
@@ -27,11 +40,15 @@ namespace ProtogamePostBuild
 
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
             {
-                var f = referencedAssemblies.FirstOrDefault(x => x.EndsWith(args.Name + ".dll"));
+                var an = new AssemblyName(args.Name);
+
+                var f = referencedAssemblies.FirstOrDefault(x => x.EndsWith(an.Name + ".dll"));
                 if (f != null)
                 {
                     return Assembly.LoadFile(f);
                 }
+
+                Console.WriteLine("WARNING: Could not find assembly named " + an.Name + ", with referenced assemblies: \r\n" + string.Join("\r\n - ", referencedAssemblies));
 
                 return null;
             };
@@ -103,12 +120,12 @@ namespace ProtogamePostBuild
                                 {
                                     case DeclaredAs.Entity:
                                         Console.WriteLine("Found editable entity: " + type.FullName);
-                                        nativeTypeName = type.FullName.Replace(".", "_").Replace("?","") + "_NativeEntity";
+                                        nativeTypeName = MakeSafeIdentifier(type.FullName) + "_NativeEntity";
                                         xsdBaseTypeName = "gameObjectType";
                                         break;
                                     case DeclaredAs.Component:
                                         Console.WriteLine("Found editable component: " + type.FullName);
-                                        nativeTypeName = type.FullName.Replace(".", "_").Replace("?", "") + "_NativeComponent";
+                                        nativeTypeName = MakeSafeIdentifier(type.FullName) + "_NativeComponent";
                                         if (bakingEditorQuery.HasTransform)
                                         {
                                             xsdBaseTypeName = "transformComponentType";
@@ -266,6 +283,11 @@ namespace ProtogamePostBuild
                     }
                 }
             }
+            catch (ReflectionTypeLoadException ex)
+            {
+                Console.Error.WriteLine("ERROR: Encountered a fatal exception during processing: " + ex + "\r\n" + ex.LoaderExceptions.Select(x => x.ToString()).Aggregate((a, b) => a + "\r\n" + b));
+                Environment.ExitCode = 1;
+            }
             catch (Exception ex)
             {
                 Console.Error.WriteLine("ERROR: Encountered a fatal exception during processing: " + ex);
@@ -294,7 +316,7 @@ namespace ProtogamePostBuild
         {
             var attribute = xsd.CreateElement("", "LeGe.NativeProperty", "gap");
             attribute.SetAttribute("name", name);
-            attribute.SetAttribute("nativeName", nativeName);
+            attribute.SetAttribute("nativeName", MakeSafeIdentifier(nativeName));
             attribute.SetAttribute("nativeType", nativeType);
             attribute.SetAttribute("access", access);
             return attribute;
