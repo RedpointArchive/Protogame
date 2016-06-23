@@ -284,6 +284,13 @@ namespace Protogame
             _synchronisedData[contextFullName].IsActiveInSynchronisation = true;
             _synchronisedData[contextFullName].FrameInterval = frameInterval;
             _synchronisedData[contextFullName].LastValue = _synchronisedData[contextFullName].CurrentValue;
+
+            if (_synchronisedData[contextFullName].LastValue is ITransform)
+            {
+                _synchronisedData[contextFullName].LastValue =
+                    ((ITransform) _synchronisedData[contextFullName].LastValue).SerializeToNetwork();
+            }
+
             _synchronisedData[contextFullName].CurrentValue = currentValue;
             _synchronisedData[contextFullName].SetValueDelegate = x => { setValue((T)x); }; // TODO: This causes a memory allocation.
         }
@@ -363,7 +370,21 @@ namespace Protogame
                     // decisions from that point onwards.
                     if (isFromClient || clientAuthoritiveMode != ClientAuthoritiveMode.TrustClient)
                     {
-                        if (data.LastValue != data.CurrentValue)
+                        var lastValue = data.LastValue;
+                        var currentValue = data.CurrentValue;
+
+                        if (lastValue is ITransform)
+                        {
+                            throw new InvalidOperationException(
+                                "Last value property got stored as ITransform, but should have been stored as NetworkTransform!");
+                        }
+
+                        if (currentValue is ITransform)
+                        {
+                            currentValue = ((ITransform)currentValue).SerializeToNetwork();
+                        }
+
+                        if (lastValue != currentValue)
                         {
                             if (data.LastFrameSynced + data.FrameInterval < currentTick)
                             {

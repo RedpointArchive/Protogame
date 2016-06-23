@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using ProtoBuf;
 
 namespace Protogame
@@ -52,5 +53,79 @@ namespace Protogame
 
         [ProtoMember(5)]
         public float[] CustomLocalMatrix;
+
+        private bool ArrayEqual(float[] a, float[] b)
+        {
+            if (a == null && b == null)
+            {
+                return true;
+            }
+
+            if (a == null || b == null)
+            {
+                return false;
+            }
+
+            if (a.Length != b.Length)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < a.Length; i++)
+            {
+                if (Math.Abs(a[i] - b[i]) > 0.00001f)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private int ArrayHashCode(float[] arr)
+        {
+            if (arr == null)
+            {
+                return 0;
+            }
+
+            var hash = arr.Length;
+            for (var i = 0; i < arr.Length; i++)
+            {
+                hash = (hash*397) ^ (int) (arr[i]*397);
+            }
+            return hash;
+        }
+
+        protected bool Equals(NetworkTransform other)
+        {
+            return
+                IsSRTMatrix == other.IsSRTMatrix &&
+                ArrayEqual(SRTLocalPosition, other.SRTLocalPosition) && 
+                ArrayEqual(SRTLocalRotation, other.SRTLocalRotation) &&
+                ArrayEqual(SRTLocalScale, other.SRTLocalScale) && 
+                ArrayEqual(CustomLocalMatrix, other.CustomLocalMatrix);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((NetworkTransform) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = IsSRTMatrix.GetHashCode();
+                hashCode = (hashCode*397) ^ ArrayHashCode(SRTLocalPosition);
+                hashCode = (hashCode*397) ^ ArrayHashCode(SRTLocalRotation);
+                hashCode = (hashCode*397) ^ ArrayHashCode(SRTLocalScale);
+                hashCode = (hashCode*397) ^ ArrayHashCode(CustomLocalMatrix);
+                return hashCode;
+            }
+        }
     }
 }
