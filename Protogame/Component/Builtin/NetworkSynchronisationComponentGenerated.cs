@@ -132,7 +132,7 @@ namespace Protogame
 				}
 
 								
-				else if (dataList[i].CurrentValue is Protogame.ITransform)
+				else if (dataList[i].CurrentValue is Protogame.NetworkTransform)
 				{
 					typeLookup[i] = EntityPropertiesMessage.PropertyTypeTransform;
 					totalTransform += 1;
@@ -289,7 +289,7 @@ namespace Protogame
 						break;
 									case EntityPropertiesMessage.PropertyTypeTransform:
 					{
-											var value = ConvertToTransform(dataList[ix].CurrentValue);
+											Protogame.NetworkTransform value = (Protogame.NetworkTransform)dataList[ix].CurrentValue;
 										message.PropertyValuesTransform[currentTransform++] = value;
 										}
 						break;
@@ -332,101 +332,129 @@ namespace Protogame
 				}
 
 				var syncData = fullDataList[message.PropertyNames[i]];
+				var hasValue = false;
+				object value = null;
 
 				switch (message.PropertyTypes[i])
 				{
 					case EntityPropertiesMessage.PropertyTypeNone:
 						break;
 					case EntityPropertiesMessage.PropertyTypeNull:
-						syncData.SetValueDelegate(null);
+						value = null;
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						break;
 										case EntityPropertiesMessage.PropertyTypeString:
 					{
-											syncData.SetValueDelegate(message.PropertyValuesString[currentString]);
+											value = message.PropertyValuesString[currentString];
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentString++;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeInt16:
 					{
-											syncData.SetValueDelegate(message.PropertyValuesInt16[currentInt16]);
+											value = message.PropertyValuesInt16[currentInt16];
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentInt16++;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeInt32:
 					{
-											syncData.SetValueDelegate(message.PropertyValuesInt32[currentInt32]);
+											value = message.PropertyValuesInt32[currentInt32];
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentInt32++;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeSingle:
 					{
-											syncData.SetValueDelegate(message.PropertyValuesSingle[currentSingle]);
+											value = message.PropertyValuesSingle[currentSingle];
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentSingle++;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeDouble:
 					{
-											syncData.SetValueDelegate(message.PropertyValuesDouble[currentDouble]);
+											value = message.PropertyValuesDouble[currentDouble];
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentDouble++;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeBoolean:
 					{
-											syncData.SetValueDelegate(message.PropertyValuesBoolean[currentBoolean]);
+											value = message.PropertyValuesBoolean[currentBoolean];
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentBoolean++;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeVector2:
 					{
-											syncData.SetValueDelegate(ConvertFromVector2(message.PropertyValuesSingleArray, currentSingleArray));
+											value = ConvertFromVector2(message.PropertyValuesSingleArray, currentSingleArray);
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentSingleArray += 2;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeVector3:
 					{
-											syncData.SetValueDelegate(ConvertFromVector3(message.PropertyValuesSingleArray, currentSingleArray));
+											value = ConvertFromVector3(message.PropertyValuesSingleArray, currentSingleArray);
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentSingleArray += 3;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeVector4:
 					{
-											syncData.SetValueDelegate(ConvertFromVector4(message.PropertyValuesSingleArray, currentSingleArray));
+											value = ConvertFromVector4(message.PropertyValuesSingleArray, currentSingleArray);
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentSingleArray += 4;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeQuaternion:
 					{
-											syncData.SetValueDelegate(ConvertFromQuaternion(message.PropertyValuesSingleArray, currentSingleArray));
+											value = ConvertFromQuaternion(message.PropertyValuesSingleArray, currentSingleArray);
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentSingleArray += 4;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeMatrix:
 					{
-											syncData.SetValueDelegate(ConvertFromMatrix(message.PropertyValuesSingleArray, currentSingleArray));
+											value = ConvertFromMatrix(message.PropertyValuesSingleArray, currentSingleArray);
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentSingleArray += 16;
 											break;
 					}
 										case EntityPropertiesMessage.PropertyTypeTransform:
 					{
-											syncData.SetValueDelegate(ConvertFromTransform(message.PropertyValuesTransform[currentTransform]));
+											value = message.PropertyValuesTransform[currentTransform];
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						currentTransform++;
 											break;
 					}
 									}
 
+				if (hasValue)
+				{
+					syncData.LastValueFromServer = value;
+
+					if (syncData.TimeMachine == null)
+					{
+						syncData.SetValueDelegate(value);
+					}
+					else
+					{
+						syncData.TimeMachine.Set(message.FrameTick, value);
+					}
+				}
 			}
 		}
 	}

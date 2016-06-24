@@ -17,5 +17,7 @@ namespace Protogame
         void SetFromSRTMatrix(Vector3 localPosition, Quaternion localRotation, Vector3 localScale);
 
         NetworkTransform SerializeToNetwork();
+
+        void Assign(ITransform from);
     }
 }

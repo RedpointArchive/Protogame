@@ -87,7 +87,7 @@ namespace Protogame
             Transform.LocalPosition += new Vector3(XSpeed, YSpeed, ZSpeed);
         }
 
-        public ITransform Transform { get; set; }
+        public ITransform Transform { get; }
 
         public IFinalTransform FinalTransform
         {

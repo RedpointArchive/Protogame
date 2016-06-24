@@ -26,7 +26,7 @@ namespace Protogame
         /// <returns>
         /// The <typeparamref name="T"/>.
         /// </returns>
-        public override sealed T Get(int tick)
+        public sealed override T Get(int tick)
         {
             int previousTick, nextTick;
 

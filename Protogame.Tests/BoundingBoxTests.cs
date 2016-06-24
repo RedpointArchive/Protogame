@@ -15,21 +15,21 @@ namespace Protogame.Tests
 
         private IBoundingBox CreateBoundingBox(int x, int y, int width, int height, int xspeed = 0, int yspeed = 0)
         {
-            return new BoundingBox
+            var bb = new BoundingBox
             {
-                Transform = new DefaultTransform { LocalPosition = new Vector3(x, y, 0) },
                 Width = width,
                 Height = height,
                 XSpeed = xspeed,
                 YSpeed = yspeed
             };
+            bb.Transform.Assign(new DefaultTransform { LocalPosition = new Vector3(x, y, 0) });
+            return bb;
         }
     
         private IBoundingBox Create3DBoundingBox(int x, int y, int z, int width, int height, int depth, int xspeed = 0, int yspeed = 0, int zspeed = 0)
         {
-            return new BoundingBox
+            var bb = new BoundingBox
             {
-                Transform = new DefaultTransform { LocalPosition = new Vector3(x, y, z) },
                 Width = width,
                 Height = height,
                 Depth = depth,
@@ -37,6 +37,8 @@ namespace Protogame.Tests
                 YSpeed = yspeed,
                 ZSpeed = zspeed
             };
+            bb.Transform.Assign(new DefaultTransform { LocalPosition = new Vector3(x, y, z) });
+            return bb;
         }
         
         public void IsNotOverlappingWhenNoBoundingBoxes()

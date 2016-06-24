@@ -61,7 +61,7 @@ namespace Protogame
         /// <summary>
         /// Gets the local transform.  For bounding boxes, this currently is only used for translation.
         /// </summary>
-        public ITransform Transform { get; set; }
+        public ITransform Transform { get; }
 
         public IFinalTransform FinalTransform
         {

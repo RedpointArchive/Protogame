@@ -10,14 +10,15 @@ namespace Protogame.Tests
 
         private IBoundingBox CreateBoundingBox(int x, int y, int width, int height, int xspeed = 0, int yspeed = 0)
         {
-            return new BoundingBox
+            var bb = new BoundingBox
             {
-                Transform = new DefaultTransform { LocalPosition = new Vector3(x, y, 0) },
                 Width = width,
                 Height = height,
                 XSpeed = xspeed,
                 YSpeed = yspeed
             };
+            bb.Transform.Assign(new DefaultTransform { LocalPosition = new Vector3(x, y, 0) });
+            return bb;
         }
 
         public PlatformingModuleTests(IAssert assert)

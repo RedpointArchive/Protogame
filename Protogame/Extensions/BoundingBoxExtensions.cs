@@ -58,12 +58,13 @@ namespace Protogame
         /// </returns>
         public static IBoundingBox ToBoundingBox(this Rectangle rectangle)
         {
-            return new BoundingBox
+            var bb = new BoundingBox
             {
-                Transform = new DefaultTransform { LocalPosition = new Vector3(rectangle.X, rectangle.Y, 0) },
                 Width = rectangle.Width, 
                 Height = rectangle.Height
             };
+            bb.Transform.Assign(new DefaultTransform { LocalPosition = new Vector3(rectangle.X, rectangle.Y, 0) });
+            return bb;
         }
 
         /// <summary>
@@ -77,13 +78,14 @@ namespace Protogame
         /// </returns>
         public static IBoundingBox ToProtogame(this Microsoft.Xna.Framework.BoundingBox boundingBox)
         {
-            return new BoundingBox
+            var bb = new BoundingBox
             {
-                Transform = new DefaultTransform { LocalPosition = new Vector3(boundingBox.Min.X, boundingBox.Min.Y, boundingBox.Min.Z) },
                 Width = (boundingBox.Max - boundingBox.Min).X, 
                 Height = (boundingBox.Max - boundingBox.Min).Y, 
                 Depth = (boundingBox.Max - boundingBox.Min).Z
             };
+            bb.Transform.Assign(new DefaultTransform { LocalPosition = new Vector3(boundingBox.Min.X, boundingBox.Min.Y, boundingBox.Min.Z) });
+            return bb;
         }
 
         /// <summary>

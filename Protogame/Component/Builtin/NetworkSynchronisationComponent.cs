@@ -7,11 +7,12 @@ using Protoinject;
 
 namespace Protogame
 {
-    public partial class NetworkSynchronisationComponent : IUpdatableComponent, IServerUpdatableComponent, INetworkedComponent, INetworkIdentifiable, ISynchronisationApi
+    public partial class NetworkSynchronisationComponent : IUpdatableComponent, IServerUpdatableComponent, INetworkedComponent, INetworkIdentifiable, ISynchronisationApi, IRenderableComponent
     {
         private readonly INetworkEngine _networkEngine;
         private readonly IUniqueIdentifierAllocator _uniqueIdentifierAllocator;
         private readonly INetworkMessageSerialization _networkMessageSerialization;
+        private readonly IDebugRenderer _debugRenderer;
 
         private int? _uniqueIdentifierForEntity;
 
@@ -26,11 +27,13 @@ namespace Protogame
         public NetworkSynchronisationComponent(
             INetworkEngine networkEngine,
             IUniqueIdentifierAllocator uniqueIdentifierAllocator,
-            INetworkMessageSerialization networkMessageSerialization)
+            INetworkMessageSerialization networkMessageSerialization,
+            IDebugRenderer debugRenderer)
         {
             _networkEngine = networkEngine;
             _uniqueIdentifierAllocator = uniqueIdentifierAllocator;
             _networkMessageSerialization = networkMessageSerialization;
+            _debugRenderer = debugRenderer;
 
             _clientsEntityIsKnownOn = new List<IPEndPoint>();
             _synchronisedData = new Dictionary<string, SynchronisedData>();
@@ -68,6 +71,16 @@ namespace Protogame
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
             _localTick++;
+
+            // For all synchronised values, update them with their time machine if they have one.
+            foreach (var data in _synchronisedData)
+            {
+                if (data.Value.TimeMachine != null)
+                {
+                    data.Value.SetValueDelegate(
+                        data.Value.TimeMachine.Get(_localTick));
+                }
+            }
 
             if (!_uniqueIdentifierForEntity.HasValue)
             {
@@ -250,7 +263,7 @@ namespace Protogame
             
         }
 
-        public void Synchronise<T>(string name, int frameInterval, T currentValue, Action<T> setValue)
+        public void Synchronise<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory = null)
         {
             // TODO: Make this value more unique, and synchronised across the network (so we can have multiple components of the same type).
             var context = "unknown";
@@ -281,18 +294,68 @@ namespace Protogame
                 entry = _synchronisedData[contextFullName];
             }
 
+            object convertedValue = currentValue;
+            if (convertedValue is ITransform)
+            {
+                convertedValue = ((ITransform) convertedValue).SerializeToNetwork();
+            }
+
             _synchronisedData[contextFullName].IsActiveInSynchronisation = true;
             _synchronisedData[contextFullName].FrameInterval = frameInterval;
             _synchronisedData[contextFullName].LastValue = _synchronisedData[contextFullName].CurrentValue;
+            _synchronisedData[contextFullName].CurrentValue = convertedValue;
 
-            if (_synchronisedData[contextFullName].LastValue is ITransform)
+            // TODO: This causes a memory allocation.
+            _synchronisedData[contextFullName].SetValueDelegate = x =>
             {
-                _synchronisedData[contextFullName].LastValue =
-                    ((ITransform) _synchronisedData[contextFullName].LastValue).SerializeToNetwork();
-            }
+                var assignValue = x;
+                if (assignValue is NetworkTransform)
+                {
+                    assignValue = ((NetworkTransform) assignValue).DeserializeFromNetwork();
+                }
+                setValue((T) assignValue);
+            };
 
-            _synchronisedData[contextFullName].CurrentValue = currentValue;
-            _synchronisedData[contextFullName].SetValueDelegate = x => { setValue((T)x); }; // TODO: This causes a memory allocation.
+            if (_synchronisedData[contextFullName].TimeMachine == null)
+            {
+                if (timeMachineHistory != null)
+                {
+                    // Set up a time machine if this is a type which can be interpolated.
+                    if (typeof(T) == typeof(int))
+                    {
+                        _synchronisedData[contextFullName].TimeMachine = new Int32TimeMachine(timeMachineHistory.Value);
+                    }
+                    if (typeof(T) == typeof(short))
+                    {
+                        _synchronisedData[contextFullName].TimeMachine = new Int16TimeMachine(timeMachineHistory.Value);
+                    }
+                    if (typeof(T) == typeof(bool))
+                    {
+                        _synchronisedData[contextFullName].TimeMachine = new BooleanTimeMachine(timeMachineHistory.Value);
+                    }
+                    if (typeof(T) == typeof(double))
+                    {
+                        _synchronisedData[contextFullName].TimeMachine = new DoubleTimeMachine(timeMachineHistory.Value);
+                    }
+                    if (typeof(T) == typeof(float))
+                    {
+                        _synchronisedData[contextFullName].TimeMachine = new SingleTimeMachine(timeMachineHistory.Value);
+                    }
+                    if (typeof(T) == typeof(string))
+                    {
+                        _synchronisedData[contextFullName].TimeMachine = new StringTimeMachine(timeMachineHistory.Value);
+                    }
+                    if (typeof(T) == typeof(Vector3))
+                    {
+                        _synchronisedData[contextFullName].TimeMachine = new Vector3TimeMachine(timeMachineHistory.Value);
+                    }
+                    if (typeof(ITransform).IsAssignableFrom(typeof(T)))
+                    {
+                        _synchronisedData[contextFullName].TimeMachine =
+                            new TransformTimeMachine(timeMachineHistory.Value);
+                    }
+                }
+            }
         }
 
         private class SynchronisedData
@@ -302,6 +365,8 @@ namespace Protogame
             public int FrameInterval;
 
             public object LastValue;
+
+            public object LastValueFromServer;
 
             public object CurrentValue;
 
@@ -314,6 +379,8 @@ namespace Protogame
             public bool IsActiveInSynchronisation;
 
             public bool HasReceivedInitialSync;
+
+            public ITimeMachine TimeMachine;
         }
 
         #region Synchronisation Preperation
@@ -484,12 +551,6 @@ namespace Protogame
             };
         }
 
-        public NetworkTransform ConvertToTransform(object obj)
-        {
-            var transform = (ITransform)obj;
-            return transform.SerializeToNetwork();
-        }
-
         public Vector2 ConvertFromVector2(float[] obj, int offset)
         {
             return new Vector2(
@@ -544,12 +605,40 @@ namespace Protogame
                 obj[offset + 15]);
         }
 
-        public ITransform ConvertFromTransform(NetworkTransform obj)
-        {
-            return obj.DeserializeFromNetwork();
-        }
-
-
         #endregion
+
+        public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
+        {
+            if (renderContext.IsCurrentRenderPass<IDebugRenderPass>())
+            {
+                var debugRenderPass = renderContext.GetCurrentRenderPass<IDebugRenderPass>();
+                var entityTransformSync = _synchronisedData.Select(x => x.Value).FirstOrDefault(x => x.Name == "entity.transform");
+
+                if (entityTransformSync != null && debugRenderPass.EnabledLayers.OfType<ServerStateDebugLayer>().Any())
+                {
+                    var lastValueSerialized = entityTransformSync.LastValueFromServer as NetworkTransform;
+                    if (lastValueSerialized != null)
+                    {
+                        var lastValueRelative = lastValueSerialized.DeserializeFromNetwork();
+                        var lastValueAbsolute = DefaultFinalTransform.Create(entity.FinalTransform.ParentObject, new TransformContainer(lastValueRelative));
+
+                        var point = Vector3.Transform(Vector3.Zero, lastValueAbsolute.AbsoluteMatrix);
+                        var up = Vector3.Transform(Vector3.Up, lastValueAbsolute.AbsoluteMatrix);
+                        var forward = Vector3.Transform(Vector3.Forward, lastValueAbsolute.AbsoluteMatrix);
+                        var left = Vector3.Transform(Vector3.Left, lastValueAbsolute.AbsoluteMatrix);
+
+                        if (entity.GetType().Name == "CubeEntity")
+                        {
+                            Console.WriteLine(lastValueSerialized);
+                        }
+
+                        // Render the previous and next server states.
+                        _debugRenderer.RenderDebugLine(renderContext, point, up, Color.Yellow, Color.Yellow);
+                        _debugRenderer.RenderDebugLine(renderContext, point, forward, Color.Yellow, Color.Yellow);
+                        _debugRenderer.RenderDebugLine(renderContext, point, left, Color.Yellow, Color.Yellow);
+                    }
+                }
+            }
+        }
     }
 }

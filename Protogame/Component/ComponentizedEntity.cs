@@ -144,7 +144,7 @@ namespace Protogame
         /// <summary>
         /// The local transform.
         /// </summary>
-        public ITransform Transform { get; set; }
+        public ITransform Transform { get; }
 
         public IFinalTransform FinalTransform
         {
@@ -363,7 +363,7 @@ namespace Protogame
         /// <param name="synchronisationApi">The synchronisation API.</param>
         public virtual void DeclareSynchronisedProperties(ISynchronisationApi synchronisationApi)
         {
-            synchronisationApi.Synchronise("transform", 30, Transform, x => Transform = x);
+            synchronisationApi.Synchronise("transform", 5, Transform, x => Transform.Assign(x));
         }
     }
 }

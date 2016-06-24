@@ -2,7 +2,12 @@
 {
     public class AbsoluteMatrixComponent : IHasTransform
     {
-        public ITransform Transform { get; set; }
+        public AbsoluteMatrixComponent()
+        {
+            Transform = new DefaultTransform();
+        }
+
+        public ITransform Transform { get; }
 
         public IFinalTransform FinalTransform
         {

@@ -9,7 +9,7 @@ namespace Protogame
         /// <summary>
         /// The local transform of this object.
         /// </summary>
-        ITransform Transform { get; set; }
+        ITransform Transform { get; }
 
         /// <summary>
         /// The final transform of this object.

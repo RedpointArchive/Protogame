@@ -5,7 +5,7 @@ namespace Protogame
 {
     public class DefaultTransform : ITransform
     {
-        private bool _isSRTMatrix = false;
+        private bool _isSRTMatrix;
 
         private Vector3 _srtLocalPosition;
 
@@ -33,6 +33,22 @@ namespace Protogame
             _isCachedSRTLocalMatrixUpToDate = true;
             _cachedRTLocalMatrix = Matrix.Identity;
             _isCachedRTLocalMatrixUpToDate = true;
+        }
+
+        public void Assign(ITransform from)
+        {
+            if (from.IsSRTMatrix)
+            {
+                SetFromSRTMatrix(
+                    from.LocalPosition,
+                    from.LocalRotation,
+                    from.LocalScale);
+            }
+            else
+            {
+                SetFromCustomMatrix(
+                    from.LocalMatrix);
+            }
         }
 
         #region Local Properties

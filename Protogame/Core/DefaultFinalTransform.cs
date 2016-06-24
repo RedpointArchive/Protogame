@@ -63,6 +63,26 @@ namespace Protogame
             get { return AbsoluteMatrixWithoutScale.Rotation; }
         }
 
+        public IFinalTransform Parent
+        {
+            get { return _parent.FinalTransform; }
+        }
+
+        public IHasTransform ParentObject
+        {
+            get { return _parent; }
+        }
+
+        public ITransform Child
+        {
+            get { return _child.Transform; }
+        }
+
+        public IHasTransform ChildObject
+        {
+            get { return _child; }
+        }
+
         public override string ToString()
         {
             if (_child.Transform.IsSRTMatrix)

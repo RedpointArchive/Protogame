@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq;
 
 namespace Protogame
@@ -62,7 +63,16 @@ namespace Protogame
 
         private bool m_Stopping;
 
-        private DateTime? _lastFrameEnd;
+        private TimeSpan _targetElapsedTime = TimeSpan.FromTicks(166667); // 60fps
+        private TimeSpan _inactiveSleepTime = TimeSpan.FromSeconds(0.02);
+
+        private TimeSpan _maxElapsedTime = TimeSpan.FromMilliseconds(500);
+
+        private TimeSpan _accumulatedElapsedTime;
+
+        private Stopwatch _gameTimer;
+
+        private long _previousTicks = 0;
 
         public CoreServer(IKernel kernel)
         {
@@ -93,6 +103,8 @@ namespace Protogame
             this.m_AnalyticsInitializer.Initialize(this.m_AnalyticsEngine);
 
             this.m_TickRegulator = this.m_Kernel.Get<ITickRegulator>(_current);
+
+            _gameTimer = Stopwatch.StartNew();
         }
 
         public IServerContext ServerContext
@@ -132,20 +144,27 @@ namespace Protogame
         {
             using (this.m_Profiler.Measure("tick"))
             {
-                var now = DateTime.Now;
-                var spanSinceStart = now - this.ServerContext.StartTime;
-                var spanSinceLastFrame = _lastFrameEnd == null ? TimeSpan.Zero : (now - _lastFrameEnd.Value);
+                var currentTicks = _gameTimer.Elapsed.Ticks;
+                _accumulatedElapsedTime += TimeSpan.FromTicks(currentTicks - _previousTicks);
+                _previousTicks = currentTicks;
 
-                this.ServerContext.GameTime.TotalGameTime = spanSinceStart;
-                this.ServerContext.GameTime.ElapsedGameTime = spanSinceLastFrame;
+                if (_accumulatedElapsedTime > _maxElapsedTime)
+                    _accumulatedElapsedTime = _maxElapsedTime;
 
-                this.ServerContext.TimeTick = (int)(DateTime.Now - this.ServerContext.StartTime).TotalMilliseconds;
+                this.ServerContext.GameTime.ElapsedGameTime = _targetElapsedTime;
 
-                this.ServerContext.WorldManager.Update(this);
+                // Perform as many full fixed length time steps as we can.
+                while (_accumulatedElapsedTime >= _targetElapsedTime)
+                {
+                    this.ServerContext.GameTime.TotalGameTime += _targetElapsedTime;
+                    _accumulatedElapsedTime -= _targetElapsedTime;
 
-                this.ServerContext.Tick++;
+                    this.ServerContext.TimeTick = (int)(DateTime.Now - this.ServerContext.StartTime).TotalMilliseconds;
 
-                _lastFrameEnd = DateTime.Now;
+                    this.ServerContext.WorldManager.Update(this);
+
+                    this.ServerContext.Tick++;
+                }
             }
         }
 

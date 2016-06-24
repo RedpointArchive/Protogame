@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Jitter;
 using Jitter.Collision;
 using Jitter.Dynamics;
@@ -139,26 +140,31 @@ namespace Protogame
         {
             if (renderContext.IsCurrentRenderPass<IDebugRenderPass>())
             {
-                var world = renderContext.World;
-                renderContext.World = Matrix.Identity;
-                
-                foreach (var pass in renderContext.Effect.CurrentTechnique.Passes)
+                var debugRenderPass = renderContext.GetCurrentRenderPass<IDebugRenderPass>();
+
+                if (debugRenderPass.EnabledLayers.OfType<PhysicsDebugLayer>().Any())
                 {
-                    pass.Apply();
+                    var world = renderContext.World;
+                    renderContext.World = Matrix.Identity;
 
-                    foreach (var kv in _rigidBodyMappings)
+                    foreach (var pass in renderContext.Effect.CurrentTechnique.Passes)
                     {
-                        if (!kv.Key.EnableDebugDraw)
+                        pass.Apply();
+
+                        foreach (var kv in _rigidBodyMappings)
                         {
-                            kv.Key.EnableDebugDraw = true;
+                            if (!kv.Key.EnableDebugDraw)
+                            {
+                                kv.Key.EnableDebugDraw = true;
+                            }
+
+                            var drawer = new PhysicsDebugDraw(renderContext, _debugRenderer, !kv.Key.IsStaticOrInactive);
+                            kv.Key.DebugDraw(drawer);
                         }
-
-                        var drawer = new PhysicsDebugDraw(renderContext, _debugRenderer, !kv.Key.IsStaticOrInactive);
-                        kv.Key.DebugDraw(drawer);
                     }
-                }
 
-                renderContext.World = world;
+                    renderContext.World = world;
+                }
             }
         }
 

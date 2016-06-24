@@ -21,7 +21,7 @@ namespace Protogame
             _basicEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Color");
             Lines = new List<VertexPositionNormalColor>();
             Triangles = new List<VertexPositionNormalColor>();
-            Enabled = true;
+            EnabledLayers = new List<IDebugLayer>();
         }
 
         public bool IsPostProcessingPass => false;
@@ -31,7 +31,7 @@ namespace Protogame
         public bool SkipEngineHookRender => false;
         public string EffectTechniqueName => RenderPipelineTechniqueName.Forward;
 
-        public bool Enabled { get; set; }
+        public List<IDebugLayer> EnabledLayers { get; }
 
         public List<VertexPositionNormalColor> Lines { get; }
 
@@ -39,7 +39,7 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
-            if (!Enabled)
+            if (EnabledLayers.Count == 0)
             {
                 return;
             }
@@ -81,7 +81,7 @@ namespace Protogame
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
-            if (!Enabled)
+            if (EnabledLayers.Count == 0)
             {
                 return;
             }

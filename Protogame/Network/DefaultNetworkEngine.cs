@@ -19,6 +19,7 @@ namespace Protogame
         private readonly MxDispatcher[] _currentDispatchers;
 
         private readonly Dictionary<int, WeakReference> _objectReferences;
+        private int _clientRenderDelayTicks;
 
         public DefaultNetworkEngine(INetworkFactory networkFactory)
         {
@@ -29,6 +30,8 @@ namespace Protogame
             _serverDispatcherChanged = new Dictionary<IServerWorld, bool>();
             _currentDispatchers = new MxDispatcher[1];
             _objectReferences = new Dictionary<int, WeakReference>();
+
+            _clientRenderDelayTicks = -200;
         }
 
         public void AttachDispatcher(IWorld world, MxDispatcher dispatcher)
@@ -127,6 +130,20 @@ namespace Protogame
         public void DeregisterObjectFromNetworkId(int id)
         {
             _objectReferences.Remove(id);
+        }
+
+        public int ClientRenderDelayTicks
+        {
+            get { return _clientRenderDelayTicks; }
+            set
+            {
+                if (value > 0)
+                {
+                    throw new ArgumentException("This value must be either 0, or a negative number.", nameof(value));
+                }
+
+                _clientRenderDelayTicks = value;
+            }
         }
     }
 }

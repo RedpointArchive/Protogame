@@ -332,11 +332,15 @@
     <Compile Include="Core\ProtogameBaseModule.cs" />
     <Compile Include="Core\ProtogameCoreModule.cs" />
     <Compile Include="Core\ReloadableGameAssetManagerProvider.cs" />
+    <Compile Include="Core\TransformContainer.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
     <Compile Include="Debug\DefaultDebugRenderer.cs" />
+    <Compile Include="Debug\IDebugLayer.cs" />
     <Compile Include="Debug\IDebugRenderer.cs" />
     <Compile Include="Debug\NullDebugRenderer.cs" />
+    <Compile Include="Debug\PhysicsDebugLayer.cs" />
     <Compile Include="Debug\ProtogameDebugModule.cs" />
+    <Compile Include="Debug\ServerStateDebugLayer.cs" />
     <Compile Include="Editor\ATFLevelEditor\DefaultDirectionalLightEntity.cs" />
     <Compile Include="Editor\ATFLevelEditor\DefaultPointLightEntity.cs" />
     <Compile Include="Editor\ATFLevelEditor\EditorQueryMode.cs" />
@@ -483,7 +487,6 @@
     <Compile Include="Network\ClientAuthoritiveMode.cs" />
     <Compile Include="Network\DefaultNetworkEngine.cs" />
     <Compile Include="Network\DefaultNetworkEventContext.cs" />
-    <Compile Include="Network\DefaultSynchronisationApi.cs" />
     <Compile Include="Network\GeneralNetworkEventBinder.cs" />
     <Compile Include="Network\INetworkedServerWorld.cs" />
     <Compile Include="Network\INetworkedWorld.cs" />
@@ -501,7 +504,6 @@
     <Compile Include="Network\LowLevel\INetworkMessage.cs" />
     <Compile Include="Network\LowLevel\INetworkMessageSerialization.cs" />
     <Compile Include="Network\LowLevel\InputPrediction.cs" />
-    <Compile Include="Network\LowLevel\InterpolatedTimeMachine.cs" />
     <Compile Include="Network\LowLevel\MxClient.cs" />
     <Compile Include="Network\LowLevel\MxClientEventArgs.cs" />
     <Compile Include="Network\LowLevel\MxClientEventHandler.cs" />
@@ -523,7 +525,6 @@
     <Compile Include="Network\LowLevel\MxUtility.cs" />
     <Compile Include="Network\LowLevel\NetworkMessageAttribute.cs" />
     <Compile Include="Network\LowLevel\NetworkTagAttribute.cs" />
-    <Compile Include="Network\LowLevel\TimeMachine.cs" />
     <Compile Include="Network\Message\EntityCreateMessage.cs" />
     <Compile Include="Network\Message\EntityPropertiesMessage.cs" />
     <Compile Include="Network\NetworkClientConnectedEvent.cs" />
@@ -537,8 +538,12 @@
     <Compile Include="Network\TimeMachines\DoubleTimeMachine.cs" />
     <Compile Include="Network\TimeMachines\Int16TimeMachine.cs" />
     <Compile Include="Network\TimeMachines\Int32TimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\InterpolatedTimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\ITimeMachine.cs" />
     <Compile Include="Network\TimeMachines\SingleTimeMachine.cs" />
     <Compile Include="Network\TimeMachines\StringTimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\TimeMachine.cs" />
+    <Compile Include="Network\TimeMachines\TransformTimeMachine.cs" />
     <Compile Include="Network\TimeMachines\Vector3TimeMachine.cs" />
     <Compile Include="Network\WorldNetworkEventBinder.cs" />
     <Compile Include="Noise\OctaveNoise.cs" />

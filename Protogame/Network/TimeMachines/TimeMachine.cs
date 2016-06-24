@@ -13,27 +13,27 @@ namespace Protogame
     /// The type of data that will be tracked by the time machine.
     /// </typeparam>
     /// <module>Network</module>
-    public abstract class TimeMachine<T>
+    public abstract class TimeMachine<T> : ITimeMachine<T>
     {
         /// <summary>
-        /// Storage of the known values provided by the <see cref="Set"/> method.
+        /// Storage of the known values provided by the <see cref="Set(int, T)"/> method.
         /// </summary>
         protected readonly Dictionary<int, T> KnownValues;
 
         /// <summary>
-        /// Storage of the known keys provided by the <see cref="Set"/> method.
+        /// Storage of the known keys provided by the <see cref="Set(int, T)"/> method.
         /// </summary>
         protected readonly List<int> KnownKeys;
 
         /// <summary>
         /// The amount of history to keep in ticks.
         /// </summary>
-        private readonly int m_History;
+        private readonly int _history;
 
         /// <summary>
-        /// The latest tick that was last set with <see cref="Set"/>.
+        /// The latest tick that was last set with <see cref="Set(int, T)"/>.
         /// </summary>
-        private int m_LatestTick;
+        private int _latestTick;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TimeMachine{T}"/> class. 
@@ -43,10 +43,10 @@ namespace Protogame
         /// </param>
         protected TimeMachine(int history)
         {
-            this.KnownValues = new Dictionary<int, T>();
-            this.KnownKeys = new List<int>();
-            this.m_LatestTick = 0;
-            this.m_History = history;
+            KnownValues = new Dictionary<int, T>();
+            KnownKeys = new List<int>();
+            _latestTick = 0;
+            _history = history;
         }
 
         /// <summary>
@@ -147,6 +147,11 @@ namespace Protogame
         }
 
         /// <summary>
+        /// The type of the values stored by this time machine.
+        /// </summary>
+        public Type Type => typeof(T);
+
+        /// <summary>
         /// Retrieves the value at the specified tick, or interpolates / extrapolates a value from
         /// the known values in the time machine.
         /// </summary>
@@ -160,20 +165,20 @@ namespace Protogame
         {
             int previousTick, nextTick;
 
-            this.FindSurroundingTickValues(
-                this.KnownKeys,
+            FindSurroundingTickValues(
+                KnownKeys,
                 tick,
                 out previousTick,
                 out nextTick);
 
             if (previousTick != -1)
             {
-                previousTick = this.KnownKeys[previousTick];
+                previousTick = KnownKeys[previousTick];
             }
 
             if (nextTick != -1)
             {
-                nextTick = this.KnownKeys[nextTick];
+                nextTick = KnownKeys[nextTick];
             }
 
             if (nextTick == -1 && previousTick == -1)
@@ -183,21 +188,36 @@ namespace Protogame
 
             if (nextTick == -1)
             {
-                return this.KnownValues[previousTick];
+                return KnownValues[previousTick];
             }
 
             if (previousTick == -1)
             {
-                return this.KnownValues[nextTick];
+                return KnownValues[nextTick];
             }
 
             // Return the nearest value.
             if (Math.Abs(tick - previousTick) < Math.Abs(nextTick - tick))
             {
-                return this.KnownValues[previousTick];
+                return KnownValues[previousTick];
             }
             
-            return this.KnownValues[nextTick];
+            return KnownValues[nextTick];
+        }
+
+        /// <summary>
+        /// Retrieves the value at the specified tick, or interpolates / extrapolates a value from
+        /// the known values in the time machine.
+        /// </summary>
+        /// <param name="tick">
+        /// The tick at which to retrieve the value.
+        /// </param>
+        /// <returns>
+        /// The interpolated value.
+        /// </returns>
+        object ITimeMachine.Get(int tick)
+        {
+            return Get(tick);
         }
 
         /// <summary>
@@ -214,19 +234,34 @@ namespace Protogame
         /// </param>
         public void Purge(int tick)
         {
-            if (this.KnownKeys.Count <= 2)
+            if (KnownKeys.Count <= 2)
             {
                 // Never allow less than 2 values in the list as this prevents extrapolation.
                 return;
             }
 
-            var keys = this.KnownKeys.Where(k => k <= tick - this.m_History).OrderBy(k => k).ToArray();
+            var keys = KnownKeys.Where(k => k <= tick - _history).OrderBy(k => k).ToArray();
 
             foreach (var k in keys)
             {
-                this.KnownKeys.Remove(k);
-                this.KnownValues.Remove(k);
+                KnownKeys.Remove(k);
+                KnownValues.Remove(k);
             }
+        }
+
+        /// <summary>
+        /// Sets the specified tick and value into the time machine.  Once you have set a value at
+        /// a specified time, you can only set values with a higher tick.
+        /// </summary>
+        /// <param name="tick">
+        /// The tick at which this value exists.
+        /// </param>
+        /// <param name="value">
+        /// The value to store in the time machine.
+        /// </param>
+        public void Set(int tick, object value)
+        {
+            Set(tick, (T)value);
         }
 
         /// <summary>
@@ -241,17 +276,17 @@ namespace Protogame
         /// </param>
         public void Set(int tick, T value)
         {
-            if (tick < this.m_LatestTick)
+            if (tick < _latestTick)
             {
                 return;
             }
 
-            this.KnownValues[tick] = value;
+            KnownValues[tick] = value;
 
-            if (tick > this.m_LatestTick)
+            if (tick > _latestTick)
             {
-                this.KnownKeys.Add(tick);
-                this.m_LatestTick = tick;
+                KnownKeys.Add(tick);
+                _latestTick = tick;
             }
         }
     }

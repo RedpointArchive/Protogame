@@ -109,10 +109,6 @@ namespace Protogame
                 transform.SetFromCustomMatrix(Matrix.CreateFromYawPitchRoll(Yaw, Pitch, Roll));
                 return transform;
             }
-            set
-            {
-                throw new NotSupportedException("Configure the transform of a FirstPersonCameraComponent by using the Pitch, Yaw and Roll properties.");
-            }
         }
 
         public IFinalTransform FinalTransform

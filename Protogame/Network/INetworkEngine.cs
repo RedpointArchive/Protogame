@@ -23,5 +23,7 @@ namespace Protogame
         void RegisterObjectAsNetworkId(int id, object obj);
 
         void DeregisterObjectFromNetworkId(int id);
+
+        int ClientRenderDelayTicks { get; set; }
     }
 }

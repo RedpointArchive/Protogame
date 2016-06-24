@@ -19,7 +19,7 @@ namespace Protogame
                 RegisterComponent(_modelComponent);
 
                 var assetManager = assetManagerProvider.GetAssetManager();
-                editorQuery.MapTransform(this, x => this.Transform = x);
+                editorQuery.MapTransform(this, Transform.Assign);
 
                 var modelUri = editorQuery.GetRawResourceUris().FirstOrDefault();
                 if (modelUri != null)

@@ -13,16 +13,17 @@ namespace Protogame
         public EntityGroup(INode node, IEditorQuery<EntityGroup> editorQuery)
         {
             _node = node;
-            
+            Transform = new DefaultTransform();
+
             // EditorGroup is used to represent game groups in the editor
             // and we need to map the transform to this object.
             if (editorQuery.Mode == EditorQueryMode.LoadingConfiguration)
             {
-                editorQuery.MapTransform(this, x => this.Transform = x);
+                editorQuery.MapTransform(this, x => this.Transform.Assign(x));
             }
         }
 
-        public ITransform Transform { get; set; }
+        public ITransform Transform { get; }
 
         public IFinalTransform FinalTransform
         {

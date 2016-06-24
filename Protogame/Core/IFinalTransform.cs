@@ -11,5 +11,13 @@ namespace Protogame
         Vector3 AbsolutePosition { get; }
 
         Quaternion AbsoluteRotation { get; }
+
+        IFinalTransform Parent { get; }
+
+        IHasTransform ParentObject { get; }
+
+        ITransform Child { get; }
+
+        IHasTransform ChildObject { get; }
     }
 }

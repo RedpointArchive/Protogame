@@ -4,7 +4,7 @@ namespace Protogame
 {
     public interface IDebugRenderPass : IRenderPass
     {
-        bool Enabled { get; set; }
+        List<IDebugLayer> EnabledLayers { get; }
 
         List<VertexPositionNormalColor> Lines { get; }
 

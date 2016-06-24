@@ -94,16 +94,16 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                Transform = _transformUtilities.CreateFromModifiedSRTFinalTransform(
-                    entity.FinalTransform,
-                    Vector3.One,
-                    Quaternion.Identity,
-                    new Vector3(0, -1, 0)),
                 Width = entity.Width,
                 Height = entity.Height,
                 XSpeed = 0,
                 YSpeed = 0
             };
+            entityExtended.Transform.Assign(_transformUtilities.CreateFromModifiedSRTFinalTransform(
+                entity.FinalTransform,
+                Vector3.One,
+                Quaternion.Identity,
+                new Vector3(0, -1, 0)));
             var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
             foreach (var collidableEntity in collidableEntities)
             {
@@ -249,17 +249,17 @@ namespace Protogame
         public bool IsOnGround(IBoundingBox entity, IEnumerable<IBoundingBox> entities, Func<IBoundingBox, bool> ground)
         {
             var entityExtended = new BoundingBox
-            {
-                Transform = _transformUtilities.CreateFromModifiedSRTTransform(
-                    entity.Transform,
-                    Vector3.One,
-                    Quaternion.Identity,
-                    new Vector3(0, 1, 0)),
+            {                
                 Width = entity.Width, 
                 Height = entity.Height, 
                 XSpeed = entity.XSpeed, 
                 YSpeed = entity.YSpeed
             };
+            entityExtended.Transform.Assign(_transformUtilities.CreateFromModifiedSRTTransform(
+                entity.Transform,
+                Vector3.One,
+                Quaternion.Identity,
+                new Vector3(0, 1, 0)));
             var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
             foreach (var collidableEntity in collidableEntities)
             {
@@ -294,16 +294,16 @@ namespace Protogame
         {
             var entityExtended = new BoundingBox
             {
-                Transform = _transformUtilities.CreateFromModifiedSRTTransform(
-                    entity.Transform,
-                    Vector3.One,
-                    Quaternion.Identity,
-                    new Vector3(0, -1, 0)),
                 Width = entity.Width,
                 Height = entity.Height,
                 XSpeed = entity.XSpeed,
                 YSpeed = entity.YSpeed
             };
+            entityExtended.Transform.Assign(_transformUtilities.CreateFromModifiedSRTTransform(
+                entity.Transform,
+                Vector3.One,
+                Quaternion.Identity,
+                new Vector3(0, -1, 0)));
             var collidableEntities = entities.Where(ground).Where(x => x != entity).ToArray();
             foreach (var collidableEntity in collidableEntities)
             {

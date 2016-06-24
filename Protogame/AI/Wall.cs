@@ -105,7 +105,7 @@
         {
         }
 
-        public ITransform Transform { get; set; }
+        public ITransform Transform { get; }
 
         public IFinalTransform FinalTransform
         {

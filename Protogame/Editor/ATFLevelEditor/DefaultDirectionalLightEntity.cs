@@ -13,7 +13,7 @@ namespace Protogame
             {
                 RegisterComponent(standardDirectionalLightComponent);
 
-                editorQuery.MapTransform(this, x => this.Transform = x);
+                editorQuery.MapTransform(this, Transform.Assign);
                 editorQuery.MapCustom(this, "diffuse", "diffuse", x => standardDirectionalLightComponent.LightColor = x, Color.White);
             }
         }

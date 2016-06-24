@@ -19,7 +19,7 @@
 		new SyncTypeInfo("Vector4", "Microsoft.Xna.Framework.Vector4", true, "float", "SingleArray", 4),
 		new SyncTypeInfo("Quaternion", "Microsoft.Xna.Framework.Quaternion", true, "float", "SingleArray", 4),
 		new SyncTypeInfo("Matrix", "Microsoft.Xna.Framework.Matrix", true, "float", "SingleArray", 16),
-		new SyncTypeInfo("Transform", "Protogame.ITransform", true, "Protogame.NetworkTransform")
+		new SyncTypeInfo("Transform", "Protogame.NetworkTransform", false)
 	};
 #>
 
@@ -174,13 +174,16 @@ namespace Protogame
 				}
 
 				var syncData = fullDataList[message.PropertyNames[i]];
+				var hasValue = false;
+				object value = null;
 
 				switch (message.PropertyTypes[i])
 				{
 					case EntityPropertiesMessage.PropertyTypeNone:
 						break;
 					case EntityPropertiesMessage.PropertyTypeNull:
-						syncData.SetValueDelegate(null);
+						value = null;
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						break;
 					<#
@@ -195,7 +198,8 @@ namespace Protogame
 						if (type.PackedArraySize == 0)
 						{
 					#>
-						syncData.SetValueDelegate(ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>]));
+						value = ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>]);
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						current<#=type.StorageLocation#>++;
 					<#
@@ -203,7 +207,8 @@ namespace Protogame
 						else
 						{
 					#>
-						syncData.SetValueDelegate(ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>, current<#=type.StorageLocation#>));
+						value = ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>, current<#=type.StorageLocation#>);
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						current<#=type.StorageLocation#> += <#=type.PackedArraySize#>;
 					<#
@@ -214,7 +219,8 @@ namespace Protogame
 						if (type.PackedArraySize == 0)
 						{
 					#>
-						syncData.SetValueDelegate(message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>]);
+						value = message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>];
+						hasValue = true;
 						syncData.HasReceivedInitialSync = true;
 						current<#=type.StorageLocation#>++;
 					<#
@@ -232,6 +238,19 @@ namespace Protogame
 					#>
 				}
 
+				if (hasValue)
+				{
+					syncData.LastValueFromServer = value;
+
+					if (syncData.TimeMachine == null)
+					{
+						syncData.SetValueDelegate(value);
+					}
+					else
+					{
+						syncData.TimeMachine.Set(message.FrameTick, value);
+					}
+				}
 			}
 		}
 	}

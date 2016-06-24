@@ -42,7 +42,8 @@ namespace Protogame
                 return;
             }
 
-            var amount = (1000f / _ticksPerSecond) - (now - _processedTime.Value).TotalMilliseconds;
+            var targetSpan = 1000f/_ticksPerSecond;
+            var amount = targetSpan - (now - _processedTime.Value).TotalMilliseconds;
             if (amount > 0)
             {
                 Thread.Sleep((int)amount);
@@ -52,14 +53,19 @@ namespace Protogame
             {
                 if (_lastActualTime != null)
                 {
-                    Console.WriteLine(
-                        "WARNING: Tick took " + (int) (now - _lastActualTime.Value).TotalMilliseconds
-                        + "ms, which is longer than " + (1000f/_ticksPerSecond) + "ms (currently behind by " + -amount + "ms).");
+                    var timeSpan = (int)(now - _lastActualTime.Value).TotalMilliseconds;
+                    if (timeSpan > targetSpan)
+                    {
+                        Console.WriteLine(
+                            "WARNING: Tick took " + (int) (now - _lastActualTime.Value).TotalMilliseconds
+                            + "ms, which is longer than " + (1000f/_ticksPerSecond) + "ms (currently behind by " +
+                            -amount + "ms).");
+                    }
                 }
                 else
                 {
                     Console.WriteLine(
-                        "WARNING: Tick took longer than " + (1000f / _ticksPerSecond) + "ms (currently behind by " + -amount + "ms).");
+                        "WARNING: Currently behind in ticks, target per frame is " + (1000f / _ticksPerSecond) + "ms, behind by " + -amount + "ms.");
                 }
 
                 // Adjust the next start time so that we wait less.  This allows us to "catch up" on ticks, ensuring

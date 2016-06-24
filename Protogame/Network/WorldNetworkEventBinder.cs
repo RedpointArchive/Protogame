@@ -56,7 +56,7 @@ namespace Protogame
 
                     if (spawnedEntity != null)
                     {
-                        spawnedEntity.Transform = createEntityMessage.InitialTransform.DeserializeFromNetwork();
+                        spawnedEntity.Transform.Assign(createEntityMessage.InitialTransform.DeserializeFromNetwork());
                     }
 
                     var networkIdentifiableEntity = spawnedEntity as INetworkIdentifiable;

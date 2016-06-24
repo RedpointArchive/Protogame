@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
@@ -55,6 +57,8 @@ namespace Protogame
             }
         }
 
+        #region Event Handlers
+
         private void DispatcherOnMessageReceived(object sender, MxMessageEventArgs mxMessageEventArgs)
         {
             _messagesRecieved.Enqueue(mxMessageEventArgs);
@@ -99,6 +103,8 @@ namespace Protogame
         {
             
         }
+
+        #endregion
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
