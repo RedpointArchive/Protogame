@@ -56,7 +56,23 @@ namespace ProtogameAssetTool
                 }
                 else
                 {
-                    Console.WriteLine("Skipping " + assetName + "; it has " + source.Count + " source files and " + compiled.Count + " compiled files");
+                    Console.WriteLine("Skipping " + assetName + "; it has " + source.Count + " source files and " + compiled.Count + " compiled files:");
+                    foreach (var src in source)
+                    {
+                        Console.WriteLine(" - (source) ");
+                        foreach (var prop in src.Key.Properties)
+                        {
+                            try
+                            {
+                                Console.WriteLine("   - " + prop.Key + " = " + prop.Value);
+                            }
+                            catch { }
+                        }
+                    }
+                    foreach (var cmp in compiled)
+                    {
+                        Console.WriteLine(" - (compiled) " + cmp.Key);
+                    }
                 }
             }
 
