@@ -65,7 +65,8 @@ namespace Protogame
                         networkIdentifiableEntity.ReceiveNetworkIDFromServer(
                             networkReceiveEvent.GameContext,
                             networkReceiveEvent.UpdateContext,
-                            createEntityMessage.EntityID);
+                            createEntityMessage.EntityID,
+                            createEntityMessage.FrameTick);
                     }
 
                     return true;

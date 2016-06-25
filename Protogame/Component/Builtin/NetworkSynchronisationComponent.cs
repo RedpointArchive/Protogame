@@ -111,6 +111,7 @@ namespace Protogame
 
         public void Update(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext)
         {
+            _localTick++;
             _isRunningOnClient = false;
 
             if (_uniqueIdentifierForEntity == null)
@@ -150,6 +151,7 @@ namespace Protogame
                             EntityID = _uniqueIdentifierForEntity.Value,
                             EntityType = entity.GetType().AssemblyQualifiedName,
                             InitialTransform = entity.Transform.SerializeToNetwork(),
+                            FrameTick = _localTick
                         };
                         dispatcher.Send(
                             endpoint,
@@ -161,7 +163,7 @@ namespace Protogame
                 }
             }
             
-            PrepareAndTransmitSynchronisation(entity, serverContext.Tick, false, ClientAuthoritiveMode);
+            PrepareAndTransmitSynchronisation(entity, _localTick, false, ClientAuthoritiveMode);
         }
 
         public bool ReceiveMessage(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext, MxDispatcher dispatcher, MxClient server,
@@ -257,9 +259,10 @@ namespace Protogame
             return false;
         }
 
-        public void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier)
+        public void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier, int initialFrameTick)
         {
             _uniqueIdentifierForEntity = identifier;
+            _localTick = initialFrameTick;
         }
 
         public void ReceivePredictedNetworkIDFromClient(IServerContext serverContext, IUpdateContext updateContext, MxClient client,

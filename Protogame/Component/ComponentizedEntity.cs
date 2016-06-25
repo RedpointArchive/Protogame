@@ -65,7 +65,7 @@ namespace Protogame
         /// <summary>
         /// The component callable for handling the creation of an entity from the server.
         /// </summary>
-        private readonly IComponentCallable<IGameContext, IUpdateContext, int> _networkIdentifiableClient;
+        private readonly IComponentCallable<IGameContext, IUpdateContext, int, int> _networkIdentifiableClient;
 
         /// <summary>
         /// The component callable for handling the creation of a predicted entity from the client.
@@ -96,7 +96,7 @@ namespace Protogame
             _handleEvent = RegisterCallable<IEventfulComponent, IGameContext, IEventEngine<IGameContext>, Event, EventState>(EventCallback);
             _handleMessageRecievedClient = RegisterCallable<INetworkedComponent, IGameContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState>(ClientMessageCallback);
             _handleMessageRecievedServer = RegisterCallable<INetworkedComponent, IServerContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState>(ServerMessageCallback);
-            _networkIdentifiableClient = RegisterCallable<INetworkIdentifiable, IGameContext, IUpdateContext, int>((c, g, u, i) => c.ReceiveNetworkIDFromServer(g, u, i));
+            _networkIdentifiableClient = RegisterCallable<INetworkIdentifiable, IGameContext, IUpdateContext, int, int>((c, g, u, i, ft) => c.ReceiveNetworkIDFromServer(g, u, i, ft));
             _networkIdentifiableServer = RegisterCallable<INetworkIdentifiable, IServerContext, IUpdateContext, MxClient, int>((c, s, u, mc, i) => c.ReceivePredictedNetworkIDFromClient(s, u, mc, i));
             _getLights = RegisterCallable<ILightableComponent, List<ILight>>(GetLightCallback);
         }
@@ -338,9 +338,10 @@ namespace Protogame
         /// <param name="gameContext"></param>
         /// <param name="updateContext"></param>
         /// <param name="identifier"></param>
-        public virtual void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier)
+        /// <param name="initialFrameTick"></param>
+        public virtual void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier, int initialFrameTick)
         {
-            _networkIdentifiableClient.Invoke(gameContext, updateContext, identifier);
+            _networkIdentifiableClient.Invoke(gameContext, updateContext, identifier, initialFrameTick);
         }
 
         /// <summary>

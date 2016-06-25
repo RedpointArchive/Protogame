@@ -13,5 +13,8 @@ namespace Protogame
 
         [ProtoMember(3)]
         public NetworkTransform InitialTransform;
+
+        [ProtoMember(4)]
+        public int FrameTick;
     }
 }

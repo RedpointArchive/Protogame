@@ -99,7 +99,7 @@ namespace Protogame
             }
         }
 
-        public void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier)
+        public void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier, int initialFrameTick)
         {
             throw new InvalidOperationException(
                 "Entity groups can not receive network IDs.  This indicates an error in the code.");
