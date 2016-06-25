@@ -363,7 +363,7 @@ namespace Protogame
         /// <param name="synchronisationApi">The synchronisation API.</param>
         public virtual void DeclareSynchronisedProperties(ISynchronisationApi synchronisationApi)
         {
-            synchronisationApi.Synchronise("transform", 5, Transform, x => Transform.Assign(x));
+            synchronisationApi.Synchronise("transform", 5, Transform, x => Transform.Assign(x), 500);
         }
     }
 }

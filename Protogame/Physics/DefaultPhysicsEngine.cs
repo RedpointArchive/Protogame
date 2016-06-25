@@ -52,6 +52,11 @@ namespace Protogame
             _shadowWorld.RegisterRigidBodyForHasMatrix(rigidBody, hasTransform);
         }
 
+        public void UnregisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform)
+        {
+            _shadowWorld.UnregisterRigidBodyForHasMatrix(rigidBody, hasTransform);
+        }
+
         public void DebugRender(IGameContext gameContext, IRenderContext renderContext)
         {
             _shadowWorld.Render(gameContext, renderContext);

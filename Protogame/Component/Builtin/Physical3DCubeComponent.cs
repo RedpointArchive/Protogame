@@ -67,6 +67,11 @@ namespace Protogame
 
         private void Update()
         {
+            if (_doNotReadd)
+            {
+                return;
+            }
+
             // Update the parent node's matrix based on the rigid body's state.
             var transformComponent = _node.Parent?.UntypedValue as IHasTransform;
             if (transformComponent != null)
@@ -76,18 +81,35 @@ namespace Protogame
                     UpdateRigidBodyShape(transformComponent.Transform);
 
                     _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent);
+                    _addedTo = transformComponent;
                     _addedRigidBody = true;
                 }
             }
         }
 
+        private bool _doNotReadd;
+
+        private IHasTransform _addedTo;
+
         public void DeclareSynchronisedProperties(ISynchronisationApi synchronisationApi)
         {
-            synchronisationApi.Synchronise("static", 60, Static, x => Static = x);
-            synchronisationApi.Synchronise("mass", 60, Mass, x => Mass = x);
-            synchronisationApi.Synchronise("active", 60, _rigidBody.IsActive, x => _rigidBody.IsActive = x);
-            synchronisationApi.Synchronise("linvel", 60, _rigidBody.LinearVelocity.ToXNAVector(), x => _rigidBody.LinearVelocity = x.ToJitterVector());
-            synchronisationApi.Synchronise("angvel", 60, _rigidBody.AngularVelocity.ToXNAVector(), x => _rigidBody.AngularVelocity = x.ToJitterVector());
+            /*if (synchronisationApi.IsRunningOnClient())
+            {
+                _doNotReadd = true;
+
+                // Remove the rigid body from the world if it exists.
+                if (_addedRigidBody)
+                {
+                    _physicsEngine.UnregisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, _addedTo);
+                    _addedRigidBody = false;
+                }
+            }*/
+            
+            synchronisationApi.Synchronise("static", 60, Static, x => Static = x, null);
+            synchronisationApi.Synchronise("mass", 60, Mass, x => Mass = x, null);
+            synchronisationApi.Synchronise("active", 60, _rigidBody.IsActive, x => _rigidBody.IsActive = x, 500);
+            synchronisationApi.Synchronise("linvel", 60, _rigidBody.LinearVelocity.ToXNAVector(), x => _rigidBody.LinearVelocity = x.ToJitterVector(), 500);
+            synchronisationApi.Synchronise("angvel", 60, _rigidBody.AngularVelocity.ToXNAVector(), x => _rigidBody.AngularVelocity = x.ToJitterVector(), 500);
         }
     }
 }

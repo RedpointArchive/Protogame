@@ -24,6 +24,8 @@ namespace Protogame
 
         private int _localTick;
 
+        private bool _isRunningOnClient;
+
         public NetworkSynchronisationComponent(
             INetworkEngine networkEngine,
             IUniqueIdentifierAllocator uniqueIdentifierAllocator,
@@ -71,6 +73,7 @@ namespace Protogame
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
             _localTick++;
+            _isRunningOnClient = true;
 
             // For all synchronised values, update them with their time machine if they have one.
             foreach (var data in _synchronisedData)
@@ -108,6 +111,8 @@ namespace Protogame
 
         public void Update(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext)
         {
+            _isRunningOnClient = false;
+
             if (_uniqueIdentifierForEntity == null)
             {
                 _uniqueIdentifierForEntity = _uniqueIdentifierAllocator.Allocate();
@@ -263,7 +268,7 @@ namespace Protogame
             
         }
 
-        public void Synchronise<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory = null)
+        public void Synchronise<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
         {
             // TODO: Make this value more unique, and synchronised across the network (so we can have multiple components of the same type).
             var context = "unknown";
@@ -316,7 +321,7 @@ namespace Protogame
                 setValue((T) assignValue);
             };
 
-            if (_synchronisedData[contextFullName].TimeMachine == null)
+            if (ClientAuthoritiveMode == ClientAuthoritiveMode.None && _synchronisedData[contextFullName].TimeMachine == null)
             {
                 if (timeMachineHistory != null)
                 {
@@ -356,6 +361,11 @@ namespace Protogame
                     }
                 }
             }
+        }
+
+        public bool IsRunningOnClient()
+        {
+            return _isRunningOnClient;
         }
 
         private class SynchronisedData
@@ -619,23 +629,52 @@ namespace Protogame
                     var lastValueSerialized = entityTransformSync.LastValueFromServer as NetworkTransform;
                     if (lastValueSerialized != null)
                     {
-                        var lastValueRelative = lastValueSerialized.DeserializeFromNetwork();
-                        var lastValueAbsolute = DefaultFinalTransform.Create(entity.FinalTransform.ParentObject, new TransformContainer(lastValueRelative));
-
-                        var point = Vector3.Transform(Vector3.Zero, lastValueAbsolute.AbsoluteMatrix);
-                        var up = Vector3.Transform(Vector3.Up, lastValueAbsolute.AbsoluteMatrix);
-                        var forward = Vector3.Transform(Vector3.Forward, lastValueAbsolute.AbsoluteMatrix);
-                        var left = Vector3.Transform(Vector3.Left, lastValueAbsolute.AbsoluteMatrix);
-
-                        if (entity.GetType().Name == "CubeEntity")
+                        var timeMachine = entityTransformSync.TimeMachine;
+                        if (timeMachine != null)
                         {
-                            Console.WriteLine(lastValueSerialized);
-                        }
+                            var lastValueRelative = lastValueSerialized.DeserializeFromNetwork();
+                            var lastValueAbsolute = DefaultFinalTransform.Create(entity.FinalTransform.ParentObject,
+                                new TransformContainer(lastValueRelative));
 
-                        // Render the previous and next server states.
-                        _debugRenderer.RenderDebugLine(renderContext, point, up, Color.Yellow, Color.Yellow);
-                        _debugRenderer.RenderDebugLine(renderContext, point, forward, Color.Yellow, Color.Yellow);
-                        _debugRenderer.RenderDebugLine(renderContext, point, left, Color.Yellow, Color.Yellow);
+                            var clientLocalTickValueRelative = timeMachine.Get(_localTick) as ITransform;
+                            var clientLocalTickValueAbsolute = DefaultFinalTransform.Create(entity.FinalTransform.ParentObject,
+                                new TransformContainer(clientLocalTickValueRelative));
+
+                            var clientRewindValueRelative = timeMachine.Get(_localTick - _networkEngine.ClientRenderDelayTicks) as ITransform;
+                            var clientRewindValueAbsolute = DefaultFinalTransform.Create(entity.FinalTransform.ParentObject,
+                                new TransformContainer(clientRewindValueRelative));
+
+                            var lastValuePoint = Vector3.Transform(Vector3.Zero, lastValueAbsolute.AbsoluteMatrix);
+                            var lastValueUp = Vector3.Transform(Vector3.Up, lastValueAbsolute.AbsoluteMatrix);
+                            var lastValueForward = Vector3.Transform(Vector3.Forward, lastValueAbsolute.AbsoluteMatrix);
+                            var lastValueLeft = Vector3.Transform(Vector3.Left, lastValueAbsolute.AbsoluteMatrix);
+
+                            var clientLocalTickPoint = Vector3.Transform(Vector3.Zero, clientLocalTickValueAbsolute.AbsoluteMatrix);
+                            var clientLocalTickUp = Vector3.Transform(Vector3.Up, clientLocalTickValueAbsolute.AbsoluteMatrix);
+                            var clientLocalTickForward = Vector3.Transform(Vector3.Forward, clientLocalTickValueAbsolute.AbsoluteMatrix);
+                            var clientLocalTickLeft = Vector3.Transform(Vector3.Left, clientLocalTickValueAbsolute.AbsoluteMatrix);
+
+                            var clientRewindValueTickPoint = Vector3.Transform(Vector3.Zero, clientRewindValueAbsolute.AbsoluteMatrix);
+                            var clientRewindValueTickUp = Vector3.Transform(Vector3.Up, clientRewindValueAbsolute.AbsoluteMatrix);
+                            var clientRewindValueTickForward = Vector3.Transform(Vector3.Forward, clientRewindValueAbsolute.AbsoluteMatrix);
+                            var clientRewindValueTickLeft = Vector3.Transform(Vector3.Left, clientRewindValueAbsolute.AbsoluteMatrix);
+
+                            if (entity.GetType().Name == "CubeEntity")
+                            {
+                                Console.WriteLine(lastValueSerialized);
+                            }
+
+                            // Render the previous and next server states.
+                            _debugRenderer.RenderDebugLine(renderContext, lastValuePoint, lastValueUp, Color.Red, Color.Red);
+                            _debugRenderer.RenderDebugLine(renderContext, lastValuePoint, lastValueForward, Color.Red, Color.Red);
+                            _debugRenderer.RenderDebugLine(renderContext, lastValuePoint, lastValueLeft, Color.Red, Color.Red);
+                            _debugRenderer.RenderDebugLine(renderContext, clientLocalTickPoint, clientLocalTickUp, Color.Orange, Color.Orange);
+                            _debugRenderer.RenderDebugLine(renderContext, clientLocalTickPoint, clientLocalTickForward, Color.Orange, Color.Orange);
+                            _debugRenderer.RenderDebugLine(renderContext, clientLocalTickPoint, clientLocalTickLeft, Color.Orange, Color.Orange);
+                            _debugRenderer.RenderDebugLine(renderContext, clientRewindValueTickPoint, clientRewindValueTickUp, Color.Yellow, Color.Yellow);
+                            _debugRenderer.RenderDebugLine(renderContext, clientRewindValueTickPoint, clientRewindValueTickForward, Color.Yellow, Color.Yellow);
+                            _debugRenderer.RenderDebugLine(renderContext, clientRewindValueTickPoint, clientRewindValueTickLeft, Color.Yellow, Color.Yellow);
+                        }
                     }
                 }
             }

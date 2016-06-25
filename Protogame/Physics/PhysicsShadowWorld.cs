@@ -183,5 +183,11 @@ namespace Protogame
         {
             return _physicsWorld;
         }
+
+        public void UnregisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform)
+        {
+            _rigidBodyMappings.RemoveAll(x => x.Key == rigidBody && x.Value == hasTransform);
+            _physicsWorld.RemoveBody(rigidBody);
+        }
     }
 }

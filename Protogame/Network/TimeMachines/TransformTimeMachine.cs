@@ -95,5 +95,15 @@ namespace Protogame
             
             return new DefaultTransform();
         }
+
+        public override void Set(int tick, object value)
+        {
+            if (value is NetworkTransform)
+            {
+                value = ((NetworkTransform) value).DeserializeFromNetwork();
+            }
+
+            base.Set(tick, value);
+        }
     }
 }

@@ -259,7 +259,7 @@ namespace Protogame
         /// <param name="value">
         /// The value to store in the time machine.
         /// </param>
-        public void Set(int tick, object value)
+        public virtual void Set(int tick, object value)
         {
             Set(tick, (T)value);
         }

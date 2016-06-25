@@ -11,6 +11,8 @@ namespace Protogame
 
         void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform);
 
+        void UnregisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform);
+
         void DebugRender(IGameContext gameContext, IRenderContext renderContext);
 
         JitterWorld GetInternalPhysicsWorld();
