@@ -7,6 +7,7 @@ namespace Protogame
     public class DefaultNetworkEngine : INetworkEngine
     {
         private readonly INetworkFactory _networkFactory;
+        private readonly IProfiler _profiler;
         private IWorld _currentWorld;
         private IServerWorld _currentServerWorld;
         private NetworkShadowWorld _shadowWorld;
@@ -21,9 +22,12 @@ namespace Protogame
         private readonly Dictionary<int, WeakReference> _objectReferences;
         private int _clientRenderDelayTicks;
 
-        public DefaultNetworkEngine(INetworkFactory networkFactory)
+        public DefaultNetworkEngine(
+            INetworkFactory networkFactory,
+            IProfiler profiler)
         {
             _networkFactory = networkFactory;
+            _profiler = profiler;
             _dispatchers = new Dictionary<IWorld, MxDispatcher>();
             _serverDispatchers = new Dictionary<IServerWorld, MxDispatcher>();
             _dispatcherChanged = new Dictionary<IWorld, bool>();
@@ -67,7 +71,10 @@ namespace Protogame
                 _currentDispatchers[0] = _shadowWorld.Dispatcher;
             }
 
-            _shadowWorld.Update(gameContext, updateContext);
+            using (_profiler.Measure("net-step"))
+            {
+                _shadowWorld.Update(gameContext, updateContext);
+            }
         }
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
@@ -91,7 +98,10 @@ namespace Protogame
                 _currentDispatchers[0] = _shadowWorld.Dispatcher;
             }
 
-            _shadowWorld.Update(serverContext, updateContext);
+            using (_profiler.Measure("net-step"))
+            {
+                _shadowWorld.Update(serverContext, updateContext);
+            }
         }
 
         public MxDispatcher[] CurrentDispatchers => _currentDispatchers;

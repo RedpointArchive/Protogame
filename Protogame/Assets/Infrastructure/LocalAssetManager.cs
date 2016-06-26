@@ -239,7 +239,7 @@ namespace Protogame
         /// </returns>
         public T Get<T>(string asset) where T : class, IAsset
         {
-            using (this.m_Profiler.Measure("asset-manager-get: " + asset))
+            using (this.m_Profiler.Measure("asset-get: " + asset))
             {
                 return this.GetUnresolved(asset).Resolve<T>();
             }
@@ -253,7 +253,7 @@ namespace Protogame
         /// </returns>
         public IAsset[] GetAll()
         {
-            using (this.m_Profiler.Measure("asset-manager-get-all"))
+            using (this.m_Profiler.Measure("asset-get-all"))
             {
                 lock (this.m_Assets)
                 {

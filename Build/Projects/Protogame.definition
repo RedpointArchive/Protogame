@@ -551,13 +551,6 @@
     <Compile Include="Noise\SimplexNoise.cs" />
     <Compile Include="Particles\ParticleDefinition.cs" />
     <Compile Include="Particles\ParticleEntity.cs" />
-    <Compile Include="Performance\DefaultProfiler.cs" />
-    <Compile Include="Performance\DefaultProfilerHandle.cs" />
-    <Compile Include="Performance\DefaultProfilingInterceptor.cs" />
-    <Compile Include="Performance\IProfiler.cs" />
-    <Compile Include="Performance\NullProfiler.cs" />
-    <Compile Include="Performance\NullProfilerHandle.cs" />
-    <Compile Include="Performance\ProtogamePerformanceIoCModule.cs" />
     <Compile Include="Physics\ConversionExtensions.cs" />
     <Compile Include="Physics\DefaultPhysicsEngine.cs" />
     <Compile Include="Physics\IPhysicsEngine.cs" />
@@ -578,6 +571,21 @@
     <Compile Include="Pooling\IRawPool.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Pooling\ScalingPool.cs" />
+    <Compile Include="Profiling\DefaultProfilerRenderPass.cs" />
+    <Compile Include="Profiling\FileProfiler.cs" />
+    <Compile Include="Profiling\FileProfilerHandle.cs" />
+    <Compile Include="Profiling\IMemoryProfiler.cs" />
+    <Compile Include="Profiling\IProfiler.cs" />
+    <Compile Include="Profiling\IProfilerRenderPass.cs" />
+    <Compile Include="Profiling\IProfilerVisualiser.cs" />
+    <Compile Include="Profiling\MemoryProfiler.cs" />
+    <Compile Include="Profiling\MemoryProfilerHandle.cs" />
+    <Compile Include="Profiling\NetworkProfilerVisualiser.cs" />
+    <Compile Include="Profiling\NullProfiler.cs" />
+    <Compile Include="Profiling\NullProfilerHandle.cs" />
+    <Compile Include="Profiling\OperationCostProfilerVisualiser.cs" />
+    <Compile Include="Profiling\ProtogamePerformanceIoCModule.cs" />
+    <Compile Include="Profiling\ProtogameProfilingModule.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <Platforms>Android,Ouya</Platforms>
     </Compile>

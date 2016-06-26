@@ -6,15 +6,19 @@ namespace Protogame
     public class DefaultPhysicsEngine : IPhysicsEngine
     {
         private readonly IPhysicsFactory _physicsFactory;
+        private readonly IProfiler _profiler;
         private IWorld _currentWorld;
         private IServerWorld _currentServerWorld;
         private PhysicsShadowWorld _shadowWorld;
 
-        public DefaultPhysicsEngine(IPhysicsFactory physicsFactory)
+        public DefaultPhysicsEngine(
+            IPhysicsFactory physicsFactory,
+            IProfiler profiler)
         {
             _physicsFactory = physicsFactory;
+            _profiler = profiler;
         }
-        
+
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             if (gameContext.World != _currentWorld || _shadowWorld == null)
@@ -28,7 +32,10 @@ namespace Protogame
                 _currentWorld = gameContext.World;
             }
 
-            _shadowWorld.Update(gameContext, updateContext);
+            using (_profiler.Measure("phys-step"))
+            {
+                _shadowWorld.Update(gameContext, updateContext);
+            }
         }
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
@@ -44,7 +51,10 @@ namespace Protogame
                 _currentServerWorld = serverContext.World;
             }
 
-            _shadowWorld.Update(serverContext, updateContext);
+            using (_profiler.Measure("phys-step"))
+            {
+                _shadowWorld.Update(serverContext, updateContext);
+            }
         }
 
         public void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform)

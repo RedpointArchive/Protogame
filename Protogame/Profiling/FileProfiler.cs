@@ -7,7 +7,7 @@ namespace Protogame
     /// <summary>
     /// The default profiler.
     /// </summary>
-    internal class DefaultProfiler : IProfiler
+    internal class FileProfiler : IProfiler
     {
         /// <summary>
         /// The m_ start.
@@ -25,43 +25,29 @@ namespace Protogame
         private string m_Indent = string.Empty;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultProfiler"/> class.
+        /// Initializes a new instance of the <see cref="FileProfiler"/> class.
         /// </summary>
-        public DefaultProfiler()
+        public FileProfiler()
         {
             this.m_Writer = new StreamWriter("game.prf");
             this.m_Start = DateTime.Now;
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="DefaultProfiler"/> class. 
+        /// Finalizes an instance of the <see cref="FileProfiler"/> class. 
         /// </summary>
-        ~DefaultProfiler()
+        ~FileProfiler()
         {
-            this.m_Writer.Flush();
-            this.m_Writer.Close();
+            try
+            {
+                this.m_Writer.Flush();
+                this.m_Writer.Close();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
         }
-
-        /// <summary>
-        /// The attach network dispatcher.
-        /// </summary>
-        /// <param name="dispatcher">
-        /// The dispatcher.
-        /// </param>
-        public void AttachNetworkDispatcher(MxDispatcher dispatcher)
-        {
-        }
-
-        /// <summary>
-        /// The detach network dispatcher.
-        /// </summary>
-        /// <param name="dispatcher">
-        /// The dispatcher.
-        /// </param>
-        public void DetachNetworkDispatcher(MxDispatcher dispatcher)
-        {
-        }
-
+        
         /// <summary>
         /// The measure.
         /// </summary>

@@ -10,17 +10,17 @@ namespace Protogame
         /// <summary>
         /// The m_ name.
         /// </summary>
-        private readonly string m_Name;
+        private readonly string _name;
 
         /// <summary>
         /// The m_ parameters.
         /// </summary>
-        private readonly string[] m_Parameters;
+        private readonly string[] _parameters;
 
         /// <summary>
         /// The m_ profiler.
         /// </summary>
-        private readonly DefaultProfiler m_Profiler;
+        private readonly FileProfiler _profiler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultProfilerHandle"/> class.
@@ -34,11 +34,11 @@ namespace Protogame
         /// <param name="parameters">
         /// The parameters.
         /// </param>
-        internal DefaultProfilerHandle(DefaultProfiler profiler, string name, string[] parameters)
+        internal DefaultProfilerHandle(FileProfiler profiler, string name, string[] parameters)
         {
-            this.m_Profiler = profiler;
-            this.m_Name = name;
-            this.m_Parameters = parameters;
+            this._profiler = profiler;
+            this._name = name;
+            this._parameters = parameters;
             this.Start = DateTime.Now;
         }
 
@@ -55,7 +55,7 @@ namespace Protogame
         /// </summary>
         public void Dispose()
         {
-            this.m_Profiler.EndEvent(this, this.m_Name, this.m_Parameters);
+            this._profiler.EndEvent(this, this._name, this._parameters);
         }
     }
 }
