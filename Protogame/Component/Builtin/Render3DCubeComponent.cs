@@ -13,15 +13,19 @@ namespace Protogame
         {
             _node = node;
             _renderUtilities = renderUtilities;
+
+            Visible = true;
         }
 
         public Color Color { get; set; }
 
         public EffectAsset Effect { get; set; }
 
+        public bool Visible { get; set; }
+
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
-            if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
+            if (Visible && renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
                 if (Effect != null)
                 {

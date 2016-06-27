@@ -575,6 +575,7 @@
     <Compile Include="Profiling\FileProfiler.cs" />
     <Compile Include="Profiling\FileProfilerHandle.cs" />
     <Compile Include="Profiling\IMemoryProfiler.cs" />
+    <Compile Include="Profiling\IOperationCostProfilerVisualiser.cs" />
     <Compile Include="Profiling\IProfiler.cs" />
     <Compile Include="Profiling\IProfilerRenderPass.cs" />
     <Compile Include="Profiling\IProfilerVisualiser.cs" />

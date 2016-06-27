@@ -79,6 +79,10 @@ namespace Protogame.ATFLevelEditor
         {
         }
 
+        public void MapVisibility(T @object, Action<bool> setVisibility)
+        {
+        }
+
         public void MapScale(T @object, Action<Vector3> setScale)
         {
         }
@@ -87,7 +91,7 @@ namespace Protogame.ATFLevelEditor
         {
         }
 
-        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Action<T2> setProperty, T2 @default) where TTarget : T
+        public void MapCustom<T2>(T @object, string id, string name, Action<T2> setProperty, T2 @default) 
         {
             Properties[id] = CreatePropertyFromDeclaration(
                 id,

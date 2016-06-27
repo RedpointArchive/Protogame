@@ -71,7 +71,17 @@ namespace Protogame.ATFLevelEditor
             }
         }
 
-        public void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Action<T2> setProperty, T2 @default) where TTarget : T
+        public void MapVisibility(T @object, Action<bool> setVisibility)
+        {
+            var visibleRawValue =
+                _element.GetAttribute("visible");
+            if (visibleRawValue == "true" || visibleRawValue == "false")
+            {
+                setVisibility(visibleRawValue == "true");
+            }
+        }
+
+        public void MapCustom<T2>(T @object, string id, string name, Action<T2> setProperty, T2 @default)
         {
             var propertyRawValue = _element.GetAttribute(id);
             object propertyValue = null;

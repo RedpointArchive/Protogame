@@ -28,6 +28,13 @@ namespace Protogame.ATFLevelEditor
         void MapTransform<TTarget>(TTarget @object, Action<ITransform> setTransform) where TTarget : T, IHasTransform;
 
         /// <summary>
+        /// Maps the specified property as the visibility of the object when considering it for rendering in-game.
+        /// </summary>
+        /// <param name="object">The object that's being mapped.</param>
+        /// <param name="setVisibility"></param>
+        void MapVisibility(T @object, Action<bool> setVisibility);
+
+        /// <summary>
         /// Maps the specified property as a custom property on the object.
         /// </summary>
         /// <typeparam name="T2">The type of the property.</typeparam>
@@ -37,7 +44,7 @@ namespace Protogame.ATFLevelEditor
         /// <param name="name">The name of the property to display in the editor.</param>
         /// <param name="setProperty"></param>
         /// <param name="default"></param>
-        void MapCustom<TTarget, T2>(TTarget @object, string id, string name, Action<T2> setProperty, T2 @default) where TTarget : T;
+        void MapCustom<T2>(T @object, string id, string name, Action<T2> setProperty, T2 @default);
 
         /// <summary>
         /// Declares that this object is a component which can be added to
