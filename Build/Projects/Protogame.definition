@@ -273,6 +273,16 @@
     <Compile Include="Compression\RangeCoder.cs" />
     <Compile Include="Compression\RangeCoderBit.cs" />
     <Compile Include="Compression\RangeCoderBitTree.cs" />
+    <Compile Include="Console\ClientConsole.cs" />
+    <Compile Include="Console\ClientConsoleInput.cs" />
+    <Compile Include="Console\ClientConsoleRender.cs" />
+    <Compile Include="Console\DefaultConsoleHandle.cs" />
+    <Compile Include="Console\IConsole.cs" />
+    <Compile Include="Console\IConsoleHandle.cs" />
+    <Compile Include="Console\IConsoleInput.cs" />
+    <Compile Include="Console\IConsoleRender.cs" />
+    <Compile Include="Console\ServerConsole.cs" />
+    <Compile Include="Core\Annotations.cs" />
     <Compile Include="Core\AssetManagerProviderInitializer.cs" />
     <Compile Include="Core\BoundingBox.cs" />
     <Compile Include="Core\CoreGame.cs" />
@@ -281,7 +291,6 @@
     <Compile Include="Core\DefaultAudioHandle.cs" />
     <Compile Include="Core\DefaultAudioUtilities.cs" />
     <Compile Include="Core\DefaultBoundingBoxUtilities.cs" />
-    <Compile Include="Core\DefaultConsole.cs" />
     <Compile Include="Core\DefaultFinalTransform.cs" />
     <Compile Include="Core\DefaultGameContext.cs" />
     <Compile Include="Core\DefaultKeyboardStringReader.cs" />
@@ -304,7 +313,6 @@
     <Compile Include="Core\IBoundingBox.cs" />
     <Compile Include="Core\IBoundingBoxUtilities.cs" />
     <Compile Include="Core\ICommand.cs" />
-    <Compile Include="Core\IConsole.cs" />
     <Compile Include="Core\IContainsEntities.cs" />
     <Compile Include="Core\ICoreGame.cs" />
     <Compile Include="Core\IEngineHook.cs" />
@@ -695,6 +703,8 @@
     <Compile Include="Server\Null2DRenderUtilities.cs" />
     <Compile Include="Server\Null3DRenderUtilities.cs" />
     <Compile Include="Server\NullAudioUtilities.cs" />
+    <Compile Include="Server\NullKeyboardStringReader.cs" />
+    <Compile Include="Server\NullRenderContext.cs" />
     <Compile Include="Server\ProtogameServerIoCModule.cs" />
     <Compile Include="Server\ProtogameServerModule.cs" />
     <Compile Include="Server\Server.cs" />

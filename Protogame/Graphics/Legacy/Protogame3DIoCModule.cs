@@ -24,7 +24,10 @@ namespace Protogame
             kernel.Bind<IUpdateContext>().To<DefaultUpdateContext>();
             kernel.Bind<IRenderContext>().To<LegacyRenderContext>();
             kernel.Bind<IKeyboardStringReader>().To<DefaultKeyboardStringReader>();
-            kernel.Bind<IConsole>().To<DefaultConsole>().InSingletonScope();
+            kernel.Bind<IConsole>().To<ClientConsole>().InSingletonScope();
+            kernel.Bind<IConsoleRender>().To<ClientConsoleRender>().InSingletonScope();
+            kernel.Bind<IConsoleInput>().To<ClientConsoleInput>().InSingletonScope();
+            kernel.Bind<IConsoleHandle>().To<DefaultConsoleHandle>().InTransientScope();
             kernel.Bind<ICommand>().To<ExitCommand>();
             kernel.Bind<ICommand>().To<HelpCommand>();
             kernel.Bind<ICommand>().To<GCCommand>();

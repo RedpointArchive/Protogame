@@ -51,11 +51,17 @@
         /// </param>
         public MxDispatcher(int port)
         {
+            Port = port;
             this.m_UdpClient = new UdpClient(port) { Client = { Blocking = false } };
             this.m_MxClients = new Dictionary<IPEndPoint, MxClient>();
             this.m_Reliabilities = new Dictionary<IPEndPoint, MxReliability>();
             this.m_Closed = false;
         }
+
+        /// <summary>
+        /// The port that this dispatcher recieves messages on.
+        /// </summary>
+        public int Port { get; private set; }
 
         /// <summary>
         /// Raised when an Mx client connects.
