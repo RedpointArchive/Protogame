@@ -94,7 +94,7 @@
         {
             if (file.Exists)
             {
-                using (var stream = new FileStream(file.FullName, FileMode.Open))
+                using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     using (var reader = new BinaryReader(stream))
                     {

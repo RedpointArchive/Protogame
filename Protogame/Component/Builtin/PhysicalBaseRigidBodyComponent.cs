@@ -83,21 +83,27 @@ namespace Protogame
 
         private void Update()
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            
             // Update the parent node's matrix based on the rigid body's state.
             var transformComponent = _node.Parent?.UntypedValue as IHasTransform;
             if (transformComponent != null)
             {
-                if (!_addedRigidBody)
+                if (!Enabled)
                 {
-                    UpdateRigidBodyShape(transformComponent.Transform);
+                    if (_addedRigidBody)
+                    {
+                        _physicsEngine.UnregisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent);
+                        _addedRigidBody = false;
+                    }
+                }
+                else
+                {
+                    if (!_addedRigidBody)
+                    {
+                        UpdateRigidBodyShape(transformComponent.Transform);
 
-                    _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent);
-                    _addedRigidBody = true;
+                        _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent);
+                        _addedRigidBody = true;
+                    }
                 }
             }
         }

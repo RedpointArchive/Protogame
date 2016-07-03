@@ -16,6 +16,7 @@ namespace Protogame
 
         private JitterWorld _jitterWorld;
         private PhysicsControllerConstraint _physicsControllerConstraint;
+        private RigidBody _rigidBody;
 
         public FirstPersonControllerPhysicsComponent(
             IPhysicsEngine physicsEngine,
@@ -91,23 +92,35 @@ namespace Protogame
                 _jitterWorld = _physicsEngine.GetInternalPhysicsWorld();
             }
 
-            if (_physicsControllerConstraint == null)
+            if (_physicalComponent.RigidBodies.Length > 0 && _physicalComponent.RigidBodies[0] != _rigidBody)
             {
-                _physicsControllerConstraint = new PhysicsControllerConstraint(
-                    _jitterWorld,
-                    _physicalComponent.RigidBodies[0]);
-                _jitterWorld.AddConstraint(_physicsControllerConstraint);
+                if (_physicsControllerConstraint != null)
+                {
+                    _jitterWorld.RemoveConstraint(_physicsControllerConstraint);
+                    _physicsControllerConstraint = null;
+                }
             }
 
-            _physicsControllerConstraint.TargetVelocity = TargetVelocity.ToJitterVector();
-            _physicsControllerConstraint.TryJump = TryJump;
-            _physicsControllerConstraint.JumpVelocity = JumpVelocity;
-            _physicsControllerConstraint.Stiffness = Stiffness;
-
-            if (TargetVelocity.LengthSquared() > 0f)
+            if (_physicalComponent.RigidBodies.Length > 0)
             {
-                // Wake up the rigid body.
-                _physicalComponent.RigidBodies[0].IsActive = true;
+                if (_physicsControllerConstraint == null)
+                {
+                    _physicsControllerConstraint = new PhysicsControllerConstraint(
+                        _jitterWorld,
+                        _physicalComponent.RigidBodies[0]);
+                    _jitterWorld.AddConstraint(_physicsControllerConstraint);
+                }
+
+                _physicsControllerConstraint.TargetVelocity = TargetVelocity.ToJitterVector();
+                _physicsControllerConstraint.TryJump = TryJump;
+                _physicsControllerConstraint.JumpVelocity = JumpVelocity;
+                _physicsControllerConstraint.Stiffness = Stiffness;
+
+                if (TargetVelocity.LengthSquared() > 0f)
+                {
+                    // Wake up the rigid body.
+                    _physicalComponent.RigidBodies[0].IsActive = true;
+                }
             }
         }
 
