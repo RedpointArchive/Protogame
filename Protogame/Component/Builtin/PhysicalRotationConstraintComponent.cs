@@ -3,7 +3,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class PhysicalRotationConstraintComponent : IUpdatableComponent, IServerUpdatableComponent
+    public class PhysicalRotationConstraintComponent : IUpdatableComponent, IServerUpdatableComponent, IEnabledComponent
     {
         private readonly IPhysicalComponent _physicalComponent;
         private bool _wasEnabled = false;

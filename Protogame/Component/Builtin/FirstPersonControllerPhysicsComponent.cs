@@ -8,7 +8,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class FirstPersonControllerPhysicsComponent : IUpdatableComponent, IRenderableComponent
+    public class FirstPersonControllerPhysicsComponent : IUpdatableComponent, IRenderableComponent, IEnabledComponent
     {
         private readonly IPhysicsEngine _physicsEngine;
         private readonly IDebugRenderer _debugRenderer;
@@ -30,7 +30,11 @@ namespace Protogame
             TryJump = false;
             JumpVelocity = 0.5f;
             Stiffness = 0.02f;
+
+            Enabled = true;
         }
+
+        public bool Enabled { get; set; }
 
         /// <summary>
         /// The target velocity that this controller should attempt to achieve.
@@ -71,6 +75,11 @@ namespace Protogame
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (_jitterWorld != _physicsEngine.GetInternalPhysicsWorld())
             {
                 // TODO: Deregister rigid bodies from old world.
@@ -179,6 +188,11 @@ namespace Protogame
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (_physicsControllerConstraint != null && _physicalComponent.RigidBodies.Length > 0)
             {
                 _debugRenderer.RenderDebugLine(

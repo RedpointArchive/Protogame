@@ -3,7 +3,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class Render3DPlaneComponent : IRenderableComponent
+    public class Render3DPlaneComponent : IRenderableComponent, IEnabledComponent
     {
         private readonly INode _node;
 
@@ -13,12 +13,21 @@ namespace Protogame
         {
             _node = node;
             _renderUtilities = renderUtilities;
+
+            Enabled = true;
         }
 
         public Color Color { get; set; }
 
+        public bool Enabled { get; set; }
+
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
                 var matrix = Matrix.Identity;

@@ -4,7 +4,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class FlyAroundInputComponent : IEventfulComponent
+    public class FlyAroundInputComponent : IEventfulComponent, IEnabledComponent
     {
         private readonly FirstPersonCameraComponent _firstPersonCameraComponent;
 
@@ -14,15 +14,24 @@ namespace Protogame
             _firstPersonCameraComponent = firstPersonCameraComponent;
             ThumbstickLookSensitivity = 1/100f;
             ThumbstickMoveSensitivity = 1/20f;
+
+            Enabled = true;
         }
 
         public float ThumbstickLookSensitivity { get; set; }
 
         public float ThumbstickMoveSensitivity { get; set; }
 
+        public bool Enabled { get; set; }
+
         public bool Handle(ComponentizedEntity componentizedEntity, IGameContext gameContext,
             IEventEngine<IGameContext> eventEngine, Event @event)
         {
+            if (!Enabled)
+            {
+                return false;
+            }
+
             var gamepadEvent = @event as GamePadEvent;
             var keyHeldEvent = @event as KeyHeldEvent;
             var mouseEvent = @event as MouseEvent;

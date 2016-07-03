@@ -4,7 +4,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class Render3DModelComponent : IRenderableComponent
+    public class Render3DModelComponent : IRenderableComponent, IEnabledComponent
     {
         private readonly INode _node;
 
@@ -38,14 +38,23 @@ namespace Protogame
             _renderUtilities = renderUtilities;
             _textureFromHintPath = textureFromHintPath;
             _assetManager = assetManagerProvider.GetAssetManager();
+
+            Enabled = true;
         }
         
         public ModelAsset Model { get; set; }
 
         public EffectAsset Effect { get; set; }
 
+        public bool Enabled { get; set; }
+
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
                 if (Effect == null)

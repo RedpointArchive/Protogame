@@ -2,7 +2,7 @@
 
 namespace Protogame
 {
-    public class Render2DTextureComponent : IRenderableComponent
+    public class Render2DTextureComponent : IRenderableComponent, IEnabledComponent
     {
         private readonly I2DRenderUtilities _renderUtilities;
 
@@ -11,10 +11,19 @@ namespace Protogame
         public Render2DTextureComponent(I2DRenderUtilities renderUtilities)
         {
             _renderUtilities = renderUtilities;
+
+            Enabled = true;
         }
+
+        public bool Enabled { get; set; }
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (!renderContext.IsCurrentRenderPass<I3DRenderPass>() && Texture != null)
             {
                 _renderUtilities.RenderTexture(

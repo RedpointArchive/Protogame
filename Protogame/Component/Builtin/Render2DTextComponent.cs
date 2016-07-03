@@ -2,7 +2,7 @@
 
 namespace Protogame
 {
-    public class Render2DTextComponent : IRenderableComponent
+    public class Render2DTextComponent : IRenderableComponent, IEnabledComponent
     {
         private readonly I2DRenderUtilities _renderUtilities;
 
@@ -13,10 +13,19 @@ namespace Protogame
         public Render2DTextComponent(I2DRenderUtilities renderUtilities)
         {
             _renderUtilities = renderUtilities;
+
+            Enabled = true;
         }
+
+        public bool Enabled { get; set; }
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (!renderContext.IsCurrentRenderPass<I3DRenderPass>() && Font != null)
             {
                 _renderUtilities.RenderText(

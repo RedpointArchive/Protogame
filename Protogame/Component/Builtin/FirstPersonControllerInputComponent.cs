@@ -4,7 +4,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class FirstPersonControllerInputComponent : IEventfulComponent, IUpdatableComponent
+    public class FirstPersonControllerInputComponent : IEventfulComponent, IUpdatableComponent, IEnabledComponent
     {
         private readonly FirstPersonCameraComponent _firstPersonCameraComponent;
         private readonly FirstPersonControllerPhysicsComponent _firstPersonControllerPhysicsComponent;
@@ -25,6 +25,8 @@ namespace Protogame
             ThumbstickMoveSensitivity = 5f;
             MovementSpeed = 1f;
             MouseLock = true;
+
+            Enabled = true;
         }
 
         public float ThumbstickLookSensitivity { get; set; }
@@ -35,8 +37,15 @@ namespace Protogame
 
         public bool MouseLock { get; set; }
 
+        public bool Enabled { get; set; }
+
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             if (!_didSetVelocityLastFrame)
             {
                 _firstPersonControllerPhysicsComponent.TargetVelocity = Vector3.Zero;
@@ -50,6 +59,11 @@ namespace Protogame
         public bool Handle(ComponentizedEntity componentizedEntity, IGameContext gameContext,
             IEventEngine<IGameContext> eventEngine, Event @event)
         {
+            if (!Enabled)
+            {
+                return false;
+            }
+
             var gamepadEvent = @event as GamePadEvent;
             var keyHeldEvent = @event as KeyHeldEvent;
             var mouseEvent = @event as MouseEvent;

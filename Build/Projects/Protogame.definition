@@ -221,6 +221,7 @@
     </Compile>
     <Compile Include="Component\Builtin\Physical3DCapsuleComponent.cs" />
     <Compile Include="Component\Builtin\Physical3DCubeComponent.cs" />
+    <Compile Include="Component\Builtin\PhysicalBaseRigidBodyComponent.cs" />
     <Compile Include="Component\Builtin\PhysicalRotationConstraintComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextComponent.cs" />
     <Compile Include="Component\Builtin\Render2DTextureComponent.cs" />
@@ -246,6 +247,7 @@
       <DependentUpon>IComponentCallable.tt</DependentUpon>
     </Compile>
     <Compile Include="Component\IContainsComponents.cs" />
+    <Compile Include="Component\IEnabledComponent.cs" />
     <Compile Include="Component\IEventfulComponent.cs" />
     <Compile Include="Component\IHasComponent.cs" />
     <Compile Include="Component\IHierarchialComponent.cs" />

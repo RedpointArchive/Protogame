@@ -3,7 +3,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class Render3DCubeComponent : IRenderableComponent
+    public class Render3DCubeComponent : IRenderableComponent, IEnabledComponent
     {
         private readonly INode _node;
 
@@ -14,18 +14,23 @@ namespace Protogame
             _node = node;
             _renderUtilities = renderUtilities;
 
-            Visible = true;
+            Enabled = true;
         }
 
         public Color Color { get; set; }
 
         public EffectAsset Effect { get; set; }
 
-        public bool Visible { get; set; }
+        public bool Enabled { get; set; }
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
-            if (Visible && renderContext.IsCurrentRenderPass<I3DRenderPass>())
+            if (!Enabled)
+            {
+                return;
+            }
+
+            if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
                 if (Effect != null)
                 {

@@ -4,7 +4,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class FirstPersonCameraComponent : IPrerenderableComponent, IHasTransform
+    public class FirstPersonCameraComponent : IPrerenderableComponent, IHasTransform, IEnabledComponent
     {
         private readonly INode _node;
         private readonly IDebugRenderer _debugRenderer;
@@ -22,6 +22,8 @@ namespace Protogame
             HeadOffset = new Vector3(0, 0, 0);
             Enabled = true;
             DebugEnabled = false;
+
+            Enabled = true;
         }
 
         /// <summary>
