@@ -1,4 +1,5 @@
-﻿using Jitter.Collision.Shapes;
+﻿using System;
+using Jitter.Collision.Shapes;
 using Protoinject;
 
 namespace Protogame
@@ -31,6 +32,11 @@ namespace Protogame
 
         protected override Shape GetShape(ITransform localTransform)
         {
+            if (_length <= 0 || _radius <= 0)
+            {
+                throw new InvalidOperationException("Invalid length or radius.");
+            }
+
             return new CapsuleShape(_length, _radius);
         }
 

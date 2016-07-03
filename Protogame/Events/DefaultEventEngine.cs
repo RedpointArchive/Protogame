@@ -17,7 +17,7 @@ namespace Protogame
         /// <summary>
         /// The registered event binders.
         /// </summary>
-        private readonly IEventBinder<TContext>[] m_EventBinders;
+        private readonly IEventBinder<TContext>[] _eventBinders;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultEventEngine{TContext}"/> class.
@@ -30,8 +30,8 @@ namespace Protogame
         /// </param>
         public DefaultEventEngine(IKernel kernel, IEventBinder<TContext>[] eventBinders)
         {
-            this.m_EventBinders = eventBinders;
-            foreach (var eventBinder in this.m_EventBinders)
+            this._eventBinders = eventBinders;
+            foreach (var eventBinder in this._eventBinders)
             {
                 eventBinder.Assign(kernel);
             }
@@ -48,7 +48,7 @@ namespace Protogame
         /// </param>
         public void Fire(TContext context, Event @event)
         {
-            foreach (var eventBinder in this.m_EventBinders.OrderByDescending(x => x.Priority))
+            foreach (var eventBinder in this._eventBinders.OrderByDescending(x => x.Priority))
             {
                 if (eventBinder.Handle(context, this, @event))
                 {

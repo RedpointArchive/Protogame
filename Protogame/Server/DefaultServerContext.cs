@@ -7,7 +7,9 @@ namespace Protogame
 
     public class DefaultServerContext : IServerContext
     {
-        private readonly IKernel m_Kernel;
+        private readonly IKernel _kernel;
+
+        private IServerWorld _nextWorld;
 
         public DefaultServerContext(
             IKernel kernel,
@@ -15,13 +17,13 @@ namespace Protogame
             IServerWorld world,
             IServerWorldManager worldManager)
         {
-            this.m_Kernel = kernel;
-            this.Server = server;
-            this.World = world;
-            this.WorldManager = worldManager;
+            _kernel = kernel;
+            Server = server;
+            World = world;
+            WorldManager = worldManager;
             
-            this.GameTime = new GameTime();
-            this.Tick = 0;
+            GameTime = new GameTime();
+            Tick = 0;
         }
 
         public int Tick
@@ -41,27 +43,36 @@ namespace Protogame
         public Server Server
         {
             get;
-            internal set;
         }
 
         public IServerWorld World
         {
-            get;
-            set;
+            get; private set;
         }
 
         public IServerWorldManager WorldManager
         {
             get;
-            internal set;
         }
 
-        public IHierarchy Hierarchy
-        {
-            get { return this.m_Kernel.Hierarchy; }
-        }
+        public IHierarchy Hierarchy => _kernel.Hierarchy;
 
         public GameTime GameTime { get; set; }
+
+        /// <summary>
+        /// Handles the beginning of a step, switching out the current world for <see cref="_nextWorld"/>
+        /// if required.
+        /// </summary>
+        public void Begin()
+        {
+            if (_nextWorld != null)
+            {
+                World?.Dispose();
+                World = _nextWorld;
+
+                _nextWorld = null;
+            }
+        }
 
         /// <summary>
         /// The create world.
@@ -73,7 +84,7 @@ namespace Protogame
         /// </returns>
         public IServerWorld CreateWorld<T>() where T : IServerWorld
         {
-            return this.m_Kernel.Get<T>();
+            return _kernel.Get<T>();
         }
 
         /// <summary>
@@ -89,7 +100,7 @@ namespace Protogame
         /// </returns>
         public IServerWorld CreateWorld<TFactory>(Func<TFactory, IServerWorld> creator)
         {
-            return creator(this.m_Kernel.Get<TFactory>());
+            return creator(_kernel.Get<TFactory>());
         }
 
         /// <summary>
@@ -99,12 +110,7 @@ namespace Protogame
         /// </typeparam>
         public void SwitchWorld<T>() where T : IServerWorld
         {
-            if (this.World != null)
-            {
-                this.World.Dispose();
-            }
-
-            this.World = this.CreateWorld<T>();
+            _nextWorld = CreateWorld<T>();
         }
 
         /// <summary>
@@ -117,12 +123,7 @@ namespace Protogame
         /// </typeparam>
         public void SwitchWorld<TFactory>(Func<TFactory, IServerWorld> creator)
         {
-            if (this.World != null)
-            {
-                this.World.Dispose();
-            }
-
-            this.World = this.CreateWorld(creator);
+            _nextWorld = CreateWorld(creator);
         }
 
         /// <summary>
@@ -135,12 +136,7 @@ namespace Protogame
         /// </typeparam>
         public void SwitchWorld<T>(T world) where T : IServerWorld
         {
-            if (this.World != null)
-            {
-                this.World.Dispose();
-            }
-
-            this.World = world;
+            _nextWorld = world;
         }
     }
 }

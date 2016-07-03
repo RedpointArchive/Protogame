@@ -111,6 +111,13 @@ namespace Protogame
         Plane MouseVerticalPlane { get; set; }
 
         /// <summary>
+        /// Called by the game at the beginning of a frame, immediately before any update
+        /// logic is processed.  This method is used by the engine, and should not be called
+        /// from user code.
+        /// </summary>
+        void Begin();
+
+        /// <summary>
         /// Creates the specified world and returns it.
         /// </summary>
         /// <typeparam name="T">

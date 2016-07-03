@@ -349,13 +349,6 @@ namespace Protogame
 
         private void InternalSynchronise<T>(SynchroniseTargets targets, string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
         {
-            if (ClientOwnership == null && targets != SynchroniseTargets.AllClients)
-            {
-                // SynchroniseOwner and SynchroniseNonOwner has no effect if there's no
-                // ownership data set.
-                return;
-            }
-
             // TODO: Make this value more unique, and synchronised across the network (so we can have multiple components of the same type).
             var context = "unknown";
             if (_synchronisationContext is ComponentizedEntity)

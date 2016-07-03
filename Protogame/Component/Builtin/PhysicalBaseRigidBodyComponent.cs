@@ -22,7 +22,6 @@ namespace Protogame
             _node = node;
             _physicsEngine = physicsEngine;
             _addedRigidBody = false;
-            UpdateRigidBodyShape(new DefaultTransform());
 
             Enabled = true;
         }
@@ -54,6 +53,7 @@ namespace Protogame
             {
                 _rigidBody.Shape = _shape;
             }
+            _rigidBody.Tag = this;
         }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
@@ -63,7 +63,17 @@ namespace Protogame
 
         public RigidBody[] RigidBodies
         {
-            get { return new[] {_rigidBody}; }
+            get
+            {
+                if (Enabled)
+                {
+                    return new[] {_rigidBody};
+                }
+                else
+                {
+                    return new RigidBody[0];
+                }
+            }
         }
 
         public void Update(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext)
@@ -97,8 +107,20 @@ namespace Protogame
             synchronisationApi.Synchronise("static", 60, Static, x => Static = x, null);
             synchronisationApi.Synchronise("mass", 60, Mass, x => Mass = x <= 0 ? 1 : x, null);
             synchronisationApi.Synchronise("active", 60, _rigidBody.IsActive, x => _rigidBody.IsActive = x, 500);
-            synchronisationApi.Synchronise("linvel", 60, _rigidBody.LinearVelocity.ToXNAVector(), x => _rigidBody.LinearVelocity = x.ToJitterVector(), 500);
-            synchronisationApi.Synchronise("angvel", 60, _rigidBody.AngularVelocity.ToXNAVector(), x => _rigidBody.AngularVelocity = x.ToJitterVector(), 500);
+            synchronisationApi.Synchronise("linvel", 60, _rigidBody.LinearVelocity.ToXNAVector(), x =>
+            {
+                if (!Static)
+                {
+                    _rigidBody.LinearVelocity = x.ToJitterVector();
+                }
+            }, 500);
+            synchronisationApi.Synchronise("angvel", 60, _rigidBody.AngularVelocity.ToXNAVector(), x =>
+            {
+                if (!Static)
+                {
+                    _rigidBody.AngularVelocity = x.ToJitterVector();
+                }
+            }, 500);
         }
     }
 }

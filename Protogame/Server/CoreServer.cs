@@ -161,6 +161,7 @@ namespace Protogame
 
                     this.ServerContext.TimeTick = (int)(DateTime.Now - this.ServerContext.StartTime).TotalMilliseconds;
 
+                    this.ServerContext.Begin();
                     this.ServerContext.WorldManager.Update(this);
 
                     this.ServerContext.Tick++;

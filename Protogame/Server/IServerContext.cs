@@ -69,6 +69,13 @@ namespace Protogame
         GameTime GameTime { get; set; }
 
         /// <summary>
+        /// Called by the server at the beginning of a step, immediately before any update
+        /// logic is processed.  This method is used by the engine, and should not be called
+        /// from user code.
+        /// </summary>
+        void Begin();
+
+        /// <summary>
         /// The create world.
         /// </summary>
         /// <typeparam name="T">

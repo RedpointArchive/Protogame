@@ -9,15 +9,10 @@ namespace Protogame
     /// </summary>
     internal class DefaultGameContext : IGameContext
     {
-        /// <summary>
-        /// The m_ kernel.
-        /// </summary>
-        private readonly IKernel m_Kernel;
+        private readonly IKernel _kernel;
+        private readonly IAnalyticsEngine _analyticsEngine;
 
-        /// <summary>
-        /// The current analytics engine.
-        /// </summary>
-        private readonly IAnalyticsEngine m_AnalyticsEngine;
+        private IWorld _nextWorld;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultGameContext"/> class.
@@ -49,13 +44,13 @@ namespace Protogame
             IWorld world, 
             IWorldManager worldManager)
         {
-            this.m_Kernel = kernel;
-            this.m_AnalyticsEngine = analyticsEngine;
-            this.Game = game;
-            this.Graphics = graphics;
-            this.World = world;
-            this.WorldManager = worldManager;
-            this.Window = window;
+            _kernel = kernel;
+            _analyticsEngine = analyticsEngine;
+            Game = game;
+            Graphics = graphics;
+            World = world;
+            WorldManager = worldManager;
+            Window = window;
         }
 
         /// <summary>
@@ -80,7 +75,7 @@ namespace Protogame
         /// <value>
         /// The game.
         /// </value>
-        public Game Game { get; internal set; }
+        public Game Game { get; }
 
         /// <summary>
         /// Gets or sets the game time.
@@ -96,7 +91,7 @@ namespace Protogame
         /// <value>
         /// The graphics.
         /// </value>
-        public GraphicsDeviceManager Graphics { get; set; }
+        public GraphicsDeviceManager Graphics { get; }
 
         /// <summary>
         /// Gets or sets the window.
@@ -104,7 +99,7 @@ namespace Protogame
         /// <value>
         /// The window.
         /// </value>
-        public IGameWindow Window { get; set; }
+        public IGameWindow Window { get; }
 
         /// <summary>
         /// Gets or sets the world.
@@ -112,7 +107,7 @@ namespace Protogame
         /// <value>
         /// The world.
         /// </value>
-        public IWorld World { get; set; }
+        public IWorld World { get; private set; }
 
         /// <summary>
         /// Gets the world manager.
@@ -120,7 +115,7 @@ namespace Protogame
         /// <value>
         /// The world manager.
         /// </value>
-        public IWorldManager WorldManager { get; internal set; }
+        public IWorldManager WorldManager { get; }
 
         /// <summary>
         /// Gets the dependency injection hierarchy, which contains all worlds, entities and components.
@@ -128,10 +123,7 @@ namespace Protogame
         /// <value>
         /// The dependency injection hierarchy, which contains all worlds, entities and components.
         /// </value>
-        public IHierarchy Hierarchy
-        {
-            get { return this.m_Kernel.Hierarchy; }
-        }
+        public IHierarchy Hierarchy => _kernel.Hierarchy;
 
         /// <summary>
         /// Gets or sets the ray representing the mouse cursor in 3D space.  This is
@@ -160,6 +152,23 @@ namespace Protogame
         public Plane MouseVerticalPlane { get; set; }
 
         /// <summary>
+        /// Handles the beginning of a frame, switching out the current world for <see cref="_nextWorld"/>
+        /// if required.
+        /// </summary>
+        public void Begin()
+        {
+            if (_nextWorld != null)
+            {
+                World?.Dispose();
+                World = _nextWorld;
+
+                _analyticsEngine.LogGameplayEvent("World:Switch:" + World.GetType().Name);
+
+                _nextWorld = null;
+            }
+        }
+
+        /// <summary>
         /// The create world.
         /// </summary>
         /// <typeparam name="T">
@@ -169,7 +178,7 @@ namespace Protogame
         /// </returns>
         public IWorld CreateWorld<T>() where T : IWorld
         {
-            return this.m_Kernel.Get<T>();
+            return _kernel.Get<T>();
         }
 
         /// <summary>
@@ -185,7 +194,7 @@ namespace Protogame
         /// </returns>
         public IWorld CreateWorld<TFactory>(Func<TFactory, IWorld> creator)
         {
-            return creator(this.m_Kernel.Get<TFactory>());
+            return creator(_kernel.Get<TFactory>());
         }
 
         /// <summary>
@@ -207,14 +216,14 @@ namespace Protogame
                     "the ResizeWindow call into the update loop instead.");
             }
 
-            if (this.Window.ClientBounds.Width == width && this.Window.ClientBounds.Height == height)
+            if (Window.ClientBounds.Width == width && Window.ClientBounds.Height == height)
             {
                 return;
             }
 
-            this.Graphics.PreferredBackBufferWidth = width;
-            this.Graphics.PreferredBackBufferHeight = height;
-            this.Graphics.ApplyChanges();
+            Graphics.PreferredBackBufferWidth = width;
+            Graphics.PreferredBackBufferHeight = height;
+            Graphics.ApplyChanges();
         }
 
         /// <summary>
@@ -224,14 +233,7 @@ namespace Protogame
         /// </typeparam>
         public void SwitchWorld<T>() where T : IWorld
         {
-            if (this.World != null)
-            {
-                this.World.Dispose();
-            }
-
-            this.World = this.CreateWorld<T>();
-
-            this.m_AnalyticsEngine.LogGameplayEvent("World:Switch:" + typeof(T).Name);
+            _nextWorld = CreateWorld<T>();
         }
 
         /// <summary>
@@ -244,21 +246,12 @@ namespace Protogame
         /// </typeparam>
         public void SwitchWorld<TFactory>(Func<TFactory, IWorld> creator)
         {
-            if (this.World != null)
+            _nextWorld = CreateWorld(creator);
+
+            if (_nextWorld == null)
             {
-                this.World.Dispose();
+                throw new InvalidOperationException("The world factory returned a null value.");
             }
-
-            var world = this.CreateWorld(creator);
-
-            if (world == null)
-            {
-                throw new ArgumentNullException("world");
-            }
-
-            this.World = world;
-
-            this.m_AnalyticsEngine.LogGameplayEvent("World:Switch:" + this.World.GetType().Name);
         }
 
         /// <summary>
@@ -273,17 +266,10 @@ namespace Protogame
         {
             if (world == null)
             {
-                throw new ArgumentNullException("world");
+                throw new ArgumentNullException(nameof(world));
             }
 
-            if (this.World != null)
-            {
-                this.World.Dispose();
-            }
-
-            this.World = world;
-
-            this.m_AnalyticsEngine.LogGameplayEvent("World:Switch:" + this.World.GetType().Name);
+            _nextWorld = world;
         }
     }
 }

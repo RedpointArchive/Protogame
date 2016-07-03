@@ -10,6 +10,7 @@ namespace Protogame
         private IHierarchy _hierarchy;
         private INetworkMessageSerialization _networkMessageSerialization;
         private INetworkEngine _networkEngine;
+        private IConsoleHandle _consoleHandle;
 
         public int Priority => 150;
 
@@ -19,6 +20,7 @@ namespace Protogame
             _hierarchy = kernel.Hierarchy;
             _networkMessageSerialization = kernel.Get<INetworkMessageSerialization>();
             _networkEngine = kernel.Get<INetworkEngine>();
+            _consoleHandle = kernel.Get<IConsoleHandle>(kernel.Hierarchy.Lookup(this));
         }
 
         public bool Handle(INetworkEventContext context, IEventEngine<INetworkEventContext> eventEngine, Event @event)
@@ -70,6 +72,20 @@ namespace Protogame
                     }
 
                     return true;
+                }
+
+                var entityPropertiesMessage = @object as EntityPropertiesMessage;
+                if (entityPropertiesMessage != null)
+                {
+                    var targetObject = _networkEngine.FindObjectByNetworkId(entityPropertiesMessage.EntityID);
+                    if (targetObject != null)
+                    {
+                        // The object willingly didn't accept the message.
+                    }
+                    else
+                    {
+                        _consoleHandle.Log("warning: got property message for missing entity {0}", entityPropertiesMessage.EntityID);
+                    }
                 }
             }
 

@@ -29,7 +29,7 @@ namespace Protogame
 
         public void LogStructured(INode node, string format, object[] args)
         {
-            Console.WriteLine();
+            Console.WriteLine(format, args);
         }
     }
 }

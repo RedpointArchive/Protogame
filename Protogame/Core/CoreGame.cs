@@ -419,6 +419,7 @@ namespace Protogame
                 using (this.m_Profiler.Measure("main"))
                 {
                     this.GameContext.GameTime = gameTime;
+                    this.GameContext.Begin();
                     foreach (var hook in this.m_EngineHooks)
                     {
                         hook.Update(this.GameContext, this.UpdateContext);
