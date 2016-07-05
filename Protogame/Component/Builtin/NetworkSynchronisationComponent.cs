@@ -557,8 +557,11 @@ namespace Protogame
                                 }
 
                                 // If we haven't performed the initial synchronisation, we always transmit the data.
-                                if (!data.HasReceivedInitialSync.GetOrDefault(endpoint, false))
+                                if (!data.HasPerformedInitialSync.GetOrDefault(endpoint, false))
                                 {
+                                    _networkEngine.LogSynchronisationEvent(
+                                        "Must send property '" + data.Name + "' on entity ID " + _uniqueIdentifierForEntity + 
+                                        " because the endpoint " + endpoint + " has not received it's initial sync.");
                                     needsSync = true;
                                 }
 
@@ -583,10 +586,16 @@ namespace Protogame
                                         currentValue = ((ITransform) currentValue).SerializeToNetwork();
                                     }
 
-                                    if (lastValue != currentValue)
+                                    if (!Equals(lastValue, currentValue))
                                     {
                                         if (data.LastFrameSynced.GetOrDefault(endpoint, 0) + data.FrameInterval < currentTick)
                                         {
+                                            _networkEngine.LogSynchronisationEvent(
+                                                "Sending property '" + data.Name + "' on entity ID " + _uniqueIdentifierForEntity +
+                                                " because the value has changed (old value: " + lastValue + ", new value: " + currentValue + ")," +
+                                                " and the next frame synced target for endpoint " + endpoint + "" +
+                                                " is " + (data.LastFrameSynced.GetOrDefault(endpoint, 0) + data.FrameInterval) + "" +
+                                                " and the current tick is " + currentTick + ".");
                                             needsSync = true;
                                         }
                                     }

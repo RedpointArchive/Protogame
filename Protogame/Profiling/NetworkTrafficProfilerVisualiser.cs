@@ -29,19 +29,31 @@ namespace Protogame
 
         public int GetHeight(int backBufferHeight)
         {
+            if (!_networkEngine.GetRecentFrames().Any())
+            {
+                return 0;
+            }
+
             return _sentSampler.Height + _receivedSampler.Height;
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, Rectangle rectangle)
         {
+            if (!_networkEngine.GetRecentFrames().Any())
+            {
+                return;
+            }
+
+            var recent = _networkEngine.GetRecentFrames().Last();
+
             _sentSampler.Sample(
-                _networkEngine.GetSizeOfMessagesSentLastFrame(),
-                _networkEngine.GetCountOfMessagesSentLastFrame(),
+                recent.BytesSentByMessageType,
+                recent.MessagesSentByMessageType,
                 rectangle.Width);
 
             _receivedSampler.Sample(
-                _networkEngine.GetSizeOfMessagesReceivedLastFrame(),
-                _networkEngine.GetCountOfMessagesReceivedLastFrame(),
+                recent.BytesReceivedByMessageType,
+                recent.MessagesReceivedByMessageType,
                 rectangle.Width);
             
             _sentSampler.Render(

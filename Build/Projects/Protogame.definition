@@ -498,12 +498,14 @@
     <Compile Include="Network\ClientAuthoritiveMode.cs" />
     <Compile Include="Network\DefaultNetworkEngine.cs" />
     <Compile Include="Network\DefaultNetworkEventContext.cs" />
+    <Compile Include="Network\DefaultNetworkFrame.cs" />
     <Compile Include="Network\GeneralNetworkEventBinder.cs" />
     <Compile Include="Network\INetworkedServerWorld.cs" />
     <Compile Include="Network\INetworkedWorld.cs" />
     <Compile Include="Network\INetworkEngine.cs" />
     <Compile Include="Network\INetworkEventContext.cs" />
     <Compile Include="Network\INetworkFactory.cs" />
+    <Compile Include="Network\INetworkFrame.cs" />
     <Compile Include="Network\INetworkIdentifiable.cs" />
     <Compile Include="Network\ISynchronisationApi.cs" />
     <Compile Include="Network\ISynchronisedObject.cs" />

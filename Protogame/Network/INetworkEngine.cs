@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 
@@ -30,12 +31,8 @@ namespace Protogame
 
         void Send<T>(MxDispatcher dispatcher, IPEndPoint target, T message, bool reliable = false);
 
-        Dictionary<Type, int> GetSizeOfMessagesSentLastFrame();
+        IEnumerable<INetworkFrame> GetRecentFrames();
 
-        Dictionary<Type, int> GetCountOfMessagesSentLastFrame();
-
-        Dictionary<Type, int> GetSizeOfMessagesReceivedLastFrame();
-
-        Dictionary<Type, int> GetCountOfMessagesReceivedLastFrame();
+        void LogSynchronisationEvent(string log);
     }
 }

@@ -235,7 +235,8 @@ namespace Protogame
 
         public void Dispose()
         {
-
+            // This will unregister the events.
+            Dispatcher = null;
         }
     }
 }

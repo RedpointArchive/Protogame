@@ -18,15 +18,16 @@ namespace Protogame
         private readonly Dictionary<IServerWorld, MxDispatcher> _serverDispatchers;
         private readonly Dictionary<IWorld, bool> _dispatcherChanged;
         private readonly Dictionary<IServerWorld, bool> _serverDispatcherChanged;
-        private readonly Dictionary<Type, int> _bytesSentLastFrame;
-        private readonly Dictionary<Type, int> _messagesSentLastFrame;
-        private readonly Dictionary<Type, int> _bytesReceivedLastFrame;
-        private readonly Dictionary<Type, int> _messagesReceivedLastFrame;
 
         private readonly MxDispatcher[] _currentDispatchers;
 
         private readonly Dictionary<int, WeakReference> _objectReferences;
         private int _clientRenderDelayTicks;
+
+        private List<INetworkFrame> _recentNetworkFrames;
+        private DefaultNetworkFrame _currentNetworkFrame;
+
+        private int _networkFrameId;
 
         public DefaultNetworkEngine(
             INetworkFactory networkFactory,
@@ -42,10 +43,8 @@ namespace Protogame
             _serverDispatcherChanged = new Dictionary<IServerWorld, bool>();
             _currentDispatchers = new MxDispatcher[1];
             _objectReferences = new Dictionary<int, WeakReference>();
-            _bytesSentLastFrame = new Dictionary<Type, int>();
-            _messagesSentLastFrame = new Dictionary<Type, int>();
-            _bytesReceivedLastFrame = new Dictionary<Type, int>();
-            _messagesReceivedLastFrame = new Dictionary<Type, int>();
+            _recentNetworkFrames = new List<INetworkFrame>();
+            _currentNetworkFrame = new DefaultNetworkFrame(_networkFrameId++);
 
             _clientRenderDelayTicks = -200;
         }
@@ -64,10 +63,7 @@ namespace Protogame
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            _bytesSentLastFrame.Clear();
-            _messagesSentLastFrame.Clear();
-            _bytesReceivedLastFrame.Clear();
-            _messagesReceivedLastFrame.Clear();
+            UpdateFrames();
 
             if (gameContext.World != _currentWorld || _shadowWorld == null)
             {
@@ -96,10 +92,26 @@ namespace Protogame
             }
         }
 
+        private void UpdateFrames()
+        {
+            if (_currentNetworkFrame != null)
+            {
+                _currentNetworkFrame.Calculate();
+                _recentNetworkFrames.Add(_currentNetworkFrame);
+            }
+
+            if (_recentNetworkFrames.Count > 120)
+            {
+                _recentNetworkFrames.RemoveAt(0);
+            }
+
+            _currentNetworkFrame = new DefaultNetworkFrame(_networkFrameId++);
+
+        }
+
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
-            _bytesSentLastFrame.Clear();
-            _messagesSentLastFrame.Clear();
+            UpdateFrames();
 
             if (serverContext.World != _currentServerWorld || _shadowWorld == null)
             {
@@ -137,14 +149,14 @@ namespace Protogame
             }
 
             var type = message.GetType();
-            if (!_bytesReceivedLastFrame.ContainsKey(type))
+            if (!_currentNetworkFrame.BytesReceivedByMessageType.ContainsKey(type))
             {
-                _bytesReceivedLastFrame[type] = 0;
-                _messagesReceivedLastFrame[type] = 0;
+                _currentNetworkFrame.BytesReceivedByMessageType[type] = 0;
+                _currentNetworkFrame.MessagesReceivedByMessageType[type] = 0;
             }
 
-            _bytesReceivedLastFrame[type] += bytes.Length;
-            _messagesReceivedLastFrame[type]++;
+            _currentNetworkFrame.BytesReceivedByMessageType[type] += bytes.Length;
+            _currentNetworkFrame.MessagesReceivedByMessageType[type]++;
         }
 
         public MxDispatcher[] CurrentDispatchers => _currentDispatchers;
@@ -205,34 +217,24 @@ namespace Protogame
             dispatcher.Send(target, serialized, reliable);
 
             var type = typeof(T);
-            if (!_bytesSentLastFrame.ContainsKey(type))
+            if (!_currentNetworkFrame.BytesSentByMessageType.ContainsKey(type))
             {
-                _bytesSentLastFrame[type] = 0;
-                _messagesSentLastFrame[type] = 0;
+                _currentNetworkFrame.BytesSentByMessageType[type] = 0;
+                _currentNetworkFrame.MessagesSentByMessageType[type] = 0;
             }
 
-            _bytesSentLastFrame[type] += serialized.Length;
-            _messagesSentLastFrame[type]++;
+            _currentNetworkFrame.BytesSentByMessageType[type] += serialized.Length;
+            _currentNetworkFrame.MessagesSentByMessageType[type]++;
         }
 
-        public Dictionary<Type, int> GetSizeOfMessagesSentLastFrame()
+        public IEnumerable<INetworkFrame> GetRecentFrames()
         {
-            return _bytesSentLastFrame;
+            return _recentNetworkFrames.AsReadOnly();
         }
 
-        public Dictionary<Type, int> GetCountOfMessagesSentLastFrame()
+        public void LogSynchronisationEvent(string log)
         {
-            return _messagesSentLastFrame;
-        }
-
-        public Dictionary<Type, int> GetSizeOfMessagesReceivedLastFrame()
-        {
-            return _bytesReceivedLastFrame;
-        }
-
-        public Dictionary<Type, int> GetCountOfMessagesReceivedLastFrame()
-        {
-            return _messagesReceivedLastFrame;
+            _currentNetworkFrame.SynchronisationLog.Add(log);
         }
     }
 }
