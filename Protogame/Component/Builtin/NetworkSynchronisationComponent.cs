@@ -9,6 +9,7 @@ namespace Protogame
 {
     public partial class NetworkSynchronisationComponent : IUpdatableComponent, IServerUpdatableComponent, INetworkedComponent, INetworkIdentifiable, ISynchronisationApi, IRenderableComponent, IEnabledComponent
     {
+        private readonly IConsoleHandle _consoleHandle;
         private readonly INetworkEngine _networkEngine;
         private readonly IUniqueIdentifierAllocator _uniqueIdentifierAllocator;
         private readonly INetworkMessageSerialization _networkMessageSerialization;
@@ -27,11 +28,13 @@ namespace Protogame
         private bool _isRunningOnClient;
 
         public NetworkSynchronisationComponent(
+            IConsoleHandle consoleHandle,
             INetworkEngine networkEngine,
             IUniqueIdentifierAllocator uniqueIdentifierAllocator,
             INetworkMessageSerialization networkMessageSerialization,
             IDebugRenderer debugRenderer)
         {
+            _consoleHandle = consoleHandle;
             _networkEngine = networkEngine;
             _uniqueIdentifierAllocator = uniqueIdentifierAllocator;
             _networkMessageSerialization = networkMessageSerialization;
@@ -172,9 +175,10 @@ namespace Protogame
                             InitialTransform = entity.Transform.SerializeToNetwork(),
                             FrameTick = _localTick
                         };
-                        dispatcher.Send(
+                        _networkEngine.Send(
+                            dispatcher,
                             endpoint,
-                            _networkMessageSerialization.Serialize(createMessage),
+                            createMessage,
                             true);
 
                         _clientsEntityIsKnownOn.Add(endpoint);
@@ -221,7 +225,7 @@ namespace Protogame
                 _synchronisationContext.DeclareSynchronisedProperties(this);
             }
 
-            AssignMessageToSyncData(propertyMessage, _synchronisedData);
+            AssignMessageToSyncData(propertyMessage, _synchronisedData, server.Endpoint);
             return true;
         }
 
@@ -276,7 +280,7 @@ namespace Protogame
                             _synchronisationContext.DeclareSynchronisedProperties(this);
                         }
 
-                        AssignMessageToSyncData(propertyMessage, _synchronisedData);
+                        AssignMessageToSyncData(propertyMessage, _synchronisedData, client.Endpoint);
                         return true;
                     }
                 case ClientAuthoritiveMode.ReplayInputs:
@@ -372,7 +376,9 @@ namespace Protogame
                 _synchronisedData[contextFullName] = new SynchronisedData
                 {
                     Name = contextFullName,
-                    HasPerformedInitialSync = false,
+                    HasPerformedInitialSync = new Dictionary<IPEndPoint, bool>(),
+                    HasReceivedInitialSync = new Dictionary<IPEndPoint, bool>(),
+                    LastFrameSynced = new Dictionary<IPEndPoint, int>()
                 };
 
                 entry = _synchronisedData[contextFullName];
@@ -455,15 +461,15 @@ namespace Protogame
 
             public object CurrentValue;
 
-            public int LastFrameSynced;
+            public Dictionary<IPEndPoint, int> LastFrameSynced;
 
-            public bool HasPerformedInitialSync;
+            public Dictionary<IPEndPoint, bool> HasPerformedInitialSync;
 
             public Action<object> SetValueDelegate;
 
             public bool IsActiveInSynchronisation;
 
-            public bool HasReceivedInitialSync;
+            public Dictionary<IPEndPoint, bool> HasReceivedInitialSync;
 
             public ITimeMachine TimeMachine;
 
@@ -545,13 +551,13 @@ namespace Protogame
 
                                 // If we're on the client and we haven't had an initial piece of data from the server,
                                 // we never synchronise because we don't know what the initial value is.
-                                if (isFromClient && !data.HasReceivedInitialSync)
+                                if (isFromClient && !data.HasReceivedInitialSync.GetOrDefault(endpoint, false))
                                 {
                                     continue;
                                 }
 
                                 // If we haven't performed the initial synchronisation, we always transmit the data.
-                                if (!data.HasPerformedInitialSync)
+                                if (!data.HasReceivedInitialSync.GetOrDefault(endpoint, false))
                                 {
                                     needsSync = true;
                                 }
@@ -579,7 +585,7 @@ namespace Protogame
 
                                     if (lastValue != currentValue)
                                     {
-                                        if (data.LastFrameSynced + data.FrameInterval < currentTick)
+                                        if (data.LastFrameSynced.GetOrDefault(endpoint, 0) + data.FrameInterval < currentTick)
                                         {
                                             needsSync = true;
                                         }
@@ -603,12 +609,13 @@ namespace Protogame
                                 message.IsClientMessage = isFromClient;
 
                                 bool reliable;
-                                AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick, out reliable);
+                                AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick, endpoint, out reliable);
 
                                 // Send an entity properties message to the client.
-                                dispatcher.Send(
+                                _networkEngine.Send(
+                                    dispatcher,
                                     endpoint,
-                                    _networkMessageSerialization.Serialize(message),
+                                    message,
                                     reliable);
                             }
                         }

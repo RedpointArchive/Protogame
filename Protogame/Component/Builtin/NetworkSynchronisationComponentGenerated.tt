@@ -26,12 +26,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Protogame
 {
 	public partial class NetworkSynchronisationComponent 
 	{
-		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick, out bool mustBeReliable)
+		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick, IPEndPoint endpoint, out bool mustBeReliable)
 		{
 			mustBeReliable = false;
 
@@ -95,14 +96,15 @@ namespace Protogame
 				message.PropertyTypes[ix] = typeLookup[ix];
 
 				// Update synchronisation data.
-				dataList[ix].LastFrameSynced = frameTick;
+				dataList[ix].LastFrameSynced[endpoint] = frameTick;
 
-				if (!dataList[ix].HasPerformedInitialSync)
+				if (!dataList[ix].HasPerformedInitialSync.GetOrDefault(endpoint))
 				{
-					dataList[ix].HasPerformedInitialSync = true;
+					dataList[ix].HasPerformedInitialSync[endpoint] = true;
 					mustBeReliable = true;
 				}
 
+				object currentValue = dataList[ix].CurrentValue;
 				switch (typeLookup[ix])
 				{
 					case EntityPropertiesMessage.PropertyTypeNull:
@@ -118,13 +120,13 @@ namespace Protogame
 					if (type.IsCustomConversion)
 					{
 					#>
-						var value = ConvertTo<#=type.PropertyName#>(dataList[ix].CurrentValue);
+						var value = ConvertTo<#=type.PropertyName#>(currentValue);
 					<#
 					}
 					else
 					{
 					#>
-						<#=type.StorageType#><#=type.PackedArraySize > 0 ? "[]" : ""#> value = (<#=type.StorageType#><#=type.PackedArraySize > 0 ? "[]" : ""#>)dataList[ix].CurrentValue;
+						<#=type.StorageType#><#=type.PackedArraySize > 0 ? "[]" : ""#> value = (<#=type.StorageType#><#=type.PackedArraySize > 0 ? "[]" : ""#>)currentValue;
 					<#
 					}
 
@@ -153,7 +155,7 @@ namespace Protogame
 			}
 		}
 		
-		private void AssignMessageToSyncData(EntityPropertiesMessage message, Dictionary<string, SynchronisedData> fullDataList)
+		private void AssignMessageToSyncData(EntityPropertiesMessage message, Dictionary<string, SynchronisedData> fullDataList, IPEndPoint endpoint)
 		{
 			<#
 			foreach (var type in supportedTypes.GroupBy(x => x.StorageLocation))
@@ -184,7 +186,7 @@ namespace Protogame
 					case EntityPropertiesMessage.PropertyTypeNull:
 						value = null;
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						break;
 					<#
 					foreach (var type in supportedTypes)
@@ -200,7 +202,7 @@ namespace Protogame
 					#>
 						value = ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>]);
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						current<#=type.StorageLocation#>++;
 					<#
 						}
@@ -209,7 +211,7 @@ namespace Protogame
 					#>
 						value = ConvertFrom<#=type.PropertyName#>(message.PropertyValues<#=type.StorageLocation#>, current<#=type.StorageLocation#>);
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						current<#=type.StorageLocation#> += <#=type.PackedArraySize#>;
 					<#
 						}
@@ -221,7 +223,7 @@ namespace Protogame
 					#>
 						value = message.PropertyValues<#=type.StorageLocation#>[current<#=type.StorageLocation#>];
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						current<#=type.StorageLocation#>++;
 					<#
 						}

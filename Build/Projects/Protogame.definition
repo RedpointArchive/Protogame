@@ -404,6 +404,7 @@
     <Compile Include="Events\UIEventBinder.cs" />
     <Compile Include="Events\UIEventListener.cs" />
     <Compile Include="Extensions\BoundingBoxExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\KeyboardStateExtensions.cs" />
     <Compile Include="Extensions\MouseStateExtensions.cs" />
     <Compile Include="Extensions\RandomExtensions.cs" />
@@ -585,6 +586,7 @@
     <Compile Include="Profiling\FileProfiler.cs" />
     <Compile Include="Profiling\FileProfilerHandle.cs" />
     <Compile Include="Profiling\IMemoryProfiler.cs" />
+    <Compile Include="Profiling\INetworkTrafficProfilerVisualiser.cs" />
     <Compile Include="Profiling\IOperationCostProfilerVisualiser.cs" />
     <Compile Include="Profiling\IProfiler.cs" />
     <Compile Include="Profiling\IProfilerRenderPass.cs" />
@@ -592,6 +594,7 @@
     <Compile Include="Profiling\MemoryProfiler.cs" />
     <Compile Include="Profiling\MemoryProfilerHandle.cs" />
     <Compile Include="Profiling\NetworkProfilerVisualiser.cs" />
+    <Compile Include="Profiling\NetworkTrafficProfilerVisualiser.cs" />
     <Compile Include="Profiling\NullProfiler.cs" />
     <Compile Include="Profiling\NullProfilerHandle.cs" />
     <Compile Include="Profiling\OperationCostProfilerVisualiser.cs" />

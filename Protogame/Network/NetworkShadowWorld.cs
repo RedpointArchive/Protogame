@@ -22,6 +22,8 @@ namespace Protogame
             _clientsDisconnected = new Queue<MxClientEventArgs>();
         }
 
+        public Action<byte[]> OnMessageRecievedStatisticsAction { get; set; }
+
         public MxDispatcher Dispatcher
         {
             get { return _dispatcher; }
@@ -61,6 +63,11 @@ namespace Protogame
 
         private void DispatcherOnMessageReceived(object sender, MxMessageEventArgs mxMessageEventArgs)
         {
+            if (OnMessageRecievedStatisticsAction != null)
+            {
+                OnMessageRecievedStatisticsAction(mxMessageEventArgs.Payload);
+            }
+
             _messagesRecieved.Enqueue(mxMessageEventArgs);
         }
 

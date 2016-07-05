@@ -3,12 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Protogame
 {
 	public partial class NetworkSynchronisationComponent 
 	{
-		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick, out bool mustBeReliable)
+		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick, IPEndPoint endpoint, out bool mustBeReliable)
 		{
 			mustBeReliable = false;
 
@@ -184,14 +185,15 @@ namespace Protogame
 				message.PropertyTypes[ix] = typeLookup[ix];
 
 				// Update synchronisation data.
-				dataList[ix].LastFrameSynced = frameTick;
+				dataList[ix].LastFrameSynced[endpoint] = frameTick;
 
-				if (!dataList[ix].HasPerformedInitialSync)
+				if (!dataList[ix].HasPerformedInitialSync.GetOrDefault(endpoint))
 				{
-					dataList[ix].HasPerformedInitialSync = true;
+					dataList[ix].HasPerformedInitialSync[endpoint] = true;
 					mustBeReliable = true;
 				}
 
+				object currentValue = dataList[ix].CurrentValue;
 				switch (typeLookup[ix])
 				{
 					case EntityPropertiesMessage.PropertyTypeNull:
@@ -199,50 +201,50 @@ namespace Protogame
 						break;
 									case EntityPropertiesMessage.PropertyTypeString:
 					{
-											string value = (string)dataList[ix].CurrentValue;
+											string value = (string)currentValue;
 										message.PropertyValuesString[currentString++] = value;
 										}
 						break;
 									case EntityPropertiesMessage.PropertyTypeInt16:
 					{
-											short value = (short)dataList[ix].CurrentValue;
+											short value = (short)currentValue;
 										message.PropertyValuesInt16[currentInt16++] = value;
 										}
 						break;
 									case EntityPropertiesMessage.PropertyTypeInt32:
 					{
-											int value = (int)dataList[ix].CurrentValue;
+											int value = (int)currentValue;
 										message.PropertyValuesInt32[currentInt32++] = value;
 										}
 						break;
 									case EntityPropertiesMessage.PropertyTypeSingle:
 					{
-											float value = (float)dataList[ix].CurrentValue;
+											float value = (float)currentValue;
 										message.PropertyValuesSingle[currentSingle++] = value;
 										}
 						break;
 									case EntityPropertiesMessage.PropertyTypeDouble:
 					{
-											double value = (double)dataList[ix].CurrentValue;
+											double value = (double)currentValue;
 										message.PropertyValuesDouble[currentDouble++] = value;
 										}
 						break;
 									case EntityPropertiesMessage.PropertyTypeBoolean:
 					{
-											bool value = (bool)dataList[ix].CurrentValue;
+											bool value = (bool)currentValue;
 										message.PropertyValuesBoolean[currentBoolean++] = value;
 										}
 						break;
 									case EntityPropertiesMessage.PropertyTypeVector2:
 					{
-											var value = ConvertToVector2(dataList[ix].CurrentValue);
+											var value = ConvertToVector2(currentValue);
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[0];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[1];
 										}
 						break;
 									case EntityPropertiesMessage.PropertyTypeVector3:
 					{
-											var value = ConvertToVector3(dataList[ix].CurrentValue);
+											var value = ConvertToVector3(currentValue);
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[0];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[1];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[2];
@@ -250,7 +252,7 @@ namespace Protogame
 						break;
 									case EntityPropertiesMessage.PropertyTypeVector4:
 					{
-											var value = ConvertToVector4(dataList[ix].CurrentValue);
+											var value = ConvertToVector4(currentValue);
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[0];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[1];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[2];
@@ -259,7 +261,7 @@ namespace Protogame
 						break;
 									case EntityPropertiesMessage.PropertyTypeQuaternion:
 					{
-											var value = ConvertToQuaternion(dataList[ix].CurrentValue);
+											var value = ConvertToQuaternion(currentValue);
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[0];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[1];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[2];
@@ -268,7 +270,7 @@ namespace Protogame
 						break;
 									case EntityPropertiesMessage.PropertyTypeMatrix:
 					{
-											var value = ConvertToMatrix(dataList[ix].CurrentValue);
+											var value = ConvertToMatrix(currentValue);
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[0];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[1];
 											message.PropertyValuesSingleArray[currentSingleArray++] = value[2];
@@ -289,7 +291,7 @@ namespace Protogame
 						break;
 									case EntityPropertiesMessage.PropertyTypeTransform:
 					{
-											Protogame.NetworkTransform value = (Protogame.NetworkTransform)dataList[ix].CurrentValue;
+											Protogame.NetworkTransform value = (Protogame.NetworkTransform)currentValue;
 										message.PropertyValuesTransform[currentTransform++] = value;
 										}
 						break;
@@ -297,7 +299,7 @@ namespace Protogame
 			}
 		}
 		
-		private void AssignMessageToSyncData(EntityPropertiesMessage message, Dictionary<string, SynchronisedData> fullDataList)
+		private void AssignMessageToSyncData(EntityPropertiesMessage message, Dictionary<string, SynchronisedData> fullDataList, IPEndPoint endpoint)
 		{
 			
 			var currentString = 0;
@@ -342,13 +344,13 @@ namespace Protogame
 					case EntityPropertiesMessage.PropertyTypeNull:
 						value = null;
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						break;
 										case EntityPropertiesMessage.PropertyTypeString:
 					{
 											value = message.PropertyValuesString[currentString];
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentString++;
 											break;
 					}
@@ -356,7 +358,7 @@ namespace Protogame
 					{
 											value = message.PropertyValuesInt16[currentInt16];
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentInt16++;
 											break;
 					}
@@ -364,7 +366,7 @@ namespace Protogame
 					{
 											value = message.PropertyValuesInt32[currentInt32];
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentInt32++;
 											break;
 					}
@@ -372,7 +374,7 @@ namespace Protogame
 					{
 											value = message.PropertyValuesSingle[currentSingle];
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentSingle++;
 											break;
 					}
@@ -380,7 +382,7 @@ namespace Protogame
 					{
 											value = message.PropertyValuesDouble[currentDouble];
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentDouble++;
 											break;
 					}
@@ -388,7 +390,7 @@ namespace Protogame
 					{
 											value = message.PropertyValuesBoolean[currentBoolean];
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentBoolean++;
 											break;
 					}
@@ -396,7 +398,7 @@ namespace Protogame
 					{
 											value = ConvertFromVector2(message.PropertyValuesSingleArray, currentSingleArray);
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentSingleArray += 2;
 											break;
 					}
@@ -404,7 +406,7 @@ namespace Protogame
 					{
 											value = ConvertFromVector3(message.PropertyValuesSingleArray, currentSingleArray);
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentSingleArray += 3;
 											break;
 					}
@@ -412,7 +414,7 @@ namespace Protogame
 					{
 											value = ConvertFromVector4(message.PropertyValuesSingleArray, currentSingleArray);
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentSingleArray += 4;
 											break;
 					}
@@ -420,7 +422,7 @@ namespace Protogame
 					{
 											value = ConvertFromQuaternion(message.PropertyValuesSingleArray, currentSingleArray);
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentSingleArray += 4;
 											break;
 					}
@@ -428,7 +430,7 @@ namespace Protogame
 					{
 											value = ConvertFromMatrix(message.PropertyValuesSingleArray, currentSingleArray);
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentSingleArray += 16;
 											break;
 					}
@@ -436,7 +438,7 @@ namespace Protogame
 					{
 											value = message.PropertyValuesTransform[currentTransform];
 						hasValue = true;
-						syncData.HasReceivedInitialSync = true;
+						syncData.HasReceivedInitialSync[endpoint] = true;
 						currentTransform++;
 											break;
 					}

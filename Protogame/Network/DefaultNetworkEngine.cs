@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Protogame
 {
@@ -8,6 +9,7 @@ namespace Protogame
     {
         private readonly INetworkFactory _networkFactory;
         private readonly IProfiler _profiler;
+        private readonly INetworkMessageSerialization _networkMessageSerialization;
         private IWorld _currentWorld;
         private IServerWorld _currentServerWorld;
         private NetworkShadowWorld _shadowWorld;
@@ -16,6 +18,10 @@ namespace Protogame
         private readonly Dictionary<IServerWorld, MxDispatcher> _serverDispatchers;
         private readonly Dictionary<IWorld, bool> _dispatcherChanged;
         private readonly Dictionary<IServerWorld, bool> _serverDispatcherChanged;
+        private readonly Dictionary<Type, int> _bytesSentLastFrame;
+        private readonly Dictionary<Type, int> _messagesSentLastFrame;
+        private readonly Dictionary<Type, int> _bytesReceivedLastFrame;
+        private readonly Dictionary<Type, int> _messagesReceivedLastFrame;
 
         private readonly MxDispatcher[] _currentDispatchers;
 
@@ -24,16 +30,22 @@ namespace Protogame
 
         public DefaultNetworkEngine(
             INetworkFactory networkFactory,
-            IProfiler profiler)
+            IProfiler profiler,
+            INetworkMessageSerialization networkMessageSerialization)
         {
             _networkFactory = networkFactory;
             _profiler = profiler;
+            _networkMessageSerialization = networkMessageSerialization;
             _dispatchers = new Dictionary<IWorld, MxDispatcher>();
             _serverDispatchers = new Dictionary<IServerWorld, MxDispatcher>();
             _dispatcherChanged = new Dictionary<IWorld, bool>();
             _serverDispatcherChanged = new Dictionary<IServerWorld, bool>();
             _currentDispatchers = new MxDispatcher[1];
             _objectReferences = new Dictionary<int, WeakReference>();
+            _bytesSentLastFrame = new Dictionary<Type, int>();
+            _messagesSentLastFrame = new Dictionary<Type, int>();
+            _bytesReceivedLastFrame = new Dictionary<Type, int>();
+            _messagesReceivedLastFrame = new Dictionary<Type, int>();
 
             _clientRenderDelayTicks = -200;
         }
@@ -52,6 +64,11 @@ namespace Protogame
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
+            _bytesSentLastFrame.Clear();
+            _messagesSentLastFrame.Clear();
+            _bytesReceivedLastFrame.Clear();
+            _messagesReceivedLastFrame.Clear();
+
             if (gameContext.World != _currentWorld || _shadowWorld == null)
             {
                 if (_shadowWorld != null)
@@ -61,6 +78,8 @@ namespace Protogame
 
                 _shadowWorld = _networkFactory.CreateShadowWorld();
                 _currentWorld = gameContext.World;
+
+                _shadowWorld.OnMessageRecievedStatisticsAction += OnMessageRecievedStatisticsAction;
             }
 
             if (_dispatcherChanged.ContainsKey(gameContext.World) &&
@@ -79,6 +98,9 @@ namespace Protogame
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
+            _bytesSentLastFrame.Clear();
+            _messagesSentLastFrame.Clear();
+
             if (serverContext.World != _currentServerWorld || _shadowWorld == null)
             {
                 if (_shadowWorld != null)
@@ -88,6 +110,8 @@ namespace Protogame
 
                 _shadowWorld = _networkFactory.CreateShadowWorld();
                 _currentServerWorld = serverContext.World;
+
+                _shadowWorld.OnMessageRecievedStatisticsAction += OnMessageRecievedStatisticsAction;
             }
 
             if (_serverDispatcherChanged.ContainsKey(serverContext.World) &&
@@ -102,6 +126,25 @@ namespace Protogame
             {
                 _shadowWorld.Update(serverContext, updateContext);
             }
+        }
+
+        private void OnMessageRecievedStatisticsAction(byte[] bytes)
+        {
+            var message = _networkMessageSerialization.Deserialize(bytes);
+            if (message == null)
+            {
+                return;
+            }
+
+            var type = message.GetType();
+            if (!_bytesReceivedLastFrame.ContainsKey(type))
+            {
+                _bytesReceivedLastFrame[type] = 0;
+                _messagesReceivedLastFrame[type] = 0;
+            }
+
+            _bytesReceivedLastFrame[type] += bytes.Length;
+            _messagesReceivedLastFrame[type]++;
         }
 
         public MxDispatcher[] CurrentDispatchers => _currentDispatchers;
@@ -154,6 +197,42 @@ namespace Protogame
 
                 _clientRenderDelayTicks = value;
             }
+        }
+
+        public void Send<T>(MxDispatcher dispatcher, IPEndPoint target, T message, bool reliable = false)
+        {
+            var serialized = _networkMessageSerialization.Serialize(message);
+            dispatcher.Send(target, serialized, reliable);
+
+            var type = typeof(T);
+            if (!_bytesSentLastFrame.ContainsKey(type))
+            {
+                _bytesSentLastFrame[type] = 0;
+                _messagesSentLastFrame[type] = 0;
+            }
+
+            _bytesSentLastFrame[type] += serialized.Length;
+            _messagesSentLastFrame[type]++;
+        }
+
+        public Dictionary<Type, int> GetSizeOfMessagesSentLastFrame()
+        {
+            return _bytesSentLastFrame;
+        }
+
+        public Dictionary<Type, int> GetCountOfMessagesSentLastFrame()
+        {
+            return _messagesSentLastFrame;
+        }
+
+        public Dictionary<Type, int> GetSizeOfMessagesReceivedLastFrame()
+        {
+            return _bytesReceivedLastFrame;
+        }
+
+        public Dictionary<Type, int> GetCountOfMessagesReceivedLastFrame()
+        {
+            return _messagesReceivedLastFrame;
         }
     }
 }

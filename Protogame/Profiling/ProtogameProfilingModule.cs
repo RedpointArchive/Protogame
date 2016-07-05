@@ -12,6 +12,7 @@ namespace Protogame
             kernel.Bind<IProfilerRenderPass>().To<DefaultProfilerRenderPass>().AllowManyPerScope();
 
             kernel.Bind<IOperationCostProfilerVisualiser>().To<OperationCostProfilerVisualiser>().InSingletonScope();
+            kernel.Bind<INetworkTrafficProfilerVisualiser>().To<NetworkTrafficProfilerVisualiser>().InSingletonScope();
         }
     }
 }

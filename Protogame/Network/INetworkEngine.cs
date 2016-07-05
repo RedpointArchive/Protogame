@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace Protogame
 {
@@ -25,5 +27,15 @@ namespace Protogame
         void DeregisterObjectFromNetworkId(int id);
 
         int ClientRenderDelayTicks { get; set; }
+
+        void Send<T>(MxDispatcher dispatcher, IPEndPoint target, T message, bool reliable = false);
+
+        Dictionary<Type, int> GetSizeOfMessagesSentLastFrame();
+
+        Dictionary<Type, int> GetCountOfMessagesSentLastFrame();
+
+        Dictionary<Type, int> GetSizeOfMessagesReceivedLastFrame();
+
+        Dictionary<Type, int> GetCountOfMessagesReceivedLastFrame();
     }
 }
