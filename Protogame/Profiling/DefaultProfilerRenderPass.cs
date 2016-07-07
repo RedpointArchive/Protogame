@@ -24,12 +24,22 @@ namespace Protogame
             _renderUtilities = renderUtilities;
             _console = console;
 
+            Enabled = true;
             Visualisers = new List<IProfilerVisualiser>();
         }
+
+        public bool Enabled { get; set; }
+
+        public List<IProfilerVisualiser> Visualisers { get; }
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass,
             RenderTarget2D postProcessingSource)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
             var x = 0;
             var y = 0;
 
@@ -68,7 +78,5 @@ namespace Protogame
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
         }
-
-        public List<IProfilerVisualiser> Visualisers { get; }
     }
 }
