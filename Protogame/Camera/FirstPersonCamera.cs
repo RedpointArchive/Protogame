@@ -20,13 +20,13 @@ namespace Protogame
             float farPlaneDistance)
         {
             var viewport = renderContext.GraphicsDevice.PresentationParameters;
-            var aspectRatio = viewport.BackBufferWidth / viewport.BackBufferHeight;
+            var aspectRatio = viewport.BackBufferWidth / (float)viewport.BackBufferHeight;
 
             up = up ?? Vector3.Up;
             renderContext.CameraPosition = position;
             renderContext.CameraLookAt = lookAt;
             renderContext.View = Matrix.CreateLookAt(position, lookAt, up.Value);
-            renderContext.Projection = Matrix.CreatePerspective(
+            renderContext.Projection = Matrix.CreatePerspectiveFieldOfView(
                 fieldOfView,
                 aspectRatio,
                 nearPlaneDistance,
