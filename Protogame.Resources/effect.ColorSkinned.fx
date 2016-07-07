@@ -18,7 +18,7 @@ float4x4 Bones[MAX_BONES];
 
 struct VertexShaderInput
 {
-    float4 Position : PROTOGAME_POSITION;
+    float4 Position : PROTOGAME_POSITION(0);
     float4 Color : PROTOGAME_TARGET(0);
     float4 Normal : PROTOGAME_NORMAL(0);
     float4 BoneWeights : PROTOGAME_BLENDWEIGHT(0);
@@ -29,7 +29,7 @@ struct VertexShaderInput
 
 struct ForwardVertexShaderOutput
 {
-	float4 Position : PROTOGAME_POSITION_STATE;
+	float4 Position : PROTOGAME_POSITION_RASTERIZER;
 	float4 Color : PROTOGAME_TARGET(0);
 	float4 Normal : PROTOGAME_TEXCOORD(0);
 };
@@ -109,7 +109,7 @@ technique RENDER_PASS_TYPE_FORWARD
 
 struct DeferredVertexShaderOutput
 {
-	float4 Position : PROTOGAME_POSITION_STATE;
+	float4 Position : PROTOGAME_POSITION_RASTERIZER;
 	float4 Color : PROTOGAME_TARGET(0);
 	float4 Normal : PROTOGAME_TEXCOORD(0);
 	float2 Depth : PROTOGAME_TEXCOORD(1);
@@ -163,7 +163,7 @@ DeferredVertexShaderOutput DeferredVertexShader(VertexShaderInput input)
 	float4 viewPosition = mul(worldPosition, View);
 	output.Position = mul(viewPosition, Projection);
 
-	output.Normal = computedNormal;
+	output.Normal = mul(float4(computedNormal.xyz, 0), World);
 
 	output.Color = input.Color;
 

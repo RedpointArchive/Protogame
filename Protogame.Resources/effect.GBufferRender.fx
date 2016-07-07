@@ -9,14 +9,14 @@ float4x4 Projection;
 
 struct VertexShaderInput
 {
-	float4 Position : PROTOGAME_POSITION_INPUT;
+	float4 Position : PROTOGAME_POSITION(0);
 	float4 Normal : PROTOGAME_NORMAL(0);
 	float4 Color : PROTOGAME_TARGET(0);
 };
 
 struct VertexShaderOutput
 {
-	float4 Position : PROTOGAME_POSITION_STATE;
+	float4 Position : PROTOGAME_POSITION_RASTERIZER;
 	float3 Color : PROTOGAME_TARGET(0);
 	float3 Normal : PROTOGAME_TEXCOORD(0);
 	float2 Depth : PROTOGAME_TEXCOORD(1);

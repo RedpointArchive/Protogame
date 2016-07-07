@@ -1,9 +1,9 @@
+using Microsoft.Xna.Framework;
+
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
 
 namespace Protogame
 {
-    using Microsoft.Xna.Framework;
-
     /// <summary>
     /// An implementation of <see cref="IGameWindow"/> that provides support for desktop platforms.
     /// </summary>
@@ -12,7 +12,7 @@ namespace Protogame
         /// <summary>
         /// Stores a reference to the underlying XNA game window.
         /// </summary>
-        private readonly GameWindow m_GameWindow;
+        private readonly GameWindow _gameWindow;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Protogame.DefaultGameWindow"/> class.
@@ -22,7 +22,7 @@ namespace Protogame
         /// </param>
         public DefaultGameWindow(GameWindow gameWindow)
         {
-            this.m_GameWindow = gameWindow;
+            _gameWindow = gameWindow;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Protogame
         {
             get
             {
-                return this.m_GameWindow.ClientBounds;
+                return _gameWindow.ClientBounds;
             }
         }
 
@@ -50,12 +50,12 @@ namespace Protogame
         {
             get
             {
-                return this.m_GameWindow.Title;
+                return _gameWindow.Title;
             }
 
             set
             {
-                this.m_GameWindow.Title = value;
+                _gameWindow.Title = value;
             }
         }
 
@@ -70,12 +70,17 @@ namespace Protogame
         {
             get
             {
-                return this.m_GameWindow.AllowUserResizing;
+                return _gameWindow.AllowUserResizing;
             }
 
             set
             {
-                this.m_GameWindow.AllowUserResizing = value;
+                // We check whether the value is already the desired value, because setting
+                // this property triggers a window resize event even if the value is the same.
+                if (_gameWindow.AllowUserResizing != value)
+                {
+                    _gameWindow.AllowUserResizing = value;
+                }
             }
         }
     }

@@ -38,18 +38,20 @@ float LightRadius;
 float LightIntensity;
 float4x4 LightInvertViewProjection;
 
+float2 ScreenDimensions;
+
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
 
 struct VertexShaderInput
 {
-	float4 Position : PROTOGAME_POSITION_INPUT;
+	float4 Position : PROTOGAME_POSITION(0);
 };
 
 struct VertexShaderOutput
 {
-	float4 Position : PROTOGAME_POSITION_STATE;
+	float4 Position : PROTOGAME_POSITION_RASTERIZER;
 	float4 ScreenPosition : PROTOGAME_TEXCOORD(0);
 };
 

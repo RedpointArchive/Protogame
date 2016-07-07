@@ -8,12 +8,12 @@ float4x4 Projection;
 
 struct VertexShaderInput
 {
-	float3 Position : PROTOGAME_POSITION_INPUT;
+	float3 Position : PROTOGAME_POSITION(0);
 };
 
 struct VertexShaderOutput
 {
-	float4 Position : PROTOGAME_POSITION_STATE;
+	float4 Position : PROTOGAME_POSITION_RASTERIZER;
 };
 
 struct PixelShaderOutput
