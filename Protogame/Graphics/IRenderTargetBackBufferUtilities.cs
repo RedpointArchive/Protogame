@@ -28,8 +28,10 @@ namespace Protogame
         /// <param name="renderTarget">The existing render target, which is either returned or disposed.</param>
         /// <param name="gameContext">The current game context.</param>
         /// <param name="surfaceFormat">The surface format to use.</param>
+        /// <param name="depthFormat"></param>
+        /// <param name="multiSampleCount"></param>
         /// <returns>A render target that matches the backbuffer in size.</returns>
-        RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat);
+        RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount);
 
         /// <summary>
         /// Returns whether the specified render target matches the backbuffer.
@@ -45,7 +47,9 @@ namespace Protogame
         /// <param name="renderTarget">The render target to check.</param>
         /// <param name="gameContext">The current game context.</param>
         /// <param name="surfaceFormat">The surface format to use.</param>
+        /// <param name="depthFormat"></param>
+        /// <param name="multiSampleCount"></param>
         /// <returns>Whether the specified render target matches the backbuffer size and specified surface format.</returns>
-        bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat);
+        bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount);
     }
 }

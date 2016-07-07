@@ -26,16 +26,16 @@ namespace Protogame
                     false,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
-                    0,
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
                     RenderTargetUsage.PreserveContents);
             }
 
             return renderTarget;
         }
 
-        public RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat)
+        public RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount)
         {
-            if (IsCustomRenderTargetOutOfDate(renderTarget, gameContext, surfaceFormat, depthFormat))
+            if (IsCustomRenderTargetOutOfDate(renderTarget, gameContext, surfaceFormat, depthFormat, multiSampleCount))
             {
                 if (renderTarget != null)
                 {
@@ -49,7 +49,7 @@ namespace Protogame
                     false,
                     surfaceFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat,
                     depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
-                    0,
+                    multiSampleCount ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
                     RenderTargetUsage.PreserveContents);
             }
 
@@ -83,12 +83,17 @@ namespace Protogame
                 {
                     return true;
                 }
+
+                if (renderTarget.MultiSampleCount != gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount)
+                {
+                    return true;
+                }
             }
 
             return false;
         }
 
-        public bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat)
+        public bool IsCustomRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount)
         {
             if (renderTarget == null)
             {
@@ -112,6 +117,11 @@ namespace Protogame
                 }
 
                 if (renderTarget.DepthStencilFormat != (depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat))
+                {
+                    return true;
+                }
+
+                if (renderTarget.MultiSampleCount != (multiSampleCount ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount))
                 {
                     return true;
                 }

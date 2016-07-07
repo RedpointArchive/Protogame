@@ -73,10 +73,10 @@ namespace Protogame
             IRenderPass previousPass,      
             RenderTarget2D postProcessingSource)
         {
-            _colorRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_colorRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.Depth24);
-            _normalRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_normalRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None);
-            _depthRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_depthRenderTarget, gameContext, SurfaceFormat.Single, DepthFormat.None);
-            _lightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_lightRenderTarget, gameContext, null, DepthFormat.None);
+            _colorRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_colorRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.Depth24, null);
+            _normalRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_normalRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, null);
+            _depthRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_depthRenderTarget, gameContext, SurfaceFormat.Single, DepthFormat.None, null);
+            _lightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_lightRenderTarget, gameContext, null, DepthFormat.None, null);
 
             if (_rasterizerStateCullNone == null)
             {
