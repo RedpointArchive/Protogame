@@ -3,26 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
+using Protoinject;
 
 namespace Protogame
 {
     public class ClientConsoleInput : IConsoleInput
     {
         private readonly IKeyboardStringReader _keyboardStringReader;
-        private readonly ICommand[] _commands;
+        private readonly IKernel _kernel;
+        private ICommand[] _commands;
         
         private StringBuilder _inputBuffer = new StringBuilder();
 
         public ClientConsoleInput(
             IKeyboardStringReader keyboardStringReader,
-            ICommand[] commands)
+            IKernel kernel)
         {
             _keyboardStringReader = keyboardStringReader;
-            _commands = commands;
+            _kernel = kernel;
         }
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext, Action<string> logInternal)
         {
+            if (_commands == null)
+            {
+                _commands = _kernel.GetAll<ICommand>();
+            }
+
             var state = Keyboard.GetState();
 
             _keyboardStringReader.Process(state, gameContext.GameTime, this._inputBuffer);
