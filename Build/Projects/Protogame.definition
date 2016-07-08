@@ -346,6 +346,12 @@
     <Compile Include="Core\ReloadableGameAssetManagerProvider.cs" />
     <Compile Include="Core\TransformContainer.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
+    <Compile Include="Coroutine\CoroutineEngineHook.cs" />
+    <Compile Include="Coroutine\DefaultCoroutine.cs" />
+    <Compile Include="Coroutine\DefaultCoroutineScheduler.cs" />
+    <Compile Include="Coroutine\ICoroutine.cs" />
+    <Compile Include="Coroutine\ICoroutineScheduler.cs" />
+    <Compile Include="Coroutine\ProtogameCoroutineModule.cs" />
     <Compile Include="Debug\DefaultDebugRenderer.cs" />
     <Compile Include="Debug\IDebugLayer.cs" />
     <Compile Include="Debug\IDebugRenderer.cs" />
