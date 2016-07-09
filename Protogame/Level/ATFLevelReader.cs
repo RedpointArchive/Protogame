@@ -58,24 +58,29 @@ namespace Protogame
 
             // Validate the level configuration.
             var plans = plansList.ToArray();
+            IEnumerable<IEntity> entities = null;
+            bool isOkay = false;
             try
             {
                 _kernel.ValidateAll(plans);
 
                 // Resolve all the plans.
-                return _kernel.ResolveAll(plans).OfType<IEntity>();
+                entities = _kernel.ResolveAll(plans).OfType<IEntity>();
+                isOkay = true;
+                return entities;
             }
-            catch
+            finally
             {
-                _kernel.DiscardAll(plans);
-
-                foreach (var plan in plans)
+                if (!isOkay)
                 {
-                    // Also detach the child nodes that were appended to the root object.
-                    _hierarchy.RemoveChildNode(node, (INode)plan);
-                }
+                    _kernel.DiscardAll(plans);
 
-                throw;
+                    foreach (var plan in plans)
+                    {
+                        // Also detach the child nodes that were appended to the root object.
+                        _hierarchy.RemoveChildNode(node, (INode)plan);
+                    }
+                }
             }
         }
 
@@ -141,6 +146,7 @@ namespace Protogame
                         (INode) parentPlan,
                         null,
                         null,
+                        (INode) rootPlan,
                         null,
                         null,
                         new Dictionary<Type, List<IMapping>>
@@ -168,6 +174,11 @@ namespace Protogame
                     else
                     {
                         _hierarchy.AddChildNode(parentPlan, (INode) plan);
+
+                        if (rootPlan == null)
+                        {
+                            rootPlan = (INode) plan;
+                        }
 
                         if (depth == 0)
                         {
