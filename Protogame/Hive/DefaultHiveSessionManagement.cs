@@ -22,13 +22,21 @@ namespace Protogame
         {
             _hivePublicAuthentication = hivePublicAuthentication;
             _tempSessions = new List<TempSessionWithSecrets>();
+        }
 
-            _temporarySessionApi = new TemporarySessionApi();
-            _temporarySessionApi.Configuration.ApiKey["api_key"] = _hivePublicAuthentication.PublicApiKey;
+        private void Init()
+        {
+            if (_temporarySessionApi == null)
+            {
+                _temporarySessionApi = new TemporarySessionApi();
+                _temporarySessionApi.Configuration.ApiKey["api_key"] = _hivePublicAuthentication.PublicApiKey;
+            }
         }
 
         public async Task<TempSessionWithSecrets> CreateTemporarySession()
         {
+            Init();
+
             var session = await _temporarySessionApi.SessionPutAsync();
             _tempSessions.Add(session);
             return session;
@@ -38,6 +46,8 @@ namespace Protogame
 
         public async Task RefreshTemporarySessions()
         {
+            Init();
+
             await Task.Yield();
         }
     }

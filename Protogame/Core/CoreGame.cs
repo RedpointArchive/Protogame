@@ -344,9 +344,6 @@ namespace Protogame
                 this.m_Kernel.GetAll<IEngineHook>(this.m_Current, null, null,
                     new IInjectionAttribute[] {new FromGameAttribute()}).ToArray();
 
-            // Set up defaults.
-            this.Window.Title = "Protogame!";
-
             // Register with analytics services.
             this.m_AnalyticsEngine.LogGameplayEvent("Game:Start");
         }
