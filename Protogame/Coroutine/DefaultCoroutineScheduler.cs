@@ -30,7 +30,7 @@ namespace Protogame
 
         public override SynchronizationContext CreateCopy()
         {
-            throw new NotSupportedException();
+            return this;
         }
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)

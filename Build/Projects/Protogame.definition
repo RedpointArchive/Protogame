@@ -22,6 +22,9 @@
     <Reference Include="NDesk.Options" />
     <Reference Include="Jitter" />
     <Reference Include="Cloo" />
+    <Reference Include="HiveMP.TemporarySession" />
+    <Reference Include="HiveMP.NATPunchthrough" />
+    <Reference Include="HiveMP.Lobby" />
   </References>
   <Files>
     <Compile Include="AI\Agent.cs" />
@@ -481,6 +484,12 @@
     <Compile Include="Graphics\Shader\UnifiedShaderParsingUnexpectedTokenException.cs" />
     <Compile Include="Graphics\Shader\UnifiedShaderVersionException.cs" />
     <Compile Include="Graphics\Vertex\VertexPositionNormalColor.cs" />
+    <Compile Include="Hive\DefaultHivePublicAuthentication.cs" />
+    <Compile Include="Hive\DefaultHiveSessionManagement.cs" />
+    <Compile Include="Hive\HiveEngineHook.cs" />
+    <Compile Include="Hive\IHivePublicAuthentication.cs" />
+    <Compile Include="Hive\IHiveSessionManagement.cs" />
+    <Compile Include="Hive\ProtogameHiveModule.cs" />
     <Compile Include="ImageProcessing\DefaultColorInImageDetectionDebugRenderer.cs" />
     <Compile Include="ImageProcessing\IColorInImageDetection.cs" />
     <Compile Include="ImageProcessing\IColorInImageDetectionDebugRenderer.cs" />

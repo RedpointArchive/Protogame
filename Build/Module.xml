@@ -7,12 +7,15 @@
   <Packages>
     <Package Uri="https://protobuild.org/hach-que/Jitter" Folder="Jitter" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/Cloo" Folder="Cloo" GitRef="master" />
-    <Package Uri="https://protobuild.org/hach-que/Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="master" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="8.0.3" />
     <Package Uri="https://protobuild.org/hach-que/protobuf-net" Folder="protobuf-net" GitRef="master" />
     <Package Uri="https://protobuild.org/RedpointGames/MonoGame" Folder="MonoGame" GitRef="develop" />
     <Package Uri="https://protobuild.org/hach-que/NDesk.Options" Folder="NDesk.Options" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/Prototest" Folder="Prototest" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/AStarPathFinder" Folder="AStarPathFinder" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/Protoinject" Folder="Protoinject" GitRef="master" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.TemporarySession" Folder="HiveMP.TemporarySession" GitRef="1.5.1" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.NATPunchthrough" Folder="HiveMP.NATPunchthrough" GitRef="1.3.1" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Lobby" Folder="HiveMP.Lobby" GitRef="0.1.4" />
   </Packages>
 </Module>
