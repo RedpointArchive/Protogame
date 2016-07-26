@@ -14,5 +14,7 @@ namespace Protogame
         Task Run(Func<Task> coroutine);
 
         Task<T> Run<T>(Func<Task<T>> coroutine);
+
+        Task WaitForNextUpdate(IGameContext gameContext);
     }
 }

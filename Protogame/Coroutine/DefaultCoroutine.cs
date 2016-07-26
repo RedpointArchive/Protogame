@@ -46,5 +46,14 @@ namespace Protogame
                 SynchronizationContext.SetSynchronizationContext(oldContext);
             }
         }
+
+        public async Task WaitForNextUpdate(IGameContext gameContext)
+        {
+            var f = gameContext.FrameCount;
+            while (f == gameContext.FrameCount)
+            {
+                await Task.Yield();
+            }
+        }
     }
 }
