@@ -305,6 +305,9 @@ namespace Protogame
         /// <param name="rotation">
         /// The rotation to apply to the texture.
         /// </param>
+        /// <param name="rotationAnchor">
+        /// The anchor for rotation, or <c>null</c> to use the top-left corner.
+        /// </param>
         /// <param name="flipHorizontally">
         /// If set to <c>true</c> the texture is flipped horizontally.
         /// </param>
@@ -320,7 +323,8 @@ namespace Protogame
             TextureAsset texture, 
             Vector2? size = null, 
             Color? color = null, 
-            float rotation = 0, 
+            float rotation = 0,
+            Vector2? rotationAnchor = null,
             bool flipHorizontally = false, 
             bool flipVertically = false, 
             Rectangle? sourceArea = null)
@@ -332,6 +336,7 @@ namespace Protogame
                 size,
                 color,
                 rotation,
+                rotationAnchor,
                 flipHorizontally,
                 flipVertically,
                 sourceArea);
@@ -358,6 +363,9 @@ namespace Protogame
         /// <param name="rotation">
         /// The rotation to apply to the texture.
         /// </param>
+        /// <param name="rotationAnchor">
+        /// The anchor for rotation, or <c>null</c> to use the top-left corner.
+        /// </param>
         /// <param name="flipHorizontally">
         /// If set to <c>true</c> the texture is flipped horizontally.
         /// </param>
@@ -374,6 +382,7 @@ namespace Protogame
             Vector2? size = null,
             Color? color = null,
             float rotation = 0,
+            Vector2? rotationAnchor = null,
             bool flipHorizontally = false,
             bool flipVertically = false,
             Rectangle? sourceArea = null)
@@ -399,7 +408,7 @@ namespace Protogame
                 sourceArea,
                 color.Value.ToPremultiplied(),
                 rotation,
-                new Vector2(0, 0),
+                rotationAnchor ?? Vector2.Zero,
                 effects,
                 0);
         }

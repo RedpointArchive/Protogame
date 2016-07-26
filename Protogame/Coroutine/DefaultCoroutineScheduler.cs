@@ -54,7 +54,7 @@ namespace Protogame
                 {
                     SynchronizationContext.SetSynchronizationContext(this);
 
-                    continuation.Key.Invoke(continuation.Value);
+                    continuation.Key(continuation.Value);
                 }
                 finally
                 {

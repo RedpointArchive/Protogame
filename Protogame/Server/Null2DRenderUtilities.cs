@@ -30,14 +30,14 @@ namespace Protogame
         }
 
         public void RenderTexture(IRenderContext context, Vector2 position, TextureAsset texture, Vector2? size = null,
-            Color? color = null, float rotation = 0, bool flipHorizontally = false, bool flipVertically = false,
+            Color? color = null, float rotation = 0, Vector2? rotationAnchor = null, bool flipHorizontally = false, bool flipVertically = false,
             Rectangle? sourceArea = null)
         {
             throw new NotSupportedException();
         }
 
         public void RenderTexture(IRenderContext context, Vector2 position, Texture2D texture, Vector2? size = null,
-            Color? color = null, float rotation = 0, bool flipHorizontally = false, bool flipVertically = false,
+            Color? color = null, float rotation = 0, Vector2? rotationAnchor = null, bool flipHorizontally = false, bool flipVertically = false,
             Rectangle? sourceArea = null)
         {
             throw new NotSupportedException();
