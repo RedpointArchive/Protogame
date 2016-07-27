@@ -821,6 +821,12 @@
     <None Include="..\Protogame.Resources\effect.Invert.fx">
       <Link>Resources\effect.Invert.fx</Link>
     </None>
+    <None Include="..\Protogame.Resources\effect.Image.fx">
+      <Link>Resources\effect.Image.fx</Link>
+    </None>
+    <None Include="..\Protogame.Resources\effect.ImageTiled.fx">
+      <Link>Resources\effect.ImageTiled.fx</Link>
+    </None>
     <None Include="..\Protogame.Resources\effect.PointLight.fx">
       <Link>Resources\effect.PointLight.fx</Link>
     </None>
