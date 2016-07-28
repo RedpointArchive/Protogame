@@ -98,19 +98,23 @@
                 {
                     using (var reader = new BinaryReader(stream))
                     {
-                        if (reader.ReadByte() != 0)
+                        switch (reader.ReadByte())
                         {
-                            throw new InvalidDataException();
-                        }
-
-                        var start = DateTime.Now;
-                        using (var memory = new MemoryStream())
-                        {
-                            LzmaHelper.Decompress(reader.BaseStream, memory);
-                            memory.Seek(0, SeekOrigin.Begin);
-                            var serializer = new CompiledAssetSerializer();
-                            var result = (CompiledAsset)serializer.Deserialize(memory, null, typeof(CompiledAsset));
-                            return result;
+                            case CompiledAsset.FORMAT_LZMA_COMPRESSED:
+                                using (var memory = new MemoryStream())
+                                {
+                                    LzmaHelper.Decompress(reader.BaseStream, memory);
+                                    memory.Seek(0, SeekOrigin.Begin);
+                                    var serializer = new CompiledAssetSerializer();
+                                    var result = (CompiledAsset)serializer.Deserialize(memory, null, typeof(CompiledAsset));
+                                    return result;
+                                }
+                            case CompiledAsset.FORMAT_UNCOMPRESSED:
+                                var ucserializer = new CompiledAssetSerializer();
+                                var ucresult = (CompiledAsset)ucserializer.Deserialize(reader.BaseStream, null, typeof(CompiledAsset));
+                                return ucresult;
+                            default:
+                                throw new InvalidDataException();
                         }
                     }
                 }

@@ -18,6 +18,18 @@
     public class CompiledAsset : IRawAsset
     {
         /// <summary>
+        /// The byte value written at the start of a .bin file to indicate that
+        /// the contents are LZMA compressed using the managed C# LZMA implementation.
+        /// </summary>
+        public const byte FORMAT_LZMA_COMPRESSED = 0;
+
+        /// <summary>
+        /// The byte value written at the start of a .bin file to indicate that the
+        /// contents are uncompressed.
+        /// </summary>
+        public const byte FORMAT_UNCOMPRESSED = 1;
+
+        /// <summary>
         /// Gets or sets the type name for the loader which can load this asset.
         /// </summary>
         /// <value>

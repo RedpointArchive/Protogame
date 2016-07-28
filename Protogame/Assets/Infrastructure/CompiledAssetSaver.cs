@@ -55,14 +55,12 @@
                 var compiledData = (CompiledAsset)data;
                 using (var stream = new FileStream(file.FullName, FileMode.Create))
                 {
-                    stream.WriteByte(0);
-                    using (var memory = new MemoryStream())
-                    {
-                        var serializer = new CompiledAssetSerializer();
-                        serializer.Serialize(memory, compiledData);
-                        memory.Seek(0, SeekOrigin.Begin);
-                        LzmaHelper.Compress(memory, stream);
-                    }
+                    // LZMA compression is proving too expensive to decompress.  We'll look into
+                    // LZ4 in the future, but for now, just store assets uncompressed.
+                    stream.WriteByte(CompiledAsset.FORMAT_UNCOMPRESSED);
+
+                    var serializer = new CompiledAssetSerializer();
+                    serializer.Serialize(stream, compiledData);
                 }
             }
             else
