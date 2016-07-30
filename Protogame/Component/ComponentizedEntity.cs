@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Protoinject;
 
 namespace Protogame
 {
@@ -25,8 +27,21 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Component</module>
+    [InjectFieldsForBaseObjectInProtectedConstructor]
     public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject, IPrerenderableEntity
     {
+        /// <summary>
+        /// The dependency injection node, which is automatically set by the kernel
+        /// due to the presence of [InjectFieldsForBaseObjectInProtectedConstructor].
+        /// </summary>
+        private readonly INode _node;
+
+        /// <summary>
+        /// The dependency injection hierarchy, which is automatically set by the kernel
+        /// due to the presence of [InjectFieldsForBaseObjectInProtectedConstructor].
+        /// </summary>
+        private readonly IHierarchy _hierarchy;
+
         /// <summary>
         /// The component callable for handling updatable components.
         /// </summary>
@@ -148,7 +163,15 @@ namespace Protogame
 
         public IFinalTransform FinalTransform
         {
-            get { return this.GetDetachedFinalTransformImplementation(); }
+            get
+            {
+                if (_node == null || _hierarchy == null)
+                {
+                    throw new InvalidOperationException("Componentized entities must be created through the dependency injection kernel!");
+                }
+
+                return this.GetAttachedFinalTransformImplementation(_node);
+            }
         }
 
         /// <summary>
