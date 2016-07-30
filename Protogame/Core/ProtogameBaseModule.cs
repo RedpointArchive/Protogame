@@ -24,6 +24,8 @@ namespace Protogame
             kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
             kernel.Bind<IUniqueIdentifierAllocator>().To<DefaultUniqueIdentifierAllocator>().InSingletonScope();
             kernel.Bind<IRenderCache>().To<DefaultRenderCache>().InSingletonScope();
+            kernel.Bind<IRenderAutoCache>().To<DefaultRenderAutoCache>().InSingletonScope();
+            kernel.Bind<IEngineHook>().To<RenderAutoCacheEngineHook>();
         }
     }
 }

@@ -432,6 +432,7 @@
     <Compile Include="Graphics\DefaultDebugRenderPass.cs" />
     <Compile Include="Graphics\DefaultGraphicsBlit.cs" />
     <Compile Include="Graphics\DefaultInvertPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\DefaultRenderAutoCache.cs" />
     <Compile Include="Graphics\DefaultRenderCache.cs" />
     <Compile Include="Graphics\DefaultRenderPipeline.cs" />
     <Compile Include="Graphics\DefaultRenderTargetBackBufferUtilities.cs" />
@@ -450,6 +451,7 @@
     <Compile Include="Graphics\IGraphicsBlit.cs" />
     <Compile Include="Graphics\IGraphicsFactory.cs" />
     <Compile Include="Graphics\IInvertPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\IRenderAutoCache.cs" />
     <Compile Include="Graphics\IRenderCache.cs" />
     <Compile Include="Graphics\IRenderPass.cs" />
     <Compile Include="Graphics\IRenderPipeline.cs" />
@@ -468,6 +470,7 @@
     <Compile Include="Graphics\Lighting\ILightFactory.cs" />
     <Compile Include="Graphics\Lighting\IStandardDirectionalLight.cs" />
     <Compile Include="Graphics\Lighting\IStandardPointLight.cs" />
+    <Compile Include="Graphics\RenderAutoCacheEngineHook.cs" />
     <Compile Include="Graphics\RenderPipelineRenderContext.cs" />
     <Compile Include="Graphics\RenderPipelineTechniqueName.cs" />
     <Compile Include="Graphics\RenderPipelineWorldManager.cs" />

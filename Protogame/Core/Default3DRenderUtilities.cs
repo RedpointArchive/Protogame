@@ -1,32 +1,30 @@
+using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
-    using System;
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics;
-
     /// <summary>
-    /// The default 3 d render utilities.
+    /// The default implementation of <see cref="I3DRenderUtilities"/>.
     /// </summary>
     /// <internal>True</internal>
     /// <interface_ref>Protogame.I3DRenderUtilities</interface_ref>
     public class Default3DRenderUtilities : I3DRenderUtilities
     {
-        /// <summary>
-        /// The m_2 d render utilities.
-        /// </summary>
-        private readonly I2DRenderUtilities m_2DRenderUtilities;
+        private readonly I2DRenderUtilities _twoDimensionalRenderUtilities;
+        private readonly IRenderCache _renderCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Default3DRenderUtilities"/> class.
         /// </summary>
-        /// <param name="_2dRenderUtilities">
+        /// <param name="renderUtilities">
         /// The _2 d render utilities.
         /// </param>
-        public Default3DRenderUtilities(I2DRenderUtilities _2dRenderUtilities)
+        public Default3DRenderUtilities(I2DRenderUtilities renderUtilities, IRenderCache renderCache)
         {
-            this.m_2DRenderUtilities = _2dRenderUtilities;
+            _twoDimensionalRenderUtilities = renderUtilities;
+            _renderCache = renderCache;
         }
 
         /// <summary>
@@ -46,7 +44,7 @@ namespace Protogame
         /// </returns>
         public Vector2 MeasureText(IRenderContext context, string text, FontAsset font)
         {
-            return this.m_2DRenderUtilities.MeasureText(context, text, font);
+            return _twoDimensionalRenderUtilities.MeasureText(context, text, font);
         }
 
         /// <summary>
@@ -75,14 +73,33 @@ namespace Protogame
 
             context.EnableVertexColors();
 
-            var vertexes = new[] { new VertexPositionColor(start, color), new VertexPositionColor(end, color) };
-            var indicies = new short[] { 0, 1 };
+            var vertexes = _renderCache.GetOrSet(
+                "renderline3dvb:" + start + ":" + end + ":" + color,
+                () =>
+                {
+                    var vb = new VertexBuffer(context.GraphicsDevice, VertexPositionColor.VertexDeclaration, 2,
+                        BufferUsage.WriteOnly);
+                    vb.SetData(new[] { new VertexPositionColor(start, color), new VertexPositionColor(end, color) });
+                    return vb;
+                });
+            var indicies = _renderCache.GetOrSet(
+                "renderline3dib",
+                () =>
+                {
+                    var ib = new IndexBuffer(context.GraphicsDevice, IndexElementSize.SixteenBits, 2,
+                        BufferUsage.WriteOnly);
+                    ib.SetData(new short[] { 0, 1 });
+                    return ib;
+                });
+
+            context.GraphicsDevice.SetVertexBuffer(vertexes);
+            context.GraphicsDevice.Indices = indicies;
 
             foreach (var pass in context.Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
-                context.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.LineList, vertexes, 0, 2, indicies, 0, 1);
+                context.GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 0, 1);
             }
         }
 
@@ -123,14 +140,33 @@ namespace Protogame
             context.EnableTextures();
             context.SetActiveTexture(texture.Texture);
 
-            var vertexes = new[] { new VertexPositionTexture(start, startUV), new VertexPositionTexture(end, endUV) };
-            var indicies = new short[] { 0, 1 };
+            var vertexes = _renderCache.GetOrSet(
+                "renderlinetex3dvb:" + start + ":" + end + ":" + startUV + ":" + endUV,
+                () =>
+                {
+                    var vb = new VertexBuffer(context.GraphicsDevice, VertexPositionTexture.VertexDeclaration, 2,
+                        BufferUsage.WriteOnly);
+                    vb.SetData(new[] { new VertexPositionTexture(start, startUV), new VertexPositionTexture(end, endUV) });
+                    return vb;
+                });
+            var indicies = _renderCache.GetOrSet(
+                "renderline3dib",
+                () =>
+                {
+                    var ib = new IndexBuffer(context.GraphicsDevice, IndexElementSize.SixteenBits, 2,
+                        BufferUsage.WriteOnly);
+                    ib.SetData(new short[] { 0, 1 });
+                    return ib;
+                });
+
+            context.GraphicsDevice.SetVertexBuffer(vertexes);
+            context.GraphicsDevice.Indices = indicies;
 
             foreach (var pass in context.Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
-                context.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.LineList, vertexes, 0, 2, indicies, 0, 1);
+                context.GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 0, 1);
             }
         }
 
@@ -238,7 +274,7 @@ namespace Protogame
             }
 
             var targets = context.GraphicsDevice.GetRenderTargets();
-            var size = this.MeasureText(context, text, font);
+            var size = MeasureText(context, text, font);
 
             var temporary = new RenderTarget2D(
                 context.GraphicsDevice, 
@@ -254,7 +290,7 @@ namespace Protogame
 
             using (var spriteBatch = new SpriteBatch(context.GraphicsDevice))
             {
-                this.m_2DRenderUtilities.RenderText(
+                _twoDimensionalRenderUtilities.RenderText(
                     context, 
                     new Vector2(0, 0), 
                     text, 
@@ -275,7 +311,7 @@ namespace Protogame
             context.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
             context.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-            this.RenderTexture(context, matrix, texture, Color.White, flipHorizontally: false, flipVertically: false);
+            RenderTexture(context, matrix, texture, Color.White, flipHorizontally: false, flipVertically: false);
         }
 
         /// <summary>
@@ -318,7 +354,7 @@ namespace Protogame
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
 
-            this.RenderTexture(context, matrix, texture.Texture, color, flipHorizontally, flipVertically, sourceArea);
+            RenderTexture(context, matrix, texture.Texture, color, flipHorizontally, flipVertically, sourceArea);
         }
 
         /// <summary>
@@ -424,79 +460,91 @@ namespace Protogame
             {
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
+            
+            var vertexes = _renderCache.GetOrSet(
+                "rendercube3dvb:" + color,
+                () =>
+                {
+                    var vb = new VertexBuffer(context.GraphicsDevice, VertexPositionNormalColor.VertexDeclaration, 24, BufferUsage.WriteOnly);
+                    vb.SetData(new[]
+                    {
+                        new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(-1, 0, 0), color),
+                        new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(-1, 0, 0), color),
+                        new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(-1, 0, 0), color),
+                        new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(-1, 0, 0), color),
 
-            var vertexes = new[]
-            {
-                new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(-1, 0, 0), color),
-                new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(-1, 0, 0), color),
-                new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(-1, 0, 0), color),
-                new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(-1, 0, 0), color),
+                        new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(1, 0, 0), color),
+                        new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(1, 0, 0), color),
+                        new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(1, 0, 0), color),
+                        new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(1, 0, 0), color),
 
-                new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(1, 0, 0), color),
-                new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(1, 0, 0), color),
-                new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(1, 0, 0), color),
-                new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(1, 0, 0), color),
+                        new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(0, -1, 0), color),
+                        new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(0, -1, 0), color),
+                        new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(0, 1, 0), color),
+                        new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(0, 1, 0), color),
 
-                new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(0, -1, 0), color),
-                new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(0, -1, 0), color),
-                new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(0, 1, 0), color),
-                new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(0, 1, 0), color),
+                        new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(0, -1, 0), color),
+                        new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(0, -1, 0), color),
+                        new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(0, 1, 0), color),
+                        new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(0, 1, 0), color),
 
-                new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(0, -1, 0), color),
-                new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(0, -1, 0), color),
-                new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(0, 1, 0), color),
-                new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(0, 1, 0), color),
+                        new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(0, 0, -1), color),
+                        new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(0, 0, 1), color),
+                        new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(0, 0, -1), color),
+                        new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(0, 0, 1), color),
 
-                new VertexPositionNormalColor(new Vector3(0, 0, 0), new Vector3(0, 0, -1), color),
-                new VertexPositionNormalColor(new Vector3(0, 0, 1), new Vector3(0, 0, 1), color),
-                new VertexPositionNormalColor(new Vector3(0, 1, 0), new Vector3(0, 0, -1), color),
-                new VertexPositionNormalColor(new Vector3(0, 1, 1), new Vector3(0, 0, 1), color),
+                        new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(0, 0, -1), color),
+                        new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(0, 0, 1), color),
+                        new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(0, 0, -1), color),
+                        new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(0, 0, 1), color)
+                    });
+                    return vb;
+                });
+            var indicies = _renderCache.GetOrSet(
+                "rendercube3dib",
+                () =>
+                {
+                    var ib = new IndexBuffer(context.GraphicsDevice, IndexElementSize.SixteenBits, 36, BufferUsage.WriteOnly);
+                    ib.SetData(new short[]
+                    {
+                        0, 2, 1,
+                        3, 1, 2,
 
-                new VertexPositionNormalColor(new Vector3(1, 0, 0), new Vector3(0, 0, -1), color),
-                new VertexPositionNormalColor(new Vector3(1, 0, 1), new Vector3(0, 0, 1), color),
-                new VertexPositionNormalColor(new Vector3(1, 1, 0), new Vector3(0, 0, -1), color),
-                new VertexPositionNormalColor(new Vector3(1, 1, 1), new Vector3(0, 0, 1), color),
-            };
+                        4, 5, 6,
+                        7, 6, 5,
 
-            var indicies = new short[]
-            {
-                0, 2, 1,
-                3, 1, 2,
+                        0 + 8, 1 + 8, 4 + 8,
+                        5 + 8, 4 + 8, 1 + 8,
 
-                4, 5, 6, 
-                7, 6, 5,
+                        2 + 8, 6 + 8, 3 + 8,
+                        7 + 8, 3 + 8, 6 + 8,
 
-                0 + 8, 1 + 8, 4 + 8,
-                5 + 8, 4 + 8, 1 + 8,
+                        0 + 16, 4 + 16, 2 + 16,
+                        6 + 16, 2 + 16, 4 + 16,
 
-                2 + 8, 6 + 8, 3 + 8,
-                7 + 8, 3 + 8, 6 + 8,
-
-                0 + 16, 4 + 16, 2 + 16,
-                6 + 16, 2 + 16, 4 + 16,
-
-                1 + 16, 3 + 16, 5 + 16,
-                7 + 16, 5 + 16, 3 + 16
-            };
+                        1 + 16, 3 + 16, 5 + 16,
+                        7 + 16, 5 + 16, 3 + 16
+                    });
+                    return ib;
+                });
 
             context.EnableVertexColors();
 
             var world = context.World;
 
             context.World = transform;
+            context.GraphicsDevice.SetVertexBuffer(vertexes);
+            context.GraphicsDevice.Indices = indicies;
 
             foreach (var pass in context.Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
-                context.GraphicsDevice.DrawUserIndexedPrimitives(
+                context.GraphicsDevice.DrawIndexedPrimitives(
                     PrimitiveType.TriangleList,
-                    vertexes,
                     0,
-                    vertexes.Length,
-                    indicies,
                     0,
-                    indicies.Length / 3);
+                    indicies.IndexCount / 3);
             }
 
             context.World = world;
@@ -558,7 +606,7 @@ namespace Protogame
                 new VertexPositionNormalTexture(new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector2(bottomRightUV.X, topLeftUV.Y)),
                 new VertexPositionNormalTexture(new Vector3(1, 0, 1), new Vector3(0, 0, 1), new Vector2(bottomRightUV.X, topLeftUV.Y)),
                 new VertexPositionNormalTexture(new Vector3(1, 1, 0), new Vector3(0, 0, -1), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
-                new VertexPositionNormalTexture(new Vector3(1, 1, 1), new Vector3(0, 0, 1), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 1, 1), new Vector3(0, 0, 1), new Vector2(bottomRightUV.X, bottomRightUV.Y))
             };
 
             var indicies = new short[]
@@ -630,13 +678,13 @@ namespace Protogame
                 new VertexPositionColor(new Vector3(0, 0, 0), color),
                 new VertexPositionColor(new Vector3(0, 0, 1), color),
                 new VertexPositionColor(new Vector3(1, 0, 0), color),
-                new VertexPositionColor(new Vector3(1, 0, 1), color),
+                new VertexPositionColor(new Vector3(1, 0, 1), color)
             };
 
             var indicies = new short[]
             {
                 0, 2, 1,
-                3, 1, 2,
+                3, 1, 2
             };
 
             context.EnableVertexColors();
@@ -675,13 +723,13 @@ namespace Protogame
                 new VertexPositionNormalTexture(new Vector3(0, 0, 0), new Vector3(0, -1, 0), new Vector2(topLeftUV.X, topLeftUV.Y)),
                 new VertexPositionNormalTexture(new Vector3(0, 0, 1), new Vector3(0, -1, 0), new Vector2(topLeftUV.X, bottomRightUV.Y)),
                 new VertexPositionNormalTexture(new Vector3(1, 0, 0), new Vector3(0, -1, 0), new Vector2(bottomRightUV.X, topLeftUV.Y)),
-                new VertexPositionNormalTexture(new Vector3(1, 0, 1), new Vector3(0, -1, 0), new Vector2(bottomRightUV.X, bottomRightUV.Y)),
+                new VertexPositionNormalTexture(new Vector3(1, 0, 1), new Vector3(0, -1, 0), new Vector2(bottomRightUV.X, bottomRightUV.Y))
             };
 
             var indicies = new short[]
             {
                 0, 2, 1,
-                3, 1, 2,
+                3, 1, 2
             };
 
             context.EnableTextures();
@@ -752,7 +800,7 @@ namespace Protogame
                 {
                     indicesList.Add((short) i);
                 }
-                indicesList.Add((short)1);
+                indicesList.Add(1);
             }
 
             var vertexes = vertexesList.ToArray();
