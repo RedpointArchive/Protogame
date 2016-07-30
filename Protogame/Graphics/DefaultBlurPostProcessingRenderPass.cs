@@ -27,6 +27,8 @@ namespace Protogame
         public bool SkipEngineHookRender => true;
         public string EffectTechniqueName => RenderPipelineTechniqueName.PostProcess;
 
+        public Viewport? Viewport { get; set; }
+
         /// <summary>
         /// Gets or sets the number of blur iterations to apply.
         /// </summary>

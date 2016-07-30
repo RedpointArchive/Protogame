@@ -85,6 +85,7 @@ namespace Protogame
                     var pass = standardRenderPasses[i];
                     _isFirstRenderPass = previousPass == null;
                     _renderPass = pass;
+                    SetupRenderPassViewport(renderContext, pass);
                     pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
                     previousPass = pass;
                     RenderPass(gameContext, renderContext, entities);
@@ -122,6 +123,7 @@ namespace Protogame
                         var pass = transientStandardRenderPasses[i];
                         _isFirstRenderPass = previousPass == null;
                         _renderPass = pass;
+                        SetupRenderPassViewport(renderContext, pass);
                         pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
                         previousPass = pass;
                         RenderPass(gameContext, renderContext, entities);
@@ -266,6 +268,35 @@ namespace Protogame
             {
                 _renderPass = null;
                 _isFirstRenderPass = false;
+            }
+        }
+
+        private void SetupRenderPassViewport(IRenderContext renderContext, IRenderPass pass)
+        {
+            var renderPassWithViewport = pass as IRenderPassWithViewport;
+
+            Viewport newViewport;
+            if (renderPassWithViewport?.Viewport != null)
+            {
+                newViewport = renderPassWithViewport.Viewport.Value;
+            }
+            else
+            {
+                newViewport = new Viewport(
+                    0,
+                    0,
+                    renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                    renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight);
+            }
+
+            var currentViewport = renderContext.GraphicsDevice.Viewport;
+            if (currentViewport.X != newViewport.X ||
+                currentViewport.Y != newViewport.Y ||
+                currentViewport.Width != newViewport.Width ||
+                currentViewport.Height != newViewport.Height)
+            {
+                // The viewport is different, assign it to the GPU.
+                renderContext.GraphicsDevice.Viewport = newViewport;
             }
         }
 

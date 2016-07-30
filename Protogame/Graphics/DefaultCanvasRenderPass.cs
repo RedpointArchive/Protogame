@@ -10,14 +10,6 @@ namespace Protogame
     /// <interface_ref>Protogame.ICanvasRenderPass</interface_ref>
     public class DefaultCanvasRenderPass : ICanvasRenderPass
     {
-        private Viewport _viewport;
-
-        private bool _viewportConfigured;
-
-        public DefaultCanvasRenderPass()
-        {
-        }
-        
         public bool IsPostProcessingPass => false;
         public bool SkipWorldRenderBelow => false;
         public bool SkipWorldRenderAbove => false;
@@ -25,18 +17,7 @@ namespace Protogame
         public bool SkipEngineHookRender => false;
         public string EffectTechniqueName => RenderPipelineTechniqueName.Canvas;
 
-        public Viewport Viewport
-        {
-            get
-            {
-                return _viewport;
-            }
-            set
-            {
-                _viewport = value;
-                _viewportConfigured = true;
-            }
-        }
+        public Viewport? Viewport { get; set; }
 
         public SpriteSortMode TextureSortMode
         {
@@ -46,22 +27,17 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
-#if PLATFORM_WINDOWS
-            if (!_viewportConfigured)
+            if (Viewport != null)
             {
-                _viewport = new Viewport(
-                    0,
-                    0,
-                    gameContext.Game.Window.ClientBounds.Width,
-                    gameContext.Game.Window.ClientBounds.Height);
-                _viewportConfigured = true;
+                renderContext.GraphicsDevice.Viewport = Viewport.Value;
             }
-#endif
-
-
-            if (_viewportConfigured)
+            else
             {
-                renderContext.GraphicsDevice.Viewport = this.Viewport;
+                renderContext.GraphicsDevice.Viewport = new Viewport(
+                    0,
+                    0,
+                    renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                    renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight);
             }
 
             renderContext.Is3DContext = false;

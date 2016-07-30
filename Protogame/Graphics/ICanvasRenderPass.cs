@@ -20,7 +20,7 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Graphics</module>
-    public interface ICanvasRenderPass : IRenderPass
+    public interface ICanvasRenderPass : IRenderPass, IRenderPassWithViewport
     {
         /// <summary>
         /// Gets or sets the viewport used in this rendering pass.
@@ -31,7 +31,7 @@ namespace Protogame
         /// </para>
         /// </summary>
         /// <value>The viewport used for rendering.</value>
-        Viewport Viewport { get; set; }
+        Viewport? Viewport { get; set; }
 
         /// <summary>
         /// Gets or sets the sorting mode for textures during

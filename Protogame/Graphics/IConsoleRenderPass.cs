@@ -1,6 +1,6 @@
 ﻿namespace Protogame
 {
-    public interface IConsoleRenderPass : IRenderPass
+    public interface IConsoleRenderPass : IRenderPass, IRenderPassWithViewport
     {
     }
 }

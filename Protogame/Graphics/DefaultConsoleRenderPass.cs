@@ -13,6 +13,8 @@ namespace Protogame
         public bool SkipEngineHookRender => true;
         public string EffectTechniqueName => RenderPipelineTechniqueName.Canvas;
 
+        public Viewport? Viewport { get; set; }
+
         public DefaultConsoleRenderPass(IConsole console)
         {
             _console = console;

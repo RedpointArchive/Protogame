@@ -65,6 +65,8 @@ namespace Protogame
         public bool SkipEngineHookRender => false;
         public string EffectTechniqueName => RenderPipelineTechniqueName.Deferred;
 
+        public Viewport? Viewport { get; set; }
+
         public bool DebugGBuffer { get; set; }
 
         public void BeginRenderPass(

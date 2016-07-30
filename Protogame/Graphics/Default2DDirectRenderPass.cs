@@ -17,7 +17,7 @@ namespace Protogame
         public bool SkipEngineHookRender => false;
         public string EffectTechniqueName => RenderPipelineTechniqueName.Direct2D;
 
-        public Viewport Viewport
+        public Viewport? Viewport
         {
             get;
             set;

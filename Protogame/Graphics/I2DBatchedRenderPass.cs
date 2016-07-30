@@ -14,19 +14,8 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Graphics</module>
-    public interface I2DBatchedRenderPass : IRenderPass
+    public interface I2DBatchedRenderPass : IRenderPass, IRenderPassWithViewport
     {
-        /// <summary>
-        /// Gets or sets the viewport used in this rendering pass.
-        /// <para>
-        /// By configuring different viewports on multiple render passes, you
-        /// can easily configure split-screen games, where different viewports
-        /// are used for different players.
-        /// </para>
-        /// </summary>
-        /// <value>The viewport used for rendering.</value>
-        Viewport Viewport { get; set; }
-
         /// <summary>
         /// Gets or sets the sorting mode for textures during
         /// batch rendering.

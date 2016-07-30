@@ -15,18 +15,8 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Graphics</module>
-    public interface I2DDirectRenderPass : IRenderPass
+    public interface I2DDirectRenderPass : IRenderPass, IRenderPassWithViewport
     {
-        /// <summary>
-        /// Gets or sets the viewport used in this rendering pass.
-        /// <para>
-        /// By configuring different viewports on multiple render passes, you
-        /// can easily configure split-screen games, where different viewports
-        /// are used for different players.
-        /// </para>
-        /// </summary>
-        /// <value>The viewport used for rendering.</value>
-        Viewport Viewport { get; set; }
     }
 }
 

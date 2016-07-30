@@ -10,14 +10,6 @@ namespace Protogame
     /// <interface_ref>Protogame.I2DBatchedRenderPass</interface_ref>
     public class Default2DBatchedRenderPass : I2DBatchedRenderPass
     {
-        private Viewport _viewport;
-
-        private bool _viewportConfigured;
-
-        public Default2DBatchedRenderPass()
-        {
-        }
-        
         public bool IsPostProcessingPass => false;
         public bool SkipWorldRenderBelow => false;
         public bool SkipWorldRenderAbove => false;
@@ -25,18 +17,7 @@ namespace Protogame
         public bool SkipEngineHookRender => false;
         public string EffectTechniqueName => RenderPipelineTechniqueName.Batched2D;
 
-        public Viewport Viewport
-        {
-            get
-            {
-                return _viewport;
-            }
-            set
-            {
-                _viewport = value;
-                _viewportConfigured = true;
-            }
-        }
+        public Viewport? Viewport { get; set; }
 
         public SpriteSortMode TextureSortMode
         {
@@ -46,24 +27,6 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
-#if PLATFORM_WINDOWS
-            if (!_viewportConfigured)
-            {
-                _viewport = new Viewport(
-                    0,
-                    0,
-                    gameContext.Game.Window.ClientBounds.Width,
-                    gameContext.Game.Window.ClientBounds.Height);
-                _viewportConfigured = true;
-            }
-#endif
-
-
-            if (_viewportConfigured)
-            {
-                renderContext.GraphicsDevice.Viewport = this.Viewport;
-            }
-
             renderContext.Is3DContext = false;
 
             renderContext.SpriteBatch.Begin(TextureSortMode);

@@ -454,6 +454,7 @@
     <Compile Include="Graphics\IRenderAutoCache.cs" />
     <Compile Include="Graphics\IRenderCache.cs" />
     <Compile Include="Graphics\IRenderPass.cs" />
+    <Compile Include="Graphics\IRenderPassWithViewport.cs" />
     <Compile Include="Graphics\IRenderPipeline.cs" />
     <Compile Include="Graphics\IRenderTargetBackBufferUtilities.cs" />
     <Compile Include="Graphics\Legacy\Default2DWorldManager.cs" />
