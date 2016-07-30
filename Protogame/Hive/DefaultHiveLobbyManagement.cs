@@ -15,11 +15,18 @@ namespace Protogame
     /// <interface_ref>Protogame.IHiveLobbyManagement</interface_ref>
     public class DefaultHiveLobbyManagement : IHiveLobbyManagement
     {
-        public async Task<LobbyInfo> CreateLobby(TempSessionWithSecrets userSession)
+        public async Task<LobbyInfo> CreateLobby(TempSessionWithSecrets userSession, string name, int maxSessions)
         {
             var lobbyApi = new LobbyApi();
             lobbyApi.Configuration.ApiKey["api_key"] = userSession.ApiKey;
-            return await lobbyApi.LobbyPutAsync();
+            return await lobbyApi.LobbyPutAsync(name, maxSessions);
+        }
+
+        public async Task<LobbyInfo> UpdateLobby(TempSessionWithSecrets userSession, LobbyInfo lobby, string name = null, int? maxSessions = null)
+        {
+            var lobbyApi = new LobbyApi();
+            lobbyApi.Configuration.ApiKey["api_key"] = userSession.ApiKey;
+            return await lobbyApi.LobbyPostAsync(lobby.Id, name, maxSessions);
         }
 
         public async Task<IEnumerable<LobbyInfo>> GetLobbies(TempSessionWithSecrets userSession)

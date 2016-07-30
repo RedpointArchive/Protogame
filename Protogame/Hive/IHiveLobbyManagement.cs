@@ -18,8 +18,21 @@ namespace Protogame
         /// after this.
         /// </summary>
         /// <param name="userSession">The user session that will own this lobby.</param>
+        /// <param name="name">The name of the new lobby.</param>
+        /// <param name="maxSessions">The maximum number of sessions allowed in the lobby.</param>
         /// <returns>The new lobby information.</returns>
-        Task<LobbyInfo> CreateLobby(TempSessionWithSecrets userSession);
+        Task<LobbyInfo> CreateLobby(TempSessionWithSecrets userSession, string name, int maxSessions);
+
+        /// <summary>
+        /// Updates an existing game lobby owned by the user session.
+        /// </summary>
+        /// <param name="userSession">The user session that owns this lobby.</param>
+        /// <param name="lobby">The lobby to update.</param>
+        /// <param name="name">The new name of the game lobby, or null to not modify.</param>
+        /// <param name="maxSessions">The new number of maximum sessions allowed in the lobby, or null to not modify.</param>
+        /// <returns></returns>
+        Task<LobbyInfo> UpdateLobby(TempSessionWithSecrets userSession, LobbyInfo lobby, string name = null,
+            int? maxSessions = null);
 
         /// <summary>
         /// Gets a list of all available lobbies.
