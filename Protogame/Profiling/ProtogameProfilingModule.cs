@@ -13,6 +13,7 @@ namespace Protogame
 
             kernel.Bind<IOperationCostProfilerVisualiser>().To<OperationCostProfilerVisualiser>().InSingletonScope();
             kernel.Bind<INetworkTrafficProfilerVisualiser>().To<NetworkTrafficProfilerVisualiser>().InSingletonScope();
+            kernel.Bind<IGraphicsMetricsProfilerVisualiser>().To<GraphicsMetricsProfilerVisualiser>().InSingletonScope();
         }
     }
 }

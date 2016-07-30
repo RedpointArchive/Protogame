@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
+
 namespace Protogame
 {
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.Xna.Framework.Input;
 #if PLATFORM_ANDROID || PLATFORM_OUYA
 	using Microsoft.Xna.Framework.Input.Touch;
 #endif
@@ -17,24 +18,37 @@ namespace Protogame
         /// <summary>
         /// The event engine through which we raise events.
         /// </summary>
-        private readonly IEventEngine<IGameContext> m_EventEngine;
+        private readonly IEventEngine<IGameContext> _eventEngine;
 
         /// <summary>
         /// A dictionary of the last game pad state for each player.  We use this to detect
         /// the difference between button press and button held events.
         /// </summary>
-        private readonly Dictionary<int, GamePadState> m_LastGamePadStates;
+        private readonly Dictionary<int, GamePadState> _lastGamePadStates;
 
         /// <summary>
         /// The last mouse state.  We use this to detect mouse move events and only fire them
         /// when appropriate.
         /// </summary>
-        private MouseState? m_LastMouseState;
+        private MouseState? _lastMouseState;
 
         /// <summary>
         /// Determines if we are using the gamepad.
         /// </summary>
-        private bool m_GamepadEnabled = true;
+        private bool _gamepadEnabled = true;
+
+        /// <summary>
+        /// Determines if we've checked gamepad connectivity.  On some systems, calling
+        /// <see cref="GamePad.GetState(int)"/> is relatively expensive and can cause stuttering
+        /// in the game, so by default we only check connectivity at the start of the game.
+        /// </summary>
+        private bool _hasCheckedGamepadConnectivity = false;
+
+        /// <summary>
+        /// Once we've checked connectivity, we store whether we have any gamepads in here.  If
+        /// we don't have any gamepads, we don't call <see cref="GamePad.GetState(int)"/>.
+        /// </summary>
+        private bool _hasAnyGamepads = false;
 
 #if PLATFORM_ANDROID
         /// <summary>
@@ -51,8 +65,8 @@ namespace Protogame
         /// </param>
         public EventEngineHook(IEventEngine<IGameContext> eventEngine)
         {
-            this.m_EventEngine = eventEngine;
-            this.m_LastGamePadStates = new Dictionary<int, GamePadState>();
+            _eventEngine = eventEngine;
+            _lastGamePadStates = new Dictionary<int, GamePadState>();
         }
 
         /// <summary>
@@ -84,18 +98,18 @@ namespace Protogame
         /// </param>
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            this.UpdateKeyboard(gameContext);
-            this.UpdateMouse(gameContext);
+            UpdateKeyboard(gameContext);
+            UpdateMouse(gameContext);
 
-            if (this.m_GamepadEnabled)
+            if (_gamepadEnabled)
             {
                 try
                 {
-                    this.UpdateGamepad(gameContext);
+                    UpdateGamepad(gameContext);
                 }
                 catch (DllNotFoundException)
                 {
-                    this.m_GamepadEnabled = false;
+                    _gamepadEnabled = false;
                 }
             }
 
@@ -116,13 +130,34 @@ namespace Protogame
         /// </param>
         private void UpdateGamepad(IGameContext gameContext)
         {
+            if (!_hasCheckedGamepadConnectivity)
+            {
+                for (var index = 0; index < GamePad.MaximumGamePadCount; index++)
+                {
+                    var gamepadState = GamePad.GetState(index);
+
+                    if (gamepadState.IsConnected)
+                    {
+                        _hasAnyGamepads = true;
+                        break;
+                    }
+                }
+
+                _hasCheckedGamepadConnectivity = true;
+            }
+
+            if (!_hasAnyGamepads)
+            {
+                return;
+            }
+
             for (var index = 0; index < GamePad.MaximumGamePadCount; index++)
             {
                 var gamepadState = GamePad.GetState(index);
 
                 if (gamepadState.IsConnected)
                 {
-                    this.UpdateGamepadSingle(gameContext, index, gamepadState);
+                    UpdateGamepadSingle(gameContext, index, gamepadState);
                 }
             }
         }
@@ -142,14 +177,14 @@ namespace Protogame
         private void UpdateGamepadSingle(IGameContext gameContext, int index, GamePadState gamepadState)
         {
             var lastGamepadState = new GamePadState();
-            if (this.m_LastGamePadStates.ContainsKey(index))
+            if (_lastGamePadStates.ContainsKey(index))
             {
-                lastGamepadState = this.m_LastGamePadStates[index];
+                lastGamepadState = _lastGamePadStates[index];
             }
 
             if (gamepadState.ThumbSticks.Left.X != 0 || gamepadState.ThumbSticks.Right.X != 0 || gamepadState.ThumbSticks.Left.Y != 0 || gamepadState.ThumbSticks.Right.Y != 0)
             {
-                this.m_EventEngine.Fire(
+                _eventEngine.Fire(
                     gameContext,
                     new GamePadThumbstickActiveEvent
                     {
@@ -163,7 +198,7 @@ namespace Protogame
                 {
                     if (lastGamepadState.IsButtonUp(button))
                     {
-                        this.m_EventEngine.Fire(
+                        _eventEngine.Fire(
                             gameContext, 
                             new GamePadButtonPressEvent
                             {
@@ -174,7 +209,7 @@ namespace Protogame
                     }
                     else
                     {
-                        this.m_EventEngine.Fire(
+                        _eventEngine.Fire(
                             gameContext, 
                             new GamePadButtonHeldEvent
                             {
@@ -188,7 +223,7 @@ namespace Protogame
                 {
                     if (lastGamepadState.IsButtonDown(button))
                     {
-                        this.m_EventEngine.Fire(
+                        _eventEngine.Fire(
                             gameContext, 
                             new GamePadButtonReleaseEvent
                             {
@@ -200,7 +235,7 @@ namespace Protogame
                 }
             }
 
-            this.m_LastGamePadStates[index] = gamepadState;
+            _lastGamePadStates[index] = gamepadState;
         }
 
         /// <summary>
@@ -218,18 +253,18 @@ namespace Protogame
             {
                 if (keyboardState.IsKeyDown(key))
                 {
-                    this.m_EventEngine.Fire(gameContext, new KeyHeldEvent { Key = key, KeyboardState = keyboardState });
+                    _eventEngine.Fire(gameContext, new KeyHeldEvent { Key = key, KeyboardState = keyboardState });
                 }
 
                 var change = keyboardState.IsKeyChanged(this, key);
 
                 if (change == KeyState.Down)
                 {
-                    this.m_EventEngine.Fire(gameContext, new KeyPressEvent { Key = key, KeyboardState = keyboardState });
+                    _eventEngine.Fire(gameContext, new KeyPressEvent { Key = key, KeyboardState = keyboardState });
                 }
                 else if (change == KeyState.Up)
                 {
-                    this.m_EventEngine.Fire(gameContext, new KeyReleaseEvent { Key = key, KeyboardState = keyboardState });
+                    _eventEngine.Fire(gameContext, new KeyReleaseEvent { Key = key, KeyboardState = keyboardState });
                 }
             }
         }
@@ -243,9 +278,9 @@ namespace Protogame
         private void UpdateMouse(IGameContext gameContext)
         {
             var mouseState = Mouse.GetState();
-            if (this.m_LastMouseState == null)
+            if (_lastMouseState == null)
             {
-                this.m_LastMouseState = mouseState;
+                _lastMouseState = mouseState;
                 return;
             }
 
@@ -255,61 +290,61 @@ namespace Protogame
 
             if (leftChange == ButtonState.Pressed)
             {
-                this.m_EventEngine.Fire(
+                _eventEngine.Fire(
                     gameContext, 
                     new MousePressEvent { Button = MouseButton.Left, MouseState = mouseState });
             }
 
             if (middleChange == ButtonState.Pressed)
             {
-                this.m_EventEngine.Fire(
+                _eventEngine.Fire(
                     gameContext, 
                     new MousePressEvent { Button = MouseButton.Middle, MouseState = mouseState });
             }
 
             if (rightChange == ButtonState.Pressed)
             {
-                this.m_EventEngine.Fire(
+                _eventEngine.Fire(
                     gameContext, 
                     new MousePressEvent { Button = MouseButton.Right, MouseState = mouseState });
             }
 
             if (leftChange == ButtonState.Released)
             {
-                this.m_EventEngine.Fire(
+                _eventEngine.Fire(
                     gameContext,
                     new MouseReleaseEvent { Button = MouseButton.Left, MouseState = mouseState });
             }
 
             if (middleChange == ButtonState.Released)
             {
-                this.m_EventEngine.Fire(
+                _eventEngine.Fire(
                     gameContext,
                     new MouseReleaseEvent { Button = MouseButton.Middle, MouseState = mouseState });
             }
 
             if (rightChange == ButtonState.Released)
             {
-                this.m_EventEngine.Fire(
+                _eventEngine.Fire(
                     gameContext,
                     new MouseReleaseEvent { Button = MouseButton.Right, MouseState = mouseState });
             }
 
-            if (mouseState.X != this.m_LastMouseState.Value.X || mouseState.Y != this.m_LastMouseState.Value.Y)
+            if (mouseState.X != _lastMouseState.Value.X || mouseState.Y != _lastMouseState.Value.Y)
             {
-                this.m_EventEngine.Fire(
+                _eventEngine.Fire(
                     gameContext, 
                     new MouseMoveEvent
                     {
                         X = mouseState.X, 
                         Y = mouseState.Y, 
-                        LastX = this.m_LastMouseState.Value.X, 
-                        LastY = this.m_LastMouseState.Value.Y, 
+                        LastX = _lastMouseState.Value.X, 
+                        LastY = _lastMouseState.Value.Y, 
                         MouseState = mouseState
                     });
             }
 
-            this.m_LastMouseState = mouseState;
+            _lastMouseState = mouseState;
         }
 
 #if PLATFORM_ANDROID || PLATFORM_OUYA
@@ -345,7 +380,7 @@ namespace Protogame
                     {
                         // There is no previous touch near this location, therefore
                         // it's a press event.
-                        this.m_EventEngine.Fire(
+                        this._eventEngine.Fire(
                             gameContext, 
                             new TouchPressEvent
                             {
@@ -375,7 +410,7 @@ namespace Protogame
                     {
                         // There is no longer any touch events in this location, so
                         // raise a release event.
-                        this.m_EventEngine.Fire(
+                        this._eventEngine.Fire(
                             gameContext, 
                             new TouchReleaseEvent
                             {
@@ -389,7 +424,7 @@ namespace Protogame
 
             foreach (var touch in touchState)
             {
-                this.m_EventEngine.Fire(
+                this._eventEngine.Fire(
                     gameContext, 
                     new TouchHeldEvent
                     {

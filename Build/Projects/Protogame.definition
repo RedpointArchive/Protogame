@@ -199,8 +199,6 @@
     <Compile Include="Assets\Variable\VariableAsset.cs" />
     <Compile Include="Assets\Variable\VariableAssetLoader.cs" />
     <Compile Include="Assets\Variable\VariableAssetSaver.cs" />
-    <Compile Include="Caching\DefaultRenderCache.cs" />
-    <Compile Include="Caching\IRenderCache.cs" />
     <Compile Include="Caching\ProtogameCachingIoCModule.cs" />
     <Compile Include="Camera\FirstPersonCamera.cs" />
     <Compile Include="Camera\IFirstPersonCamera.cs" />
@@ -434,6 +432,7 @@
     <Compile Include="Graphics\DefaultDebugRenderPass.cs" />
     <Compile Include="Graphics\DefaultGraphicsBlit.cs" />
     <Compile Include="Graphics\DefaultInvertPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\DefaultRenderCache.cs" />
     <Compile Include="Graphics\DefaultRenderPipeline.cs" />
     <Compile Include="Graphics\DefaultRenderTargetBackBufferUtilities.cs" />
     <Compile Include="Graphics\I2DBatchedRenderPass.cs" />
@@ -451,6 +450,7 @@
     <Compile Include="Graphics\IGraphicsBlit.cs" />
     <Compile Include="Graphics\IGraphicsFactory.cs" />
     <Compile Include="Graphics\IInvertPostProcessingRenderPass.cs" />
+    <Compile Include="Graphics\IRenderCache.cs" />
     <Compile Include="Graphics\IRenderPass.cs" />
     <Compile Include="Graphics\IRenderPipeline.cs" />
     <Compile Include="Graphics\IRenderTargetBackBufferUtilities.cs" />
@@ -604,6 +604,8 @@
     <Compile Include="Profiling\DefaultProfilerRenderPass.cs" />
     <Compile Include="Profiling\FileProfiler.cs" />
     <Compile Include="Profiling\FileProfilerHandle.cs" />
+    <Compile Include="Profiling\GraphicsMetricsProfilerVisualiser.cs" />
+    <Compile Include="Profiling\IGraphicsMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\IMemoryProfiler.cs" />
     <Compile Include="Profiling\INetworkTrafficProfilerVisualiser.cs" />
     <Compile Include="Profiling\IOperationCostProfilerVisualiser.cs" />
@@ -818,14 +820,14 @@
     <None Include="..\Protogame.Resources\effect.GBufferRender.fx">
       <Link>Resources\effect.GBufferRender.fx</Link>
     </None>
-    <None Include="..\Protogame.Resources\effect.Invert.fx">
-      <Link>Resources\effect.Invert.fx</Link>
-    </None>
     <None Include="..\Protogame.Resources\effect.Image.fx">
       <Link>Resources\effect.Image.fx</Link>
     </None>
     <None Include="..\Protogame.Resources\effect.ImageTiled.fx">
       <Link>Resources\effect.ImageTiled.fx</Link>
+    </None>
+    <None Include="..\Protogame.Resources\effect.Invert.fx">
+      <Link>Resources\effect.Invert.fx</Link>
     </None>
     <None Include="..\Protogame.Resources\effect.PointLight.fx">
       <Link>Resources\effect.PointLight.fx</Link>

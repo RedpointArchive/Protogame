@@ -23,6 +23,7 @@ namespace Protogame
             kernel.Bind<IStringSanitizer>().To<DefaultStringSanitizer>();
             kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
             kernel.Bind<IUniqueIdentifierAllocator>().To<DefaultUniqueIdentifierAllocator>().InSingletonScope();
+            kernel.Bind<IRenderCache>().To<DefaultRenderCache>().InSingletonScope();
         }
     }
 }
