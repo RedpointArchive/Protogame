@@ -33,7 +33,7 @@ namespace Protogame
             {
                 if (_parent != null)
                 {
-                    return _parent.FinalTransform.AbsoluteMatrix*_child.Transform.LocalMatrix;
+                    return _child.Transform.LocalMatrix * _parent.FinalTransform.AbsoluteMatrix;
                 }
 
                 return _child.Transform.LocalMatrix;
@@ -46,7 +46,7 @@ namespace Protogame
             {
                 if (_parent != null)
                 {
-                    return _parent.FinalTransform.AbsoluteMatrixWithoutScale * _child.Transform.LocalMatrixWithoutScale;
+                    return _child.Transform.LocalMatrixWithoutScale * _parent.FinalTransform.AbsoluteMatrixWithoutScale;
                 }
 
                 return _child.Transform.LocalMatrixWithoutScale;
