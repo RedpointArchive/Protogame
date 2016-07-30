@@ -22,7 +22,7 @@ namespace Protogame
         /// <param name="lookAt">The position to look at.</param>
         /// <param name="up">The up vector (defaults to <see cref="Vector3.Up"/>.</param>
         /// <param name="fieldOfView">The field of view in radians (defaults to pi over 4; which is 45 degrees).</param>
-        /// <param name="nearPlaneDistance">The near plane distance (defaults to 1).</param>
+        /// <param name="nearPlaneDistance">The near plane distance (defaults to 0.1).</param>
         /// <param name="farPlaneDistance">The far plane distance (defaults to 1000).</param>
         void Apply(
             IRenderContext renderContext,
@@ -30,7 +30,7 @@ namespace Protogame
             Vector3 lookAt, 
             Vector3? up = null,
             float fieldOfView = MathHelper.PiOver2, 
-            float nearPlaneDistance = 1, 
+            float nearPlaneDistance = 0.1f, 
             float farPlaneDistance = 1000);
     }
 }
