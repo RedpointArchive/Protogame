@@ -48,6 +48,8 @@ namespace Protogame
 
         public bool Enabled { get; set; }
 
+        public Material OverrideMaterial { get; set; }
+
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
             if (!Enabled)
@@ -82,15 +84,24 @@ namespace Protogame
                         matrix *= matrixComponent.FinalTransform.AbsoluteMatrix;
                     }
 
+                    var material = OverrideMaterial ?? Model.Material;
+
                     if (_lastCachedModel != Model)
                     {
-                        if (Model.Material.TextureDiffuse != null)
+                        if (material.TextureDiffuse != null)
                         {
-                            _lastCachedTexture =
-                                _textureFromHintPath.GetTextureFromHintPath(Model.Material.TextureDiffuse);
+                            if (material.TextureDiffuse.TextureAsset != null)
+                            {
+                                _lastCachedTexture = material.TextureDiffuse.TextureAsset;
+                            }
+                            else
+                            {
+                                _lastCachedTexture =
+                                    _textureFromHintPath.GetTextureFromHintPath(material.TextureDiffuse);
+                            }
                             _mode = "texture";
                         }
-                        else if (Model.Material.ColorDiffuse != null)
+                        else if (material.ColorDiffuse != null)
                         {
                             _mode = "diffuse";
                         }
@@ -141,7 +152,7 @@ namespace Protogame
                             if (semanticEffect != null)
                             {
                                 semanticEffect.GetSemantic<IColorDiffuseEffectSemantic>().Diffuse =
-                                    Model.Material.ColorDiffuse.Value;
+                                    material.ColorDiffuse.Value;
                             }
 
                             renderContext.PushEffect(targetEffect);

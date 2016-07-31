@@ -26,10 +26,14 @@ namespace Protogame
     public interface IMaterialTexture
     {
         string HintPath { get; }
+
+        TextureAsset TextureAsset { get; }
     }
 
     public class MaterialTexture : IMaterialTexture
     {
         public string HintPath { get; set; }
+
+        public TextureAsset TextureAsset { get; set; }
     }
 }
