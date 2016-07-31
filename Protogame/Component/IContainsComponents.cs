@@ -12,6 +12,6 @@ namespace Protogame
         /// <summary>
         /// A list of components that are attached to this object.
         /// </summary>
-        ReadOnlyCollection<object> Components { get; } 
+        object[] Components { get; } 
     }
 }

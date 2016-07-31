@@ -42,15 +42,54 @@ namespace Protogame
 		/// </summary>
 		private List<object> _nonHierarchyComponents = new List<object>();
 
+	    private bool _usesHierarchy;
+
+	    private object[] _componentCache;
+
 		protected ComponentizedObject()
-		{
-		}
+        {
+            FinalizeSetup();
+        }
 
         public ComponentizedObject(IHierarchy hierarchy, INode node)
         {
             _hierarchy = hierarchy;
             _node = node;
+
+            FinalizeSetup();
         }
+
+	    private void FinalizeSetup()
+	    {
+	        _usesHierarchy = _node != null && _hierarchy == null;
+
+	        if (_usesHierarchy)
+	        {
+	            _node.ChildrenChanged += (sender, args) => { UpdateCache(); };
+	        }
+
+			UpdateCache();
+	    }
+
+		private void UpdateCache()
+		{
+			_componentCache = new object[0];
+
+			if (_usesHierarchy)
+			{
+				if (_nonHierarchyComponents != null)
+				{
+					_componentCache = _nonHierarchyComponents.ToArray();
+				}
+			}
+			else
+			{
+				if (_node != null && _node.Children != null)
+				{
+					_componentCache = _node.Children.Select(x => x.UntypedValue).ToArray();
+				}
+			}
+		}
 	
 		protected void RegisterComponent(object component)
 		{
@@ -58,6 +97,8 @@ namespace Protogame
 			{
 				// No hierarchy, always use private list.
 				_nonHierarchyComponents.Add(component);
+
+				UpdateCache();
 			}
 			else
 			{
@@ -72,18 +113,11 @@ namespace Protogame
 			}
 		}
 
-		public ReadOnlyCollection<object> Components
+		public object[] Components
 		{
 			get
 			{
-				if (_node == null || _hierarchy == null)
-				{
-					return _nonHierarchyComponents.AsReadOnly();
-				}
-				else
-				{
-					return _node.Children.Select(x => x.UntypedValue).ToList().AsReadOnly();
-				}
+				return _componentCache;
 			}
 		}
 
@@ -91,7 +125,7 @@ namespace Protogame
 		{
 			get
 			{
-				return !(_node == null || _hierarchy == null);
+				return _usesHierarchy;
 			}
 		}
 

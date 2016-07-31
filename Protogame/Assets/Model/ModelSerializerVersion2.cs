@@ -832,7 +832,7 @@ namespace Protogame
         /// </param>
         private void SerializeMaterialTexture(BinaryWriter writer, IMaterialTexture texture)
         {
-            if (texture == null)
+            if (texture?.HintPath == null)
             {
                 writer.Write(false);
             }

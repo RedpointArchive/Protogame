@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
@@ -9,10 +10,22 @@ namespace Protogame
 
         private EffectParameter _textureParam;
 
+        private EffectParameter _textureDimensionsParam;
+
+        private bool? _hasTextureDimensions;
+
         public Texture2D Texture
         {
             get { return _textureParam.GetValueTexture2D(); }
-            set { _textureParam.SetValue(value); }
+            set
+            {
+                _textureParam.SetValue(value);
+
+                if (_hasTextureDimensions ?? false)
+                {
+                    _textureDimensionsParam.SetValue(new Vector2(value.Width, value.Height));
+                }
+            }
         }
 
         public bool ShouldAttachToEffect(EffectWithSemantics effectWithSemantics)
@@ -44,6 +57,12 @@ namespace Protogame
             if (_textureParam == null)
             {
                 _textureParam = _effectWithSemantics.Parameters["Texture"];
+            }
+
+            if (_hasTextureDimensions == null)
+            {
+                _textureDimensionsParam = _effectWithSemantics.Parameters["TextureDimensions"];
+                _hasTextureDimensions = _textureDimensionsParam != null;
             }
         }
 

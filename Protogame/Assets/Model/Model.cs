@@ -203,7 +203,7 @@
             {
                 // Find the vertex mapping configuration for this model.
                 var modelConfiguration =
-                    _modelRenderConfigurations.Select(x => x.GetVertexMappingToGPU(this, renderContext.Effect)).FirstOrDefault();
+                    _modelRenderConfigurations.Select(x => x.GetVertexMappingToGPU(this, renderContext.Effect)).FirstOrDefault(x => x != null);
                 if (modelConfiguration == null)
                 {
                     throw new InvalidOperationException(

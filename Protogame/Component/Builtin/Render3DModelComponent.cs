@@ -16,11 +16,15 @@ namespace Protogame
 
         private ModelAsset _lastCachedModel;
 
-        private TextureAsset _lastCachedTexture;
+        private TextureAsset _lastCachedDiffuseTexture;
+
+        private TextureAsset _lastCachedNormalMapTexture;
 
         private bool _useDefaultEffects;
 
         private EffectAsset _defaultTextureSkinnedEffectAsset;
+
+        private EffectAsset _defaultTextureNormalSkinnedEffectAsset;
 
         private EffectAsset _defaultColorSkinnedEffectAsset;
 
@@ -71,6 +75,7 @@ namespace Protogame
                 if (_useDefaultEffects && _defaultTextureSkinnedEffectAsset == null)
                 {
                     _defaultTextureSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureSkinned");
+                    _defaultTextureNormalSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureNormalSkinned");
                     _defaultColorSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.ColorSkinned");
                     _defaultDiffuseSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.DiffuseSkinned");
                 }
@@ -88,17 +93,42 @@ namespace Protogame
 
                     if (_lastCachedModel != Model)
                     {
-                        if (material.TextureDiffuse != null)
+                        if (material.TextureDiffuse != null && material.TextureNormal != null)
                         {
                             if (material.TextureDiffuse.TextureAsset != null)
                             {
-                                _lastCachedTexture = material.TextureDiffuse.TextureAsset;
+                                _lastCachedDiffuseTexture = material.TextureDiffuse.TextureAsset;
                             }
                             else
                             {
-                                _lastCachedTexture =
+                                _lastCachedDiffuseTexture =
                                     _textureFromHintPath.GetTextureFromHintPath(material.TextureDiffuse);
                             }
+                            
+                            if (material.TextureNormal.TextureAsset != null)
+                            {
+                                _lastCachedNormalMapTexture = material.TextureNormal.TextureAsset;
+                            }
+                            else
+                            {
+                                _lastCachedNormalMapTexture =
+                                    _textureFromHintPath.GetTextureFromHintPath(material.TextureNormal);
+                            }
+
+                            _mode = "texture-normal";
+                        }
+                        else if (material.TextureDiffuse != null)
+                        {
+                            if (material.TextureDiffuse.TextureAsset != null)
+                            {
+                                _lastCachedDiffuseTexture = material.TextureDiffuse.TextureAsset;
+                            }
+                            else
+                            {
+                                _lastCachedDiffuseTexture =
+                                    _textureFromHintPath.GetTextureFromHintPath(material.TextureDiffuse);
+                            }
+                            
                             _mode = "texture";
                         }
                         else if (material.ColorDiffuse != null)
@@ -124,7 +154,32 @@ namespace Protogame
                                 renderContext.PushEffect(Effect.Effect);
                             }
                             
-                            renderContext.SetActiveTexture(_lastCachedTexture.Texture);
+                            renderContext.SetActiveTexture(_lastCachedDiffuseTexture.Texture);
+                            break;
+                        case "texture-normal":
+                            if (_useDefaultEffects)
+                            {
+                                renderContext.PushEffect(_defaultTextureSkinnedEffectAsset.Effect);
+                            }
+                            else
+                            {
+                                renderContext.PushEffect(Effect.Effect);
+                            }
+
+                            renderContext.SetActiveTexture(_lastCachedDiffuseTexture.Texture);
+
+                            {
+                                var semanticEffect = renderContext.Effect as EffectWithSemantics;
+                                if (semanticEffect != null && semanticEffect.HasSemantic<INormalMapEffectSemantic>())
+                                {
+                                    var normalMap = semanticEffect.GetSemantic<INormalMapEffectSemantic>();
+                                    if (normalMap != null)
+                                    {
+                                        normalMap.NormalMap = _lastCachedNormalMapTexture.Texture;
+                                    }
+                                }
+                            }
+
                             break;
                         case "color":
                             if (_useDefaultEffects)
@@ -148,11 +203,13 @@ namespace Protogame
                                 targetEffect = Effect.Effect;
                             }
 
-                            var semanticEffect = targetEffect as EffectWithSemantics;
-                            if (semanticEffect != null)
                             {
-                                semanticEffect.GetSemantic<IColorDiffuseEffectSemantic>().Diffuse =
-                                    material.ColorDiffuse.Value;
+                                var semanticEffect = targetEffect as EffectWithSemantics;
+                                if (semanticEffect != null)
+                                {
+                                    semanticEffect.GetSemantic<IColorDiffuseEffectSemantic>().Diffuse =
+                                        material.ColorDiffuse.Value;
+                                }
                             }
 
                             renderContext.PushEffect(targetEffect);
@@ -168,7 +225,7 @@ namespace Protogame
                 else
                 {
                     _lastCachedModel = null;
-                    _lastCachedTexture = null;
+                    _lastCachedDiffuseTexture = null;
                 }
             }
         }

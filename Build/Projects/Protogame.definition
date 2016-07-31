@@ -61,9 +61,11 @@
     <Compile Include="Assets\Effect\IColorDiffuseEffectSemantic.cs" />
     <Compile Include="Assets\Effect\IEffectSemantic.cs" />
     <Compile Include="Assets\Effect\IEffectWithSemantics.cs" />
+    <Compile Include="Assets\Effect\INormalMapEffectSemantic.cs" />
     <Compile Include="Assets\Effect\IScreenDimensionsEffectSemantic.cs" />
     <Compile Include="Assets\Effect\ITextureEffectSemantic.cs" />
     <Compile Include="Assets\Effect\IWorldViewProjectionEffectSemantic.cs" />
+    <Compile Include="Assets\Effect\NormalMapEffectSemantic.cs" />
     <Compile Include="Assets\Effect\RawEffectLoadStrategy.cs" />
     <Compile Include="Assets\Effect\ScreenDimensionsEffectSemantic.cs" />
     <Compile Include="Assets\Effect\TextureEffectSemantic.cs" />
@@ -167,6 +169,7 @@
     <Compile Include="Assets\Model\ModelVertexMapping.cs" />
     <Compile Include="Assets\Model\RawModelLoadStrategy.cs" />
     <Compile Include="Assets\Model\VertexPositionNormal.cs" />
+    <Compile Include="Assets\Model\VertexPositionNormalBinormalTangentTextureBlendable.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalBlendable.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalColorBlendable.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalTextureBlendable.cs" />
@@ -843,6 +846,9 @@
     </None>
     <None Include="..\Protogame.Resources\effect.Texture.fx">
       <Link>Resources\effect.Texture.fx</Link>
+    </None>
+    <None Include="..\Protogame.Resources\effect.TextureNormalSkinned.fx">
+      <Link>Resources\effect.TextureSkinned.fx</Link>
     </None>
     <None Include="..\Protogame.Resources\effect.TextureSkinned.fx">
       <Link>Resources\effect.TextureSkinned.fx</Link>

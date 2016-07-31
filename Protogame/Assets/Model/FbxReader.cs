@@ -178,7 +178,16 @@ namespace Protogame
                 ColorEmissive = m.HasColorEmissive ? (Color?)ConvertMaterialColor(m.ColorEmissive) : null,
                 ColorTransparent = m.HasColorTransparent ? (Color?)ConvertMaterialColor(m.ColorTransparent) : null,
                 ColorReflective = m.HasColorReflective ? (Color?)ConvertMaterialColor(m.ColorReflective) : null,
+                TextureEmissive = m.HasTextureDiffuse ? ConvertMaterialTexture(m.TextureEmissive) : null,
+                TextureAmbient = m.HasTextureAmbient ? ConvertMaterialTexture(m.TextureAmbient) : null,
+                TextureDisplacement = m.HasTextureDisplacement ? ConvertMaterialTexture(m.TextureDisplacement) : null,
+                TextureSpecular = m.HasTextureSpecular ? ConvertMaterialTexture(m.TextureSpecular) : null,
                 TextureDiffuse = m.HasTextureDiffuse ? ConvertMaterialTexture(m.TextureDiffuse) : null,
+                TextureHeight = m.HasTextureHeight ? ConvertMaterialTexture(m.TextureHeight) : null,
+                TextureLightMap = m.HasTextureLightMap ? ConvertMaterialTexture(m.TextureLightMap) : null,
+                TextureNormal = m.HasTextureNormal ? ConvertMaterialTexture(m.TextureNormal) : null,
+                TextureOpacity = m.HasTextureOpacity ? ConvertMaterialTexture(m.TextureOpacity) : null,
+                TextureReflection = m.HasTextureReflection ? ConvertMaterialTexture(m.TextureReflection) : null,
             };
         }
 
