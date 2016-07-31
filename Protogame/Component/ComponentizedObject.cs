@@ -153,11 +153,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T>(Action<T> method) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable);
@@ -189,11 +187,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1>(Action<T, T1> method, T1 arg1) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1);
@@ -225,11 +221,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2>(Action<T, T1, T2> method, T1 arg1, T2 arg2) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2);
@@ -261,11 +255,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3>(Action<T, T1, T2, T3> method, T1 arg1, T2 arg2, T3 arg3) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3);
@@ -297,11 +289,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4>(Action<T, T1, T2, T3, T4> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4);
@@ -333,11 +323,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5>(Action<T, T1, T2, T3, T4, T5> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5);
@@ -369,11 +357,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6>(Action<T, T1, T2, T3, T4, T5, T6> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6);
@@ -405,11 +391,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7>(Action<T, T1, T2, T3, T4, T5, T6, T7> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
@@ -441,11 +425,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7, T8>(Action<T, T1, T2, T3, T4, T5, T6, T7, T8> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
@@ -477,11 +459,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
@@ -513,11 +493,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
@@ -549,11 +527,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
@@ -585,11 +561,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
@@ -621,11 +595,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
@@ -657,11 +629,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
@@ -693,11 +663,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> method, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15) where T : class
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);

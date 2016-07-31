@@ -177,11 +177,9 @@ namespace Protogame
 
 		private void InvokeCallableOnComponents<T<#=typeArgumentsAppended#>>(Action<T<#=typeArgumentsAppended#>> method<#=typeParametersAppended#>) <#=typeConstraints#>
 		{
-			var collectionSource = (_node == null || _hierarchy == null) ? _nonHierarchyComponents : _node.Children.Select(x => x.UntypedValue);
-
-			foreach (var component in collectionSource)
+			for (var i = 0; i < _componentCache.Length; i++)
 			{
-				var targetable = component as T;
+				var targetable = _componentCache[i] as T;
 				if (targetable != null)
 				{
 					method(targetable<#=typeParametersPassed#>);

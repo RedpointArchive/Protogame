@@ -17,6 +17,9 @@ namespace Protogame
 
         private bool _hasSetRotationOnRigidBody;
 
+        private bool _didUpdateSync;
+        private bool _enabled;
+
         internal PhysicalBaseRigidBodyComponent(INode node, IPhysicsEngine physicsEngine)
         {
             _node = node;
@@ -26,7 +29,18 @@ namespace Protogame
             Enabled = true;
         }
 
-        public bool Enabled { get; set; }
+        public bool Enabled
+        {
+            get { return _enabled; }
+            set
+            {
+                if (_enabled != value)
+                {
+                    _enabled = value;
+                    _didUpdateSync = false;
+                }
+            }
+        }
 
         public bool Static
         {
@@ -58,6 +72,11 @@ namespace Protogame
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
+            if (_didUpdateSync)
+            {
+                return;
+            }
+
             Update();
         }
 
@@ -78,11 +97,21 @@ namespace Protogame
 
         public void Update(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext)
         {
+            if (_didUpdateSync)
+            {
+                return;
+            }
+
             Update();
         }
 
         private void Update()
         {
+            if (_didUpdateSync)
+            {
+                return;
+            }
+
             // Update the parent node's matrix based on the rigid body's state.
             var transformComponent = _node.Parent?.UntypedValue as IHasTransform;
             if (transformComponent != null)
@@ -106,6 +135,8 @@ namespace Protogame
                     }
                 }
             }
+
+            _didUpdateSync = true;
         }
 
         public virtual void DeclareSynchronisedProperties(ISynchronisationApi synchronisationApi)
