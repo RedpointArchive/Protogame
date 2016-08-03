@@ -169,6 +169,7 @@
     <Compile Include="Assets\Model\ModelVertexMapping.cs" />
     <Compile Include="Assets\Model\RawModelLoadStrategy.cs" />
     <Compile Include="Assets\Model\VertexPositionNormal.cs" />
+    <Compile Include="Assets\Model\VertexPositionNormalBinormalTangentTexture.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalBinormalTangentTextureBlendable.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalBlendable.cs" />
     <Compile Include="Assets\Model\VertexPositionNormalColorBlendable.cs" />
