@@ -62,6 +62,8 @@ namespace Protogame
             kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>().AllowManyPerScope();
             
             kernel.Bind<IDebugRenderer>().To<NullDebugRenderer>().InSingletonScope();
+
+            kernel.Bind<IRenderBatcher>().To<DefaultRenderBatcher>().InSingletonScope();
         }
     }
 }

@@ -362,6 +362,18 @@
         }
 
         /// <summary>
+        /// Creates a render request the specified model in it's current state.
+        /// </summary>
+        /// <param name="renderContext">The current render context.</param>
+        /// <param name="transform">The world transformation to apply.</param>
+        public IRenderRequest CreateRenderRequest(IRenderContext renderContext, Matrix transform)
+        {
+            this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
+
+            return this.m_Model.CreateRenderRequest(renderContext, transform);
+        }
+
+        /// <summary>
         /// Loads vertex and index buffers for all of animations in this model.
         /// </summary>
         /// <param name="graphicsDevice">

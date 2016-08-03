@@ -14,10 +14,14 @@ namespace Protogame
     public class ModelSerializerVersion2 : IModelSerializer
     {
         private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
+        private readonly IRenderBatcher _renderBatcher;
 
-        public ModelSerializerVersion2(IModelRenderConfiguration[] modelRenderConfigurations)
+        public ModelSerializerVersion2(
+            IModelRenderConfiguration[] modelRenderConfigurations,
+            IRenderBatcher renderBatcher)
         {
             _modelRenderConfigurations = modelRenderConfigurations;
+            _renderBatcher = renderBatcher;
         }
 
         /// <summary>
@@ -283,7 +287,7 @@ namespace Protogame
             var vertexes = this.DeserializeVertexes(reader);
             var indices = this.DeserializeIndices(reader);
 
-            return new Model(_modelRenderConfigurations, name, animations, material, boneHierarchy, vertexes, indices);
+            return new Model(_modelRenderConfigurations, _renderBatcher, name, animations, material, boneHierarchy, vertexes, indices);
         }
 
         /// <summary>

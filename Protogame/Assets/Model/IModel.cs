@@ -102,6 +102,17 @@
         void Render(IRenderContext renderContext, Matrix transform);
 
         /// <summary>
+        /// Creates a render request for the model using the specified transform.
+        /// </summary>
+        /// <param name="renderContext">
+        /// The render context.
+        /// </param>
+        /// <param name="transform">
+        /// The transform.
+        /// </param>
+        IRenderRequest CreateRenderRequest(IRenderContext renderContext, Matrix transform);
+
+        /// <summary>
         /// Loads vertex and index buffers for all of animations in this model.
         /// </summary>
         /// <param name="graphicsDevice">

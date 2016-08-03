@@ -422,6 +422,10 @@
     <Compile Include="Extensions\RandomExtensions.cs" />
     <Compile Include="Extensions\UtilityExtensions.cs" />
     <Compile Include="Extensions\VectorExtensions.cs" />
+    <Compile Include="Graphics\Batching\DefaultRenderBatcher.cs" />
+    <Compile Include="Graphics\Batching\DefaultRenderRequest.cs" />
+    <Compile Include="Graphics\Batching\IRenderBatcher.cs" />
+    <Compile Include="Graphics\Batching\IRenderRequest.cs" />
     <Compile Include="Graphics\Default2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\Default2DDirectRenderPass.cs" />
     <Compile Include="Graphics\Default3DDeferredRenderPass.cs" />
@@ -441,6 +445,7 @@
     <Compile Include="Graphics\DefaultRenderTargetBackBufferUtilities.cs" />
     <Compile Include="Graphics\I2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\I2DDirectRenderPass.cs" />
+    <Compile Include="Graphics\I3DBatchedRenderPass.cs" />
     <Compile Include="Graphics\I3DDeferredRenderPass.cs" />
     <Compile Include="Graphics\I3DForwardRenderPass.cs" />
     <Compile Include="Graphics\I3DRenderPass.cs" />

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Protoinject;
 
@@ -11,6 +13,7 @@ namespace Protogame
         private readonly I3DRenderUtilities _renderUtilities;
 
         private readonly ITextureFromHintPath _textureFromHintPath;
+        private readonly IRenderBatcher _renderBatcher;
 
         private readonly IAssetManager _assetManager;
 
@@ -36,11 +39,13 @@ namespace Protogame
             INode node,
             I3DRenderUtilities renderUtilities,
             IAssetManagerProvider assetManagerProvider,
-            ITextureFromHintPath textureFromHintPath)
+            ITextureFromHintPath textureFromHintPath,
+            IRenderBatcher renderBatcher)
         {
             _node = node;
             _renderUtilities = renderUtilities;
             _textureFromHintPath = textureFromHintPath;
+            _renderBatcher = renderBatcher;
             _assetManager = assetManagerProvider.GetAssetManager();
 
             Enabled = true;
@@ -142,84 +147,65 @@ namespace Protogame
                         _lastCachedModel = Model;
                     }
 
-                    switch (_mode)
+                    Effect effect;
+
+                    if (!_useDefaultEffects)
                     {
-                        case "texture":
-                            if (_useDefaultEffects)
-                            {
-                                renderContext.PushEffect(_defaultTextureSkinnedEffectAsset.Effect);
-                            }
-                            else
-                            {
-                                renderContext.PushEffect(Effect.Effect);
-                            }
-                            
-                            renderContext.SetActiveTexture(_lastCachedDiffuseTexture.Texture);
-                            break;
-                        case "texture-normal":
-                            if (_useDefaultEffects)
-                            {
-                                renderContext.PushEffect(_defaultTextureSkinnedEffectAsset.Effect);
-                            }
-                            else
-                            {
-                                renderContext.PushEffect(Effect.Effect);
-                            }
-
-                            renderContext.SetActiveTexture(_lastCachedDiffuseTexture.Texture);
-
-                            {
-                                var semanticEffect = renderContext.Effect as EffectWithSemantics;
-                                if (semanticEffect != null && semanticEffect.HasSemantic<INormalMapEffectSemantic>())
-                                {
-                                    var normalMap = semanticEffect.GetSemantic<INormalMapEffectSemantic>();
-                                    if (normalMap != null)
-                                    {
-                                        normalMap.NormalMap = _lastCachedNormalMapTexture.Texture;
-                                    }
-                                }
-                            }
-
-                            break;
-                        case "color":
-                            if (_useDefaultEffects)
-                            {
-                                renderContext.PushEffect(_defaultColorSkinnedEffectAsset.Effect);
-                            }
-                            else
-                            {
-                                renderContext.PushEffect(Effect.Effect);
-                            }
-                            
-                            break;
-                        case "diffuse":
-                            Effect targetEffect;
-                            if (_useDefaultEffects)
-                            {
-                                targetEffect = _defaultDiffuseSkinnedEffectAsset.Effect;
-                            }
-                            else
-                            {
-                                targetEffect = Effect.Effect;
-                            }
-
-                            {
-                                var semanticEffect = targetEffect as EffectWithSemantics;
-                                if (semanticEffect != null)
-                                {
-                                    semanticEffect.GetSemantic<IColorDiffuseEffectSemantic>().Diffuse =
-                                        material.ColorDiffuse.Value;
-                                }
-                            }
-
-                            renderContext.PushEffect(targetEffect);
-                            
-                            break;
+                        effect = Effect.Effect;
+                    }
+                    else
+                    {
+                        switch (_mode)
+                        {
+                            case "texture":
+                                effect = _defaultTextureSkinnedEffectAsset.Effect;
+                                break;
+                            case "texture-normal":
+                                effect = _defaultTextureNormalSkinnedEffectAsset.Effect;
+                                break;
+                            case "color":
+                                effect = _defaultColorSkinnedEffectAsset.Effect;
+                                break;
+                            case "diffuse":
+                                effect = _defaultDiffuseSkinnedEffectAsset.Effect;
+                                break;
+                            default:
+                                throw new InvalidOperationException("Unknown default effect type.");
+                        }
                     }
 
-                    Model.Render(
+                    var semanticEffect = effect as EffectWithSemantics;
+                    if (semanticEffect != null)
+                    {
+                        if (semanticEffect.HasSemantic<ITextureEffectSemantic>())
+                        {
+                            if (_lastCachedDiffuseTexture.Texture != null)
+                            {
+                                semanticEffect.GetSemantic<ITextureEffectSemantic>().Texture =
+                                    _lastCachedDiffuseTexture.Texture;
+                            }
+                        }
+
+                        if (semanticEffect.HasSemantic<INormalMapEffectSemantic>())
+                        {
+                            if (_lastCachedNormalMapTexture.Texture != null)
+                            {
+                                semanticEffect.GetSemantic<INormalMapEffectSemantic>().NormalMap =
+                                    _lastCachedNormalMapTexture.Texture;
+                            }
+                        }
+
+                        if (semanticEffect.HasSemantic<IColorDiffuseEffectSemantic>())
+                        {
+                            semanticEffect.GetSemantic<IColorDiffuseEffectSemantic>().Diffuse =
+                                material.ColorDiffuse ?? Color.Black;
+                        }
+                    }
+
+                    renderContext.PushEffect(effect);
+                    _renderBatcher.QueueRequest(
                         renderContext,
-                        matrix);
+                        Model.CreateRenderRequest(renderContext, matrix));
                     renderContext.PopEffect();
                 }
                 else

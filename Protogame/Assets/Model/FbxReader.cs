@@ -24,10 +24,12 @@ namespace Protogame
     public class FbxReader
     {
         private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
+        private readonly IRenderBatcher _renderBatcher;
 
-        public FbxReader(IModelRenderConfiguration[] modelRenderConfigurations)
+        public FbxReader(IModelRenderConfiguration[] modelRenderConfigurations, IRenderBatcher renderBatcher)
         {
             _modelRenderConfigurations = modelRenderConfigurations;
+            _renderBatcher = renderBatcher;
         }
 
         /// <summary>
@@ -160,6 +162,7 @@ namespace Protogame
             // Return the resulting model.
             return new Model(
                 _modelRenderConfigurations,
+                _renderBatcher,
                 name,
                 new AnimationCollection(animations),
                 material,

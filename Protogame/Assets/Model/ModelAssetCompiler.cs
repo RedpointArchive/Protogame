@@ -9,11 +9,13 @@ namespace Protogame
     public class ModelAssetCompiler : IAssetCompiler<ModelAsset>
     {
         private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
+        private readonly IRenderBatcher _renderBatcher;
         private readonly IModelSerializer _modelSerializer;
 
-        public ModelAssetCompiler(IModelRenderConfiguration[] modelRenderConfigurations, IModelSerializer modelSerializer)
+        public ModelAssetCompiler(IModelRenderConfiguration[] modelRenderConfigurations, IRenderBatcher renderBatcher, IModelSerializer modelSerializer)
         {
             _modelRenderConfigurations = modelRenderConfigurations;
+            _renderBatcher = renderBatcher;
             _modelSerializer = modelSerializer;
         }
 
@@ -33,7 +35,7 @@ namespace Protogame
                 return;
             }
 
-            var reader = new FbxReader(_modelRenderConfigurations);
+            var reader = new FbxReader(_modelRenderConfigurations, _renderBatcher);
             var model = reader.Load(asset.RawData, asset.Name, asset.Extension, asset.RawAdditionalAnimations);
             var data = _modelSerializer.Serialize(model);
 

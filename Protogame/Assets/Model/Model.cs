@@ -24,6 +24,11 @@
         private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
 
         /// <summary>
+        /// The render batcher, which is used to create render requests.
+        /// </summary>
+        private readonly IRenderBatcher _renderBatcher;
+
+        /// <summary>
         /// The index buffer.
         /// </summary>
         private IndexBuffer _indexBuffer;
@@ -50,6 +55,7 @@
         /// </param>
         public Model(
             IModelRenderConfiguration[] modelRenderConfigurations,
+            IRenderBatcher renderBatcher,
             string name,
             IAnimationCollection availableAnimations,
             IMaterial material,
@@ -66,6 +72,7 @@
 
             _cachedVertexBuffers = new Dictionary<object, VertexBuffer>();
             _modelRenderConfigurations = modelRenderConfigurations;
+            _renderBatcher = renderBatcher;
 
             if (this.Root != null)
             {
@@ -184,6 +191,40 @@
         /// </param>
         public void Render(IRenderContext renderContext, Matrix transform)
         {
+            var request = CreateRenderRequest(renderContext, transform);
+            _renderBatcher.RenderRequestImmediate(renderContext, request);
+        }
+        
+        /// <summary>
+        /// Load the vertex and index buffer for this model.
+        /// </summary>
+        /// <param name="graphicsDevice">
+        /// The graphics device.
+        /// </param>
+        public void LoadBuffers(GraphicsDevice graphicsDevice)
+        {
+            if (this._indexBuffer == null)
+            {
+                this._indexBuffer = new IndexBuffer(
+                    graphicsDevice, 
+                    IndexElementSize.ThirtyTwoBits, 
+                    this.Indices.Length, 
+                    BufferUsage.WriteOnly);
+                this._indexBuffer.SetData(this.Indices);
+            }
+        }
+
+        /// <summary>
+        /// Creates a render request for the model using the specified transform.
+        /// </summary>
+        /// <param name="renderContext">
+        /// The render context.
+        /// </param>
+        /// <param name="transform">
+        /// The transform.
+        /// </param>
+        public IRenderRequest CreateRenderRequest(IRenderContext renderContext, Matrix transform)
+        {
             if (this.Vertexes.Length == 0 && this.Indices.Length == 0)
             {
                 throw new InvalidOperationException(
@@ -227,7 +268,7 @@
                     BufferUsage.WriteOnly);
                 vertexBuffer.GetType().GetMethods().First(x => x.Name == "SetData" && x.GetParameters().Length == 1).MakeGenericMethod(modelConfiguration.VertexType).Invoke(
                     vertexBuffer,
-                    new [] { mappedVerticies });
+                    new[] { mappedVerticies });
                 _cachedVertexBuffers[renderContext.Effect] = vertexBuffer;
             }
 
@@ -255,48 +296,14 @@
                     bonesEffectSemantic.Bones[bone.ID] = bone.GetFinalMatrix();
                 }
             }
-
-            // Keep a copy of the current world transformation and then apply the
-            // transformation that was passed in.
-            var oldWorld = renderContext.World;
-            renderContext.World *= transform;
-
-            // Render the vertex and index buffer.
-            renderContext.GraphicsDevice.Indices = this.IndexBuffer;
-            renderContext.GraphicsDevice.SetVertexBuffer(vertexBuffer);
-            foreach (var pass in renderContext.Effect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                renderContext.GraphicsDevice.DrawIndexedPrimitives(
-                    PrimitiveType.TriangleList,
-                    0,
-                    0,
-                    vertexBuffer.VertexCount,
-                    0,
-                    this.IndexBuffer.IndexCount / 3);
-            }
-
-            // Restore the world matrix.
-            renderContext.World = oldWorld;
-        }
-        
-        /// <summary>
-        /// Load the vertex and index buffer for this model.
-        /// </summary>
-        /// <param name="graphicsDevice">
-        /// The graphics device.
-        /// </param>
-        public void LoadBuffers(GraphicsDevice graphicsDevice)
-        {
-            if (this._indexBuffer == null)
-            {
-                this._indexBuffer = new IndexBuffer(
-                    graphicsDevice, 
-                    IndexElementSize.ThirtyTwoBits, 
-                    this.Indices.Length, 
-                    BufferUsage.WriteOnly);
-                this._indexBuffer.SetData(this.Indices);
-            }
+            
+            // Create the render request.
+            return _renderBatcher.CreateSingleRequestFromState(
+                renderContext,
+                vertexBuffer,
+                IndexBuffer,
+                PrimitiveType.TriangleList,
+                renderContext.World*transform);
         }
     }
 }
