@@ -14,17 +14,13 @@ namespace Protogame
     {
         private readonly I2DRenderUtilities _twoDimensionalRenderUtilities;
         private readonly IRenderCache _renderCache;
+        private readonly IRenderBatcher _renderBatcher;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Default3DRenderUtilities"/> class.
-        /// </summary>
-        /// <param name="renderUtilities">
-        /// The _2 d render utilities.
-        /// </param>
-        public Default3DRenderUtilities(I2DRenderUtilities renderUtilities, IRenderCache renderCache)
+        public Default3DRenderUtilities(I2DRenderUtilities renderUtilities, IRenderCache renderCache, IRenderBatcher renderBatcher)
         {
             _twoDimensionalRenderUtilities = renderUtilities;
             _renderCache = renderCache;
+            _renderBatcher = renderBatcher;
         }
 
         /// <summary>
@@ -530,24 +526,14 @@ namespace Protogame
 
             context.EnableVertexColors();
 
-            var world = context.World;
-
-            context.World = transform;
-            context.GraphicsDevice.SetVertexBuffer(vertexes);
-            context.GraphicsDevice.Indices = indicies;
-
-            foreach (var pass in context.Effect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-
-                context.GraphicsDevice.DrawIndexedPrimitives(
+            _renderBatcher.QueueRequest(
+                context,
+                _renderBatcher.CreateSingleRequestFromState(
+                    context,
+                    vertexes,
+                    indicies,
                     PrimitiveType.TriangleList,
-                    0,
-                    0,
-                    indicies.IndexCount / 3);
-            }
-
-            context.World = world;
+                    transform));
         }
 
         /// <summary>

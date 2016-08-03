@@ -8,17 +8,49 @@ namespace Protogame
 {
     public class DefaultRenderBatcher : IRenderBatcher
     {
-        private Queue<IRenderRequest> _requestQueue = new Queue<IRenderRequest>();
+        private readonly IProfiler _profiler;
+
+        public DefaultRenderBatcher(IProfiler profiler)
+        {
+            _profiler = profiler;
+        }
+
+        private Dictionary<int, IRenderRequest> _requestLookup = new Dictionary<int, IRenderRequest>();
+
+        private Dictionary<int, List<Matrix>> _requestInstances = new Dictionary<int, List<Matrix>>();
+
+        private VertexBuffer _vertexBuffer;
+
+        private int _vertexBufferLastInstanceCount;
+
+        private readonly VertexDeclaration _vertexDeclaration = new VertexDeclaration(
+            new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1),
+            new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 2),
+            new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 3),
+            new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 4));
 
         public void QueueRequest(IRenderContext renderContext, IRenderRequest request)
         {
-            if (renderContext.IsCurrentRenderPass<I3DBatchedRenderPass>())
+            using (_profiler.Measure("render-queue"))
             {
-                _requestQueue.Enqueue(request);
-            }
-            else
-            {
-                RenderRequestImmediate(renderContext, request);
+                if (renderContext.IsCurrentRenderPass<I3DBatchedRenderPass>())
+                {
+                    if (!_requestLookup.ContainsKey(request.StateHash))
+                    {
+                        _requestLookup[request.StateHash] = request;
+                    }
+
+                    if (!_requestInstances.ContainsKey(request.StateHash))
+                    {
+                        _requestInstances[request.StateHash] = new List<Matrix>();
+                    }
+
+                    _requestInstances[request.StateHash].AddRange(request.Instances);
+                }
+                else
+                {
+                    RenderRequestImmediate(renderContext, request);
+                }
             }
         }
 
@@ -26,7 +58,99 @@ namespace Protogame
         {
             if (renderContext.IsCurrentRenderPass<I3DBatchedRenderPass>())
             {
-                // TODO
+                using (_profiler.Measure("render-flush"))
+                {
+                    foreach (var kv in _requestLookup)
+                    {
+                        if (_requestInstances[kv.Key].Count == 0)
+                        {
+                            continue;
+                        }
+
+                        var request = kv.Value;
+
+                        int pc;
+                        SetupForRequest(renderContext, request, out pc, false);
+
+#if PLATFORM_WINDOWS
+                        // TODO: Not quite working yet...
+                        var allowInstancedCalls = false;
+#else
+                        var allowInstancedCalls = false;
+#endif
+
+                        if (allowInstancedCalls &&
+                            renderContext.Effect.Techniques[request.TechniqueName + "Batched"] != null)
+                        {
+#if PLATFORM_WINDOWS
+                            if (_vertexBuffer == null ||
+                                _requestInstances[kv.Key].Count > _vertexBufferLastInstanceCount)
+                            {
+                                _vertexBuffer?.Dispose();
+
+                                _vertexBuffer = new VertexBuffer(
+                                    renderContext.GraphicsDevice,
+                                    _vertexDeclaration,
+                                    _requestInstances[kv.Key].Count,
+                                    BufferUsage.WriteOnly);
+                            }
+
+                            var matrices = _requestInstances[kv.Key];
+                            _vertexBuffer.SetData(matrices.ToArray(), 0, matrices.Count);
+                            renderContext.GraphicsDevice.SetVertexBuffers(
+                                new VertexBufferBinding(request.MeshVertexBuffer),
+                                new VertexBufferBinding(_vertexBuffer, 0, 1));
+
+                            foreach (var pass in renderContext.Effect.Techniques[request.TechniqueName].Passes)
+                            {
+                                pass.Apply();
+
+                                renderContext.GraphicsDevice.DrawInstancedPrimitives(
+                                    request.PrimitiveType,
+                                    0,
+                                    0,
+                                    request.MeshVertexBuffer.VertexCount,
+                                    0,
+                                    pc,
+                                    matrices.Count);
+                            }
+#endif
+                        }
+                        else
+                        {
+                            var oldWorld = renderContext.World;
+
+                            renderContext.GraphicsDevice.SetVertexBuffer(request.MeshVertexBuffer);
+
+                            foreach (var instance in _requestInstances[kv.Key])
+                            {
+                                // TODO: In instanced mode, we want to pass the world transforms through
+                                // as a seperate vertex buffer.
+                                renderContext.World = instance;
+
+                                foreach (var pass in renderContext.Effect.Techniques[request.TechniqueName].Passes)
+                                {
+                                    pass.Apply();
+
+                                    renderContext.GraphicsDevice.DrawIndexedPrimitives(
+                                        request.PrimitiveType,
+                                        0,
+                                        0,
+                                        pc);
+                                }
+                            }
+
+                            renderContext.World = oldWorld;
+                        }
+
+                        renderContext.PopEffect();
+
+                        _requestInstances[kv.Key].Clear();
+                    }
+
+                    _requestLookup.Clear();
+                    _requestInstances.Clear();
+                }
             }
         }
 
@@ -73,14 +197,18 @@ namespace Protogame
 
         private EffectParameter[] CloneParameters(Effect effect)
         {
-            var clonedParameters = effect.Clone().Parameters;
+            var clonedParameters = new List<EffectParameter>();
 
-            foreach (var param in clonedParameters)
+            foreach (var param in effect.Parameters)
             {
-                if (param.ParameterType == EffectParameterType.Texture2D)
+                var newParam = new EffectParameter(param);
+
+                if (newParam.ParameterType == EffectParameterType.Texture2D)
                 {
-                    param.SetValue(effect.Parameters[param.Name].GetValueTexture2D());
+                    newParam.SetValue(param.GetValueTexture2D());
                 }
+
+                clonedParameters.Add(newParam);
             }
 
             return clonedParameters.ToArray();
@@ -127,17 +255,19 @@ namespace Protogame
                 instancedWorldTransforms);
         }
 
-        public void RenderRequestImmediate(IRenderContext renderContext, IRenderRequest request)
+        private void SetupForRequest(IRenderContext renderContext, IRenderRequest request, out int pc, bool setVertexBuffers)
         {
             renderContext.PushEffect(request.Effect);
             renderContext.GraphicsDevice.RasterizerState = request.RasterizerState;
             renderContext.GraphicsDevice.BlendState = request.BlendState;
             renderContext.GraphicsDevice.DepthStencilState = request.DepthStencilState;
 
-            renderContext.GraphicsDevice.SetVertexBuffer(request.MeshVertexBuffer);
+            if (setVertexBuffers)
+            {
+                renderContext.GraphicsDevice.SetVertexBuffer(request.MeshVertexBuffer);
+            }
             renderContext.GraphicsDevice.Indices = request.MeshIndexBuffer;
             
-            var pc = 0;
             switch (request.PrimitiveType)
             {
                 case PrimitiveType.TriangleStrip:
@@ -237,6 +367,12 @@ namespace Protogame
                         throw new InvalidOperationException("Can't copy value to target effect (dest expected type " + dest.ParameterType + ").");
                 }
             }
+        }
+
+        public void RenderRequestImmediate(IRenderContext renderContext, IRenderRequest request)
+        {
+            int pc;
+            SetupForRequest(renderContext, request, out pc, true);
 
             var oldWorld = renderContext.World;
 

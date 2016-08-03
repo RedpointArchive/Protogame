@@ -27,6 +27,8 @@ namespace Protogame
 
         private readonly IRenderTargetBackBufferUtilities _renderTargetBackBufferUtilities;
 
+        private readonly IProfiler _profiler;
+
         private readonly IEngineHook[] _engineHooks;
 
         private RenderTarget2D _primary;
@@ -40,10 +42,12 @@ namespace Protogame
         public DefaultRenderPipeline(
             IGraphicsBlit graphicsBlit,
             IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities,
+            IProfiler profiler,
             [FromGame] IEngineHook[] engineHooks)
         {
             _graphicsBlit = graphicsBlit;
             _renderTargetBackBufferUtilities = renderTargetBackBufferUtilities;
+            _profiler = profiler;
             _engineHooks = engineHooks;
             _standardRenderPasses = new List<IRenderPass>();
             _postProcessingRenderPasses = new List<IRenderPass>();
@@ -83,53 +87,17 @@ namespace Protogame
                 for (var i = 0; i < standardRenderPasses.Length; i++)
                 {
                     var pass = standardRenderPasses[i];
-                    _isFirstRenderPass = previousPass == null;
-                    _renderPass = pass;
-                    SetupRenderPassViewport(renderContext, pass);
-                    pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
-                    previousPass = pass;
-                    RenderPass(gameContext, renderContext, entities);
-                    if (i < standardRenderPasses.Length - 1)
+                    using (_profiler.Measure("r-" + pass.GetType().Name))
                     {
-                        nextPass = standardRenderPasses[i + 1];
-                    }
-                    else if (_transientStandardRenderPasses.Count > 0)
-                    {
-                        nextPass = _transientStandardRenderPasses[0];
-                    }
-                    else if (postProcessingRenderPasses.Length > 0)
-                    {
-                        nextPass = postProcessingRenderPasses[0];
-                    }
-                    else if (_transientPostProcessingRenderPasses.Count > 0)
-                    {
-                        nextPass = _transientPostProcessingRenderPasses[0];
-                    }
-                    else
-                    {
-                        nextPass = null;
-                    }
-                    pass.EndRenderPass(gameContext, renderContext, nextPass);
-                }
-
-                var loop = 100;
-                while (_transientStandardRenderPasses.Count > 0 && loop-- >= 0)
-                {
-                    var transientStandardRenderPasses = _transientStandardRenderPasses.ToArray();
-                    _transientStandardRenderPasses.Clear();
-
-                    for (var i = 0; i < transientStandardRenderPasses.Length; i++)
-                    {
-                        var pass = transientStandardRenderPasses[i];
                         _isFirstRenderPass = previousPass == null;
                         _renderPass = pass;
                         SetupRenderPassViewport(renderContext, pass);
                         pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
                         previousPass = pass;
                         RenderPass(gameContext, renderContext, entities);
-                        if (i < transientStandardRenderPasses.Length - 1)
+                        if (i < standardRenderPasses.Length - 1)
                         {
-                            nextPass = transientStandardRenderPasses[i + 1];
+                            nextPass = standardRenderPasses[i + 1];
                         }
                         else if (_transientStandardRenderPasses.Count > 0)
                         {
@@ -148,6 +116,48 @@ namespace Protogame
                             nextPass = null;
                         }
                         pass.EndRenderPass(gameContext, renderContext, nextPass);
+                    }
+                }
+
+                var loop = 100;
+                while (_transientStandardRenderPasses.Count > 0 && loop-- >= 0)
+                {
+                    var transientStandardRenderPasses = _transientStandardRenderPasses.ToArray();
+                    _transientStandardRenderPasses.Clear();
+
+                    for (var i = 0; i < transientStandardRenderPasses.Length; i++)
+                    {
+                        var pass = transientStandardRenderPasses[i];
+                        using (_profiler.Measure("r-" + pass.GetType().Name))
+                        {
+                            _isFirstRenderPass = previousPass == null;
+                            _renderPass = pass;
+                            SetupRenderPassViewport(renderContext, pass);
+                            pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
+                            previousPass = pass;
+                            RenderPass(gameContext, renderContext, entities);
+                            if (i < transientStandardRenderPasses.Length - 1)
+                            {
+                                nextPass = transientStandardRenderPasses[i + 1];
+                            }
+                            else if (_transientStandardRenderPasses.Count > 0)
+                            {
+                                nextPass = _transientStandardRenderPasses[0];
+                            }
+                            else if (postProcessingRenderPasses.Length > 0)
+                            {
+                                nextPass = postProcessingRenderPasses[0];
+                            }
+                            else if (_transientPostProcessingRenderPasses.Count > 0)
+                            {
+                                nextPass = _transientPostProcessingRenderPasses[0];
+                            }
+                            else
+                            {
+                                nextPass = null;
+                            }
+                            pass.EndRenderPass(gameContext, renderContext, nextPass);
+                        }
                     }
                 }
                 if (loop < 0)
@@ -180,53 +190,15 @@ namespace Protogame
                 for (var i = 0; i < postProcessingRenderPasses.Length; i++)
                 {
                     var pass = postProcessingRenderPasses[i];
-                    _isFirstRenderPass = previousPass == null;
-                    _renderPass = pass;
-                    pass.BeginRenderPass(gameContext, renderContext, previousPass, currentSource);
-                    previousPass = pass;
-                    if (i < postProcessingRenderPasses.Length - 1)
+                    using (_profiler.Measure("r-" + pass.GetType().Name))
                     {
-                        nextPass = postProcessingRenderPasses[i + 1];
-                    }
-                    else if (_transientPostProcessingRenderPasses.Count > 0)
-                    {
-                        nextPass = _transientPostProcessingRenderPasses[0];
-                    }
-                    else
-                    {
-                        nextPass = null;
-                    }
-                    pass.EndRenderPass(gameContext, renderContext, nextPass);
-
-                    var temp = currentSource;
-                    currentSource = currentDest;
-                    currentDest = temp;
-
-#if !DISABLE_PIPELINE_TARGETS
-                    renderContext.PopRenderTarget();
-                    renderContext.PushRenderTarget(currentDest);
-#endif
-
-                    // NOTE: This does not clear the new destination render target; it is expected that
-                    // post-processing effects will fully overwrite the destination.
-                }
-
-                loop = 100;
-                while (_transientPostProcessingRenderPasses.Count > 0 && loop-- >= 0)
-                {
-                    var transientPostProcessingRenderPasses = _transientPostProcessingRenderPasses.ToArray();
-                    _transientPostProcessingRenderPasses.Clear();
-
-                    for (var i = 0; i < transientPostProcessingRenderPasses.Length; i++)
-                    {
-                        var pass = transientPostProcessingRenderPasses[i];
                         _isFirstRenderPass = previousPass == null;
                         _renderPass = pass;
                         pass.BeginRenderPass(gameContext, renderContext, previousPass, currentSource);
                         previousPass = pass;
-                        if (i < transientPostProcessingRenderPasses.Length - 1)
+                        if (i < postProcessingRenderPasses.Length - 1)
                         {
-                            nextPass = transientPostProcessingRenderPasses[i + 1];
+                            nextPass = postProcessingRenderPasses[i + 1];
                         }
                         else if (_transientPostProcessingRenderPasses.Count > 0)
                         {
@@ -249,6 +221,50 @@ namespace Protogame
 
                         // NOTE: This does not clear the new destination render target; it is expected that
                         // post-processing effects will fully overwrite the destination.
+                    }
+                }
+
+                loop = 100;
+                while (_transientPostProcessingRenderPasses.Count > 0 && loop-- >= 0)
+                {
+                    var transientPostProcessingRenderPasses = _transientPostProcessingRenderPasses.ToArray();
+                    _transientPostProcessingRenderPasses.Clear();
+
+                    for (var i = 0; i < transientPostProcessingRenderPasses.Length; i++)
+                    {
+                        var pass = transientPostProcessingRenderPasses[i];
+                        using (_profiler.Measure("r-" + pass.GetType().Name))
+                        {
+                            _isFirstRenderPass = previousPass == null;
+                            _renderPass = pass;
+                            pass.BeginRenderPass(gameContext, renderContext, previousPass, currentSource);
+                            previousPass = pass;
+                            if (i < transientPostProcessingRenderPasses.Length - 1)
+                            {
+                                nextPass = transientPostProcessingRenderPasses[i + 1];
+                            }
+                            else if (_transientPostProcessingRenderPasses.Count > 0)
+                            {
+                                nextPass = _transientPostProcessingRenderPasses[0];
+                            }
+                            else
+                            {
+                                nextPass = null;
+                            }
+                            pass.EndRenderPass(gameContext, renderContext, nextPass);
+
+                            var temp = currentSource;
+                            currentSource = currentDest;
+                            currentDest = temp;
+
+#if !DISABLE_PIPELINE_TARGETS
+                            renderContext.PopRenderTarget();
+                            renderContext.PushRenderTarget(currentDest);
+#endif
+
+                            // NOTE: This does not clear the new destination render target; it is expected that
+                            // post-processing effects will fully overwrite the destination.
+                        }
                     }
                 }
                 if (loop < 0)

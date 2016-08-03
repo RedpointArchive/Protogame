@@ -23,6 +23,7 @@
     <Compile Include="IAssetCleanup.cs" />
     <Compile Include="IAssetCompilationEngine.cs" />
     <Compile Include="IAssetOutOfDateCalculator.cs" />
+    <Compile Include="NullRenderBatcher.cs" />
     <Compile Include="Program.cs" />
   </Files>
 </Project>

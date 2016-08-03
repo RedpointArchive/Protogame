@@ -78,6 +78,7 @@
             var services = new GameServiceContainer();
             var assetContentManager = new AssetContentManager(services);
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+            kernel.Bind<IRenderBatcher>().To<NullRenderBatcher>();
 
             // Only allow source and raw load strategies.
             kernel.Unbind<ILoadStrategy>();
@@ -195,6 +196,7 @@
             var services = new GameServiceContainer();
             var assetContentManager = new AssetContentManager(services);
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+            kernel.Bind<IRenderBatcher>().To<NullRenderBatcher>();
 
             // Only allow source and raw load strategies.
             kernel.Unbind<ILoadStrategy>();

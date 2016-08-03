@@ -1,24 +1,26 @@
-﻿// -----------------------------------------------------------------------------
-// This is a template for a color-based shader.  It is written to provide the
-// minimal amount of code such that it can be built upon (for custom lighting effects).
-// -----------------------------------------------------------------------------
+﻿PROTOGAME_DECLARE_TEXTURE(Texture);
+PROTOGAME_DECLARE_TEXTURE(NormalMap);
 
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
 
-float4 ColorDiffuse;
-
 struct VertexShaderInput
 {
-    float4 Position : PROTOGAME_POSITION(0);
+	float4 Position : PROTOGAME_POSITION(0);
+	float2 TexCoord : PROTOGAME_TEXCOORD(0);
 	float4 Normal : PROTOGAME_NORMAL(0);
+	float4 Binormal : PROTOGAME_BINORMAL(0);
+	float4 Tangent : PROTOGAME_TANGENT(0);
 };
 
 struct VertexShaderInputBatched
 {
 	float4 Position : PROTOGAME_POSITION(0);
+	float2 TexCoord : PROTOGAME_TEXCOORD(0);
 	float4 Normal : PROTOGAME_NORMAL(0);
+	float4 Binormal : PROTOGAME_BINORMAL(0);
+	float4 Tangent : PROTOGAME_TANGENT(0);
 	float4x4 InstanceWorld : PROTOGAME_TEXCOORD(1);
 };
 
@@ -26,8 +28,11 @@ struct VertexShaderInputBatched
 
 struct ForwardVertexShaderOutput
 {
-    float4 Position : PROTOGAME_POSITION_RASTERIZER;
-    float4 Color : PROTOGAME_TARGET(0);
+	float4 Position : PROTOGAME_POSITION_RASTERIZER;
+	float2 TexCoord : PROTOGAME_TEXCOORD(0);
+	float4 Normal : PROTOGAME_NORMAL(0);
+	float4 Binormal : PROTOGAME_BINORMAL(0);
+	float4 Tangent : PROTOGAME_TANGENT(0);
 };
 
 struct ForwardPixelShaderOutput
@@ -38,31 +43,33 @@ struct ForwardPixelShaderOutput
 ForwardVertexShaderOutput ForwardVertexShader(VertexShaderInput input)
 {
 	ForwardVertexShaderOutput output;
-    
-    float4 worldPosition = mul(input.Position, World);
-    float4 viewPosition = mul(worldPosition, View);
-    output.Position = mul(viewPosition, Projection);
 
-    output.Color = ColorDiffuse;
+	float4 worldPosition = mul(input.Position, World);
+	float4 viewPosition = mul(worldPosition, View);
+	output.Position = mul(viewPosition, Projection);
+	output.Normal = mul(float4(input.Normal.rgb, 0), World);
+	output.Tangent = mul(float4(input.Tangent.rgb, 0), World);
+	output.Binormal = mul(float4(input.Binormal.rgb, 0), World);
+	output.TexCoord = input.TexCoord;
 
-    return output;
+	return output;
 }
 
 ForwardPixelShaderOutput ForwardPixelShader(ForwardVertexShaderOutput input)
 {
 	ForwardPixelShaderOutput output;
 
-	output.Color = input.Color;
-    
-    return output;
+	output.Color = PROTOGAME_SAMPLE_TEXTURE(Texture, input.TexCoord);
+
+	return output;
 }
 
 technique RENDER_PASS_TYPE_FORWARD
 {
 	pass
 	{
-		VertexShader = compile PROTOGAME_VERTEX_LOW_SHADER ForwardVertexShader();
-		PixelShader = compile PROTOGAME_PIXEL_LOW_SHADER ForwardPixelShader();
+		VertexShader = compile PROTOGAME_VERTEX_HIGH_SHADER ForwardVertexShader();
+		PixelShader = compile PROTOGAME_PIXEL_HIGH_SHADER ForwardPixelShader();
 	}
 }
 
@@ -71,9 +78,11 @@ technique RENDER_PASS_TYPE_FORWARD
 struct DeferredVertexShaderOutput
 {
 	float4 Position : PROTOGAME_POSITION_RASTERIZER;
-	float3 Color : PROTOGAME_TARGET(0);
-	float3 Normal : PROTOGAME_TEXCOORD(0);
+	float2 TexCoord : PROTOGAME_TEXCOORD(0);
 	float2 Depth : PROTOGAME_TEXCOORD(1);
+	float4 Normal : PROTOGAME_NORMAL(0);
+	float4 Binormal : PROTOGAME_BINORMAL(0);
+	float4 Tangent : PROTOGAME_TANGENT(0);
 };
 
 struct DeferredPixelShaderOutput
@@ -91,8 +100,10 @@ DeferredVertexShaderOutput DeferredVertexShader(VertexShaderInput input)
 	float4 viewPosition = mul(worldPosition, View);
 	output.Position = mul(viewPosition, Projection);
 
-	output.Color = ColorDiffuse;
+	output.TexCoord = input.TexCoord;
 	output.Normal = mul(float4(input.Normal.rgb, 0), World);
+	output.Tangent = mul(float4(input.Tangent.rgb, 0), World);
+	output.Binormal = mul(float4(input.Binormal.rgb, 0), World);
 	output.Depth.x = output.Position.z;
 	output.Depth.y = output.Position.w;
 
@@ -107,8 +118,10 @@ DeferredVertexShaderOutput DeferredVertexShaderBatched(VertexShaderInputBatched 
 	float4 viewPosition = mul(worldPosition, View);
 	output.Position = mul(viewPosition, Projection);
 
-	output.Color = ColorDiffuse;
+	output.TexCoord = input.TexCoord;
 	output.Normal = mul(float4(input.Normal.rgb, 0), input.InstanceWorld);
+	output.Tangent = mul(float4(input.Tangent.rgb, 0), input.InstanceWorld);
+	output.Binormal = mul(float4(input.Binormal.rgb, 0), input.InstanceWorld);
 	output.Depth.x = output.Position.z;
 	output.Depth.y = output.Position.w;
 
@@ -120,13 +133,18 @@ DeferredPixelShaderOutput DeferredPixelShader(DeferredVertexShaderOutput input)
 	DeferredPixelShaderOutput output;
 
 	// Output the RGB color.
-	output.Color.rgb = input.Color;
+	output.Color.rgb = PROTOGAME_SAMPLE_TEXTURE(Texture, input.TexCoord).rgb;
 
 	// Alpha channel is unused.
 	output.Color.a = 0.0f;
 
 	// Transform normal.
-	output.Normal.rgb = 0.5f * (normalize(input.Normal) + 1.0f);
+	float3 normalMap = PROTOGAME_SAMPLE_TEXTURE(NormalMap, input.TexCoord).rgb;
+	normalMap = (normalMap * 2.0f) - 1.0f;
+	output.Normal.rgb = normalize(
+		(normalMap.x * input.Tangent) + 
+		(normalMap.y * input.Binormal) +
+		(normalMap.z * input.Normal));
 
 	// Alpha channel is unused.
 	output.Normal.a = 0.0f;
@@ -141,8 +159,8 @@ technique RENDER_PASS_TYPE_DEFERRED
 {
 	pass
 	{
-		VertexShader = compile PROTOGAME_VERTEX_LOW_SHADER DeferredVertexShader();
-		PixelShader = compile PROTOGAME_PIXEL_LOW_SHADER DeferredPixelShader();
+		VertexShader = compile PROTOGAME_VERTEX_HIGH_SHADER DeferredVertexShader();
+		PixelShader = compile PROTOGAME_PIXEL_HIGH_SHADER DeferredPixelShader();
 	}
 }
 

@@ -799,6 +799,15 @@
     <Compile Include="UserInterface\VerticalAlign.cs" />
     <Compile Include="UserInterface\VerticalContainer.cs" />
     <Compile Include="UserInterface\Window.cs" />
+    <Content Include="..\Protogame.Resources\effect.Diffuse.fx">
+      <Link>Resources\effect.Diffuse.fx</Link>
+    </Content>
+    <Content Include="..\Protogame.Resources\effect.DiffuseSkinned.fx">
+      <Link>Resources\effect.DiffuseSkinned.fx</Link>
+    </Content>
+    <Content Include="..\Protogame.Resources\effect.TextureNormal.fx">
+      <Link>Resources\effect.TextureNormal.fx</Link>
+    </Content>
     <Content Include="Component\Builtin\NetworkSynchronisationComponentGenerated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>NetworkSynchronisationComponentGenerated.cs</LastGenOutput>
@@ -821,6 +830,12 @@
     </None>
     <None Include="..\Protogame.Resources\effect.ColorSkinned.fx">
       <Link>Resources\effect.ColorSkinned.fx</Link>
+    </None>
+    <None Include="..\Protogame.Resources\effect.Diffuse.fx">
+      <Link>Resources\effect.Diffuse.fx</Link>
+    </None>
+    <None Include="..\Protogame.Resources\effect.DiffuseSkinned.fx">
+      <Link>Resources\effect.DiffuseSkinned.fx</Link>
     </None>
     <None Include="..\Protogame.Resources\effect.DirectionalLight.fx">
       <Link>Resources\effect.DirectionalLight.fx</Link>
@@ -852,8 +867,11 @@
     <None Include="..\Protogame.Resources\effect.Texture.fx">
       <Link>Resources\effect.Texture.fx</Link>
     </None>
+    <None Include="..\Protogame.Resources\effect.TextureNormal.fx">
+      <Link>Resources\effect.TextureNormal.fx</Link>
+    </None>
     <None Include="..\Protogame.Resources\effect.TextureNormalSkinned.fx">
-      <Link>Resources\effect.TextureSkinned.fx</Link>
+      <Link>Resources\effect.TextureNormalSkinned.fx</Link>
     </None>
     <None Include="..\Protogame.Resources\effect.TextureSkinned.fx">
       <Link>Resources\effect.TextureSkinned.fx</Link>

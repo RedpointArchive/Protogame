@@ -43,6 +43,14 @@ namespace Protogame
                             src.Normal ?? Vector3.Zero,
                             src.BoneWeights ?? Vector4.Zero,
                             src.BoneIndices ?? new Byte4(0, 0, 0, 0)));
+                case "effect.TextureNormal":
+                    return ModelVertexMapping.Create(
+                        src => new VertexPositionNormalBinormalTangentTexture(
+                            src.Position ?? Vector3.Zero,
+                            src.BiTangent ?? Vector3.Zero,
+                            src.Tangent ?? Vector3.Zero,
+                            src.Normal ?? Vector3.Zero,
+                            (src.TexCoordsUV != null && src.TexCoordsUV.Length >= 1) ? src.TexCoordsUV[0] : Vector2.Zero));
                 case "effect.Texture":
                     return ModelVertexMapping.Create(
                         src => new VertexPositionNormalTexture(

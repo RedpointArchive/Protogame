@@ -33,6 +33,14 @@ namespace Protogame
 
         private EffectAsset _defaultDiffuseSkinnedEffectAsset;
 
+        private EffectAsset _defaultTextureEffectAsset;
+
+        private EffectAsset _defaultTextureNormalEffectAsset;
+
+        private EffectAsset _defaultColorEffectAsset;
+
+        private EffectAsset _defaultDiffuseEffectAsset;
+
         private string _mode;
 
         public Render3DModelComponent(
@@ -83,6 +91,10 @@ namespace Protogame
                     _defaultTextureNormalSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureNormalSkinned");
                     _defaultColorSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.ColorSkinned");
                     _defaultDiffuseSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.DiffuseSkinned");
+                    _defaultTextureEffectAsset = _assetManager.Get<EffectAsset>("effect.Texture");
+                    _defaultTextureNormalEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureNormal");
+                    _defaultColorEffectAsset = _assetManager.Get<EffectAsset>("effect.Color");
+                    _defaultDiffuseEffectAsset = _assetManager.Get<EffectAsset>("effect.Diffuse");
                 }
 
                 if (Model != null)
@@ -155,22 +167,45 @@ namespace Protogame
                     }
                     else
                     {
-                        switch (_mode)
+                        if (_lastCachedModel.Bones == null)
                         {
-                            case "texture":
-                                effect = _defaultTextureSkinnedEffectAsset.Effect;
-                                break;
-                            case "texture-normal":
-                                effect = _defaultTextureNormalSkinnedEffectAsset.Effect;
-                                break;
-                            case "color":
-                                effect = _defaultColorSkinnedEffectAsset.Effect;
-                                break;
-                            case "diffuse":
-                                effect = _defaultDiffuseSkinnedEffectAsset.Effect;
-                                break;
-                            default:
-                                throw new InvalidOperationException("Unknown default effect type.");
+                            switch (_mode)
+                            {
+                                case "texture":
+                                    effect = _defaultTextureEffectAsset.Effect;
+                                    break;
+                                case "texture-normal":
+                                    effect = _defaultTextureNormalEffectAsset.Effect;
+                                    break;
+                                case "color":
+                                    effect = _defaultColorEffectAsset.Effect;
+                                    break;
+                                case "diffuse":
+                                    effect = _defaultDiffuseEffectAsset.Effect;
+                                    break;
+                                default:
+                                    throw new InvalidOperationException("Unknown default effect type.");
+                            }
+                        }
+                        else
+                        {
+                            switch (_mode)
+                            {
+                                case "texture":
+                                    effect = _defaultTextureSkinnedEffectAsset.Effect;
+                                    break;
+                                case "texture-normal":
+                                    effect = _defaultTextureNormalSkinnedEffectAsset.Effect;
+                                    break;
+                                case "color":
+                                    effect = _defaultColorSkinnedEffectAsset.Effect;
+                                    break;
+                                case "diffuse":
+                                    effect = _defaultDiffuseSkinnedEffectAsset.Effect;
+                                    break;
+                                default:
+                                    throw new InvalidOperationException("Unknown default effect type.");
+                            }
                         }
                     }
 

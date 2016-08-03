@@ -18,6 +18,7 @@ namespace Protogame
         private readonly IRenderTargetBackBufferUtilities _renderTargetBackBufferUtilities;
         private readonly IGraphicsBlit _graphicsBlit;
         private readonly ILightFactory _lightFactory;
+        private readonly IRenderBatcher _renderBatcher;
         private readonly EffectAsset _gbufferClearEffect;
         private readonly EffectAsset _gbufferRenderEffect;
         private readonly EffectAsset _gbufferCombineEffect;
@@ -44,12 +45,14 @@ namespace Protogame
             IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities,
             IGraphicsBlit graphicsBlit,
             IAssetManagerProvider assetManagerProvider,
-            ILightFactory lightFactory)
+            ILightFactory lightFactory,
+            IRenderBatcher renderBatcher)
         {
             _hierarchy = hierarchy;
             _renderTargetBackBufferUtilities = renderTargetBackBufferUtilities;
             _graphicsBlit = graphicsBlit;
             _lightFactory = lightFactory;
+            _renderBatcher = renderBatcher;
             _gbufferClearEffect =
                 assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.GBufferClear");
             _gbufferRenderEffect =
@@ -165,6 +168,8 @@ namespace Protogame
             IRenderContext renderContext, 
             IRenderPass nextPass)
         {
+            _renderBatcher.FlushRequests(renderContext);
+
             renderContext.PopEffect();
             renderContext.PopRenderTarget();
 

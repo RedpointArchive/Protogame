@@ -11,6 +11,7 @@
 // Keep this in sync with RenderPipelineTechniqueName.
 #define RENDER_PASS_TYPE_FORWARD Forward
 #define RENDER_PASS_TYPE_DEFERRED Deferred
+#define RENDER_PASS_TYPE_DEFERRED_BATCHED DeferredBatched
 #define RENDER_PASS_TYPE_BATCHED2D Batched2D
 #define RENDER_PASS_TYPE_DIRECT2D Direct2D
 #define RENDER_PASS_TYPE_CANVAS Canvas
