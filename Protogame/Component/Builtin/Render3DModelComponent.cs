@@ -6,7 +6,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class Render3DModelComponent : IRenderableComponent, IEnabledComponent
+    public class Render3DModelComponent : IRenderableComponent, IEnabledComponent, IHasTransform
     {
         private readonly INode _node;
 
@@ -57,6 +57,7 @@ namespace Protogame
             _assetManager = assetManagerProvider.GetAssetManager();
 
             Enabled = true;
+            Transform = new DefaultTransform();
         }
         
         public ModelAsset Model { get; set; }
@@ -99,12 +100,7 @@ namespace Protogame
 
                 if (Model != null)
                 {
-                    var matrix = Matrix.Identity;
-                    var matrixComponent = _node.Parent?.UntypedValue as IHasTransform;
-                    if (matrixComponent != null)
-                    {
-                        matrix *= matrixComponent.FinalTransform.AbsoluteMatrix;
-                    }
+                    var matrix = FinalTransform.AbsoluteMatrix;
 
                     var material = OverrideMaterial ?? Model.Material;
 
@@ -250,5 +246,9 @@ namespace Protogame
                 }
             }
         }
+
+        public ITransform Transform { get; }
+
+        public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
     }
 }
