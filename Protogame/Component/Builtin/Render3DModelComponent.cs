@@ -155,7 +155,7 @@ namespace Protogame
                         _lastCachedModel = Model;
                     }
 
-                    Effect effect;
+                    IEffect effect;
 
                     if (!_useDefaultEffects)
                     {
@@ -205,39 +205,35 @@ namespace Protogame
                         }
                     }
 
-                    var semanticEffect = effect as EffectWithSemantics;
-                    if (semanticEffect != null)
+                    var parameterSet = effect.CreateParameterSet();
+
+                    if (parameterSet.HasSemantic<ITextureEffectSemantic>())
                     {
-                        if (semanticEffect.HasSemantic<ITextureEffectSemantic>())
+                        if (_lastCachedDiffuseTexture.Texture != null)
                         {
-                            if (_lastCachedDiffuseTexture.Texture != null)
-                            {
-                                semanticEffect.GetSemantic<ITextureEffectSemantic>().Texture =
-                                    _lastCachedDiffuseTexture.Texture;
-                            }
-                        }
-
-                        if (semanticEffect.HasSemantic<INormalMapEffectSemantic>())
-                        {
-                            if (_lastCachedNormalMapTexture.Texture != null)
-                            {
-                                semanticEffect.GetSemantic<INormalMapEffectSemantic>().NormalMap =
-                                    _lastCachedNormalMapTexture.Texture;
-                            }
-                        }
-
-                        if (semanticEffect.HasSemantic<IColorDiffuseEffectSemantic>())
-                        {
-                            semanticEffect.GetSemantic<IColorDiffuseEffectSemantic>().Diffuse =
-                                material.ColorDiffuse ?? Color.Black;
+                            parameterSet.GetSemantic<ITextureEffectSemantic>().Texture =
+                                _lastCachedDiffuseTexture.Texture;
                         }
                     }
 
-                    renderContext.PushEffect(effect);
+                    if (parameterSet.HasSemantic<INormalMapEffectSemantic>())
+                    {
+                        if (_lastCachedNormalMapTexture.Texture != null)
+                        {
+                            parameterSet.GetSemantic<INormalMapEffectSemantic>().NormalMap =
+                                _lastCachedNormalMapTexture.Texture;
+                        }
+                    }
+
+                    if (parameterSet.HasSemantic<IColorDiffuseEffectSemantic>())
+                    {
+                        parameterSet.GetSemantic<IColorDiffuseEffectSemantic>().Diffuse =
+                            material.ColorDiffuse ?? Color.Black;
+                    }
+                    
                     _renderBatcher.QueueRequest(
                         renderContext,
-                        Model.CreateRenderRequest(renderContext, matrix));
-                    renderContext.PopEffect();
+                        Model.CreateRenderRequest(renderContext, effect, parameterSet, matrix));
                 }
                 else
                 {

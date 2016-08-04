@@ -73,7 +73,6 @@ namespace Protogame
 
             renderContext.GraphicsDevice.RasterizerState = _debugRasterizerState;
             renderContext.GraphicsDevice.DepthStencilState = _debugDepthState;
-            renderContext.PushEffect(_basicEffect.Effect);
 
             Lines.Clear();
             Triangles.Clear();
@@ -89,7 +88,7 @@ namespace Protogame
             var world = renderContext.World;
             renderContext.World = Matrix.Identity;
 
-            foreach (var pass in renderContext.Effect.CurrentTechnique.Passes)
+            foreach (var pass in _basicEffect.Effect.NativeEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
@@ -123,8 +122,7 @@ namespace Protogame
             }
 
             renderContext.World = world;
-
-            renderContext.PopEffect();
+            
             renderContext.GraphicsDevice.RasterizerState = _oldRasterizerState;
             renderContext.GraphicsDevice.DepthStencilState = _oldDepthState;
         }

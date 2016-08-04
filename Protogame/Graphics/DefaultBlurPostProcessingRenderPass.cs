@@ -10,7 +10,7 @@ namespace Protogame
     /// <interface_ref>Protogame.IBlurPostProcessingRenderPass</interface_ref>
     public class DefaultBlurPostProcessingRenderPass : IBlurPostProcessingRenderPass
     {
-        private readonly Effect _blurEffect;
+        private readonly IEffect _blurEffect;
 
         private readonly IGraphicsBlit _graphicsBlit;
 
@@ -38,8 +38,8 @@ namespace Protogame
         {
             // TODO Make iterations work.
 
-            _blurEffect.Parameters["PixelWidth"].SetValue(1f/postProcessingSource.Width);
-            _blurEffect.Parameters["PixelHeight"].SetValue(1f/postProcessingSource.Height);
+            _blurEffect.NativeEffect.Parameters["PixelWidth"].SetValue(1f/postProcessingSource.Width);
+            _blurEffect.NativeEffect.Parameters["PixelHeight"].SetValue(1f/postProcessingSource.Height);
             //_blurEffect.CurrentTechnique.Passes[0].Apply();
 
             // Parameters will get applied when blitting occurs.

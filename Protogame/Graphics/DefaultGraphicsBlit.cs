@@ -21,7 +21,7 @@ namespace Protogame
 
         private readonly short[] _indicies = { 1, 3, 0, 2 };
 
-        private readonly Effect _blitEffect;
+        private readonly IEffect _blitEffect;
 
         private VertexBuffer _vertexBuffer;
 
@@ -32,14 +32,7 @@ namespace Protogame
             _blitEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Texture").Effect;
         }
 
-        public void Blit(
-            IRenderContext renderContext, 
-            Texture2D source, 
-            RenderTarget2D destination = null, 
-            Effect shader = null, 
-            BlendState blendState = null,
-            Vector2? offset = null,
-            Vector2? size = null)
+        public void Blit(IRenderContext renderContext, Texture2D source, RenderTarget2D destination = null, IEffect shader = null, IEffectParameterSet effectParameterSet = null, BlendState blendState = null, Vector2? offset = null, Vector2? size = null)
         {
             float destWidth, destHeight;
             if (destination != null)
@@ -66,6 +59,11 @@ namespace Protogame
             if (shader == null)
             {
                 shader = _blitEffect;
+            }
+
+            if (effectParameterSet == null)
+            {
+                effectParameterSet = shader.CreateParameterSet();
             }
 
             if (_vertexBuffer == null)
@@ -104,19 +102,21 @@ namespace Protogame
                     0,
                     1);
             renderContext.View = Matrix.Identity;
-            
-            renderContext.PushEffect(shader);
 
-            if (source != null)
+            if (source != null && effectParameterSet != null)
             {
-                renderContext.EnableTextures();
-                renderContext.SetActiveTexture(source);
+                var semantic = effectParameterSet.GetSemantic<ITextureEffectSemantic>();
+                if (semantic.Texture != source)
+                {
+                    semantic.Texture = source;
+                }
             }
 
             renderContext.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
             renderContext.GraphicsDevice.Indices = _indexBuffer;
             
-            foreach (var pass in shader.CurrentTechnique.Passes)
+            shader.LoadParameterSet(renderContext, effectParameterSet);
+            foreach (var pass in shader.NativeEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
@@ -126,8 +126,6 @@ namespace Protogame
                     0,
                     2);
             }
-
-            renderContext.PopEffect();
 
             renderContext.World = oldWorld;
             renderContext.Projection = oldProjection;

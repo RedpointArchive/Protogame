@@ -7,7 +7,7 @@ namespace Protogame
     public class NullRenderContext : IRenderContext
     {
         public BoundingFrustum BoundingFrustum { get; }
-        public Effect Effect { get; }
+        public IEffect Effect { get; }
         public GraphicsDevice GraphicsDevice { get; }
         public bool Is3DContext { get; set; }
         public bool IsRendering { get; set; }
@@ -28,7 +28,7 @@ namespace Protogame
             throw new NotSupportedException();
         }
 
-        public Effect PopEffect()
+        public IEffect PopEffect()
         {
             throw new NotSupportedException();
         }
@@ -38,7 +38,7 @@ namespace Protogame
             throw new NotSupportedException();
         }
 
-        public void PushEffect(Effect effect)
+        public void PushEffect(IEffect effect)
         {
             throw new NotSupportedException();
         }

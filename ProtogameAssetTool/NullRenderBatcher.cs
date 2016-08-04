@@ -9,44 +9,46 @@ namespace ProtogameAssetTool
     {
         public void QueueRequest(IRenderContext renderContext, IRenderRequest request)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public void FlushRequests(IRenderContext renderContext)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public void RenderRequestImmediate(IRenderContext renderContext, IRenderRequest request)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public IRenderRequest CreateSingleRequest(IRenderContext renderContext, RasterizerState rasterizerState, BlendState blendState,
-            DepthStencilState depthStencilState, Effect effect, EffectParameter[] effectParameters,
+            DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
-        public IRenderRequest CreateSingleRequestFromState(IRenderContext renderContext, VertexBuffer meshVertexBuffer,
-            IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world)
+        public IRenderRequest CreateSingleRequestFromState(IRenderContext renderContext, IEffect effect,
+            IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer,
+            PrimitiveType primitiveType, Matrix world)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public IRenderRequest CreateInstancedRequest(IRenderContext renderContext, RasterizerState rasterizerState,
-            BlendState blendState, DepthStencilState depthStencilState, Effect effect, EffectParameter[] effectParameters,
+            BlendState blendState, DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType,
             Matrix[] instanceWorldTransforms)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
-        public IRenderRequest CreateInstancedRequestFromState(IRenderContext renderContext, VertexBuffer meshVertexBuffer,
-            IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix[] instancedWorldTransforms)
+        public IRenderRequest CreateInstancedRequestFromState(IRenderContext renderContext, IEffect effect,
+            IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer,
+            PrimitiveType primitiveType, Matrix[] instancedWorldTransforms)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

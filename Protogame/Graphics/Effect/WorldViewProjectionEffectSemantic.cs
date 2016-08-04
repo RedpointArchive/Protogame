@@ -6,15 +6,15 @@ namespace Protogame
 {
     public class WorldViewProjectionEffectSemantic : IWorldViewProjectionEffectSemantic
     {
-        private EffectWithSemantics _effectWithSemantics;
+        private IEffectParameterSet _parameterSet;
 
-        private EffectParameter _worldParam;
+        private IEffectWritableParameter _worldParam;
 
-        private EffectParameter _viewParam;
+        private IEffectWritableParameter _viewParam;
 
-        private EffectParameter _projectionParam;
+        private IEffectWritableParameter _projectionParam;
 
-        private EffectParameter _worldViewProjParam;
+        private IEffectWritableParameter _worldViewProjParam;
 
         private Matrix _world = Matrix.Identity;
 
@@ -65,55 +65,58 @@ namespace Protogame
             }
         }
 
-        public bool ShouldAttachToEffect(EffectWithSemantics effectWithSemantics)
+        public bool ShouldAttachToParameterSet(IEffectParameterSet parameterSet)
         {
-            return effectWithSemantics.Parameters["WorldViewProj"] != null || (
-                effectWithSemantics.Parameters["World"] != null &&
-                effectWithSemantics.Parameters["View"] != null &&
-                effectWithSemantics.Parameters["Projection"] != null);
+            return parameterSet["WorldViewProj"] != null || (
+                parameterSet["World"] != null &&
+                parameterSet["View"] != null &&
+                parameterSet["Projection"] != null);
         }
 
-        public void AttachToEffect(EffectWithSemantics effectWithSemantics)
+        public void AttachToParameterSet(IEffectParameterSet parameterSet)
         {
-            if (_effectWithSemantics != null)
+            if (_parameterSet != null)
             {
                 throw new InvalidOperationException("This semantic is already attached.");
             }
 
-            _effectWithSemantics = effectWithSemantics;
-            CacheEffectParameters();
+            _parameterSet = parameterSet;
+            CacheParameters();
         }
 
-        public IEffectSemantic Clone(EffectWithSemantics effectWithSemantics)
+        public IEffectSemantic Clone(IEffectParameterSet parameterSet)
         {
             var clone = new WorldViewProjectionEffectSemantic();
-            clone.AttachToEffect(effectWithSemantics);
-            clone.World = World;
-            clone.View = View;
-            clone.Projection = Projection;
+            clone.AttachToParameterSet(parameterSet);
+            if (_parameterSet != null)
+            {
+                clone.World = World;
+                clone.View = View;
+                clone.Projection = Projection;
+            }
             return clone;
         }
 
-        public void CacheEffectParameters()
+        public void CacheParameters()
         {
             if (_worldParam == null)
             {
-                if (_effectWithSemantics.Parameters["WorldViewProj"] != null)
+                if (_parameterSet["WorldViewProj"] != null)
                 {
                     _separatedMatrices = false;
-                    _worldViewProjParam = _effectWithSemantics.Parameters["WorldViewProj"];
+                    _worldViewProjParam = _parameterSet["WorldViewProj"];
                 }
                 else
                 {
                     _separatedMatrices = true;
-                    _worldParam = _effectWithSemantics.Parameters["World"];
-                    _viewParam = _effectWithSemantics.Parameters["View"];
-                    _projectionParam = _effectWithSemantics.Parameters["Projection"];
+                    _worldParam = _parameterSet["World"];
+                    _viewParam = _parameterSet["View"];
+                    _projectionParam = _parameterSet["Projection"];
                 }
             }
         }
 
-        public void OnApply()
+        public void OnApply(IRenderContext renderContext)
         {
             if (_worldViewProjParamDirty)
             {

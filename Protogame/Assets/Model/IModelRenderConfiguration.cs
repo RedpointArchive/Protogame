@@ -22,6 +22,6 @@ namespace Protogame
         /// <param name="modelAsset">The model asset that is being mapped.</param>
         /// <param name="effectAsset">The effect asset that the model is being mapped to.</param>
         /// <returns>The model vertex mapping, or <c>null</c> if there is none provided.</returns>
-        ModelVertexMapping GetVertexMappingToGPU(Model modelAsset, Effect effectAsset);
+        ModelVertexMapping GetVertexMappingToGPU(Model modelAsset, IEffect effectAsset);
     }
 }

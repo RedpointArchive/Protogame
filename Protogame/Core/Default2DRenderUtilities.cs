@@ -20,7 +20,7 @@ namespace Protogame
         /// <summary>
         /// The effect for rendering colorized primitives.
         /// </summary>
-        private readonly Effect m_ColorEffect;
+        private readonly IEffect m_ColorEffect;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Default2DRenderUtilities"/> class.

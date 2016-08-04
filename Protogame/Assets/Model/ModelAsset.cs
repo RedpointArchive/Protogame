@@ -302,10 +302,12 @@
         /// </summary>
         /// <param name="renderContext">The current render context.</param>
         /// <param name="transform">The world transformation to apply.</param>
+        /// <param name="effectParameterSet"></param>
         /// <param name="animationName">The animation to play.</param>
         /// <param name="secondFraction">The time elapsed.</param>
         /// <param name="multiply">The multiplication factor to apply to the animation speed.</param>
-        public void Render(IRenderContext renderContext, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
+        /// <param name="effect"></param>
+        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
@@ -313,6 +315,7 @@
             {
                 this.m_Model.AvailableAnimations[animationName].Render(
                     renderContext,
+                    effect, effectParameterSet,
                     transform,
                     this.m_Model,
                     secondFraction,
@@ -320,7 +323,7 @@
             }
             else
             {
-                this.m_Model.Render(renderContext, transform);
+                this.m_Model.Render(renderContext, effect, effectParameterSet, transform);
             }
         }
 
@@ -329,9 +332,11 @@
         /// </summary>
         /// <param name="renderContext">The current render context.</param>
         /// <param name="transform">The world transformation to apply.</param>
+        /// <param name="effectParameterSet"></param>
         /// <param name="animationName">The animation to play.</param>
         /// <param name="frame">The frame to draw at.</param>
-        public void Render(IRenderContext renderContext, Matrix transform, string animationName, double frame)
+        /// <param name="effect"></param>
+        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, string animationName, double frame)
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
@@ -339,13 +344,15 @@
             {
                 this.m_Model.AvailableAnimations[animationName].Render(
                     renderContext,
+                    effect,
+                    effectParameterSet,
                     transform,
                     this.m_Model,
                     frame);
             }
             else
             {
-                this.m_Model.Render(renderContext, transform);
+                this.m_Model.Render(renderContext, effect, effectParameterSet, transform);
             }
         }
 
@@ -353,12 +360,14 @@
         /// Renders the specified model in it's current state.
         /// </summary>
         /// <param name="renderContext">The current render context.</param>
+        /// <param name="effect">The effect to use for rendering.</param>
+        /// <param name="effectParameterSet">The parameters to use on the effect.</param>
         /// <param name="transform">The world transformation to apply.</param>
-        public void Render(IRenderContext renderContext, Matrix transform)
+        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform)
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
-            this.m_Model.Render(renderContext, transform);
+            this.m_Model.Render(renderContext, effect, effectParameterSet, transform);
         }
 
         /// <summary>
@@ -366,11 +375,14 @@
         /// </summary>
         /// <param name="renderContext">The current render context.</param>
         /// <param name="transform">The world transformation to apply.</param>
-        public IRenderRequest CreateRenderRequest(IRenderContext renderContext, Matrix transform)
+        /// <param name="effectParameterSet"></param>
+        /// <param name="effect"></param>
+        /// <param name="parameterSet"></param>
+        public IRenderRequest CreateRenderRequest(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform)
         {
             this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
 
-            return this.m_Model.CreateRenderRequest(renderContext, transform);
+            return this.m_Model.CreateRenderRequest(renderContext, effect, effectParameterSet, transform);
         }
 
         /// <summary>

@@ -27,8 +27,6 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
-            renderContext.Is3DContext = false;
-
             renderContext.SpriteBatch.Begin(TextureSortMode);
         }
 

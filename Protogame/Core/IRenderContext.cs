@@ -26,34 +26,12 @@ namespace Protogame
         BoundingFrustum BoundingFrustum { get; }
 
         /// <summary>
-        /// Gets the current active effect for rendering.
-        /// </summary>
-        /// <value>
-        /// The effect.
-        /// </value>
-        Effect Effect { get; }
-
-        /// <summary>
         /// Gets the associated graphics device.
         /// </summary>
         /// <value>
         /// The graphics device.
         /// </value>
         GraphicsDevice GraphicsDevice { get; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the world manager is currently
-        /// rendering a 3D context.  For games using a 2D world manager, this will
-        /// always be false.  For 3D games, world managers will do an initial 3D pass
-        /// followed by a 2D pass that is rendered on top (for UI, etc.) In a 3D
-        /// context, only I3DRenderUtilities can be used; in a 2D context, only
-        /// I2DRenderUtilities can be used.
-        /// </summary>
-        /// <value>
-        /// Whether the rendering context is currently a 3D context.
-        /// </value>
-        [Obsolete("For games using the new render pipeline, call IRenderContext.IsCurrentRenderPass<I3DRenderPass>() instead.")]
-        bool Is3DContext { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the game is currently rendering
@@ -122,25 +100,7 @@ namespace Protogame
         /// The world matrix for 3D rendering.
         /// </value>
         Matrix World { get; set; }
-
-        /// <summary>
-        /// Enables rendering with textures for the current effect.
-        /// </summary>
-        void EnableTextures();
-
-        /// <summary>
-        /// Enables rendering with plain colors for the current effect.
-        /// </summary>
-        void EnableVertexColors();
-
-        /// <summary>
-        /// Pop an effect from the current rendering context.
-        /// </summary>
-        /// <returns>
-        /// The effect that was popped from the current rendering context.
-        /// </returns>
-        Effect PopEffect();
-
+        
         /// <summary>
         /// Pops the current render target from the current rendering context.  If there are no more render targets
         /// in the stack after this call, then the rendering will default back to rendering to the back buffer.
@@ -151,14 +111,6 @@ namespace Protogame
         /// the rendering state.
         /// </exception>
         void PopRenderTarget();
-
-        /// <summary>
-        /// Push an effect onto the current rendering context, making it the active effect used for rendering.
-        /// </summary>
-        /// <param name="effect">
-        /// The effect instance.
-        /// </param>
-        void PushEffect(Effect effect);
 
         /// <summary>
         /// Push a render target onto the current rendering context, making it
@@ -192,14 +144,6 @@ namespace Protogame
         /// The current game context.
         /// </param>
         void Render(IGameContext context);
-
-        /// <summary>
-        /// Set the active texture used in rendering.
-        /// </summary>
-        /// <param name="texture">
-        /// The active texture.
-        /// </param>
-        void SetActiveTexture(Texture2D texture);
 
         /// <summary>
         /// Adds the specified render pass to the render pipeline

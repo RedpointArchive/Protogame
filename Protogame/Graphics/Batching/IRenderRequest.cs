@@ -13,11 +13,11 @@ namespace Protogame
 
         DepthStencilState DepthStencilState { get; }
 
-        Effect Effect { get; }
+        IEffect Effect { get; }
 
         string TechniqueName { get; }
 
-        EffectParameter[] EffectParameters { get; }
+        IEffectParameterSet EffectParameterSet { get; }
 
         VertexBuffer MeshVertexBuffer { get; }
 

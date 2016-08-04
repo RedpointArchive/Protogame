@@ -93,7 +93,7 @@ namespace Protogame
         /// <value>
         /// The effect.
         /// </value>
-        public Effect Effect { get; private set; }
+        public IEffect Effect { get; private set; }
 
         /// <summary>
         /// Gets the name.
@@ -170,10 +170,7 @@ namespace Protogame
                     
                     // Use the new EffectWithSemantics class that allows for extensible semantics.
                     var availableSemantics = _kernel.GetAll<IEffectSemantic>();
-                    this.Effect = new EffectWithSemantics(graphicsDevice, this.PlatformData.Data, availableSemantics);
-                    
-                    // Assign the asset name so we can trace it back.
-                    this.Effect.Name = this.Name;
+                    this.Effect = new ProtogameEffect(graphicsDevice, this.PlatformData.Data, this.Name, availableSemantics);
                 }
             }
         }

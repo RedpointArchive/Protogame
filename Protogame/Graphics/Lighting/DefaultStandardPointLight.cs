@@ -29,18 +29,19 @@ namespace Protogame
             var oldRasterizerState = renderContext.GraphicsDevice.RasterizerState;
             var oldWorld = renderContext.World;
 
-            _pointLightEffect.Effect.Parameters["Color"]?.SetValue(lightContext.DeferredColorMap);
-            _pointLightEffect.Effect.Parameters["Normal"]?.SetValue(lightContext.DeferredNormalMap);
-            _pointLightEffect.Effect.Parameters["Depth"]?.SetValue(lightContext.DeferredDepthMap);
-            _pointLightEffect.Effect.Parameters["CameraPosition"]?.SetValue(renderContext.CameraPosition);
-            _pointLightEffect.Effect.Parameters["LightPosition"]?.SetValue(LightPosition);
-            _pointLightEffect.Effect.Parameters["LightColor"]?.SetValue(LightColor.ToVector3());
-            _pointLightEffect.Effect.Parameters["LightRadius"]?.SetValue(LightRadius);
-            _pointLightEffect.Effect.Parameters["LightIntensity"]?.SetValue(LightIntensity);
-            _pointLightEffect.Effect.Parameters["LightInvertViewProjection"]?.SetValue(Matrix.Invert(renderContext.View * renderContext.Projection));
-            _pointLightEffect.Effect.Parameters["World"]?.SetValue(renderContext.World);
-            _pointLightEffect.Effect.Parameters["View"]?.SetValue(renderContext.View);
-            _pointLightEffect.Effect.Parameters["Projection"]?.SetValue(renderContext.Projection);
+            var parameterSet = _pointLightEffect.Effect.CreateParameterSet();
+            parameterSet["Color"]?.SetValue(lightContext.DeferredColorMap);
+            parameterSet["Normal"]?.SetValue(lightContext.DeferredNormalMap);
+            parameterSet["Depth"]?.SetValue(lightContext.DeferredDepthMap);
+            parameterSet["CameraPosition"]?.SetValue(renderContext.CameraPosition);
+            parameterSet["LightPosition"]?.SetValue(LightPosition);
+            parameterSet["LightColor"]?.SetValue(LightColor.ToVector3());
+            parameterSet["LightRadius"]?.SetValue(LightRadius);
+            parameterSet["LightIntensity"]?.SetValue(LightIntensity);
+            parameterSet["LightInvertViewProjection"]?.SetValue(Matrix.Invert(renderContext.View * renderContext.Projection));
+            parameterSet["World"]?.SetValue(renderContext.World);
+            parameterSet["View"]?.SetValue(renderContext.View);
+            parameterSet["Projection"]?.SetValue(renderContext.Projection);
             
             // If we are inside the lighting sphere, we need to invert the culling mode so
             // that we see the inside faces of the model.
@@ -55,22 +56,18 @@ namespace Protogame
             }
 
             renderContext.World = Matrix.CreateScale(LightRadius) * Matrix.CreateTranslation(LightPosition);
-
-            renderContext.PushEffect(_pointLightEffect.Effect);
-
+            
             if (lightContext.LightRenderTarget != null)
             {
                 renderContext.PushRenderTarget(lightContext.LightRenderTarget);
             }
 
-            _pointLightSphereModel.Render(renderContext, Matrix.Identity);
+            _pointLightSphereModel.Render(renderContext, _pointLightEffect.Effect, parameterSet, Matrix.Identity);
 
             if (lightContext.LightRenderTarget != null)
             {
                 renderContext.PopRenderTarget();
             }
-
-            renderContext.PopEffect();
 
             renderContext.World = oldWorld;
             renderContext.GraphicsDevice.RasterizerState = oldRasterizerState;

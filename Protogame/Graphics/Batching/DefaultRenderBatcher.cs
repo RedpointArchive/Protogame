@@ -78,9 +78,9 @@ namespace Protogame
 #else
                         var allowInstancedCalls = false;
 #endif
-
+                        
                         if (allowInstancedCalls &&
-                            renderContext.Effect.Techniques[request.TechniqueName + "Batched"] != null)
+                            request.Effect.Techniques[request.TechniqueName + "Batched"] != null)
                         {
 #if PLATFORM_WINDOWS
                             if (_vertexBuffer == null ||
@@ -101,7 +101,7 @@ namespace Protogame
                                 new VertexBufferBinding(request.MeshVertexBuffer),
                                 new VertexBufferBinding(_vertexBuffer, 0, 1));
 
-                            foreach (var pass in renderContext.Effect.Techniques[request.TechniqueName].Passes)
+                            foreach (var pass in request.Effect.NativeEffect.Techniques[request.TechniqueName].Passes)
                             {
                                 pass.Apply();
 
@@ -118,17 +118,13 @@ namespace Protogame
                         }
                         else
                         {
-                            var oldWorld = renderContext.World;
-
                             renderContext.GraphicsDevice.SetVertexBuffer(request.MeshVertexBuffer);
 
                             foreach (var instance in _requestInstances[kv.Key])
                             {
-                                // TODO: In instanced mode, we want to pass the world transforms through
-                                // as a seperate vertex buffer.
-                                renderContext.World = instance;
+                                request.Effect.NativeEffect.Parameters["World"]?.SetValue(instance);
 
-                                foreach (var pass in renderContext.Effect.Techniques[request.TechniqueName].Passes)
+                                foreach (var pass in request.Effect.NativeEffect.Techniques[request.TechniqueName].Passes)
                                 {
                                     pass.Apply();
 
@@ -139,11 +135,7 @@ namespace Protogame
                                         pc);
                                 }
                             }
-
-                            renderContext.World = oldWorld;
                         }
-
-                        renderContext.PopEffect();
 
                         _requestInstances[kv.Key].Clear();
                     }
@@ -159,96 +151,91 @@ namespace Protogame
             RasterizerState rasterizerState, 
             BlendState blendState,
             DepthStencilState depthStencilState,
-            Effect effect,
-            EffectParameter[] effectParameters,
+            IEffect effect,
+            IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer,
             IndexBuffer meshIndexBuffer, 
             PrimitiveType primitiveType,
             Matrix world)
         {
             return new DefaultRenderRequest(
+                renderContext,
                 rasterizerState,
                 blendState,
                 depthStencilState,
                 effect,
                 renderContext.GetCurrentRenderPass<IRenderPass>().EffectTechniqueName,
-                effectParameters,
+                effectParameterSet,
                 meshVertexBuffer,
                 meshIndexBuffer,
                 primitiveType,
                 new [] { world });
         }
 
-        public IRenderRequest CreateSingleRequestFromState(IRenderContext renderContext, VertexBuffer meshVertexBuffer,
-            IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world)
+        public IRenderRequest CreateSingleRequestFromState(
+            IRenderContext renderContext,
+            IEffect effect,
+            IEffectParameterSet effectParameterSet,
+            VertexBuffer meshVertexBuffer,
+            IndexBuffer meshIndexBuffer,
+            PrimitiveType primitiveType,
+            Matrix world)
         {
             return CreateSingleRequest(
                 renderContext,
                 renderContext.GraphicsDevice.RasterizerState,
                 renderContext.GraphicsDevice.BlendState,
                 renderContext.GraphicsDevice.DepthStencilState,
-                renderContext.Effect,
-                CloneParameters(renderContext.Effect),
+                effect,
+                effectParameterSet,
                 meshVertexBuffer,
                 meshIndexBuffer,
                 primitiveType,
                 world);
         }
-
-        private EffectParameter[] CloneParameters(Effect effect)
-        {
-            var clonedParameters = new List<EffectParameter>();
-
-            foreach (var param in effect.Parameters)
-            {
-                var newParam = new EffectParameter(param);
-
-                if (newParam.ParameterType == EffectParameterType.Texture2D)
-                {
-                    newParam.SetValue(param.GetValueTexture2D());
-                }
-
-                clonedParameters.Add(newParam);
-            }
-
-            return clonedParameters.ToArray();
-        }
-
+        
         public IRenderRequest CreateInstancedRequest(
             IRenderContext renderContext,
             RasterizerState rasterizerState,
             BlendState blendState, 
             DepthStencilState depthStencilState,
-            Effect effect,
-            EffectParameter[] effectParameters,
+            IEffect effect,
+            IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer, 
             IndexBuffer meshIndexBuffer, 
             PrimitiveType primitiveType,
             Matrix[] instanceWorldTransforms)
         {
             return new DefaultRenderRequest(
+                renderContext,
                 rasterizerState,
                 blendState,
                 depthStencilState,
                 effect,
                 renderContext.GetCurrentRenderPass<IRenderPass>().EffectTechniqueName,
-                effectParameters,
+                effectParameterSet,
                 meshVertexBuffer,
                 meshIndexBuffer,
                 primitiveType,
                 instanceWorldTransforms);
         }
 
-        public IRenderRequest CreateInstancedRequestFromState(IRenderContext renderContext, VertexBuffer meshVertexBuffer,
-            IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix[] instancedWorldTransforms)
+        public IRenderRequest CreateInstancedRequestFromState(
+            IRenderContext renderContext,
+            IEffect effect,
+            IEffectParameterSet effectParameterSet,
+            VertexBuffer meshVertexBuffer,
+            IndexBuffer meshIndexBuffer,
+            PrimitiveType primitiveType,
+            Matrix[] instancedWorldTransforms)
         {
             return CreateInstancedRequest(
                 renderContext,
                 renderContext.GraphicsDevice.RasterizerState,
                 renderContext.GraphicsDevice.BlendState,
                 renderContext.GraphicsDevice.DepthStencilState,
-                renderContext.Effect,
-                CloneParameters(renderContext.Effect),
+                effect,
+                effectParameterSet,
                 meshVertexBuffer,
                 meshIndexBuffer,
                 primitiveType,
@@ -257,7 +244,6 @@ namespace Protogame
 
         private void SetupForRequest(IRenderContext renderContext, IRenderRequest request, out int pc, bool setVertexBuffers)
         {
-            renderContext.PushEffect(request.Effect);
             renderContext.GraphicsDevice.RasterizerState = request.RasterizerState;
             renderContext.GraphicsDevice.BlendState = request.BlendState;
             renderContext.GraphicsDevice.DepthStencilState = request.DepthStencilState;
@@ -286,103 +272,19 @@ namespace Protogame
                     throw new InvalidOperationException("Unknown primitive type!");
             }
 
-            for (var i = 0; i < request.EffectParameters.Length; i++)
-            {
-                var src = request.EffectParameters[i];
-                var dest = renderContext.Effect.Parameters[src.Name];
-                switch (dest.ParameterType)
-                {
-                    case EffectParameterType.Bool:
-                        dest.SetValue(src.GetValueBoolean());
-                        break;
-                    case EffectParameterType.Int32:
-                        dest.SetValue(src.GetValueInt32());
-                        break;
-                    case EffectParameterType.Single:
-                        if (dest.ParameterClass == EffectParameterClass.Scalar)
-                        {
-                            dest.SetValue(src.GetValueSingle());
-                        }
-                        else if (dest.ParameterClass == EffectParameterClass.Matrix)
-                        {
-                            if (dest.Elements.Count > 0)
-                            {
-                                dest.SetValue(src.GetValueMatrixArray(dest.Elements.Count));
-                            }
-                            else
-                            {
-                                dest.SetValue(src.GetValueMatrix());
-                            }
-                        }
-                        else if (dest.ParameterClass == EffectParameterClass.Vector)
-                        {
-                            if (dest.ColumnCount == 4)
-                            {
-                                if (dest.Elements.Count > 0)
-                                {
-                                    dest.SetValue(src.GetValueVector4Array());
-                                }
-                                else
-                                {
-                                    dest.SetValue(src.GetValueVector4());
-                                }
-                            }
-                            else if (dest.ColumnCount == 3)
-                            {
-                                if (dest.Elements.Count > 0)
-                                {
-                                    dest.SetValue(src.GetValueVector3Array());
-                                }
-                                else
-                                {
-                                    dest.SetValue(src.GetValueVector3());
-                                }
-                            }
-                            else if (dest.ColumnCount == 2)
-                            {
-                                if (dest.Elements.Count > 0)
-                                {
-                                    dest.SetValue(src.GetValueVector2Array());
-                                }
-                                else
-                                {
-                                    dest.SetValue(src.GetValueVector2());
-                                }
-                            }
-                        }
-                        else
-                        {
-                            dest.SetValue(src.GetValueSingleArray());
-                        }
-                        break;
-                    case EffectParameterType.Texture2D:
-                        dest.SetValue(src.GetValueTexture2D());
-                        break;
-                    case EffectParameterType.Texture3D:
-                        dest.SetValue(src.GetValueTexture3D());
-                        break;
-                    case EffectParameterType.Void:
-                        break;
-                    default:
-                        throw new InvalidOperationException("Can't copy value to target effect (dest expected type " + dest.ParameterType + ").");
-                }
-            }
+            request.Effect.LoadParameterSet(renderContext, request.EffectParameterSet, true);
         }
 
         public void RenderRequestImmediate(IRenderContext renderContext, IRenderRequest request)
         {
             int pc;
             SetupForRequest(renderContext, request, out pc, true);
-
-            var oldWorld = renderContext.World;
-
+            
             for (var i = 0; i < request.Instances.Length; i++)
             {
-                // TODO: In instanced mode, we want to pass the world transforms through
-                // as a seperate vertex buffer.
-                renderContext.World = request.Instances[i];
+                request.Effect.NativeEffect.Parameters["World"]?.SetValue(request.Instances[i]);
 
-                foreach (var pass in renderContext.Effect.Techniques[request.TechniqueName].Passes)
+                foreach (var pass in request.Effect.NativeEffect.Techniques[request.TechniqueName].Passes)
                 {
                     pass.Apply();
                     
@@ -393,10 +295,6 @@ namespace Protogame
                         pc);
                 }
             }
-
-            renderContext.World = oldWorld;
-
-            renderContext.PopEffect();
         }
     }
 }

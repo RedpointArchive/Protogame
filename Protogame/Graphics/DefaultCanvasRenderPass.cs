@@ -40,8 +40,6 @@ namespace Protogame
                     renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight);
             }
 
-            renderContext.Is3DContext = false;
-
             renderContext.SpriteBatch.Begin(TextureSortMode);
         }
 

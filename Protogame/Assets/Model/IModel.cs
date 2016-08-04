@@ -94,23 +94,27 @@
         /// Renders the model using the specified transform.
         /// </summary>
         /// <param name="renderContext">
-        /// The render context.
+        ///     The render context.
         /// </param>
         /// <param name="transform">
-        /// The transform.
+        ///     The transform.
         /// </param>
-        void Render(IRenderContext renderContext, Matrix transform);
+        /// <param name="effectParameterSet"></param>
+        /// <param name="effect"></param>
+        void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform);
 
         /// <summary>
         /// Creates a render request for the model using the specified transform.
         /// </summary>
         /// <param name="renderContext">
-        /// The render context.
+        ///     The render context.
         /// </param>
+        /// <param name="effect"></param>
+        /// <param name="effectParameterSet"></param>
         /// <param name="transform">
-        /// The transform.
+        ///     The transform.
         /// </param>
-        IRenderRequest CreateRenderRequest(IRenderContext renderContext, Matrix transform);
+        IRenderRequest CreateRenderRequest(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform);
 
         /// <summary>
         /// Loads vertex and index buffers for all of animations in this model.

@@ -18,6 +18,7 @@ namespace Protogame
     /// <module>Core API</module>
     public interface IRenderContextImplementationUtilities
     {
+        /*
         /// <summary>
         /// Copies matrices from the outgoing effect to the incoming effect.  When
         /// you switch effects using <see cref="IRenderContext.PushEffect"/> or
@@ -28,7 +29,7 @@ namespace Protogame
         /// </summary>
         /// <param name="outgoing">The outgoing effect which is being removed from the stack.</param>
         /// <param name="incoming">The incoming effect which will be the effect used going forward.</param>
-        void CopyMatricesToTargetEffect(Effect outgoing, Effect incoming);
+        void CopyMatricesToTargetEffect(IEffect outgoing, IEffect incoming);
 
         /// <summary>
         /// Returns the matrices from an effect.
@@ -43,7 +44,7 @@ namespace Protogame
         /// <param name="effect">The effect to retrieve matrices from.</param>
         /// <param name="prop">The matrix to retrieve.</param>
         /// <returns>The matrix value.</returns>
-        Matrix GetEffectMatrix(Effect effect, Func<IEffectMatrices, Matrix> prop);
+        Matrix GetEffectMatrix(IEffect effect, Func<IEffectMatrices, Matrix> prop);
 
         /// <summary>
         /// Sets the matrices from an effect.
@@ -57,6 +58,7 @@ namespace Protogame
         /// </summary>
         /// <param name="effect">The effect to assign matrices to.</param>
         /// <param name="assign">The matrix to assign a value to.</param>
-        void SetEffectMatrix(Effect effect, Action<IEffectMatrices> assign);
+        void SetEffectMatrix(IEffect effect, Action<IEffectMatrices> assign);
+        */
     }
 }

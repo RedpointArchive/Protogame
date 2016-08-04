@@ -151,9 +151,6 @@ namespace Protogame
                 null,
                 _gbufferClearEffect.Effect);
 
-            renderContext.PushEffect(
-                _gbufferRenderEffect.Effect);
-
             _previousDepthStencilState = renderContext.GraphicsDevice.DepthStencilState;
             _previousRasterizerState = renderContext.GraphicsDevice.RasterizerState;
             _previousBlendState = renderContext.GraphicsDevice.BlendState;
@@ -169,8 +166,7 @@ namespace Protogame
             IRenderPass nextPass)
         {
             _renderBatcher.FlushRequests(renderContext);
-
-            renderContext.PopEffect();
+            
             renderContext.PopRenderTarget();
 
             renderContext.GraphicsDevice.DepthStencilState = _previousDepthStencilState;
@@ -222,11 +218,13 @@ namespace Protogame
                     null,
                     null,
                     null,
+                    null,
                     new Vector2(0, 0),
                     new Vector2(0.5f, 0.5f));
                 _graphicsBlit.Blit(
                     renderContext,
                     _normalRenderTarget,
+                    null,
                     null,
                     null,
                     null,
@@ -238,6 +236,7 @@ namespace Protogame
                     null,
                     null,
                     null,
+                    null,
                     new Vector2(0f, 0.5f),
                     new Vector2(0.5f, 0.5f));
                 _graphicsBlit.Blit(
@@ -245,21 +244,24 @@ namespace Protogame
                     _lightRenderTarget,
                     null,
                     null,
+                    null,
                     BlendState.AlphaBlend,
                     new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f));
             }
             else
-            { 
-                _gbufferCombineEffect.Effect.Parameters["Color"]?.SetValue(_colorRenderTarget);
-                _gbufferCombineEffect.Effect.Parameters["Light"]?.SetValue(_lightRenderTarget);
-                _gbufferCombineEffect.Effect.Parameters["AmbientLight"]?.SetValue(new Vector3(0.2f, 0.2f, 0.2f));
+            {
+                var parameterSet = _gbufferCombineEffect.Effect.CreateParameterSet();
+                parameterSet["Color"]?.SetValue(_colorRenderTarget);
+                parameterSet["Light"]?.SetValue(_lightRenderTarget);
+                parameterSet["AmbientLight"]?.SetValue(new Vector3(0.2f, 0.2f, 0.2f));
 
                 _graphicsBlit.Blit(
                     renderContext,
                     null,
                     null,
                     _gbufferCombineEffect.Effect,
+                    parameterSet,
                     BlendState.Opaque);
             }
         }

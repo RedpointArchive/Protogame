@@ -10,7 +10,7 @@ namespace Protogame
     /// <interface_ref>Protogame.IInvertPostProcessingRenderPass</interface_ref>
     public class DefaultInvertPostProcessingRenderPass : IInvertPostProcessingRenderPass
     {
-        private readonly Effect _invertEffect;
+        private readonly IEffect _invertEffect;
 
         private readonly IGraphicsBlit _graphicsBlit;
 

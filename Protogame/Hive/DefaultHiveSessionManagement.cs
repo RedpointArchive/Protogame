@@ -29,6 +29,7 @@ namespace Protogame
             if (_temporarySessionApi == null)
             {
                 _temporarySessionApi = new TemporarySessionApi();
+                _temporarySessionApi.Configuration.Timeout = 5000;
                 _temporarySessionApi.Configuration.ApiKey["api_key"] = _hivePublicAuthentication.PublicApiKey;
             }
         }

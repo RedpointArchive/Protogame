@@ -56,10 +56,7 @@ namespace Protogame
 
                 // Use the new EffectWithSemantics class that allows for extensible semantics.
                 var availableSemantics = _kernel.GetAll<IEffectSemantic>();
-                this.Effect = new EffectWithSemantics(graphicsDevice, compiledUnifiedShaderReader, availableSemantics);
-
-                // Assign the asset name so we can trace it back.
-                this.Effect.Name = this.Name;
+                this.Effect = new ProtogameEffect(graphicsDevice, compiledUnifiedShaderReader, Name, availableSemantics);
             }
         }
 
@@ -71,7 +68,7 @@ namespace Protogame
 
         public bool CompiledOnly => Code == null;
 
-        public Effect Effect { get; set; }
+        public IEffect Effect { get; set; }
 
         public string Name { get; }
 

@@ -21,12 +21,8 @@ namespace Protogame
         private readonly IRenderPipeline _renderPipeline;
 
         private readonly IRenderContextImplementationUtilities _renderContextImplementationUtilities;
-
-        /// <summary>
-        /// The current stack of effect.
-        /// </summary>
-        private readonly Stack<Effect> m_Effects = new Stack<Effect>();
-
+        private readonly IEffectSemantic[] _availableSemantics;
+        
         /// <summary>
         /// The current stack of render targets.
         /// </summary>
@@ -47,14 +43,23 @@ namespace Protogame
         /// </summary>
         private Vector3? _lastCameraLookAt;
 
+        private Matrix _globalView;
+        private Matrix _globalProjection;
+        private Matrix _globalWorld;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Protogame.RenderPipelineRenderContext"/> class.
         /// </summary>
         /// <param name="renderPipeline">The render pipeline shared with the <see cref="RenderPipelineWorldManager"/> instance.</param>
-        public RenderPipelineRenderContext(IRenderPipeline renderPipeline, IRenderContextImplementationUtilities renderContextImplementationUtilities)
+        /// <param name="availableSemantics">The available effect semantics in the game.</param>
+        public RenderPipelineRenderContext(
+            IRenderPipeline renderPipeline,
+            IRenderContextImplementationUtilities renderContextImplementationUtilities,
+            IEffectSemantic[] availableSemantics)
         {
             _renderPipeline = renderPipeline;
             _renderContextImplementationUtilities = renderContextImplementationUtilities;
+            _availableSemantics = availableSemantics;
         }
 
         /// <summary>
@@ -68,20 +73,6 @@ namespace Protogame
             get
             {
                 return this.m_BoundingFrustum;
-            }
-        }
-
-        /// <summary>
-        /// Gets the current active effect for rendering.
-        /// </summary>
-        /// <value>
-        /// The effect.
-        /// </value>
-        public Effect Effect
-        {
-            get
-            {
-                return this.m_Effects.Peek();
             }
         }
 
@@ -180,14 +171,10 @@ namespace Protogame
         /// </value>
         public Matrix Projection
         {
-            get
-            {
-                return this.GetEffectMatrix(x => x.Projection);
-            }
-
+            get { return _globalProjection; }
             set
             {
-                this.SetEffectMatrix(x => x.Projection = value);
+                _globalProjection = value;
                 this.RecalculateBoundingFrustum();
             }
         }
@@ -216,14 +203,10 @@ namespace Protogame
         /// </value>
         public Matrix View
         {
-            get
-            {
-                return this.GetEffectMatrix(x => x.View);
-            }
-
+            get { return _globalView; }
             set
             {
-                this.SetEffectMatrix(x => x.View = value);
+                _globalView = value;
                 this.RecalculateBoundingFrustum();
             }
         }
@@ -236,69 +219,10 @@ namespace Protogame
         /// </value>
         public Matrix World
         {
-            get
-            {
-                return this.GetEffectMatrix(x => x.World);
-            }
-
-            set
-            {
-                this.SetEffectMatrix(x => x.World = value);
-            }
+            get { return _globalWorld; }
+            set { _globalWorld = value; }
         }
-
-        /// <summary>
-        /// The enable textures.
-        /// </summary>
-        public void EnableTextures()
-        {
-            var basicEffect = this.m_Effects.Peek() as BasicEffect;
-
-            if (basicEffect != null)
-            {
-                basicEffect.TextureEnabled = true;
-                basicEffect.VertexColorEnabled = false;
-            }
-        }
-
-        /// <summary>
-        /// The enable vertex colors.
-        /// </summary>
-        public void EnableVertexColors()
-        {
-            var basicEffect = this.m_Effects.Peek() as BasicEffect;
-
-            if (basicEffect != null)
-            {
-                basicEffect.VertexColorEnabled = true;
-                basicEffect.TextureEnabled = false;
-            }
-        }
-
-        /// <summary>
-        /// Pop an effect from the current rendering context.
-        /// </summary>
-        /// <returns>
-        /// The effect that was popped from the current rendering context.
-        /// </returns>
-        public Effect PopEffect()
-        {
-            // Prevent the original effect from ever being pushed off the stack.
-            if (this.m_Effects.Count > 1)
-            {
-                var outgoing = this.m_Effects.Pop();
-
-                // Automatically copy the matrices from the outgoing effect to the current
-                // effect if applicable.  This reduces confusion when popping an effect
-                // from the stack and losing the matrices.
-                _renderContextImplementationUtilities.CopyMatricesToTargetEffect(outgoing, this.m_Effects.Peek());
-
-                return outgoing;
-            }
-
-            return null;
-        }
-
+        
         /// <summary>
         /// Pops the current render target from the current rendering context.  If there are no more render targets
         /// in the stack after this call, then the rendering will default back to rendering to the back buffer.
@@ -354,40 +278,6 @@ namespace Protogame
         }
 
         /// <summary>
-        /// Push an effect onto the current rendering context, making it the active effect used for rendering.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The effect type.
-        /// </typeparam>
-        /// <param name="effect">
-        /// The effect instance.
-        /// </param>
-        public void PushEffect(Effect effect)
-        {
-            // Ignore if the effect is null.  We might be pushing a value
-            // returned from PopEffect, and that method can return null
-            // if there are no effects on the stack.
-            if (effect == null)
-            {
-                return;
-            }
-
-            // Automatically copy the matrices from the current effect to the new
-            // effect if applicable.  This reduces confusion when pushing a new effect
-            // onto the stack and not having things render correctly.
-            _renderContextImplementationUtilities.CopyMatricesToTargetEffect(this.m_Effects.Peek(), effect);
-
-            // Check if the effect has a technique whose name matches the current render pipeline pass'
-            // desired technique name.  If it does, set the current technique to that one.
-            if (effect.Techniques[CurrentRenderPass.EffectTechniqueName] != null)
-            {
-                effect.CurrentTechnique = effect.Techniques[CurrentRenderPass.EffectTechniqueName];
-            }
-
-            this.m_Effects.Push(effect);
-        }
-
-        /// <summary>
         /// Push a render target onto the current rendering context, making it
         /// the active target for rendering.  By using the PushRenderTarget / PopRenderTarget
         /// methods, this allows you to safely chain render target switches, without risk
@@ -429,10 +319,6 @@ namespace Protogame
         public void Render(IGameContext context)
         {
             this.GraphicsDevice = context.Graphics.GraphicsDevice;
-            if (this.m_Effects.Count == 0)
-            {
-                this.m_Effects.Push(new BasicEffect(context.Graphics.GraphicsDevice));
-            }
 
             if (this.SpriteBatch == null)
             {
@@ -498,67 +384,13 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The set active texture.
-        /// </summary>
-        /// <param name="texture">
-        /// The texture.
-        /// </param>
-        public void SetActiveTexture(Texture2D texture)
-        {
-            this.GraphicsDevice.Textures[0] = texture;
-
-            var basicEffect = this.m_Effects.Peek() as BasicEffect;
-            var semanticEffect = this.m_Effects.Peek() as IEffectWithSemantics;
-
-            if (basicEffect != null)
-            {
-                basicEffect.Texture = texture;
-            }
-
-            if (semanticEffect != null)
-            {
-                if (semanticEffect.HasSemantic<ITextureEffectSemantic>())
-                {
-                    semanticEffect.GetSemantic<ITextureEffectSemantic>().Texture = texture;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Applies a get property operation against the current effect, returning
-        /// the identity matrix if the current effect does not implement <see cref="IEffectMatrices"/>.
-        /// </summary>
-        /// <param name="prop">
-        /// The lambda representing the property getter operation to perform.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Matrix"/> if the effect implements <see cref="IEffectMatrices"/>, or <see cref="Matrix.Identity"/>.
-        /// </returns>
-        private Matrix GetEffectMatrix(Func<IEffectMatrices, Matrix> prop)
-        {
-            return _renderContextImplementationUtilities.GetEffectMatrix(this.m_Effects.Peek(), prop);
-        }
-
-        /// <summary>
         /// The recalculate bounding frustum.
         /// </summary>
         private void RecalculateBoundingFrustum()
         {
             this.m_BoundingFrustum = new BoundingFrustum(this.View * this.Projection);
         }
-
-        /// <summary>
-        /// Applies a set property operation against the current effect, performing a
-        /// no-op if the current effect does not implement <see cref="IEffectMatrices"/>.
-        /// </summary>
-        /// <param name="assign">
-        /// The lambda representing the property setter operation to perform.
-        /// </param>
-        private void SetEffectMatrix(Action<IEffectMatrices> assign)
-        {
-            _renderContextImplementationUtilities.SetEffectMatrix(this.m_Effects.Peek(), assign);
-        }
-
+        
         /// <summary>
         /// Adds the specified render pass to the render pipeline
         /// permanently.  This render pass will take effect after the

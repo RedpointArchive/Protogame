@@ -184,14 +184,16 @@
         /// Renders the model using the specified transform and GPU mapping.
         /// </summary>
         /// <param name="renderContext">
-        /// The render context.
+        ///     The render context.
         /// </param>
         /// <param name="transform">
-        /// The transform.
+        ///     The transform.
         /// </param>
-        public void Render(IRenderContext renderContext, Matrix transform)
+        /// <param name="effectParameterSet"></param>
+        /// <param name="effect"></param>
+        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform)
         {
-            var request = CreateRenderRequest(renderContext, transform);
+            var request = CreateRenderRequest(renderContext, effect, effectParameterSet, transform);
             _renderBatcher.RenderRequestImmediate(renderContext, request);
         }
         
@@ -218,12 +220,14 @@
         /// Creates a render request for the model using the specified transform.
         /// </summary>
         /// <param name="renderContext">
-        /// The render context.
+        ///     The render context.
         /// </param>
+        /// <param name="effect"></param>
+        /// <param name="effectParameterSet"></param>
         /// <param name="transform">
-        /// The transform.
+        ///     The transform.
         /// </param>
-        public IRenderRequest CreateRenderRequest(IRenderContext renderContext, Matrix transform)
+        public IRenderRequest CreateRenderRequest(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform)
         {
             if (this.Vertexes.Length == 0 && this.Indices.Length == 0)
             {
@@ -236,15 +240,15 @@
             this.LoadBuffers(renderContext.GraphicsDevice);
 
             VertexBuffer vertexBuffer;
-            if (_cachedVertexBuffers.ContainsKey(renderContext.Effect))
+            if (_cachedVertexBuffers.ContainsKey(effect))
             {
-                vertexBuffer = _cachedVertexBuffers[renderContext.Effect];
+                vertexBuffer = _cachedVertexBuffers[effect];
             }
             else
             {
                 // Find the vertex mapping configuration for this model.
                 var modelConfiguration =
-                    _modelRenderConfigurations.Select(x => x.GetVertexMappingToGPU(this, renderContext.Effect)).FirstOrDefault(x => x != null);
+                    _modelRenderConfigurations.Select(x => x.GetVertexMappingToGPU(this, effect)).FirstOrDefault(x => x != null);
                 if (modelConfiguration == null)
                 {
                     throw new InvalidOperationException(
@@ -269,22 +273,12 @@
                 vertexBuffer.GetType().GetMethods().First(x => x.Name == "SetData" && x.GetParameters().Length == 1).MakeGenericMethod(modelConfiguration.VertexType).Invoke(
                     vertexBuffer,
                     new[] { mappedVerticies });
-                _cachedVertexBuffers[renderContext.Effect] = vertexBuffer;
+                _cachedVertexBuffers[effect] = vertexBuffer;
             }
-
-            var effectSemantic = renderContext.Effect as IEffectWithSemantics;
-
-            if (effectSemantic == null)
+            
+            if (effectParameterSet.HasSemantic<IBonesEffectSemantic>())
             {
-                throw new InvalidOperationException(
-                    "The current effect on the render context is " +
-                    "not a semantic effect.  You can use " +
-                    "'effect.TextureSkinned' for a basic model rendering effect.");
-            }
-
-            if (effectSemantic.HasSemantic<IBonesEffectSemantic>())
-            {
-                var bonesEffectSemantic = effectSemantic.GetSemantic<IBonesEffectSemantic>();
+                var bonesEffectSemantic = effectParameterSet.GetSemantic<IBonesEffectSemantic>();
 
                 foreach (var bone in this._flattenedBones)
                 {
@@ -296,10 +290,12 @@
                     bonesEffectSemantic.Bones[bone.ID] = bone.GetFinalMatrix();
                 }
             }
-            
+
             // Create the render request.
             return _renderBatcher.CreateSingleRequestFromState(
                 renderContext,
+                effect,
+                effectParameterSet,
                 vertexBuffer,
                 IndexBuffer,
                 PrimitiveType.TriangleList,

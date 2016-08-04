@@ -1,54 +1,53 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
     public class ScreenDimensionsEffectSemantic : IScreenDimensionsEffectSemantic
     {
-        private EffectWithSemantics _effectWithSemantics;
+        private IEffectParameterSet _parameterSet;
 
-        private EffectParameter _screenDimensionsParam;
+        private IEffectWritableParameter _screenDimensionsParam;
 
         private int _lastScreenX;
 
         private int _lastScreenY;
 
-        public bool ShouldAttachToEffect(EffectWithSemantics effectWithSemantics)
+        public bool ShouldAttachToParameterSet(IEffectParameterSet parameterSet)
         {
-            return effectWithSemantics.Parameters["ScreenDimensions"] != null;
+            return parameterSet["ScreenDimensions"] != null;
         }
 
-        public void AttachToEffect(EffectWithSemantics effectWithSemantics)
+        public void AttachToParameterSet(IEffectParameterSet parameterSet)
         {
-            if (_effectWithSemantics != null)
+            if (_parameterSet != null)
             {
                 throw new InvalidOperationException("This semantic is already attached.");
             }
 
-            _effectWithSemantics = effectWithSemantics;
-            CacheEffectParameters();
+            _parameterSet = parameterSet;
+            CacheParameters();
         }
 
-        public IEffectSemantic Clone(EffectWithSemantics effectWithSemantics)
+        public IEffectSemantic Clone(IEffectParameterSet parameterSet)
         {
             var clone = new ScreenDimensionsEffectSemantic();
-            clone.AttachToEffect(effectWithSemantics);
+            clone.AttachToParameterSet(parameterSet);
             return clone;
         }
 
-        public void CacheEffectParameters()
+        public void CacheParameters()
         {
             if (_screenDimensionsParam == null)
             {
-                _screenDimensionsParam = _effectWithSemantics.Parameters["ScreenDimensions"];
+                _screenDimensionsParam = _parameterSet["ScreenDimensions"];
             }
         }
 
-        public void OnApply()
+        public void OnApply(IRenderContext renderContext)
         {
-            var width = _effectWithSemantics.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            var height = _effectWithSemantics.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            var width = renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            var height = renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
             var needsUpdate = false;
             if (_lastScreenX != width)

@@ -6,12 +6,13 @@ namespace Protogame
 {
     public class DefaultRenderContextImplementationUtilities : IRenderContextImplementationUtilities
     {
-        public void CopyMatricesToTargetEffect(Effect outgoing, Effect incoming)
+        /*
+        public void CopyMatricesToTargetEffect(IEffect outgoing, IEffect incoming)
         {
             Matrix? projection = null, view = null, world = null;
-            if (outgoing is IEffectMatrices)
+            if (outgoing?.NativeEffect is IEffectMatrices)
             {
-                var outgoingMatrices = (IEffectMatrices)outgoing;
+                var outgoingMatrices = (IEffectMatrices)outgoing.NativeEffect;
                 projection = outgoingMatrices.Projection;
                 view = outgoingMatrices.View;
                 world = outgoingMatrices.World;
@@ -30,9 +31,9 @@ namespace Protogame
 
             if (projection != null && view != null && world != null)
             {
-                if (incoming is IEffectMatrices)
+                if (incoming?.NativeEffect is IEffectMatrices)
                 {
-                    var incomingMatrices = (IEffectMatrices)incoming;
+                    var incomingMatrices = (IEffectMatrices)incoming.NativeEffect;
                     incomingMatrices.Projection = projection.Value;
                     incomingMatrices.View = view.Value;
                     incomingMatrices.World = world.Value;
@@ -51,9 +52,9 @@ namespace Protogame
             }
         }
 
-        public Matrix GetEffectMatrix(Effect effect, Func<IEffectMatrices, Matrix> prop)
+        public Matrix GetEffectMatrix(IEffect effect, Func<IEffectMatrices, Matrix> prop)
         {
-            var effectMatrices = effect as IEffectMatrices;
+            var effectMatrices = effect?.NativeEffect as IEffectMatrices;
 
             if (effectMatrices != null)
             {
@@ -72,9 +73,9 @@ namespace Protogame
             return Matrix.Identity;
         }
 
-        public void SetEffectMatrix(Effect effect, Action<IEffectMatrices> assign)
+        public void SetEffectMatrix(IEffect effect, Action<IEffectMatrices> assign)
         {
-            var effectMatrices = effect as IEffectMatrices;
+            var effectMatrices = effect?.NativeEffect as IEffectMatrices;
 
             if (effectMatrices != null)
             {
@@ -90,5 +91,6 @@ namespace Protogame
                 }
             }
         }
+        */
     }
 }

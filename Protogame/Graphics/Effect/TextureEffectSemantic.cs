@@ -6,11 +6,11 @@ namespace Protogame
 {
     public class TextureEffectSemantic : ITextureEffectSemantic
     {
-        private EffectWithSemantics _effectWithSemantics;
+        private IEffectParameterSet _parameterSet;
 
-        private EffectParameter _textureParam;
+        private IEffectWritableParameter _textureParam;
 
-        private EffectParameter _textureDimensionsParam;
+        private IEffectWritableParameter _textureDimensionsParam;
 
         private bool? _hasTextureDimensions;
 
@@ -28,45 +28,48 @@ namespace Protogame
             }
         }
 
-        public bool ShouldAttachToEffect(EffectWithSemantics effectWithSemantics)
+        public bool ShouldAttachToParameterSet(IEffectParameterSet parameterSet)
         {
-            return effectWithSemantics.Parameters["Texture"] != null;
+            return parameterSet["Texture"] != null;
         }
 
-        public void AttachToEffect(EffectWithSemantics effectWithSemantics)
+        public void AttachToParameterSet(IEffectParameterSet parameterSet)
         {
-            if (_effectWithSemantics != null)
+            if (_parameterSet != null)
             {
                 throw new InvalidOperationException("This semantic is already attached.");
             }
 
-            _effectWithSemantics = effectWithSemantics;
-            CacheEffectParameters();
+            _parameterSet = parameterSet;
+            CacheParameters();
         }
 
-        public IEffectSemantic Clone(EffectWithSemantics effectWithSemantics)
+        public IEffectSemantic Clone(IEffectParameterSet parameterSet)
         {
             var clone = new TextureEffectSemantic();
-            clone.AttachToEffect(effectWithSemantics);
-            clone.Texture = this.Texture;
+            clone.AttachToParameterSet(parameterSet);
+            if (_parameterSet != null)
+            {
+                clone.Texture = this.Texture;
+            }
             return clone;
         }
 
-        public void CacheEffectParameters()
+        public void CacheParameters()
         {
             if (_textureParam == null)
             {
-                _textureParam = _effectWithSemantics.Parameters["Texture"];
+                _textureParam = _parameterSet["Texture"];
             }
 
             if (_hasTextureDimensions == null)
             {
-                _textureDimensionsParam = _effectWithSemantics.Parameters["TextureDimensions"];
+                _textureDimensionsParam = _parameterSet["TextureDimensions"];
                 _hasTextureDimensions = _textureDimensionsParam != null;
             }
         }
 
-        public void OnApply()
+        public void OnApply(IRenderContext renderContext)
         {
         }
     }

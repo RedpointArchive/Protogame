@@ -144,26 +144,16 @@ namespace Protogame
 
                 if (debugRenderPass.EnabledLayers.OfType<PhysicsDebugLayer>().Any())
                 {
-                    var world = renderContext.World;
-                    renderContext.World = Matrix.Identity;
-
-                    foreach (var pass in renderContext.Effect.CurrentTechnique.Passes)
+                    foreach (var kv in _rigidBodyMappings)
                     {
-                        pass.Apply();
-
-                        foreach (var kv in _rigidBodyMappings)
+                        if (!kv.Key.EnableDebugDraw)
                         {
-                            if (!kv.Key.EnableDebugDraw)
-                            {
-                                kv.Key.EnableDebugDraw = true;
-                            }
-
-                            var drawer = new PhysicsDebugDraw(renderContext, _debugRenderer, !kv.Key.IsStaticOrInactive);
-                            kv.Key.DebugDraw(drawer);
+                            kv.Key.EnableDebugDraw = true;
                         }
-                    }
 
-                    renderContext.World = world;
+                        var drawer = new PhysicsDebugDraw(renderContext, _debugRenderer, !kv.Key.IsStaticOrInactive);
+                        kv.Key.DebugDraw(drawer);
+                    }
                 }
             }
         }

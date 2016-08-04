@@ -6,7 +6,7 @@ namespace Protogame
 {
     public class DefaultModelRenderConfiguration : IModelRenderConfiguration
     {
-        public ModelVertexMapping GetVertexMappingToGPU(Model modelAsset, Effect effectAsset)
+        public ModelVertexMapping GetVertexMappingToGPU(Model modelAsset, IEffect effectAsset)
         {
             switch (effectAsset.Name)
             {

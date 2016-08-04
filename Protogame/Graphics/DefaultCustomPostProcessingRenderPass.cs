@@ -11,7 +11,7 @@ namespace Protogame
     /// <interface_ref>Protogame.ICustomPostProcessingRenderPass</interface_ref>
     public class DefaultCustomPostProcessingRenderPass : ICustomPostProcessingRenderPass
     {
-        private readonly Effect _effect;
+        private readonly IEffect _effect;
 
         private readonly IGraphicsBlit _graphicsBlit;
 
@@ -27,7 +27,7 @@ namespace Protogame
             _graphicsBlit = graphicsBlit;
         }
 
-        public DefaultCustomPostProcessingRenderPass(IGraphicsBlit graphicsBlit, Effect effect)
+        public DefaultCustomPostProcessingRenderPass(IGraphicsBlit graphicsBlit, IEffect effect)
         {
             _effect = effect;
             _graphicsBlit = graphicsBlit;
@@ -56,72 +56,72 @@ namespace Protogame
 
         public void SetValue(string name, bool value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, int value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Matrix value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Matrix[] value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Quaternion value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, float value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, float[] value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Texture value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector2 value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector2[] value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector3 value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector3[] value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector4 value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector4[] value)
         {
-            _effect.Parameters[name].SetValue(value);
+            _effect.NativeEffect.Parameters[name].SetValue(value);
         }
     }
 }

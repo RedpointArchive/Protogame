@@ -99,22 +99,26 @@
         /// Modifies the specified model to align to this animation at the specified frame and then renders it.
         /// </summary>
         /// <param name="renderContext">
-        /// The current render context.
+        ///     The current render context.
         /// </param>
         /// <param name="transform">
-        /// The world transformation to apply.
+        ///     The world transformation to apply.
         /// </param>
+        /// <param name="effectParameterSet"></param>
         /// <param name="model">
-        /// The model to update.
+        ///     The model to update.
         /// </param>
         /// <param name="secondFraction">
-        /// The time elapsed.
+        ///     The time elapsed.
         /// </param>
         /// <param name="multiply">
-        /// The multiplication factor to apply to the animation speed.
+        ///     The multiplication factor to apply to the animation speed.
         /// </param>
+        /// <param name="effect"></param>
         void Render(
             IRenderContext renderContext, 
+            IEffect effect, 
+            IEffectParameterSet effectParameterSet, 
             Matrix transform, 
             Model model, 
             TimeSpan secondFraction, 
@@ -124,37 +128,41 @@
         /// Modifies the specified model to align to this animation at the specified frame and then renders it.
         /// </summary>
         /// <param name="renderContext">
-        /// The current render context.
+        ///     The current render context.
         /// </param>
         /// <param name="transform">
-        /// The world transformation to apply.
+        ///     The world transformation to apply.
         /// </param>
+        /// <param name="effectParameterSet"></param>
         /// <param name="model">
-        /// The model to update.
+        ///     The model to update.
         /// </param>
         /// <param name="totalSeconds">
-        /// The time elapsed.
+        ///     The time elapsed.
         /// </param>
         /// <param name="multiply">
-        /// The multiplication factor to apply to the animation speed.
+        ///     The multiplication factor to apply to the animation speed.
         /// </param>
-        void Render(IRenderContext renderContext, Matrix transform, Model model, float totalSeconds, float multiply);
+        /// <param name="effect"></param>
+        void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Model model, float totalSeconds, float multiply);
 
         /// <summary>
         /// Modifies the specified model to align to this animation at the specified frame and then renders it.
         /// </summary>
         /// <param name="renderContext">
-        /// The current render context.
+        ///     The current render context.
         /// </param>
         /// <param name="transform">
-        /// The world transformation to apply.
+        ///     The world transformation to apply.
         /// </param>
+        /// <param name="effectParameterSet"></param>
         /// <param name="model">
-        /// The model to update.
+        ///     The model to update.
         /// </param>
         /// <param name="frame">
-        /// The frame to draw at.
+        ///     The frame to draw at.
         /// </param>
-        void Render(IRenderContext renderContext, Matrix transform, Model model, double frame);
+        /// <param name="effect"></param>
+        void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Model model, double frame);
     }
 }

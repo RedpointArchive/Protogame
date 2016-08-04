@@ -26,18 +26,20 @@ namespace Protogame
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, ILightContext lightContext)
         {
-            _directionalLightEffect.Effect.Parameters["Color"]?.SetValue(lightContext.DeferredColorMap);
-            _directionalLightEffect.Effect.Parameters["Normal"]?.SetValue(lightContext.DeferredNormalMap);
-            _directionalLightEffect.Effect.Parameters["Depth"]?.SetValue(lightContext.DeferredDepthMap);
-            _directionalLightEffect.Effect.Parameters["LightDirection"]?.SetValue(LightDirection);
-            _directionalLightEffect.Effect.Parameters["LightColor"]?.SetValue(LightColor.ToVector3());
-            _directionalLightEffect.Effect.Parameters["HalfPixel"]?.SetValue(lightContext.HalfPixel);
+            var parameterSet = _directionalLightEffect.Effect.CreateParameterSet();
+            parameterSet["Color"]?.SetValue(lightContext.DeferredColorMap);
+            parameterSet["Normal"]?.SetValue(lightContext.DeferredNormalMap);
+            parameterSet["Depth"]?.SetValue(lightContext.DeferredDepthMap);
+            parameterSet["LightDirection"]?.SetValue(LightDirection);
+            parameterSet["LightColor"]?.SetValue(LightColor.ToVector3());
+            parameterSet["HalfPixel"]?.SetValue(lightContext.HalfPixel);
 
             _graphicsBlit.Blit(
                 renderContext,
                 null,
                 lightContext.LightRenderTarget,
                 _directionalLightEffect.Effect,
+                parameterSet,
                 lightContext.LightBlendState);
         }
     }
