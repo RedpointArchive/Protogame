@@ -42,7 +42,7 @@ namespace Protogame
             kernel.Bind<IRawAssetSaver>().To<RawAssetSaver>();
             kernel.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
             kernel.Bind<IModelSerializer>().To<ModelSerializerGeneric>();
-            kernel.Bind<ITextureFromHintPath>().To<TextureFromHintPath>();
+            kernel.Bind<ITextureFromHintPath>().To<TextureFromHintPath>().InSingletonScope();
             kernel.Bind<IEffectSemantic>().To<WorldViewProjectionEffectSemantic>();
             kernel.Bind<IEffectSemantic>().To<TextureEffectSemantic>();
             kernel.Bind<IEffectSemantic>().To<BonesEffectSemantic>();

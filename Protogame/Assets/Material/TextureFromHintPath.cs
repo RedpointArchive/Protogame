@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -7,13 +9,21 @@ namespace Protogame
     {
         private readonly IAssetManager _assetManager;
 
+        private Dictionary<string, TextureAsset> _hintPathCache;
+
         public TextureFromHintPath(IAssetManagerProvider assetManagerProvider)
         {
             _assetManager = assetManagerProvider.GetAssetManager();
+            _hintPathCache = new Dictionary<string, TextureAsset>();
         }
 
         public TextureAsset GetTextureFromHintPath(string hintPath)
         {
+            if (_hintPathCache.ContainsKey(hintPath))
+            {
+                return _hintPathCache[hintPath];
+            }
+
             var baseName = hintPath.Split('/').Last();
             var baseNameWithoutExtension = baseName.Substring(0, baseName.LastIndexOf(".", StringComparison.InvariantCulture));
             var fullName = hintPath.Replace('/', '.');
@@ -35,10 +45,12 @@ namespace Protogame
                 var texture = _assetManager.TryGet<TextureAsset>(name);
                 if (texture != null)
                 {
+                    _hintPathCache[hintPath] = texture;
                     return texture;
                 }
             }
 
+            _hintPathCache[hintPath] = null;
             return null;
         }
 
