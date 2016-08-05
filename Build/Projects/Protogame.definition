@@ -224,10 +224,11 @@
     <Compile Include="Component\Builtin\StandardPointLightComponent.cs" />
     <Compile Include="Component\ComponentExtensions.cs" />
     <Compile Include="Component\ComponentizedEntity.cs" />
-    <Compile Include="Component\ComponentizedObject.cs">
+    <Compile Include="Component\ComponentizedObject.cs" />
+    <Compile Include="Component\ComponentizedObject.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ComponentizedObject.tt</DependentUpon>
+      <DependentUpon>ComponentizedObject.Generated.tt</DependentUpon>
     </Compile>
     <Compile Include="Component\FromGameAttribute.cs" />
     <Compile Include="Component\FromParentAttribute.cs" />
@@ -816,9 +817,9 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>NetworkSynchronisationComponentGenerated.cs</LastGenOutput>
     </Content>
-    <Content Include="Component\ComponentizedObject.tt">
+    <Content Include="Component\ComponentizedObject.Generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ComponentizedObject.cs</LastGenOutput>
+      <LastGenOutput>ComponentizedObject.Generated.cs</LastGenOutput>
     </Content>
     <Content Include="Component\IComponentCallable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
