@@ -5,8 +5,14 @@ using Protogame;
 
 namespace ProtogameAssetTool
 {
-    public class NullRenderBatcher :IRenderBatcher
+    public class NullRenderBatcher : IRenderBatcher
     {
+        public ulong LastBatchCount { get; }
+
+        public ulong LastApplyCount { get; }
+
+        public ulong LastBatchSaveCount { get; }
+
         public void QueueRequest(IRenderContext renderContext, IRenderRequest request)
         {
             throw new NotSupportedException();

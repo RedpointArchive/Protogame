@@ -28,6 +28,12 @@ namespace Protogame
             new VertexElement(16, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 2),
             new VertexElement(32, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 3),
             new VertexElement(48, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 4));
+        
+        public ulong LastBatchCount { get; private set; }
+
+        public ulong LastApplyCount { get; private set; }
+
+        public ulong LastBatchSaveCount { get; private set; }
 
         public void QueueRequest(IRenderContext renderContext, IRenderRequest request)
         {
@@ -56,6 +62,10 @@ namespace Protogame
 
         public void FlushRequests(IRenderContext renderContext)
         {
+            LastBatchCount = 0;
+            LastApplyCount = 0;
+            LastBatchSaveCount = 0;
+
             if (renderContext.IsCurrentRenderPass<I3DBatchedRenderPass>())
             {
                 using (_profiler.Measure("render-flush"))
@@ -66,6 +76,9 @@ namespace Protogame
                         {
                             continue;
                         }
+
+                        LastBatchCount++;
+                        LastBatchSaveCount += (ulong)(_requestInstances[kv.Key].Count - 1);
 
                         var request = kv.Value;
 
@@ -127,6 +140,8 @@ namespace Protogame
                                 foreach (var pass in request.Effect.NativeEffect.Techniques[request.TechniqueName].Passes)
                                 {
                                     pass.Apply();
+
+                                    LastApplyCount++;
 
                                     renderContext.GraphicsDevice.DrawIndexedPrimitives(
                                         request.PrimitiveType,

@@ -83,7 +83,7 @@ namespace Protogame
         /// </returns>
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
-            return new ModelAsset(_modelSerializer, name, null, null, null, false, string.Empty);
+            return new ModelAsset(_modelSerializer, name, null, null, null, false, string.Empty, null);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Protogame
         {
             if (data is CompiledAsset)
             {
-                return new ModelAsset(_modelSerializer, name, null, null, data.GetProperty<PlatformData>("PlatformData"), false, string.Empty);
+                return new ModelAsset(_modelSerializer, name, null, null, data.GetProperty<PlatformData>("PlatformData"), false, string.Empty, null);
             }
 
             PlatformData platformData = null;
@@ -125,7 +125,8 @@ namespace Protogame
                 data.GetProperty<System.Collections.Generic.Dictionary<string, byte[]>>("RawAdditionalAnimations"), 
                 platformData,
                 data.GetProperty<bool>("SourcedFromRaw"),
-                data.GetProperty<string>("Extension"));
+                data.GetProperty<string>("Extension"),
+                data.GetProperty<string[]>("ImportOptions"));
 
             return model;
         }

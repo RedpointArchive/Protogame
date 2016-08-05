@@ -133,8 +133,8 @@
     <Compile Include="Assets\Model\Animation.cs" />
     <Compile Include="Assets\Model\AnimationCollection.cs" />
     <Compile Include="Assets\Model\AnimationController.cs" />
+    <Compile Include="Assets\Model\AssimpReader.cs" />
     <Compile Include="Assets\Model\DefaultModelRenderConfiguration.cs" />
-    <Compile Include="Assets\Model\FbxReader.cs" />
     <Compile Include="Assets\Model\IAnimation.cs" />
     <Compile Include="Assets\Model\IAnimationCollection.cs" />
     <Compile Include="Assets\Model\IModel.cs" />
@@ -150,6 +150,7 @@
     <Compile Include="Assets\Model\ModelSerializerGeneric.cs" />
     <Compile Include="Assets\Model\ModelSerializerVersion1.cs" />
     <Compile Include="Assets\Model\ModelSerializerVersion2.cs" />
+    <Compile Include="Assets\Model\ModelSerializerVersion3.cs" />
     <Compile Include="Assets\Model\ModelVertex.cs" />
     <Compile Include="Assets\Model\ModelVertexMapping.cs" />
     <Compile Include="Assets\Model\RawModelLoadStrategy.cs" />

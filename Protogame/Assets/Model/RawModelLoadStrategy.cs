@@ -87,6 +87,46 @@
                         }
                     }
 
+                    var folderPath = Path.GetDirectoryName(
+                        new FileInfo(Path.Combine(path,
+                            (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".txt")).FullName);
+                    var folderOptionsFile = new FileInfo(Path.Combine(folderPath, "_FolderOptions.txt"));
+                    string[] importFolderOptions = null;
+                    if (folderOptionsFile.Exists)
+                    {
+                        using (var reader = new StreamReader(folderOptionsFile.FullName))
+                        {
+                            importFolderOptions = reader.ReadToEnd()
+                                .Trim()
+                                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim())
+                                .Where(x => !x.StartsWith("#"))
+                                .ToArray();
+                        }
+                    }
+
+                    var optionsFile =
+                        new FileInfo(Path.Combine(path,
+                            (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + ".txt"));
+                    string[] importOptions = null;
+                    if (optionsFile.Exists)
+                    {
+                        using (var reader = new StreamReader(optionsFile.FullName))
+                        {
+                            importOptions = reader.ReadToEnd()
+                                .Trim()
+                                .Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Trim())
+                                .Where(x => !x.StartsWith("#"))
+                                .ToArray();
+                        }
+                    }
+
+                    if (importOptions == null)
+                    {
+                        importOptions = importFolderOptions;
+                    }
+
                     return
                         new AnonymousObjectBasedRawAsset(
                             new
@@ -96,7 +136,8 @@
                                 RawData = this.ReadModelData(file.FullName),
                                 RawAdditionalAnimations = otherAnimations,
                                 SourcedFromRaw = true,
-                                Extension = kv.Key
+                                Extension = kv.Key,
+                                ImportOptions = importOptions
                             });
                 }
             }

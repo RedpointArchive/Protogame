@@ -160,6 +160,11 @@ namespace Protogame
                 _locked = true;
             }
 
+            public void Unlock()
+            {
+                _locked = false;
+            }
+
             public int GetStateHash()
             {
                 var h = _writableParameters.Count ^ 397;

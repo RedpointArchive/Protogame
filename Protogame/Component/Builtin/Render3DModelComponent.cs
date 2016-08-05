@@ -43,6 +43,10 @@ namespace Protogame
 
         private string _mode;
 
+        private IEffectParameterSet _cachedEffectParameterSet;
+
+        private IEffect _effectUsedForParameterSetCache;
+
         public Render3DModelComponent(
             INode node,
             I3DRenderUtilities renderUtilities,
@@ -205,7 +209,20 @@ namespace Protogame
                         }
                     }
 
-                    var parameterSet = effect.CreateParameterSet();
+                    IEffectParameterSet parameterSet;
+                    if (_effectUsedForParameterSetCache == effect)
+                    {
+                        // Reuse the existing parameter set.
+                        parameterSet = _cachedEffectParameterSet;
+                        parameterSet.Unlock();
+                    }
+                    else
+                    {
+                        // Create a new parameter set and cache it.
+                        parameterSet = effect.CreateParameterSet();
+                        _cachedEffectParameterSet = parameterSet;
+                        _effectUsedForParameterSetCache = effect;
+                    }
 
                     if (parameterSet.HasSemantic<ITextureEffectSemantic>())
                     {

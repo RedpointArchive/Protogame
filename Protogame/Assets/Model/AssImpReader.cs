@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Assimp.Configs;
+
 #if PLATFORM_LINUX || PLATFORM_MACOS || PLATFORM_WINDOWS
 
 namespace Protogame
@@ -18,15 +21,15 @@ namespace Protogame
     using Quaternion = Microsoft.Xna.Framework.Quaternion;
 
     /// <summary>
-    /// Reads an FBX file using AssImp and converts it to an <see cref="IModel"/>, which can be used
+    /// Reads a model file using AssImp and converts it to an <see cref="IModel"/>, which can be used
     /// at runtime for rendering, or serialized for storage as an asset.
     /// </summary>
-    public class FbxReader
+    public class AssimpReader
     {
         private readonly IModelRenderConfiguration[] _modelRenderConfigurations;
         private readonly IRenderBatcher _renderBatcher;
 
-        public FbxReader(IModelRenderConfiguration[] modelRenderConfigurations, IRenderBatcher renderBatcher)
+        public AssimpReader(IModelRenderConfiguration[] modelRenderConfigurations, IRenderBatcher renderBatcher)
         {
             _modelRenderConfigurations = modelRenderConfigurations;
             _renderBatcher = renderBatcher;
@@ -44,10 +47,11 @@ namespace Protogame
         /// <param name="rawAdditionalAnimations">
         /// A dictionary mapping of animation names to byte arrays for additional FBX files to load.
         /// </param>
+        /// <param name="options">Additional options for the import.</param>
         /// <returns>
         /// The loaded <see cref="IModel"/>.
         /// </returns>
-        public IModel Load(byte[] data, string name, string extension, Dictionary<string, byte[]> rawAdditionalAnimations)
+        public IModel Load(byte[] data, string name, string extension, Dictionary<string, byte[]> rawAdditionalAnimations, string[] options)
         {
             var file = Path.GetTempFileName() + "." + extension;
             using (var stream = new FileStream(file, FileMode.Create))
@@ -72,7 +76,7 @@ namespace Protogame
                 }
             }
 
-            var model = this.Load(file, name, additionalAnimationFiles);
+            var model = this.Load(file, name, additionalAnimationFiles, options);
 
             File.Delete(file);
 
@@ -93,20 +97,35 @@ namespace Protogame
         /// <param name="additionalAnimationFiles">
         /// A dictionary mapping of animation names to filenames for additional FBX files to load.
         /// </param>
+        /// <param name="options">Additional options for the import.</param>
         /// <returns>
         /// The loaded <see cref="IModel"/>.
         /// </returns>
-        public IModel Load(string filename, string name, Dictionary<string, string> additionalAnimationFiles)
+        public IModel Load(string filename, string name, Dictionary<string, string> additionalAnimationFiles, string[] options)
         {
             this.LoadAssimpLibrary();
 
             // Import the scene via AssImp.
             var importer = new AssimpContext();
-            const PostProcessSteps ProcessFlags = 0
-                | PostProcessSteps.FlipUVs
-                | PostProcessSteps.Triangulate
-                | PostProcessSteps.FlipWindingOrder
-                ;
+            PostProcessSteps ProcessFlags = 0;
+            if (options == null)
+            {
+                ProcessFlags |= PostProcessSteps.FlipUVs | PostProcessSteps.Triangulate |
+                                PostProcessSteps.FlipWindingOrder;
+            }
+            else
+            {
+                foreach (var v in options)
+                {
+                    PostProcessSteps flag;
+                    if (Enum.TryParse(v, true, out flag))
+                    {
+                        ProcessFlags |= flag;
+                        Console.Write("(on: " + flag + ") ");
+                    }
+                }
+            }
+            
             var scene = importer.ImportFile(filename, ProcessFlags);
 
             ModelVertex[] vertexes;
@@ -118,8 +137,15 @@ namespace Protogame
             {
                 var boneWeightingMap = this.BuildBoneWeightingMap(scene);
                 var staticTransformMap = this.BuildStaticTransformMap(scene);
-
-                boneHierarchy = this.ImportBoneHierarchy(scene.RootNode, scene.Meshes[0]);
+                
+                if (options?.Contains("!NoBoneHierarchy") ?? false)
+                {
+                    boneHierarchy = null;
+                }
+                else
+                {
+                    boneHierarchy = this.ImportBoneHierarchy(scene.RootNode, scene.Meshes[0]);
+                }
 
                 vertexes = this.ImportVertexes(scene, boneWeightingMap, staticTransformMap);
                 indices = this.ImportIndices(scene);

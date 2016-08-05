@@ -35,8 +35,8 @@ namespace Protogame
                 return;
             }
 
-            var reader = new FbxReader(_modelRenderConfigurations, _renderBatcher);
-            var model = reader.Load(asset.RawData, asset.Name, asset.Extension, asset.RawAdditionalAnimations);
+            var reader = new AssimpReader(_modelRenderConfigurations, _renderBatcher);
+            var model = reader.Load(asset.RawData, asset.Name, asset.Extension, asset.RawAdditionalAnimations, asset.ImportOptions);
             var data = _modelSerializer.Serialize(model);
 
             asset.PlatformData = new PlatformData { Data = data, Platform = platform };

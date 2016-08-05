@@ -5,6 +5,12 @@ namespace Protogame
 {
     public interface IRenderBatcher
     {
+        ulong LastBatchCount { get; }
+
+        ulong LastApplyCount { get; }
+
+        ulong LastBatchSaveCount { get; }
+
         void QueueRequest(IRenderContext renderContext, IRenderRequest request);
 
         void FlushRequests(IRenderContext renderContext);

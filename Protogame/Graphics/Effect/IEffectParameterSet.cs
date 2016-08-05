@@ -10,6 +10,8 @@ namespace Protogame
 
         void Lock(IRenderContext renderContext);
 
+        void Unlock();
+
         int GetStateHash();
 
         bool HasSemantic<T>() where T : IEffectSemantic;

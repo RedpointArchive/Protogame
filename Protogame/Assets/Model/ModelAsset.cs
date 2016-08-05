@@ -24,34 +24,28 @@
         /// </para>
         /// </summary>
         /// <param name="modelSerializer">
-        /// The model serializer service.
+        ///     The model serializer service.
         /// </param>
         /// <param name="name">
-        /// The name of the model asset.
+        ///     The name of the model asset.
         /// </param>
         /// <param name="rawData">
-        /// The raw, serialized model data.
+        ///     The raw, serialized model data.
         /// </param>
         /// <param name="rawAdditionalAnimations">
-        /// The source raw data that contains additional animations, mapping byte arrays to animation names.
+        ///     The source raw data that contains additional animations, mapping byte arrays to animation names.
         /// </param>
         /// <param name="data">
-        /// The platform specific data.
+        ///     The platform specific data.
         /// </param>
         /// <param name="sourcedFromRaw">
-        /// Whether or not this asset was sourced from a purely raw asset file (such as a PNG).
+        ///     Whether or not this asset was sourced from a purely raw asset file (such as a PNG).
         /// </param>
         /// <param name="extension">
-        /// The appropriate file extension for this model.
+        ///     The appropriate file extension for this model.
         /// </param>
-        public ModelAsset(
-            IModelSerializer modelSerializer,
-            string name, 
-            byte[] rawData, 
-            Dictionary<string, byte[]> rawAdditionalAnimations, 
-            PlatformData data, 
-            bool sourcedFromRaw,
-            string extension)
+        /// <param name="importOptions"></param>
+        public ModelAsset(IModelSerializer modelSerializer, string name, byte[] rawData, Dictionary<string, byte[]> rawAdditionalAnimations, PlatformData data, bool sourcedFromRaw, string extension, string[] importOptions)
         {
             this._modelSerializer = modelSerializer;
             this.Name = name;
@@ -60,6 +54,7 @@
             this.PlatformData = data;
             this.SourcedFromRaw = sourcedFromRaw;
             this.Extension = extension;
+            this.ImportOptions = importOptions;
 
             if (this.PlatformData != null)
             {
@@ -270,6 +265,15 @@
         /// The sourced from raw.
         /// </value>
         public bool SourcedFromRaw { get; private set; }
+
+        /// <summary>
+        /// Gets the additional options used for the initial import.  If this is null, then no options file was
+        /// present, otherwise it is an explicit list of options that were set during the import.
+        /// <para>
+        /// This value is always null at runtime.
+        /// </para>
+        /// </summary>
+        public string[] ImportOptions { get; set; }
 
         /// <summary>
         /// Modifies the specified model to align to this animation at the specified frame.

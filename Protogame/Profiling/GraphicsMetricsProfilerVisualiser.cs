@@ -8,23 +8,26 @@ namespace Protogame
         private readonly I2DRenderUtilities _renderUtilities;
         private readonly IRenderCache _renderCache;
         private readonly IRenderAutoCache _renderAutoCache;
+        private readonly IRenderBatcher _renderBatcher;
         private readonly FontAsset _defaultFont;
 
         public GraphicsMetricsProfilerVisualiser(
             IAssetManagerProvider assetManagerProvider,
             I2DRenderUtilities renderUtilities,
             IRenderCache renderCache,
-            IRenderAutoCache renderAutoCache)
+            IRenderAutoCache renderAutoCache,
+            IRenderBatcher renderBatcher)
         {
             _renderUtilities = renderUtilities;
             _renderCache = renderCache;
             _renderAutoCache = renderAutoCache;
+            _renderBatcher = renderBatcher;
             _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
         }
 
         public int GetHeight(int backBufferHeight)
         {
-            return 60;
+            return 80;
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, Rectangle rectangle)
@@ -45,6 +48,9 @@ namespace Protogame
                 new Tuple<string, ulong>("ibc", (ulong)_renderCache.IndexBuffersCached),
                 new Tuple<string, ulong>("vbac", (ulong)_renderAutoCache.VertexBuffersCached),
                 new Tuple<string, ulong>("ibac", (ulong)_renderAutoCache.IndexBuffersCached),
+                new Tuple<string, ulong>("bch", _renderBatcher.LastBatchCount),
+                new Tuple<string, ulong>("apy", _renderBatcher.LastApplyCount),
+                new Tuple<string, ulong>("sav", _renderBatcher.LastBatchSaveCount),
             };
 
             for (var i = 0; i < metrics.Length; i++)
