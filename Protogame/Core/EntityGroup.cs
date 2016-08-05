@@ -10,6 +10,10 @@ namespace Protogame
     {
         private readonly INode _node;
 
+        private INode<IEntity>[] _entityCache = new INode<IEntity>[0];
+
+        private INode<IServerEntity>[] _serverEntityCache = new INode<IServerEntity>[0];
+
         public EntityGroup(INode node, IEditorQuery<EntityGroup> editorQuery)
         {
             _node = node;
@@ -20,7 +24,16 @@ namespace Protogame
             if (editorQuery.Mode == EditorQueryMode.LoadingConfiguration)
             {
                 editorQuery.MapTransform(this, x => this.Transform.Assign(x));
+
+                _node.ChildrenChanged += ChildrenChanged;
+                ChildrenChanged(null, null);
             }
+        }
+
+        private void ChildrenChanged(object sender, EventArgs e)
+        {
+            _entityCache = _node.Children.Where(x => typeof(IEntity).IsAssignableFrom(x.Type)).Cast<INode<IEntity>>().ToArray();
+            _serverEntityCache = _node.Children.Where(x => typeof(IServerEntity).IsAssignableFrom(x.Type)).Cast<INode<IServerEntity>>().ToArray();
         }
 
         public ITransform Transform { get; }
@@ -32,17 +45,17 @@ namespace Protogame
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
-            foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IServerEntity>())
+            for (var i = 0; i < _entityCache.Length; i++)
             {
-                child.Update(serverContext, updateContext);
+                _serverEntityCache[i].Value.Update(serverContext, updateContext);
             }
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IEntity>())
+            for (var i = 0; i < _entityCache.Length; i++)
             {
-                child.Render(gameContext, renderContext);
+                _entityCache[i].Value.Render(gameContext, renderContext);
             }
         }
 
@@ -56,9 +69,9 @@ namespace Protogame
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IEntity>())
+            for (var i = 0; i < _entityCache.Length; i++)
             {
-                child.Update(gameContext, updateContext);
+                _entityCache[i].Value.Update(gameContext, updateContext);
             }
         }
 
