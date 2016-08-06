@@ -226,7 +226,7 @@ namespace Protogame
 
                     if (parameterSet.HasSemantic<ITextureEffectSemantic>())
                     {
-                        if (_lastCachedDiffuseTexture.Texture != null)
+                        if (_lastCachedDiffuseTexture?.Texture != null)
                         {
                             parameterSet.GetSemantic<ITextureEffectSemantic>().Texture =
                                 _lastCachedDiffuseTexture.Texture;
@@ -235,7 +235,7 @@ namespace Protogame
 
                     if (parameterSet.HasSemantic<INormalMapEffectSemantic>())
                     {
-                        if (_lastCachedNormalMapTexture.Texture != null)
+                        if (_lastCachedNormalMapTexture?.Texture != null)
                         {
                             parameterSet.GetSemantic<INormalMapEffectSemantic>().NormalMap =
                                 _lastCachedNormalMapTexture.Texture;
