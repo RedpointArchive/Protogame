@@ -36,6 +36,16 @@ PROTOGAME_DECLARE_TEXTURE(Normal) = sampler_state
 	MipFilter = POINT;
 };
 
+PROTOGAME_DECLARE_TEXTURE(Specular) = sampler_state
+{
+	Texture = (Specular);
+	AddressU = CLAMP;
+	AddressV = CLAMP;
+	MagFilter = LINEAR;
+	MinFilter = LINEAR;
+	MipFilter = LINEAR;
+};
+
 float3 LightPosition;
 float3 LightColor;
 float LightRadius;
@@ -43,6 +53,8 @@ float LightIntensity;
 float4x4 LightInvertViewProjection;
 
 float2 ScreenDimensions;
+
+float3 CameraPosition;
 
 float4x4 World;
 float4x4 View;
@@ -61,7 +73,8 @@ struct VertexShaderOutput
 
 struct PixelShaderOutput
 {
-	float4 Color : PROTOGAME_TARGET(0);
+	float4 DiffuseLight : PROTOGAME_TARGET(0);
+	float4 SpecularLight : PROTOGAME_TARGET(1);
 };
 
 VertexShaderOutput DeferredVertexShader(VertexShaderInput input)
@@ -94,6 +107,12 @@ PixelShaderOutput DeferredPixelShader(VertexShaderOutput input)
 	// Transform normal back into [-1, 1] range.
 	float3 normal = 2.0f * normalRaw.xyz - 1.0f;
 
+	// Read specular power from the normal alpha.
+	float specularPower = normalRaw.a * 255;
+
+	// Read the specular intensity.
+	float3 specularColor = PROTOGAME_SAMPLE_TEXTURE(Specular, texCoord).rgb;
+
 	// Read depth.
 	float depthVal = PROTOGAME_SAMPLE_TEXTURE(Depth, texCoord).r;
 
@@ -120,7 +139,18 @@ PixelShaderOutput DeferredPixelShader(VertexShaderOutput input)
 	float NdL = max(0, dot(normal, lightVector));
 	float3 diffuseLight = NdL * LightColor.rgb;
 
-	output.Color = attenuation * LightIntensity * float4(diffuseLight.rgb, 0);
+	// Compute camera-to-surface vector.
+	float3 directionToCamera = normalize(CameraPosition - position.xyz);
+
+	// Compute half vector.
+	float3 halfVector = normalize(normalize(lightVector) + directionToCamera);
+
+	// Compute specular light.
+	float3 specularLight = specularColor * pow(saturate(dot(normal, halfVector)), specularPower);
+
+	// Compute light colors.
+	output.DiffuseLight = attenuation * LightIntensity * float4(diffuseLight.rgb, 0);
+	output.SpecularLight = attenuation * LightIntensity * float4(specularLight.rgb, 0);
 
 	return output;
 }
@@ -129,7 +159,7 @@ technique RENDER_PASS_TYPE_DEFERRED
 {
 	pass
 	{
-		VertexShader = compile PROTOGAME_VERTEX_LOW_SHADER DeferredVertexShader();
-		PixelShader = compile PROTOGAME_PIXEL_LOW_SHADER DeferredPixelShader();
+		VertexShader = compile PROTOGAME_VERTEX_HIGH_SHADER DeferredVertexShader();
+		PixelShader = compile PROTOGAME_PIXEL_HIGH_SHADER DeferredPixelShader();
 	}
 }

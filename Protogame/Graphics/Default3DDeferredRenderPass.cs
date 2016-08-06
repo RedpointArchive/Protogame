@@ -17,17 +17,16 @@ namespace Protogame
         private readonly IHierarchy _hierarchy;
         private readonly IRenderTargetBackBufferUtilities _renderTargetBackBufferUtilities;
         private readonly IGraphicsBlit _graphicsBlit;
-        private readonly ILightFactory _lightFactory;
         private readonly IRenderBatcher _renderBatcher;
         private readonly EffectAsset _gbufferClearEffect;
-        private readonly EffectAsset _gbufferRenderEffect;
         private readonly EffectAsset _gbufferCombineEffect;
 
         private RenderTarget2D _normalRenderTarget;
         private RenderTarget2D _colorRenderTarget;
         private RenderTarget2D _depthRenderTarget;
         private RenderTarget2D _specularRenderTarget;
-        private RenderTarget2D _lightRenderTarget;
+        private RenderTarget2D _diffuseLightRenderTarget;
+        private RenderTarget2D _specularLightRenderTarget;
 
         private DepthStencilState _depthStencilState;
         private DepthStencilState _lightDepthStencilState;
@@ -46,18 +45,14 @@ namespace Protogame
             IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities,
             IGraphicsBlit graphicsBlit,
             IAssetManagerProvider assetManagerProvider,
-            ILightFactory lightFactory,
             IRenderBatcher renderBatcher)
         {
             _hierarchy = hierarchy;
             _renderTargetBackBufferUtilities = renderTargetBackBufferUtilities;
             _graphicsBlit = graphicsBlit;
-            _lightFactory = lightFactory;
             _renderBatcher = renderBatcher;
             _gbufferClearEffect =
                 assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.GBufferClear");
-            _gbufferRenderEffect =
-                assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.GBufferRender");
             _gbufferCombineEffect =
                 assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.GBufferCombine");
         }
@@ -83,7 +78,8 @@ namespace Protogame
             _normalRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_normalRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, null);
             _depthRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_depthRenderTarget, gameContext, SurfaceFormat.Single, DepthFormat.None, null);
             _specularRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_specularRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, null);
-            _lightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_lightRenderTarget, gameContext, null, DepthFormat.None, null);
+            _diffuseLightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_diffuseLightRenderTarget, gameContext, null, DepthFormat.None, null);
+            _specularLightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_specularLightRenderTarget, gameContext, null, DepthFormat.None, null);
 
             if (_rasterizerStateCullNone == null)
             {
@@ -176,7 +172,11 @@ namespace Protogame
             renderContext.GraphicsDevice.RasterizerState = _previousRasterizerState;
             renderContext.GraphicsDevice.BlendState = _previousBlendState;
             
-            renderContext.PushRenderTarget(_lightRenderTarget);
+            renderContext.PushRenderTarget(_diffuseLightRenderTarget);
+            renderContext.GraphicsDevice.Clear(Color.Transparent);
+            renderContext.PopRenderTarget();
+
+            renderContext.PushRenderTarget(_specularLightRenderTarget);
             renderContext.GraphicsDevice.Clear(Color.Transparent);
             renderContext.PopRenderTarget();
 
@@ -184,7 +184,9 @@ namespace Protogame
                 _colorRenderTarget,
                 _normalRenderTarget,
                 _depthRenderTarget,
-                _lightRenderTarget,
+                _specularRenderTarget,
+                _diffuseLightRenderTarget,
+                _specularLightRenderTarget,
                 _lightBlendState,
                 _rasterizerStateCullNone,
                 _rasterizerStateCullClockwiseFace,
@@ -223,7 +225,7 @@ namespace Protogame
                     null,
                     null,
                     new Vector2(0, 0),
-                    new Vector2(0.5f, 0.5f));
+                    new Vector2(0.33f, 0.5f));
                 _graphicsBlit.Blit(
                     renderContext,
                     _normalRenderTarget,
@@ -231,8 +233,8 @@ namespace Protogame
                     null,
                     null,
                     null,
-                    new Vector2(0.5f, 0),
-                    new Vector2(0.5f, 0.5f));
+                    new Vector2(0.33f, 0),
+                    new Vector2(0.34f, 0.5f));
                 _graphicsBlit.Blit(
                     renderContext,
                     _depthRenderTarget,
@@ -240,8 +242,8 @@ namespace Protogame
                     null,
                     null,
                     null,
-                    new Vector2(0f, 0.5f),
-                    new Vector2(0.33f, 0.33f));
+                    new Vector2(0.67f, 0f),
+                    new Vector2(0.33f, 0.5f));
                 _graphicsBlit.Blit(
                     renderContext,
                     _specularRenderTarget,
@@ -249,23 +251,33 @@ namespace Protogame
                     null,
                     null,
                     null,
-                    new Vector2(0.33f, 0.5f),
-                    new Vector2(0.34f, 0.33f));
+                    new Vector2(0.0f, 0.5f),
+                    new Vector2(0.33f, 0.5f));
                 _graphicsBlit.Blit(
                     renderContext,
-                    _lightRenderTarget,
+                    _diffuseLightRenderTarget,
                     null,
                     null,
                     null,
-                    BlendState.AlphaBlend,
+                    null,
+                    new Vector2(0.33f, 0.5f),
+                    new Vector2(0.34f, 0.5f));
+                _graphicsBlit.Blit(
+                    renderContext,
+                    _specularLightRenderTarget,
+                    null,
+                    null,
+                    null,
+                    null,
                     new Vector2(0.67f, 0.5f),
-                    new Vector2(0.33f, 0.33f));
+                    new Vector2(0.33f, 0.5f));
             }
             else
             {
                 var parameterSet = _gbufferCombineEffect.Effect.CreateParameterSet();
                 parameterSet["Color"]?.SetValue(_colorRenderTarget);
-                parameterSet["Light"]?.SetValue(_lightRenderTarget);
+                parameterSet["DiffuseLight"]?.SetValue(_diffuseLightRenderTarget);
+                parameterSet["SpecularLight"]?.SetValue(_specularLightRenderTarget);
                 parameterSet["AmbientLight"]?.SetValue(new Vector3(0.2f, 0.2f, 0.2f));
 
                 _graphicsBlit.Blit(

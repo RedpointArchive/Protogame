@@ -18,5 +18,7 @@ namespace Protogame
         void SetValue(Matrix matrix);
 
         void SetValue(Matrix[] matrices);
+
+        void SetValue(Color color);
     }
 }

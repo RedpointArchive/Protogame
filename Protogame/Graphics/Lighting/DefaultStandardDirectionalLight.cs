@@ -34,10 +34,10 @@ namespace Protogame
             parameterSet["LightColor"]?.SetValue(LightColor.ToVector3());
             parameterSet["HalfPixel"]?.SetValue(lightContext.HalfPixel);
 
-            _graphicsBlit.Blit(
+            _graphicsBlit.BlitMRT(
                 renderContext,
                 null,
-                lightContext.LightRenderTarget,
+                new[] { lightContext.DiffuseLightRenderTarget, lightContext.SpecularLightRenderTarget },
                 _directionalLightEffect.Effect,
                 parameterSet,
                 lightContext.LightBlendState);

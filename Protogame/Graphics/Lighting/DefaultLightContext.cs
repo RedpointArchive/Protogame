@@ -6,20 +6,24 @@ namespace Protogame
     public class DefaultLightContext : ILightContext
     {
         public DefaultLightContext(
-            Texture2D deferredColorMap,
+            Texture2D deferredColorMap, 
             Texture2D deferredNormalMap,
-            Texture2D deferredDepthMap,
-            RenderTarget2D lightRenderTarget,
+            Texture2D deferredDepthMap, 
+            Texture2D deferredSpecularMap,
+            RenderTarget2D diffuseLightRenderTarget,
+            RenderTarget2D specularLightRenderTarget,
             BlendState lightBlendState,
             RasterizerState rasterizerStateCullNone,
-            RasterizerState rasterizerStateCullClockwiseFace,
-            RasterizerState rasterizerStateCullCounterClockwiseFace,
+            RasterizerState rasterizerStateCullClockwiseFace, 
+            RasterizerState rasterizerStateCullCounterClockwiseFace, 
             Vector2 halfPixel)
         {
             DeferredColorMap = deferredColorMap;
             DeferredNormalMap = deferredNormalMap;
             DeferredDepthMap = deferredDepthMap;
-            LightRenderTarget = lightRenderTarget;
+            DeferredSpecularMap = deferredSpecularMap;
+            DiffuseLightRenderTarget = diffuseLightRenderTarget;
+            SpecularLightRenderTarget = specularLightRenderTarget;
             LightBlendState = lightBlendState;
             RasterizerStateCullNone = rasterizerStateCullNone;
             RasterizerStateCullClockwiseFace = rasterizerStateCullClockwiseFace;
@@ -30,7 +34,9 @@ namespace Protogame
         public Texture2D DeferredColorMap { get; }
         public Texture2D DeferredNormalMap { get; }
         public Texture2D DeferredDepthMap { get; }
-        public RenderTarget2D LightRenderTarget { get; }
+        public Texture2D DeferredSpecularMap { get; }
+        public RenderTarget2D DiffuseLightRenderTarget { get; }
+        public RenderTarget2D SpecularLightRenderTarget { get; set; }
         public BlendState LightBlendState { get; }
         public RasterizerState RasterizerStateCullNone { get; }
         public RasterizerState RasterizerStateCullClockwiseFace { get; }

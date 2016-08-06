@@ -28,5 +28,15 @@ namespace Protogame
         {
             return _targetParameter.GetValueVector4();
         }
+
+        public float GetValueSingle()
+        {
+            return _targetParameter.GetValueSingle();
+        }
+
+        public Color GetValueColor()
+        {
+            return new Color(_targetParameter.GetValueVector4());
+        }
     }
 }

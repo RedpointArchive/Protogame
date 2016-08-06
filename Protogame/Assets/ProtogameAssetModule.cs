@@ -51,6 +51,8 @@ namespace Protogame
             kernel.Bind<IEffectSemantic>().To<ColorDiffuseEffectSemantic>();
             kernel.Bind<IEffectSemantic>().To<ScreenDimensionsEffectSemantic>();
             kernel.Bind<IEffectSemantic>().To<NormalMapEffectSemantic>();
+            kernel.Bind<IEffectSemantic>().To<SpecularEffectSemantic>();
+            kernel.Bind<IEffectSemantic>().To<CameraPositionEffectSemantic>();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             kernel.Bind<IAutomaticAssetReload>().To<DefaultAutomaticAssetReload>().InSingletonScope();

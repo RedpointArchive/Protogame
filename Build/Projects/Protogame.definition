@@ -436,8 +436,10 @@
     <Compile Include="Graphics\DefaultRenderPipeline.cs" />
     <Compile Include="Graphics\DefaultRenderTargetBackBufferUtilities.cs" />
     <Compile Include="Graphics\Effect\BonesEffectSemantic.cs" />
+    <Compile Include="Graphics\Effect\CameraPositionEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\ColorDiffuseEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\IBonesEffectSemantic.cs" />
+    <Compile Include="Graphics\Effect\ICameraPositionEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\IColorDiffuseEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\IEffect.cs" />
     <Compile Include="Graphics\Effect\IEffectParameter.cs" />
@@ -449,6 +451,7 @@
     <Compile Include="Graphics\Effect\IEffectWritableParameter.cs" />
     <Compile Include="Graphics\Effect\INormalMapEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\IScreenDimensionsEffectSemantic.cs" />
+    <Compile Include="Graphics\Effect\ISpecularEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\ITextureEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\IWorldViewProjectionEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\NormalMapEffectSemantic.cs" />
@@ -456,6 +459,7 @@
     <Compile Include="Graphics\Effect\ProtogameEffectParameter.cs" />
     <Compile Include="Graphics\Effect\ProtogameEffectParameterCollection.cs" />
     <Compile Include="Graphics\Effect\ScreenDimensionsEffectSemantic.cs" />
+    <Compile Include="Graphics\Effect\SpecularEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\TextureEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\WorldViewProjectionEffectSemantic.cs" />
     <Compile Include="Graphics\I2DBatchedRenderPass.cs" />
@@ -814,6 +818,9 @@
     <None Include="..\Protogame.Resources\effect.Blur.fx">
       <Link>Resources\effect.Blur.fx</Link>
     </None>
+    <None Include="..\Protogame.Resources\effect.BuiltinSurface.fx">
+      <Link>Resources\effect.BuiltinSurface.fx</Link>
+    </None>
     <None Include="..\Protogame.Resources\effect.DirectionalLight.fx">
       <Link>Resources\effect.DirectionalLight.fx</Link>
     </None>
@@ -822,9 +829,6 @@
     </None>
     <None Include="..\Protogame.Resources\effect.GBufferCombine.fx">
       <Link>Resources\effect.GBufferCombine.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.GBufferRender.fx">
-      <Link>Resources\effect.GBufferRender.fx</Link>
     </None>
     <None Include="..\Protogame.Resources\effect.Invert.fx">
       <Link>Resources\effect.Invert.fx</Link>
@@ -843,9 +847,6 @@
     </None>
     <None Include="..\Protogame.Resources\model.LightSphere.dae">
       <Link>Resources\model.LightSphere.dae</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.BuiltinSurface.fx">
-      <Link>Resources\effect.BuiltinSurface.fx</Link>
     </None>
     <None Include="Component\Builtin\NetworkSynchronisationComponentGenerated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

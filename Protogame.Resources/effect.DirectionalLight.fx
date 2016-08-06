@@ -60,7 +60,8 @@ struct VertexShaderOutput
 
 struct PixelShaderOutput
 {
-	float4 Color : PROTOGAME_TARGET(0);
+	float4 DiffuseLight : PROTOGAME_TARGET(0);
+	float4 SpecularLight : PROTOGAME_TARGET(1);
 };
 
 VertexShaderOutput ForwardVertexShader(VertexShaderInput input)
@@ -93,7 +94,8 @@ PixelShaderOutput ForwardPixelShader(VertexShaderOutput input)
 	float NdL = max(0, dot(normal, lightVector));
 	float3 diffuseLight = NdL * LightColor.rgb;
 
-	output.Color = float4(diffuseLight, 0);
+	output.DiffuseLight = float4(diffuseLight, 0);
+	output.SpecularLight = float4(0, 0, 0, 0);
 
 	return output;
 }

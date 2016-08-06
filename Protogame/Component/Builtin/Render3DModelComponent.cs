@@ -23,6 +23,8 @@ namespace Protogame
 
         private TextureAsset _lastCachedNormalMapTexture;
 
+        private TextureAsset _lastCachedSpecularMapTexture;
+
         private bool _useDefaultEffects;
 
         private UberEffectAsset _uberEffectAsset;
@@ -100,31 +102,41 @@ namespace Protogame
                                 _lastCachedDiffuseTexture =
                                     _textureFromHintPath.GetTextureFromHintPath(material.TextureDiffuse);
                             }
-                            
-                            if (material.TextureNormal.TextureAsset != null)
+
+                            if (material.TextureNormal != null)
                             {
-                                _lastCachedNormalMapTexture = material.TextureNormal.TextureAsset;
+                                if (material.TextureNormal.TextureAsset != null)
+                                {
+                                    _lastCachedNormalMapTexture = material.TextureNormal.TextureAsset;
+                                }
+                                else
+                                {
+                                    _lastCachedNormalMapTexture =
+                                        _textureFromHintPath.GetTextureFromHintPath(material.TextureNormal);
+                                }
                             }
                             else
                             {
-                                _lastCachedNormalMapTexture =
-                                    _textureFromHintPath.GetTextureFromHintPath(material.TextureNormal);
+                                _lastCachedNormalMapTexture = null;
                             }
 
-                            _mode = "texture-normal";
-                        }
-                        else if (material.TextureDiffuse != null)
-                        {
-                            if (material.TextureDiffuse.TextureAsset != null)
+                            if (material.TextureSpecular != null)
                             {
-                                _lastCachedDiffuseTexture = material.TextureDiffuse.TextureAsset;
+                                if (material.TextureSpecular.TextureAsset != null)
+                                {
+                                    _lastCachedSpecularMapTexture = material.TextureNormal.TextureAsset;
+                                }
+                                else
+                                {
+                                    _lastCachedSpecularMapTexture =
+                                        _textureFromHintPath.GetTextureFromHintPath(material.TextureSpecular);
+                                }
                             }
                             else
                             {
-                                _lastCachedDiffuseTexture =
-                                    _textureFromHintPath.GetTextureFromHintPath(material.TextureDiffuse);
+                                _lastCachedSpecularMapTexture = null;
                             }
-                            
+
                             _mode = "texture";
                         }
                         else if (material.ColorDiffuse != null)
@@ -151,10 +163,18 @@ namespace Protogame
                             switch (_mode)
                             {
                                 case "texture":
-                                    effect = _uberEffectAsset.Effects["Texture"];
-                                    break;
-                                case "texture-normal":
-                                    effect = _uberEffectAsset.Effects["TextureNormal"];
+                                    if (_lastCachedNormalMapTexture != null && _lastCachedSpecularMapTexture != null)
+                                    {
+                                        effect = _uberEffectAsset.Effects["TextureNormalSpecIntMapColDef"];
+                                    }
+                                    else if (_lastCachedNormalMapTexture != null)
+                                    {
+                                        effect = _uberEffectAsset.Effects["TextureNormal"];
+                                    }
+                                    else
+                                    {
+                                        effect = _uberEffectAsset.Effects["Texture"];
+                                    }
                                     break;
                                 case "color":
                                     effect = _uberEffectAsset.Effects["Color"];
@@ -171,10 +191,18 @@ namespace Protogame
                             switch (_mode)
                             {
                                 case "texture":
-                                    effect = _uberEffectAsset.Effects["TextureSkinned"];
-                                    break;
-                                case "texture-normal":
-                                    effect = _uberEffectAsset.Effects["TextureNormalSkinned"];
+                                    if (_lastCachedNormalMapTexture != null && _lastCachedSpecularMapTexture != null)
+                                    {
+                                        effect = _uberEffectAsset.Effects["TextureNormalSpecIntMapColDefSkinned"];
+                                    }
+                                    else if (_lastCachedNormalMapTexture != null)
+                                    {
+                                        effect = _uberEffectAsset.Effects["TextureNormalSkinned"];
+                                    }
+                                    else
+                                    {
+                                        effect = _uberEffectAsset.Effects["TextureSkinned"];
+                                    }
                                     break;
                                 case "color":
                                     effect = _uberEffectAsset.Effects["ColorSkinned"];
@@ -218,6 +246,16 @@ namespace Protogame
                         {
                             parameterSet.GetSemantic<INormalMapEffectSemantic>().NormalMap =
                                 _lastCachedNormalMapTexture.Texture;
+                        }
+                    }
+
+                    if (parameterSet.HasSemantic<ISpecularEffectSemantic>())
+                    {
+                        if (_lastCachedNormalMapTexture?.Texture != null)
+                        {
+                            var semantic = parameterSet.GetSemantic<ISpecularEffectSemantic>();
+                            semantic.SpecularIntensityMap = _lastCachedSpecularMapTexture.Texture;
+                            semantic.SpecularPower = 0.5f;
                         }
                     }
 

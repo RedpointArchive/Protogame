@@ -16,9 +16,19 @@ PROTOGAME_DECLARE_TEXTURE(Color) = sampler_state
 	MipFilter = LINEAR;
 };
 
-PROTOGAME_DECLARE_TEXTURE(Light) = sampler_state
+PROTOGAME_DECLARE_TEXTURE(DiffuseLight) = sampler_state
 {
-	Texture = (Light);
+	Texture = (DiffuseLight);
+	AddressU = CLAMP;
+	AddressV = CLAMP;
+	MagFilter = LINEAR;
+	MinFilter = LINEAR;
+	MipFilter = LINEAR;
+};
+
+PROTOGAME_DECLARE_TEXTURE(SpecularLight) = sampler_state
+{
+	Texture = (SpecularLight);
 	AddressU = CLAMP;
 	AddressV = CLAMP;
 	MagFilter = LINEAR;
@@ -65,18 +75,16 @@ PixelShaderOutput DefaultPixelShader(VertexShaderOutput input)
 	PixelShaderOutput output;
 
 	// Sample diffuse color.
-	float4 diffuseColor = PROTOGAME_SAMPLE_TEXTURE(Color, input.TexCoord);
+	float3 diffuseColor = PROTOGAME_SAMPLE_TEXTURE(Color, input.TexCoord).rgb;
 
-	// Sample light color.
-	float4 light = PROTOGAME_SAMPLE_TEXTURE(Light, input.TexCoord);
+	// Sample diffuse light color.
+	float3 diffuseLight = PROTOGAME_SAMPLE_TEXTURE(DiffuseLight, input.TexCoord).rgb;
 
-	// Get the color component of the light.
-	float3 diffuseLight = light.rgb;
-
-	// Alpha channel of light is unused.
+	// Sample specular light color.
+	float3 specularLight = PROTOGAME_SAMPLE_TEXTURE(SpecularLight, input.TexCoord).rgb;
 
 	// Set the calculated light.
-	output.Color = float4((diffuseColor.rgb * diffuseLight), 1);
+	output.Color = float4((diffuseColor * diffuseLight + specularLight), 1);
 
 	return output;
 }

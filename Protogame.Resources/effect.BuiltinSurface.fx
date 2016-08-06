@@ -81,13 +81,13 @@ float4x4 Projection;
 
 // Declare relevant specular parameters.
 #if defined(HAS_SPECULAR_INTENSITY_CONSTANT)
-float4 SpecularIntensity;
+float SpecularIntensity;
 #endif
 #if defined(HAS_SPECULAR_COLOR_CONSTANT)
 float4 SpecularColor;
 #endif
 #if defined(HAS_SPECULAR_POWER)
-float4 SpecularPower;
+float SpecularPower;
 #endif
 
 // Declares the global diffuse parameters.
@@ -449,12 +449,15 @@ DeferredPixelShaderOutput DeferredPixelShader(DeferredVertexShaderOutput input)
 
 #if defined(HAS_NORMAL_MAP)
 	// Transform normal.
+	output.Normal.rgb = (0.5f * (normalize(input.Normal) + 1.0f)).rgb;
+	/*
 	float3 normalMap = PROTOGAME_SAMPLE_TEXTURE(NormalMap, input.TexCoord).rgb;
 	normalMap = (normalMap * 2.0f) - 1.0f;
 	output.Normal.rgb = normalize(
-		(normalMap.x * input.Tangent) + 
-		(normalMap.y * input.Binormal) +
+		(normalMap.x * input.Binormal) +
+		(normalMap.y * input.Tangent) +
 		(normalMap.z * input.Normal));
+	*/
 #elif !defined(HAS_NO_NORMALS)
 	// Transform normal.
 	output.Normal.rgb = (0.5f * (normalize(input.Normal) + 1.0f)).rgb;

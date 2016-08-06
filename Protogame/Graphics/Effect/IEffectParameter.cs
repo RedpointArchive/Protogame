@@ -10,5 +10,9 @@ namespace Protogame
         Texture2D GetValueTexture2D();
 
         Vector4 GetValueVector4();
+
+        float GetValueSingle();
+
+        Color GetValueColor();
     }
 }

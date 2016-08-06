@@ -5,13 +5,17 @@ namespace Protogame
 {
     public interface ILightContext
     {
-        RenderTarget2D LightRenderTarget { get; }
+        RenderTarget2D DiffuseLightRenderTarget { get; }
+
+        RenderTarget2D SpecularLightRenderTarget { get; }
 
         Texture2D DeferredColorMap { get; }
 
         Texture2D DeferredNormalMap { get; }
 
         Texture2D DeferredDepthMap { get; }
+
+        Texture2D DeferredSpecularMap { get; }
 
         Vector2 HalfPixel { get; }
 

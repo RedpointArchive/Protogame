@@ -33,6 +33,7 @@ namespace Protogame
             parameterSet["Color"]?.SetValue(lightContext.DeferredColorMap);
             parameterSet["Normal"]?.SetValue(lightContext.DeferredNormalMap);
             parameterSet["Depth"]?.SetValue(lightContext.DeferredDepthMap);
+            parameterSet["Specular"]?.SetValue(lightContext.DeferredSpecularMap);
             parameterSet["CameraPosition"]?.SetValue(renderContext.CameraPosition);
             parameterSet["LightPosition"]?.SetValue(LightPosition);
             parameterSet["LightColor"]?.SetValue(LightColor.ToVector3());
@@ -57,14 +58,14 @@ namespace Protogame
 
             renderContext.World = Matrix.CreateScale(LightRadius) * Matrix.CreateTranslation(LightPosition);
             
-            if (lightContext.LightRenderTarget != null)
+            if (lightContext.DiffuseLightRenderTarget != null && lightContext.SpecularLightRenderTarget != null)
             {
-                renderContext.PushRenderTarget(lightContext.LightRenderTarget);
+                renderContext.PushRenderTarget(lightContext.DiffuseLightRenderTarget, lightContext.SpecularLightRenderTarget);
             }
 
             _pointLightSphereModel.Render(renderContext, _pointLightEffect.Effect, parameterSet, Matrix.Identity);
 
-            if (lightContext.LightRenderTarget != null)
+            if (lightContext.DiffuseLightRenderTarget != null && lightContext.SpecularLightRenderTarget != null)
             {
                 renderContext.PopRenderTarget();
             }

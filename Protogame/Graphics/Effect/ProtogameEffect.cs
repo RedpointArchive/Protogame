@@ -234,6 +234,16 @@ namespace Protogame
                     return _vector4;
                 }
 
+                public float GetValueSingle()
+                {
+                    return _float;
+                }
+
+                public Color GetValueColor()
+                {
+                    return new Color(_vector4);
+                }
+
                 public ProtogameEffectWriteableParameterInternalType InternalType { get; private set; }
 
                 public int GetStateHash()
@@ -337,6 +347,20 @@ namespace Protogame
                     _matrices = matrices;
                     _valueStateHash = _matrices.GetHashCode() ^ 397;
                     InternalType = ProtogameEffectWriteableParameterInternalType.MatrixArray;
+                }
+
+                public void SetValue(Color color)
+                {
+                    if (_protogameParameterSet._locked)
+                    {
+                        throw new InvalidOperationException(
+                            "The effect parameter set is locked because it has been assigned to a " +
+                            "render request.  Create a new parameter set instead of modifying this one.");
+                    }
+
+                    _vector4 = color.ToVector4();
+                    _valueStateHash = _vector4.GetHashCode() ^ 397;
+                    InternalType = ProtogameEffectWriteableParameterInternalType.Vector4;
                 }
             }
 

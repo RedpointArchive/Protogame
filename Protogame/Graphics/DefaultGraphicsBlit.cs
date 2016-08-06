@@ -32,14 +32,71 @@ namespace Protogame
             _blitEffect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects["Texture"];
         }
 
-        public void Blit(IRenderContext renderContext, Texture2D source, RenderTarget2D destination = null, IEffect shader = null, IEffectParameterSet effectParameterSet = null, BlendState blendState = null, Vector2? offset = null, Vector2? size = null)
+        public void BlitMRT(
+            IRenderContext renderContext,
+            Texture2D source,
+            RenderTarget2D[] destinations,
+            IEffect shader,
+            IEffectParameterSet effectParameterSet,
+            BlendState blendState = null,
+            Vector2? offset = null,
+            Vector2? size = null)
+        {
+            BlitInternal(
+                renderContext,
+                source,
+                destinations,
+                shader,
+                effectParameterSet,
+                blendState,
+                offset,
+                size);
+        }
+        
+        public void Blit(
+            IRenderContext renderContext,
+            Texture2D source,
+            RenderTarget2D destination = null,
+            IEffect shader = null,
+            IEffectParameterSet effectParameterSet = null,
+            BlendState blendState = null,
+            Vector2? offset = null,
+            Vector2? size = null)
+        {
+            BlitInternal(
+                renderContext,
+                source,
+                destination == null ? null : new [] { destination },
+                shader,
+                effectParameterSet,
+                blendState,
+                offset,
+                size);
+        }
+
+        private void BlitInternal(
+            IRenderContext renderContext,
+            Texture2D source,
+            RenderTarget2D[] destinations = null, 
+            IEffect shader = null,
+            IEffectParameterSet effectParameterSet = null,
+            BlendState blendState = null,
+            Vector2? offset = null,
+            Vector2? size = null)
         {
             float destWidth, destHeight;
-            if (destination != null)
+            if (destinations != null)
             {
-                renderContext.PushRenderTarget(destination);
-                destWidth = destination.Width;
-                destHeight = destination.Height;
+                var destinationsBound = new RenderTargetBinding[destinations.Length];
+                for (var i = 0; i < destinations.Length; i++)
+                {
+                    // Implicit cast.
+                    destinationsBound[i] = destinations[i];
+                }
+
+                renderContext.PushRenderTarget(destinationsBound);
+                destWidth = destinations[0].Width;
+                destHeight = destinations[0].Height;
             }
             else
             {
@@ -131,7 +188,7 @@ namespace Protogame
             renderContext.Projection = oldProjection;
             renderContext.View = oldView;
 
-            if (destination != null)
+            if (destinations != null)
             {
                 renderContext.PopRenderTarget();
             }
