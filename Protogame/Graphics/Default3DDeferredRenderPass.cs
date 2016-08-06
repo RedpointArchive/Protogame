@@ -26,6 +26,7 @@ namespace Protogame
         private RenderTarget2D _normalRenderTarget;
         private RenderTarget2D _colorRenderTarget;
         private RenderTarget2D _depthRenderTarget;
+        private RenderTarget2D _specularRenderTarget;
         private RenderTarget2D _lightRenderTarget;
 
         private DepthStencilState _depthStencilState;
@@ -81,6 +82,7 @@ namespace Protogame
             _colorRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_colorRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.Depth24, null);
             _normalRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_normalRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, null);
             _depthRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_depthRenderTarget, gameContext, SurfaceFormat.Single, DepthFormat.None, null);
+            _specularRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_specularRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, null);
             _lightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_lightRenderTarget, gameContext, null, DepthFormat.None, null);
 
             if (_rasterizerStateCullNone == null)
@@ -142,7 +144,8 @@ namespace Protogame
             renderContext.PushRenderTarget(
                 _colorRenderTarget,
                 _normalRenderTarget,
-                _depthRenderTarget);
+                _depthRenderTarget,
+                _specularRenderTarget);
 
             // Clear the geometry buffer before moving into main rendering.
             _graphicsBlit.Blit(
@@ -238,7 +241,16 @@ namespace Protogame
                     null,
                     null,
                     new Vector2(0f, 0.5f),
-                    new Vector2(0.5f, 0.5f));
+                    new Vector2(0.33f, 0.33f));
+                _graphicsBlit.Blit(
+                    renderContext,
+                    _specularRenderTarget,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new Vector2(0.33f, 0.5f),
+                    new Vector2(0.34f, 0.33f));
                 _graphicsBlit.Blit(
                     renderContext,
                     _lightRenderTarget,
@@ -246,8 +258,8 @@ namespace Protogame
                     null,
                     null,
                     BlendState.AlphaBlend,
-                    new Vector2(0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f));
+                    new Vector2(0.67f, 0.5f),
+                    new Vector2(0.33f, 0.33f));
             }
             else
             {

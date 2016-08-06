@@ -2,6 +2,10 @@
 // A shader which combines the color map and light maps in deferred shading.
 // -----------------------------------------------------------------------------
 
+#if defined(__INTELLISENSE__)
+#include "Macros.inc"
+#endif
+
 PROTOGAME_DECLARE_TEXTURE(Color) = sampler_state
 {
 	Texture = (Color);

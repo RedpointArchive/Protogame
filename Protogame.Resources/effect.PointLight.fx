@@ -2,6 +2,10 @@
 // A shader which provides point lighting.
 // -----------------------------------------------------------------------------
 
+#if defined(__INTELLISENSE__)
+#include "Macros.inc"
+#endif
+
 PROTOGAME_DECLARE_TEXTURE(Color) = sampler_state
 {
 	Texture = (Color);

@@ -2,6 +2,10 @@
 // A basic gaussian blur shader.
 // -----------------------------------------------------------------------------
 
+#if defined(__INTELLISENSE__)
+#include "Macros.inc"
+#endif
+
 PROTOGAME_DECLARE_TEXTURE(Texture);
 
 float4x4 World;

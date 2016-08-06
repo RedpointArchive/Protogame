@@ -2,6 +2,10 @@
 // This shader clears the geometry buffer in deferred rendering.
 // -----------------------------------------------------------------------------
 
+#if defined(__INTELLISENSE__)
+#include "Macros.inc"
+#endif
+
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
@@ -21,6 +25,7 @@ struct PixelShaderOutput
 	float4 Color : PROTOGAME_TARGET(0);
 	float4 Normal : PROTOGAME_TARGET(1);
 	float4 Depth : PROTOGAME_TARGET(2);
+	float4 Specular : PROTOGAME_TARGET(3);
 };
 
 VertexShaderOutput DefaultVertexShader(VertexShaderInput input)
@@ -48,6 +53,9 @@ PixelShaderOutput DefaultPixelShader(VertexShaderOutput input)
 
 	// Maximum depth.
 	output.Depth = 1.0f;
+	
+	// Specular channel to 0.
+	output.Specular = float4(0, 0, 0, 0);
 
 	return output;
 }
