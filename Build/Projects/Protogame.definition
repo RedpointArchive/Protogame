@@ -55,6 +55,10 @@
     <Compile Include="Assets\Effect\EffectAssetRemoteCompiler.cs" />
     <Compile Include="Assets\Effect\EffectAssetSaver.cs" />
     <Compile Include="Assets\Effect\RawEffectLoadStrategy.cs" />
+    <Compile Include="Assets\Effect\UberEffectAsset.cs" />
+    <Compile Include="Assets\Effect\UberEffectAssetCompiler.cs" />
+    <Compile Include="Assets\Effect\UberEffectAssetLoader.cs" />
+    <Compile Include="Assets\Effect\UberEffectAssetSaver.cs" />
     <Compile Include="Assets\Font\FontAsset.cs" />
     <Compile Include="Assets\Font\FontAssetCompiler.cs" />
     <Compile Include="Assets\Font\FontAssetLoader.cs" />

@@ -20,6 +20,7 @@ namespace Protogame
             kernel.Bind<IAssetLoader>().To<AudioAssetLoader>();
             kernel.Bind<IAssetLoader>().To<TilesetAssetLoader>();
             kernel.Bind<IAssetLoader>().To<EffectAssetLoader>();
+            kernel.Bind<IAssetLoader>().To<UberEffectAssetLoader>();
             kernel.Bind<IAssetLoader>().To<AIAssetLoader>();
             kernel.Bind<IAssetLoader>().To<ModelAssetLoader>();
             kernel.Bind<IAssetLoader>().To<TextureAtlasAssetLoader>();
@@ -33,6 +34,7 @@ namespace Protogame
             kernel.Bind<IAssetSaver>().To<AudioAssetSaver>();
             kernel.Bind<IAssetSaver>().To<TilesetAssetSaver>();
             kernel.Bind<IAssetSaver>().To<EffectAssetSaver>();
+            kernel.Bind<IAssetSaver>().To<UberEffectAssetSaver>();
             kernel.Bind<IAssetSaver>().To<ModelAssetSaver>();
             kernel.Bind<IAssetSaver>().To<TextureAtlasAssetSaver>();
             kernel.Bind<IAssetSaver>().To<VariableAssetSaver>();
@@ -83,6 +85,7 @@ namespace Protogame
                 kernel.Bind<IAssetCompiler<TextureAtlasAsset>>().To<TextureAtlasAssetCompiler>();
 #if PLATFORM_WINDOWS
                 kernel.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
+                kernel.Bind<IAssetCompiler<UberEffectAsset>>().To<UberEffectAssetCompiler>();
                 kernel.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
 #elif PLATFORM_LINUX
                 kernel.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>();

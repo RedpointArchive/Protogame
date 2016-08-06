@@ -4,18 +4,9 @@
     using System.IO;
     using System.Linq;
     using System.Text.RegularExpressions;
-
-    /// <summary>
-    /// The raw effect load strategy.
-    /// </summary>
+    
     public class RawEffectLoadStrategy : ILoadStrategy
     {
-        /// <summary>
-        /// Gets the asset extensions.
-        /// </summary>
-        /// <value>
-        /// The asset extensions.
-        /// </value>
         public string[] AssetExtensions
         {
             get
@@ -23,13 +14,7 @@
                 return new[] { "fx", "usl" };
             }
         }
-
-        /// <summary>
-        /// Gets a value indicating whether scan source path.
-        /// </summary>
-        /// <value>
-        /// The scan source path.
-        /// </value>
+        
         public bool ScanSourcePath
         {
             get
@@ -37,19 +22,7 @@
                 return true;
             }
         }
-
-        /// <summary>
-        /// The attempt load.
-        /// </summary>
-        /// <param name="path">
-        /// The path.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
+        
         public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
             foreach (var ext in AssetExtensions)
@@ -71,11 +44,21 @@
                                 code = this.ResolveIncludes(file.Directory, code);
                             }
 
+                            var loader = typeof(EffectAssetLoader).FullName;
+                            if (ext != "fx")
+                            {
+                                loader = typeof(UnifiedShaderAssetLoader).FullName;
+                            }
+                            else if (code.Contains("// uber ") && ext == "fx")
+                            {
+                                loader = typeof(UberEffectAssetLoader).FullName;
+                            }
+
                             return
                                 new AnonymousObjectBasedRawAsset(
                                     new
                                     {
-                                        Loader = ext == "fx" ? typeof (EffectAssetLoader).FullName : typeof(UnifiedShaderAssetLoader).FullName,
+                                        Loader = loader,
                                         PlatformData = (PlatformData) null,
                                         Code = code,
                                         SourcedFromRaw = true
