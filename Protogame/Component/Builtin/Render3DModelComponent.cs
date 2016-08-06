@@ -25,21 +25,7 @@ namespace Protogame
 
         private bool _useDefaultEffects;
 
-        private EffectAsset _defaultTextureSkinnedEffectAsset;
-
-        private EffectAsset _defaultTextureNormalSkinnedEffectAsset;
-
-        private EffectAsset _defaultColorSkinnedEffectAsset;
-
-        private EffectAsset _defaultDiffuseSkinnedEffectAsset;
-
-        private EffectAsset _defaultTextureEffectAsset;
-
-        private EffectAsset _defaultTextureNormalEffectAsset;
-
-        private EffectAsset _defaultColorEffectAsset;
-
-        private EffectAsset _defaultDiffuseEffectAsset;
+        private UberEffectAsset _uberEffectAsset;
 
         private string _mode;
 
@@ -90,16 +76,9 @@ namespace Protogame
                     _useDefaultEffects = false;
                 }
 
-                if (_useDefaultEffects && _defaultTextureSkinnedEffectAsset == null)
+                if (_useDefaultEffects && _uberEffectAsset == null)
                 {
-                    _defaultTextureSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureSkinned");
-                    _defaultTextureNormalSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureNormalSkinned");
-                    _defaultColorSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.ColorSkinned");
-                    _defaultDiffuseSkinnedEffectAsset = _assetManager.Get<EffectAsset>("effect.DiffuseSkinned");
-                    _defaultTextureEffectAsset = _assetManager.Get<EffectAsset>("effect.Texture");
-                    _defaultTextureNormalEffectAsset = _assetManager.Get<EffectAsset>("effect.TextureNormal");
-                    _defaultColorEffectAsset = _assetManager.Get<EffectAsset>("effect.Color");
-                    _defaultDiffuseEffectAsset = _assetManager.Get<EffectAsset>("effect.Diffuse");
+                    _uberEffectAsset = _assetManager.Get<UberEffectAsset>("effect.BuiltinSurface");
                 }
 
                 if (Model != null)
@@ -172,16 +151,16 @@ namespace Protogame
                             switch (_mode)
                             {
                                 case "texture":
-                                    effect = _defaultTextureEffectAsset.Effect;
+                                    effect = _uberEffectAsset.Effects["Texture"];
                                     break;
                                 case "texture-normal":
-                                    effect = _defaultTextureNormalEffectAsset.Effect;
+                                    effect = _uberEffectAsset.Effects["TextureNormal"];
                                     break;
                                 case "color":
-                                    effect = _defaultColorEffectAsset.Effect;
+                                    effect = _uberEffectAsset.Effects["Color"];
                                     break;
                                 case "diffuse":
-                                    effect = _defaultDiffuseEffectAsset.Effect;
+                                    effect = _uberEffectAsset.Effects["Diffuse"];
                                     break;
                                 default:
                                     throw new InvalidOperationException("Unknown default effect type.");
@@ -192,16 +171,16 @@ namespace Protogame
                             switch (_mode)
                             {
                                 case "texture":
-                                    effect = _defaultTextureSkinnedEffectAsset.Effect;
+                                    effect = _uberEffectAsset.Effects["TextureSkinned"];
                                     break;
                                 case "texture-normal":
-                                    effect = _defaultTextureNormalSkinnedEffectAsset.Effect;
+                                    effect = _uberEffectAsset.Effects["TextureNormalSkinned"];
                                     break;
                                 case "color":
-                                    effect = _defaultColorSkinnedEffectAsset.Effect;
+                                    effect = _uberEffectAsset.Effects["ColorSkinned"];
                                     break;
                                 case "diffuse":
-                                    effect = _defaultDiffuseSkinnedEffectAsset.Effect;
+                                    effect = _uberEffectAsset.Effects["DiffuseSkinned"];
                                     break;
                                 default:
                                     throw new InvalidOperationException("Unknown default effect type.");

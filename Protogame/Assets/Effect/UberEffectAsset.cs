@@ -112,7 +112,7 @@ namespace Protogame
 
                                 // Use the new EffectWithSemantics class that allows for extensible semantics.
                                 var availableSemantics = _kernel.GetAll<IEffectSemantic>();
-                                Effects[name] = new ProtogameEffect(graphicsDevice, PlatformData.Data, Name, availableSemantics);
+                                Effects[name] = new ProtogameEffect(graphicsDevice, data, Name + ":" + name, availableSemantics);
                             }
                         }
                     }

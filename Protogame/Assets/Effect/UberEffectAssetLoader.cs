@@ -51,7 +51,7 @@ namespace Protogame
                 };
             }
 
-            var effect = new EffectAsset(
+            var effect = new UberEffectAsset(
                 _kernel,
                 this._assetContentManager, 
                 name,

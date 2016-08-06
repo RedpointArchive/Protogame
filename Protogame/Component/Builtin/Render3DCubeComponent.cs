@@ -15,12 +15,12 @@ namespace Protogame
             _renderUtilities = renderUtilities;
 
             Enabled = true;
-            Effect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Color");
+            Effect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects["Color"];
         }
 
         public Color Color { get; set; }
 
-        public EffectAsset Effect { get; set; }
+        public IEffect Effect { get; set; }
 
         public bool Enabled { get; set; }
 
@@ -41,8 +41,8 @@ namespace Protogame
                 }
                 _renderUtilities.RenderCube(
                     renderContext,
-                    Effect.Effect,
-                    Effect.Effect.CreateParameterSet(),
+                    Effect,
+                    Effect.CreateParameterSet(),
                     Matrix.CreateTranslation(-0.5f, -0.5f, -0.5f) *
                     matrix, 
                     Color);

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
@@ -19,11 +20,15 @@ namespace Protogame
                 return;
             }
 
-            
+            var allPassed = true;
             var effectCodes = new Dictionary<string, Tuple<string, byte[]>>();
             foreach (var rawLine in asset.Code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var line = rawLine.Trim();
+                if (line.StartsWith("#line"))
+                {
+                    continue;
+                }
                 if (!line.StartsWith("// uber "))
                 {
                     break;
@@ -33,27 +38,59 @@ namespace Protogame
                 var name = components[0].Trim();
                 var defines = components[1].Trim();
 
+                Console.WriteLine();
+                Console.Write("Compiling uber shader variant " + name + "... ");
+
                 var output = new EffectContent();
                 output.EffectCode = this.GetEffectPrefixCode() + asset.Code;
 
-                var tempPath = Path.GetTempFileName();
-                using (var writer = new StreamWriter(tempPath))
+                string tempPath = null, tempOutputPath = null;
+                try
                 {
-                    writer.Write(output.EffectCode);
+                    tempPath = Path.GetTempFileName();
+                    tempOutputPath = Path.GetTempFileName();
+
+                    using (var writer = new StreamWriter(tempPath))
+                    {
+                        writer.Write(output.EffectCode);
+                    }
+
+                    output.Identity = new ContentIdentity(tempPath);
+
+                    var processor = new EffectProcessor();
+                    processor.Defines = defines;
+                    var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
+                    context.ActualOutputFilename = tempOutputPath;
+                    var content = processor.Process(output, context);
+                    effectCodes[name] = new Tuple<string, byte[]>(defines, content.GetEffectCode());
+                    Console.Write("done.");
                 }
+                catch (InvalidContentException ex)
+                {
+                    Console.WriteLine("failed.");
+                    Console.Write(ex.Message.Trim());
+                    allPassed = false;
+                }
+                finally
+                {
+                    if (tempOutputPath != null)
+                    {
+                        File.Delete(tempOutputPath);
+                    }
 
-                output.Identity = new ContentIdentity(tempPath);
+                    if (tempOutputPath != null)
+                    {
+                        File.Delete(tempPath);
+                    }
+                }
+            }
+            
+            Console.WriteLine();
+            Console.Write("Finalizing uber shader compilation... ");
 
-                var tempOutputPath = Path.GetTempFileName();
-                var processor = new EffectProcessor();
-                var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
-                context.ActualOutputFilename = tempOutputPath;
-                var content = processor.Process(output, context);
-
-                File.Delete(tempOutputPath);
-                File.Delete(tempPath);
-
-                effectCodes[name] = new Tuple<string, byte[]>(defines, content.GetEffectCode());
+            if (!allPassed)
+            {
+                throw new Exception("One or more uber shader variants failed to compile (see above!)");
             }
 
             using (var memory = new MemoryStream())
@@ -69,13 +106,13 @@ namespace Protogame
                         writer.Write(kv.Value.Item2.Length);
                         writer.Write(kv.Value.Item2);
                     }
-                }
 
-                var len = memory.Position;
-                var data = new byte[len];
-                memory.Seek(0, SeekOrigin.Begin);
-                memory.Read(data, 0, data.Length);
-                asset.PlatformData = new PlatformData { Platform = platform, Data = data };
+                    var len = memory.Position;
+                    var data = new byte[len];
+                    memory.Seek(0, SeekOrigin.Begin);
+                    memory.Read(data, 0, data.Length);
+                    asset.PlatformData = new PlatformData { Platform = platform, Data = data };
+                }
             }
 
             try

@@ -809,43 +809,10 @@
     <Compile Include="UserInterface\VerticalAlign.cs" />
     <Compile Include="UserInterface\VerticalContainer.cs" />
     <Compile Include="UserInterface\Window.cs" />
-    <Content Include="..\Protogame.Resources\effect.Diffuse.fx">
-      <Link>Resources\effect.Diffuse.fx</Link>
-    </Content>
-    <Content Include="..\Protogame.Resources\effect.DiffuseSkinned.fx">
-      <Link>Resources\effect.DiffuseSkinned.fx</Link>
-    </Content>
-    <Content Include="..\Protogame.Resources\effect.TextureNormal.fx">
-      <Link>Resources\effect.TextureNormal.fx</Link>
-    </Content>
-    <Content Include="Component\Builtin\NetworkSynchronisationComponentGenerated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>NetworkSynchronisationComponentGenerated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Component\ComponentizedObject.Generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ComponentizedObject.Generated.cs</LastGenOutput>
-    </Content>
-    <Content Include="Component\IComponentCallable.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IComponentCallable.cs</LastGenOutput>
-    </Content>
     <EmbeddedResource Include="Assets\Effect\Macros.fx" />
     <EmbeddedResource Include="Scripting\LogicControl\Grammar.egt" />
     <None Include="..\Protogame.Resources\effect.Blur.fx">
       <Link>Resources\effect.Blur.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.Color.fx">
-      <Link>Resources\effect.Color.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.ColorSkinned.fx">
-      <Link>Resources\effect.ColorSkinned.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.Diffuse.fx">
-      <Link>Resources\effect.Diffuse.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.DiffuseSkinned.fx">
-      <Link>Resources\effect.DiffuseSkinned.fx</Link>
     </None>
     <None Include="..\Protogame.Resources\effect.DirectionalLight.fx">
       <Link>Resources\effect.DirectionalLight.fx</Link>
@@ -859,12 +826,6 @@
     <None Include="..\Protogame.Resources\effect.GBufferRender.fx">
       <Link>Resources\effect.GBufferRender.fx</Link>
     </None>
-    <None Include="..\Protogame.Resources\effect.Image.fx">
-      <Link>Resources\effect.Image.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.ImageTiled.fx">
-      <Link>Resources\effect.ImageTiled.fx</Link>
-    </None>
     <None Include="..\Protogame.Resources\effect.Invert.fx">
       <Link>Resources\effect.Invert.fx</Link>
     </None>
@@ -874,23 +835,29 @@
     <None Include="..\Protogame.Resources\effect.ShadowMapGen.fx">
       <Link>Resources\effect.ShadowMapGen.fx</Link>
     </None>
-    <None Include="..\Protogame.Resources\effect.Texture.fx">
-      <Link>Resources\effect.Texture.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.TextureNormal.fx">
-      <Link>Resources\effect.TextureNormal.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.TextureNormalSkinned.fx">
-      <Link>Resources\effect.TextureNormalSkinned.fx</Link>
-    </None>
-    <None Include="..\Protogame.Resources\effect.TextureSkinned.fx">
-      <Link>Resources\effect.TextureSkinned.fx</Link>
-    </None>
     <None Include="..\Protogame.Resources\font.Default.asset">
       <Link>Resources\font.Default.asset</Link>
     </None>
+    <None Include="..\Protogame.Resources\Macros.inc">
+      <Link>Resources\Macros.inc</Link>
+    </None>
     <None Include="..\Protogame.Resources\model.LightSphere.dae">
       <Link>Resources\model.LightSphere.dae</Link>
+    </None>
+    <None Include="..\Protogame.Resources\effect.BuiltinSurface.fx">
+      <Link>Resources\effect.BuiltinSurface.fx</Link>
+    </None>
+    <None Include="Component\Builtin\NetworkSynchronisationComponentGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NetworkSynchronisationComponentGenerated.cs</LastGenOutput>
+    </None>
+    <None Include="Component\ComponentizedObject.Generated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ComponentizedObject.Generated.cs</LastGenOutput>
+    </None>
+    <None Include="Component\IComponentCallable.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IComponentCallable.cs</LastGenOutput>
     </None>
     <None Include="Scripting\LogicControl\Grammar.grm" />
     <None Include="Scripting\LogicControl\LogicBuiltins.tt">

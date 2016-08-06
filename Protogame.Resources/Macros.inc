@@ -1,5 +1,4 @@
-﻿#line 1 "Macros.fx"
-// -----------------------------------------------------------------------------
+﻿// -----------------------------------------------------------------------------
 // These are utility macros that are provided to all effects compiled under Protogame.
 // They are used to target different shader profiles depending on whether compilation
 // is for DX11 or OpenGL.

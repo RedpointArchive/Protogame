@@ -1,0 +1,38 @@
+# This file sets the flags to be used for
+# the model import.
+#
+# Lines starting with a '#' are ignored.  This
+# means that options that are prefixed with
+# a '#' symbol are turned off, while options
+# that do not start with a # are turned on.
+#
+# You can add or remove the '#' symbol on any
+# line to turn on and off the options you want.
+
+#CalculateTangentSpace
+#JoinIdenticalVertices
+#MakeLeftHanded
+Triangulate
+#RemoveComponent
+#GenerateNormals
+#GenerateSmoothNormals
+#SplitLargeMeshes
+PreTransformVertices
+#LimitBoneWeights
+#ValidateDataStructure
+#ImproveCacheLocality
+#RemoveRedundantMaterials
+#FixInFacingNormals
+#SortByPrimitiveType
+#FindDegenerates
+#FindInvalidData
+#GenerateUVCoords
+#TransformUVCoords
+#FindInstances
+#OptimizeMeshes
+#OptimizeGraph
+FlipUVs
+FlipWindingOrder
+#SplitByBoneCount
+Debone
+!NoBoneHierarchy

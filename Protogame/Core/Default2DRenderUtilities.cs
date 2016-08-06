@@ -33,7 +33,7 @@ namespace Protogame
             IAssetManagerProvider assetManagerProvider)
         {
             this.m_StringSanitizer = stringSanitizer;
-            this.m_ColorEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Color").Effect;
+            this.m_ColorEffect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects["Color"];
         }
 
         /// <summary>

@@ -33,11 +33,13 @@
                 if (file.Exists)
                 {
                     lastModified = file.LastWriteTime;
+                    var fullName = file.FullName;
                     using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
                     {
                         using (var reader = new StreamReader(fileStream))
                         {
                             var code = reader.ReadToEnd();
+                            code = "#line 1 \"" + fullName + "\"\r\n" + code;
 
                             if (file.Directory != null)
                             {
@@ -107,6 +109,7 @@
                 using (var reader = new StreamReader(fullName))
                 {
                     var replace = reader.ReadToEnd();
+                    replace = "#line 1 \"" + fullName + "\"\r\n" + replace;
                     replace = this.ResolveIncludes(new FileInfo(fullName).Directory, replace);
 
                     code = code.Replace(currentMatch.Value, replace);

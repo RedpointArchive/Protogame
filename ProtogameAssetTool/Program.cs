@@ -137,49 +137,52 @@
 
                 foreach (var asset in assetNames.Select(assetManager.GetUnresolved))
                 {
+                    Console.Write("Compiling " + asset.Name + " for " + platform + "... ");
                     try
                     {
                         assetCompiler.HandlePlatform(asset, platform, true);
+
+                        foreach (var saver in savers)
+                        {
+                            var canSave = false;
+                            try
+                            {
+                                canSave = saver.CanHandle(asset);
+                            }
+                            catch (Exception)
+                            {
+                            }
+
+                            if (canSave)
+                            {
+                                try
+                                {
+                                    var result = saver.Handle(asset, AssetTarget.CompiledFile);
+                                    compiledAssetSaver.SaveCompiledAsset(
+                                        outputPath,
+                                        asset.Name,
+                                        result,
+                                        result is CompiledAsset,
+                                        platformName);
+                                    Console.WriteLine("done.");
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("failed!");
+                                    Console.WriteLine("ERROR: Unable to compile " + asset.Name + " for " + platform);
+                                    Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
+                                    break;
+                                }
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
+                        Console.WriteLine("failed!");
                         Console.WriteLine("ERROR: Unable to compile " + asset.Name + " for " + platform);
                         Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
-                        continue;
-                    }
-
-                    foreach (var saver in savers)
-                    {
-                        var canSave = false;
-                        try
-                        {
-                            canSave = saver.CanHandle(asset);
-                        }
-                        catch (Exception)
-                        {
-                        }
-
-                        if (canSave)
-                        {
-                            try
-                            {
-                                var result = saver.Handle(asset, AssetTarget.CompiledFile);
-                                compiledAssetSaver.SaveCompiledAsset(
-                                    outputPath,
-                                    asset.Name,
-                                    result,
-                                    result is CompiledAsset,
-                                    platformName);
-                                Console.WriteLine("Compiled " + asset.Name + " for " + platform);
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("ERROR: Unable to compile " + asset.Name + " for " + platform);
-                                Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
-                                break;
-                            }
-                        }
+                        break;
                     }
 
                     assetManager.Dirty(asset.Name);

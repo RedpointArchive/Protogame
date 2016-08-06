@@ -14,11 +14,11 @@ namespace Protogame
 
         private DepthStencilState _debugDepthState;
 
-        private EffectAsset _basicEffect;
+        private IEffect _basicEffect;
 
         public DefaultDebugRenderPass(IAssetManagerProvider assetManagerProvider)
         {
-            _basicEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Color");
+            _basicEffect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects["Color"];
             Lines = new List<VertexPositionNormalColor>();
             Triangles = new List<VertexPositionNormalColor>();
             EnabledLayers = new List<IDebugLayer>();
@@ -88,7 +88,7 @@ namespace Protogame
             var world = renderContext.World;
             renderContext.World = Matrix.Identity;
 
-            foreach (var pass in _basicEffect.Effect.NativeEffect.CurrentTechnique.Passes)
+            foreach (var pass in _basicEffect.NativeEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 

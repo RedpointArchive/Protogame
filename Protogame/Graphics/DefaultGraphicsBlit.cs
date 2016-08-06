@@ -29,7 +29,7 @@ namespace Protogame
 
         public DefaultGraphicsBlit(IAssetManagerProvider assetManagerProvider)
         {
-            _blitEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Texture").Effect;
+            _blitEffect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects["Texture"];
         }
 
         public void Blit(IRenderContext renderContext, Texture2D source, RenderTarget2D destination = null, IEffect shader = null, IEffectParameterSet effectParameterSet = null, BlendState blendState = null, Vector2? offset = null, Vector2? size = null)

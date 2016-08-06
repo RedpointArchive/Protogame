@@ -11,7 +11,7 @@ namespace Protogame
         
         public IRawAsset Handle(IAsset asset, AssetTarget target)
         {
-            var effectAsset = asset as EffectAsset;
+            var effectAsset = (UberEffectAsset)asset;
 
             if (effectAsset.SourcedFromRaw && target != AssetTarget.CompiledFile)
             {
