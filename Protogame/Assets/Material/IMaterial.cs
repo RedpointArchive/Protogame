@@ -37,5 +37,7 @@ namespace Protogame
         IMaterialTexture TextureLightMap { get; }
 
         IMaterialTexture TextureReflection { get; }
+
+        float? PowerSpecular { get; }
     }
 }

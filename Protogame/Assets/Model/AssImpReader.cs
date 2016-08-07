@@ -217,6 +217,7 @@ namespace Protogame
                 TextureNormal = m.HasTextureNormal ? ConvertMaterialTexture(m.TextureNormal) : null,
                 TextureOpacity = m.HasTextureOpacity ? ConvertMaterialTexture(m.TextureOpacity) : null,
                 TextureReflection = m.HasTextureReflection ? ConvertMaterialTexture(m.TextureReflection) : null,
+                PowerSpecular = m.HasShininess ? (float?)(m.Shininess / 255f) : null,
             };
         }
 

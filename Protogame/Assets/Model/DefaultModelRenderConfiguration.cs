@@ -11,12 +11,9 @@ namespace Protogame
             switch (effectAsset.Name)
             {
                 case "effect.BuiltinSurface:TextureNormalSkinned":
-                case "effect.BuiltinSurface:TextureNormalSpecIntMapColDefSkinned":
-                case "effect.BuiltinSurface:TextureNormalSpecIntConColDefSkinned":
-                case "effect.BuiltinSurface:TextureNormalSpecIntMapColConSkinned":
-                case "effect.BuiltinSurface:TextureNormalSpecIntConColConSkinned":
-                case "effect.BuiltinSurface:TextureNormalSpecIntMapColMapSkinned":
-                case "effect.BuiltinSurface:TextureNormalSpecIntConColMapSkinned":
+                case "effect.BuiltinSurface:TextureNormalSpecColDefSkinned":
+                case "effect.BuiltinSurface:TextureNormalSpecColConSkinned":
+                case "effect.BuiltinSurface:TextureNormalSpecColMapSkinned":
                     return ModelVertexMapping.Create(
                         src => new VertexPositionNormalBinormalTangentTextureBlendable(
                             src.Position ?? Vector3.Zero,
@@ -50,12 +47,9 @@ namespace Protogame
                             src.BoneWeights ?? Vector4.Zero,
                             src.BoneIndices ?? new Byte4(0, 0, 0, 0)));
                 case "effect.BuiltinSurface:TextureNormal":
-                case "effect.BuiltinSurface:TextureNormalSpecIntMapColDef":
-                case "effect.BuiltinSurface:TextureNormalSpecIntConColDef":
-                case "effect.BuiltinSurface:TextureNormalSpecIntMapColCon":
-                case "effect.BuiltinSurface:TextureNormalSpecIntConColCon":
-                case "effect.BuiltinSurface:TextureNormalSpecIntMapColMap":
-                case "effect.BuiltinSurface:TextureNormalSpecIntConColMap":
+                case "effect.BuiltinSurface:TextureNormalSpecColDef":
+                case "effect.BuiltinSurface:TextureNormalSpecColCon":
+                case "effect.BuiltinSurface:TextureNormalSpecColMap":
                     return ModelVertexMapping.Create(
                         src => new VertexPositionNormalBinormalTangentTexture(
                             src.Position ?? Vector3.Zero,

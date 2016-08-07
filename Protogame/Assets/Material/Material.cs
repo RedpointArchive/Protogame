@@ -21,6 +21,7 @@ namespace Protogame
         public IMaterialTexture TextureDisplacement { get; set; }
         public IMaterialTexture TextureLightMap { get; set; }
         public IMaterialTexture TextureReflection { get; set; }
+        public float? PowerSpecular { get; set; }
     }
 
     public interface IMaterialTexture

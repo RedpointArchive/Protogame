@@ -23,7 +23,11 @@ namespace Protogame
 
         private TextureAsset _lastCachedNormalMapTexture;
 
-        private TextureAsset _lastCachedSpecularMapTexture;
+        private TextureAsset _lastCachedSpecularColorMapTexture;
+
+        private Color? _lastCachedSpecularColor;
+
+        private float? _lastCachedSpecularPower;
 
         private bool _useDefaultEffects;
 
@@ -120,21 +124,34 @@ namespace Protogame
                                 _lastCachedNormalMapTexture = null;
                             }
 
-                            if (material.TextureSpecular != null)
+                            if (material.PowerSpecular != null)
                             {
-                                if (material.TextureSpecular.TextureAsset != null)
+                                _lastCachedSpecularPower = material.PowerSpecular.Value;
+
+                                if (material.TextureSpecular != null)
                                 {
-                                    _lastCachedSpecularMapTexture = material.TextureNormal.TextureAsset;
+                                    if (material.TextureSpecular.TextureAsset != null)
+                                    {
+                                        _lastCachedSpecularColorMapTexture = material.TextureNormal.TextureAsset;
+                                    }
+                                    else
+                                    {
+                                        _lastCachedSpecularColorMapTexture =
+                                            _textureFromHintPath.GetTextureFromHintPath(material.TextureSpecular);
+                                    }
+                                }
+                                else if (material.ColorSpecular != null)
+                                {
+                                    _lastCachedSpecularColor = material.ColorSpecular.Value;
                                 }
                                 else
                                 {
-                                    _lastCachedSpecularMapTexture =
-                                        _textureFromHintPath.GetTextureFromHintPath(material.TextureSpecular);
+                                    _lastCachedSpecularColor = null;
                                 }
                             }
                             else
                             {
-                                _lastCachedSpecularMapTexture = null;
+                                _lastCachedSpecularPower = null;
                             }
 
                             _mode = "texture";
@@ -158,61 +175,46 @@ namespace Protogame
                     }
                     else
                     {
-                        if (_lastCachedModel.Bones == null)
+                        var skinnedSuffix = _lastCachedModel.Bones == null ? null : "Skinned";
+
+                        switch (_mode)
                         {
-                            switch (_mode)
-                            {
-                                case "texture":
-                                    if (_lastCachedNormalMapTexture != null && _lastCachedSpecularMapTexture != null)
+                            case "texture":
+                                if (_lastCachedNormalMapTexture != null && _lastCachedSpecularPower != null)
+                                {
+                                    if (_lastCachedSpecularColorMapTexture != null)
                                     {
-                                        effect = _uberEffectAsset.Effects["TextureNormalSpecIntMapColDef"];
+                                        effect =
+                                            _uberEffectAsset.Effects["TextureNormalSpecColMap" + skinnedSuffix];
                                     }
-                                    else if (_lastCachedNormalMapTexture != null)
+                                    else if (_lastCachedSpecularColor != null)
                                     {
-                                        effect = _uberEffectAsset.Effects["TextureNormal"];
+                                        effect =
+                                            _uberEffectAsset.Effects["TextureNormalSpecColCon" + skinnedSuffix];
                                     }
                                     else
                                     {
-                                        effect = _uberEffectAsset.Effects["Texture"];
+                                        effect =
+                                            _uberEffectAsset.Effects["TextureNormalSpecColDef" + skinnedSuffix];
                                     }
-                                    break;
-                                case "color":
-                                    effect = _uberEffectAsset.Effects["Color"];
-                                    break;
-                                case "diffuse":
-                                    effect = _uberEffectAsset.Effects["Diffuse"];
-                                    break;
-                                default:
-                                    throw new InvalidOperationException("Unknown default effect type.");
-                            }
-                        }
-                        else
-                        {
-                            switch (_mode)
-                            {
-                                case "texture":
-                                    if (_lastCachedNormalMapTexture != null && _lastCachedSpecularMapTexture != null)
-                                    {
-                                        effect = _uberEffectAsset.Effects["TextureNormalSpecIntMapColDefSkinned"];
-                                    }
-                                    else if (_lastCachedNormalMapTexture != null)
-                                    {
-                                        effect = _uberEffectAsset.Effects["TextureNormalSkinned"];
-                                    }
-                                    else
-                                    {
-                                        effect = _uberEffectAsset.Effects["TextureSkinned"];
-                                    }
-                                    break;
-                                case "color":
-                                    effect = _uberEffectAsset.Effects["ColorSkinned"];
-                                    break;
-                                case "diffuse":
-                                    effect = _uberEffectAsset.Effects["DiffuseSkinned"];
-                                    break;
-                                default:
-                                    throw new InvalidOperationException("Unknown default effect type.");
-                            }
+                                }
+                                else if (_lastCachedNormalMapTexture != null)
+                                {
+                                    effect = _uberEffectAsset.Effects["TextureNormal" + skinnedSuffix];
+                                }
+                                else
+                                {
+                                    effect = _uberEffectAsset.Effects["Texture" + skinnedSuffix];
+                                }
+                                break;
+                            case "color":
+                                effect = _uberEffectAsset.Effects["Color" + skinnedSuffix];
+                                break;
+                            case "diffuse":
+                                effect = _uberEffectAsset.Effects["Diffuse" + skinnedSuffix];
+                                break;
+                            default:
+                                throw new InvalidOperationException("Unknown default effect type.");
                         }
                     }
 
@@ -251,11 +253,19 @@ namespace Protogame
 
                     if (parameterSet.HasSemantic<ISpecularEffectSemantic>())
                     {
-                        if (_lastCachedNormalMapTexture?.Texture != null)
+                        if (_lastCachedSpecularPower != null)
                         {
                             var semantic = parameterSet.GetSemantic<ISpecularEffectSemantic>();
-                            semantic.SpecularIntensityMap = _lastCachedSpecularMapTexture.Texture;
-                            semantic.SpecularPower = 0.5f;
+                            semantic.SpecularPower = _lastCachedSpecularPower.Value;
+
+                            if (_lastCachedSpecularColorMapTexture != null)
+                            {
+                                semantic.SpecularColorMap = _lastCachedSpecularColorMapTexture.Texture;
+                            }
+                            else if (_lastCachedSpecularColor != null)
+                            {
+                                semantic.SpecularColor = _lastCachedSpecularColor.Value;
+                            }
                         }
                     }
 

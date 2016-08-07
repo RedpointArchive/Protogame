@@ -11,15 +11,18 @@ namespace Protogame
         private readonly ModelSerializerVersion1 _modelSerializerVersion1;
         private readonly ModelSerializerVersion2 _modelSerializerVersion2;
         private readonly ModelSerializerVersion3 _modelSerializerVersion3;
+        private readonly ModelSerializerVersion4 _modelSerializerVersion4;
 
         public ModelSerializerGeneric(
             ModelSerializerVersion1 modelSerializerVersion1,
             ModelSerializerVersion2 modelSerializerVersion2,
-            ModelSerializerVersion3 modelSerializerVersion3)
+            ModelSerializerVersion3 modelSerializerVersion3,
+            ModelSerializerVersion4 modelSerializerVersion4)
         {
             _modelSerializerVersion1 = modelSerializerVersion1;
             _modelSerializerVersion2 = modelSerializerVersion2;
             _modelSerializerVersion3 = modelSerializerVersion3;
+            _modelSerializerVersion4 = modelSerializerVersion4;
         }
 
         /// <summary>
@@ -50,6 +53,8 @@ namespace Protogame
                                 return _modelSerializerVersion2.Deserialize(name, data);
                             case 3:
                                 return _modelSerializerVersion3.Deserialize(name, data);
+                            case 4:
+                                return _modelSerializerVersion4.Deserialize(name, data);
                             default:
                                 throw new InvalidOperationException("Unknown version for model format.");
                         }
@@ -72,7 +77,7 @@ namespace Protogame
         /// </returns>
         public byte[] Serialize(IModel model)
         {
-            return _modelSerializerVersion3.Serialize(model);
+            return _modelSerializerVersion4.Serialize(model);
         }
     }
 }
