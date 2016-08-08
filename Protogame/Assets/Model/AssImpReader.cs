@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Assimp.Configs;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 
 #if PLATFORM_LINUX || PLATFORM_MACOS || PLATFORM_WINDOWS
 
@@ -476,6 +477,28 @@ namespace Protogame
                 }
             }
 
+            // Check if we need to generate bitangents/binormals and tangents.
+            Vector3[] generatedTangents = null;
+            Vector3[] generatedBitangents = null;
+            if (!mesh.HasTangentBasis && mesh.HasNormals && mesh.HasTextureCoords(0))
+            {
+                var positions = mesh.Vertices.Select(x => new Vector3(x.X, x.Y, x.Z)).ToArray();
+                var indices = mesh.GetIndices();
+                var normals = mesh.Normals.Select(x => new Vector3(x.X, x.Y, x.Z)).ToArray();
+                var texCoords = mesh.TextureCoordinateChannels[0].Select(x => new Vector2(x.X, x.Y)).ToArray();
+                MeshHelper.CalculateTangentFrames(
+                    positions, indices, normals, texCoords, out generatedTangents, out generatedBitangents);
+            }
+
+            // If we have no possibility of obtaining tangent and bitangent information,
+            // warn the user.
+            if (!mesh.HasTangentBasis && generatedTangents == null && generatedBitangents == null)
+            {
+                Console.WriteLine(
+                    "WARNING: Model does not include binormal and tangent information, and none " +
+                    "could be generated.  Normal mapping will not be possible.");
+            }
+
             // Import vertexes.
             for (var i = 0; i < mesh.VertexCount; i++)
             {
@@ -512,6 +535,11 @@ namespace Protogame
                     var v2 = mesh.BiTangents[i];
                     tangent = new Vector3(v1.X, v1.Y, v1.Z);
                     bitangent = new Vector3(v2.X, v2.Y, v2.Z);
+                }
+                else if (generatedTangents != null && generatedBitangents != null)
+                {
+                    tangent = generatedTangents[i];
+                    bitangent = generatedBitangents[i];
                 }
                 else
                 {
