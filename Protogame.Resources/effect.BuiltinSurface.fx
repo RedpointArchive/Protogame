@@ -174,20 +174,16 @@ float4x4 Bones[MAX_BONES];
 
 // Declares COMPUTE_ASSIGNMENT_VERTEX_NORMAL, which emits a
 // normal assignment if the shader has UV coordinates enabled.
-#if defined(HAS_VERTEX_NORMAL)
+#if defined(HAS_NORMAL_MAP)
+#define COMPUTE_ASSIGNMENT_VERTEX_NORMAL(_WORLD) \
+	output.TangentToWorld = float3x3( \
+		mul(float4(input.Tangent.xyz, 0), _WORLD).xyz, \
+		mul(float4(input.Binormal.xyz, 0), _WORLD).xyz, \
+		mul(float4(input.Normal.xyz, 0), _WORLD).xyz)
+#elif defined(HAS_VERTEX_NORMAL)
 #define COMPUTE_ASSIGNMENT_VERTEX_NORMAL(_WORLD) output.Normal = mul(float4(computedNormal.xyz, 0), _WORLD);
 #else
 #define COMPUTE_ASSIGNMENT_VERTEX_NORMAL(_WORLD)
-#endif
-
-// Declares COMPUTE_ASSIGNMENT_TANGENT_BINORMAL, which emits a
-// tangent and binormal assignment if the shader has a normal map enabled.
-#if defined(HAS_NORMAL_MAP)
-#define COMPUTE_ASSIGNMENT_TANGENT_BINORMAL(_WORLD) \
-	output.Tangent = mul(float4(input.Tangent.xyz, 0), _WORLD); \
-	output.Binormal = mul(float4(input.Binormal.xyz, 0), _WORLD);
-#else
-#define COMPUTE_ASSIGNMENT_TANGENT_BINORMAL(_WORLD) 
 #endif
 
 // Declares COMPUTE_VERTEX, which combines all previous computations
@@ -201,8 +197,7 @@ float4x4 Bones[MAX_BONES];
 	\
 	COMPUTE_ASSIGNMENT_COLOR \
 	COMPUTE_ASSIGNMENT_PRIMARY_UV_COORDS \
-	COMPUTE_ASSIGNMENT_VERTEX_NORMAL(_WORLD) \
-	COMPUTE_ASSIGNMENT_TANGENT_BINORMAL(_WORLD)
+	COMPUTE_ASSIGNMENT_VERTEX_NORMAL(_WORLD)
 
 
 /**********************************************************************************/
@@ -270,12 +265,10 @@ struct ForwardVertexShaderOutput
 #if defined(HAS_SAMPLED_COLOR)
 	float4 Color : PROTOGAME_TARGET(0);
 #endif
-#if defined(HAS_VERTEX_NORMAL)
-	float4 Normal : PROTOGAME_NORMAL(0);
-#endif
 #if defined(HAS_NORMAL_MAP)
-	float4 Binormal : PROTOGAME_BINORMAL(0);
-	float4 Tangent : PROTOGAME_TANGENT(0);
+	float3x3 TangentToWorld : PROTOGAME_TEXCOORD(2);
+#elif defined(HAS_VERTEX_NORMAL)
+	float4 Normal : PROTOGAME_NORMAL(0);
 #endif
 };
 
@@ -380,12 +373,10 @@ struct DeferredVertexShaderOutput
 #if defined(HAS_SAMPLED_COLOR)
 	float4 Color : PROTOGAME_TARGET(0);
 #endif
-#if defined(HAS_VERTEX_NORMAL)
-	float4 Normal : PROTOGAME_NORMAL(0);
-#endif
 #if defined(HAS_NORMAL_MAP)
-	float4 Binormal : PROTOGAME_BINORMAL(0);
-	float4 Tangent : PROTOGAME_TANGENT(0);
+	float3x3 TangentToWorld : PROTOGAME_TEXCOORD(2);
+#elif defined(HAS_VERTEX_NORMAL)
+	float4 Normal : PROTOGAME_NORMAL(0);
 #endif
 };
 
@@ -437,18 +428,14 @@ DeferredPixelShaderOutput DeferredPixelShader(DeferredVertexShaderOutput input)
 
 #if defined(HAS_NORMAL_MAP)
 	// Transform normal.
-	output.Normal.rgb = (0.5f * (normalize(input.Normal) + 1.0f)).rgb;
-	/*
-	float3 normalMap = PROTOGAME_SAMPLE_TEXTURE(NormalMap, input.TexCoord).rgb;
-	normalMap = (normalMap * 2.0f) - 1.0f;
-	output.Normal.rgb = normalize(
-		(normalMap.x * input.Binormal) +
-		(normalMap.y * input.Tangent) +
-		(normalMap.z * input.Normal));
-	*/
+	float3 normalMap = PROTOGAME_SAMPLE_TEXTURE(NormalMap, input.TexCoord).xyz;
+	normalMap = normalize((normalMap * 2.0f) - 1.0f);
+	float3 normalTransformed = mul(normalMap, input.TangentToWorld);
+	normalTransformed = normalize(normalTransformed);
+	output.Normal.xyz = (0.5f * (normalTransformed + 1.0f));
 #elif !defined(HAS_NO_NORMALS)
 	// Transform normal.
-	output.Normal.rgb = (0.5f * (normalize(input.Normal) + 1.0f)).rgb;
+	output.Normal.rgb = (0.5f * (normalize(input.Normal) + 1.0f)).xyz;
 #else
 	output.Normal.rgb = float3(0, 0, 0);
 #endif
