@@ -32,12 +32,13 @@ namespace Protogame
 			typeParametersPassed = Enumerable.Range(1, i).Select(x => ", arg" + x).Aggregate((a, b) => a + b);
 		}
 #>
-		private class ImplementedComponentCallable<T<#=typeArgumentsAppended#>> : IInternalComponentCallable, IComponentCallable<#=typeArguments#> <#=typeConstraints#>
+		private class ImplementedComponentCallable<T, TContext<#=typeArgumentsAppended#>> : IInternalComponentCallable, IComponentCallable<#=typeArguments#> <#=typeConstraints#>
 		{
 			private readonly Action<T<#=typeArgumentsAppended#>> _method;
 			private T[] _targets;
+			pri
 
-			public ImplementedComponentCallable(Action<T<#=typeArgumentsAppended#>> method)
+			public ImplementedComponentCallable(Action<T, TContext<#=typeArgumentsAppended#>> method, TContext context)
 			{
 				_method = method;
 			}

@@ -73,6 +73,13 @@ namespace Protogame
                 _primary = _renderTargetBackBufferUtilities.UpdateRenderTarget(_primary, gameContext);
                 _secondary = _renderTargetBackBufferUtilities.UpdateRenderTarget(_secondary, gameContext);
 
+                if (_primary == null || _secondary == null)
+                {
+                    // These are null if the window is minimized or invalid, in which case we don't
+                    // render anything anyway.
+                    return;
+                }
+
                 var standardRenderPasses = _standardRenderPasses.ToArray();
                 var postProcessingRenderPasses = _postProcessingRenderPasses.ToArray();
                 IRenderPass previousPass = null;
@@ -94,7 +101,7 @@ namespace Protogame
                         SetupRenderPassViewport(renderContext, pass);
                         pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
                         previousPass = pass;
-                        RenderPass(gameContext, renderContext, entities);
+                        RenderPass(gameContext, renderContext, pass, entities);
                         if (i < standardRenderPasses.Length - 1)
                         {
                             nextPass = standardRenderPasses[i + 1];
@@ -135,7 +142,7 @@ namespace Protogame
                             SetupRenderPassViewport(renderContext, pass);
                             pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
                             previousPass = pass;
-                            RenderPass(gameContext, renderContext, entities);
+                            RenderPass(gameContext, renderContext, pass, entities);
                             if (i < transientStandardRenderPasses.Length - 1)
                             {
                                 nextPass = transientStandardRenderPasses[i + 1];
@@ -356,25 +363,37 @@ namespace Protogame
             return renderPass;
         }
 
-        private void RenderPass(IGameContext gameContext, IRenderContext renderContext, IEntity[] entities)
+        private void RenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass renderPass, IEntity[] entities)
         {
-            gameContext.World.RenderBelow(gameContext, renderContext);
-
-            foreach (var entity in entities.OfType<IPrerenderableEntity>())
+            if (!renderPass.SkipWorldRenderBelow)
             {
-                entity.Prerender(gameContext, renderContext);
+                gameContext.World.RenderBelow(gameContext, renderContext);
             }
 
-            foreach (var entity in entities)
+            if (!renderPass.SkipEntityRender)
             {
-                entity.Render(gameContext, renderContext);
+                foreach (var entity in entities.OfType<IPrerenderableEntity>())
+                {
+                    entity.Prerender(gameContext, renderContext);
+                }
+
+                foreach (var entity in entities)
+                {
+                    entity.Render(gameContext, renderContext);
+                }
             }
 
-            gameContext.World.RenderAbove(gameContext, renderContext);
-
-            foreach (var hook in _engineHooks)
+            if (!renderPass.SkipWorldRenderAbove)
             {
-                hook.Render(gameContext, renderContext);
+                gameContext.World.RenderAbove(gameContext, renderContext);
+            }
+
+            if (!renderPass.SkipEngineHookRender)
+            {
+                foreach (var hook in _engineHooks)
+                {
+                    hook.Render(gameContext, renderContext);
+                }
             }
         }
 

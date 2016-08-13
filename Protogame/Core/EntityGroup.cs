@@ -6,13 +6,15 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class EntityGroup : IContainsEntities, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject, IPrerenderableEntity
+    public class EntityGroup : IContainsEntities, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject, IPrerenderableEntity, IQueryableComponent
     {
         private readonly INode _node;
 
         private INode<IEntity>[] _entityCache = new INode<IEntity>[0];
 
         private INode<IServerEntity>[] _serverEntityCache = new INode<IServerEntity>[0];
+
+        private readonly HashSet<Type> _enabledInterfaces = new HashSet<Type>();
 
         public EntityGroup(INode node, IEditorQuery<EntityGroup> editorQuery)
         {
@@ -26,7 +28,29 @@ namespace Protogame
                 editorQuery.MapTransform(this, x => this.Transform.Assign(x));
 
                 _node.ChildrenChanged += ChildrenChanged;
+                _node.DescendantsChanged += DescendantsChanged;
                 ChildrenChanged(null, null);
+                DescendantsChanged(null, null);
+            }
+        }
+
+        private void DescendantsChanged(object sender, EventArgs e)
+        {
+            _enabledInterfaces.Clear();
+
+            var children = _node.Children.Select(x => x.UntypedValue).ToArray();
+
+            for (var i = 0; i < children.Length; i++)
+            {
+                var queryableComponent = children[i] as IQueryableComponent;
+                if (queryableComponent != null)
+                {
+                    _enabledInterfaces.UnionWith(queryableComponent.EnabledInterfaces);
+                }
+                else if (children[i] != null)
+                {
+                    _enabledInterfaces.UnionWith(children[i].GetType().GetInterfaces());
+                }
             }
         }
 
@@ -45,43 +69,58 @@ namespace Protogame
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
-            for (var i = 0; i < _entityCache.Length; i++)
+            if (EnabledInterfaces.Contains(typeof(IServerUpdatableComponent)))
             {
-                _serverEntityCache[i].Value.Update(serverContext, updateContext);
+                for (var i = 0; i < _entityCache.Length; i++)
+                {
+                    _serverEntityCache[i].Value.Update(serverContext, updateContext);
+                }
             }
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            for (var i = 0; i < _entityCache.Length; i++)
+            if (EnabledInterfaces.Contains(typeof(IRenderableComponent)))
             {
-                _entityCache[i].Value.Render(gameContext, renderContext);
+                for (var i = 0; i < _entityCache.Length; i++)
+                {
+                    _entityCache[i].Value.Render(gameContext, renderContext);
+                }
             }
         }
 
         public void Prerender(IGameContext gameContext, IRenderContext renderContext)
         {
-            foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IPrerenderableEntity>())
+            if (EnabledInterfaces.Contains(typeof(IPrerenderableComponent)))
             {
-                child.Prerender(gameContext, renderContext);
+                foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IPrerenderableEntity>())
+                {
+                    child.Prerender(gameContext, renderContext);
+                }
             }
         }
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            for (var i = 0; i < _entityCache.Length; i++)
+            if (EnabledInterfaces.Contains(typeof(IUpdatableComponent)))
             {
-                _entityCache[i].Value.Update(gameContext, updateContext);
+                for (var i = 0; i < _entityCache.Length; i++)
+                {
+                    _entityCache[i].Value.Update(gameContext, updateContext);
+                }
             }
         }
 
         public bool Handle(IGameContext context, IEventEngine<IGameContext> eventEngine, Event @event)
         {
-            foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IEventListener<IGameContext>>())
+            if (EnabledInterfaces.Contains(typeof(IEventListener<IGameContext>)))
             {
-                if (child.Handle(context, eventEngine, @event))
+                foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IEventListener<IGameContext>>())
                 {
-                    return true;
+                    if (child.Handle(context, eventEngine, @event))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -103,11 +142,14 @@ namespace Protogame
 
         public IEnumerable<ILight> GetLights()
         {
-            foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IHasLights>())
+            if (EnabledInterfaces.Contains(typeof(ILightableComponent)))
             {
-                foreach (var light in child.GetLights())
+                foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IHasLights>())
                 {
-                    yield return light;
+                    foreach (var light in child.GetLights())
+                    {
+                        yield return light;
+                    }
                 }
             }
         }
@@ -130,5 +172,7 @@ namespace Protogame
             throw new InvalidOperationException(
                 "Entity groups can not declare synchronised properties.  Do not attach a network synchronisation component to an entity group.");
         }
+        
+        public HashSet<Type> EnabledInterfaces => _enabledInterfaces;
     }
 }

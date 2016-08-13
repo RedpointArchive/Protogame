@@ -19,7 +19,7 @@ namespace Protogame
     /// </summary>
     /// <module>Component</module>
     [InjectFieldsForBaseObjectInProtectedConstructor]
-    public partial class ComponentizedObject : IContainsComponents
+    public partial class ComponentizedObject : IContainsComponents, IQueryableComponent
     {
 #pragma warning disable 169
         /// <summary>
@@ -40,6 +40,12 @@ namespace Protogame
         /// system.
         /// </summary>
         private List<object> _nonHierarchyComponents = new List<object>();
+
+        /// <summary>
+        /// A list of interfaces which are either enabled via querying <see cref="IQueryableComponent"/>
+        /// on children, or which children implement (where they don't also implement <see cref="IQueryableComponent"/>).
+        /// </summary>
+        private HashSet<Type> _enabledInterfaces = new HashSet<Type>();
 
         private bool _usesHierarchy;
 
@@ -64,32 +70,62 @@ namespace Protogame
         {
             _knownCallablesForSync = new List<IInternalComponentCallable>();
 
-            _usesHierarchy = _node != null && _hierarchy == null;
+            _usesHierarchy = _node != null && _hierarchy != null;
 
             if (_usesHierarchy)
             {
                 _node.ChildrenChanged += (sender, args) => { UpdateCache(); };
+                _node.DescendantsChanged += (sender, args) => { UpdateEnabledInterfacesCache(); };
             }
 
             UpdateCache();
+            UpdateEnabledInterfacesCache();
         }
 
+        protected virtual void OnComponentsChanged()
+        {
+        }
+
+        private void UpdateEnabledInterfacesCache()
+        {
+            _enabledInterfaces.Clear();
+
+            for (var i = 0; i < _componentCache.Length; i++)
+            {
+                var queryableComponent = _componentCache[i] as IQueryableComponent;
+                if (queryableComponent != null)
+                {
+                    _enabledInterfaces.UnionWith(queryableComponent.EnabledInterfaces);
+                }
+                else if (_componentCache[i] != null)
+                {
+                    _enabledInterfaces.UnionWith(_componentCache[i].GetType().GetInterfaces());
+                }
+            }
+
+            AddAdditionalEnabledInterfaces(_enabledInterfaces);
+        }
+
+        protected virtual void AddAdditionalEnabledInterfaces(HashSet<Type> enabledInterfaces)
+        {   
+        }
+            
         private void UpdateCache()
         {
             _componentCache = new object[0];
-            
+
             if (_usesHierarchy)
-            {
-                if (_nonHierarchyComponents != null)
-                {
-                    _componentCache = _nonHierarchyComponents.ToArray();
-                }
-            }
-            else
             {
                 if (_node != null && _node.Children != null)
                 {
                     _componentCache = _node.Children.Select(x => x.UntypedValue).ToArray();
+                }
+            }
+            else
+            {
+                if (_nonHierarchyComponents != null)
+                {
+                    _componentCache = _nonHierarchyComponents.ToArray();
                 }
             }
             
@@ -107,6 +143,7 @@ namespace Protogame
                 _nonHierarchyComponents.Add(component);
 
                 UpdateCache();
+                UpdateEnabledInterfacesCache();
             }
             else
             {
@@ -134,6 +171,11 @@ namespace Protogame
         private interface IInternalComponentCallable
         {
             void SyncComponents(object[] components);
+        }
+
+        public HashSet<Type> EnabledInterfaces
+        {
+            get { return _enabledInterfaces; }
         }
     }
 }

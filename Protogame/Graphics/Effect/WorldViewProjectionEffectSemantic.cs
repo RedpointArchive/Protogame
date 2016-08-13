@@ -8,13 +8,13 @@ namespace Protogame
     {
         private IEffectParameterSet _parameterSet;
 
-        private IEffectWritableParameter _worldParam;
+        private EffectParameter _worldParam;
 
-        private IEffectWritableParameter _viewParam;
+        private EffectParameter _viewParam;
 
-        private IEffectWritableParameter _projectionParam;
+        private EffectParameter _projectionParam;
 
-        private IEffectWritableParameter _worldViewProjParam;
+        private EffectParameter _worldViewProjParam;
 
         private Matrix _world = Matrix.Identity;
 
@@ -104,14 +104,14 @@ namespace Protogame
                 if (_parameterSet["WorldViewProj"] != null)
                 {
                     _separatedMatrices = false;
-                    _worldViewProjParam = _parameterSet["WorldViewProj"];
+                    _worldViewProjParam = _parameterSet["WorldViewProj"].NativeParameter;
                 }
                 else
                 {
                     _separatedMatrices = true;
-                    _worldParam = _parameterSet["World"];
-                    _viewParam = _parameterSet["View"];
-                    _projectionParam = _parameterSet["Projection"];
+                    _worldParam = _parameterSet["World"].NativeParameter;
+                    _viewParam = _parameterSet["View"].NativeParameter;
+                    _projectionParam = _parameterSet["Projection"].NativeParameter;
                 }
             }
         }

@@ -19,6 +19,12 @@ namespace Protogame
                     renderTarget.Dispose();
                 }
 
+                if (gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth == 0 &&
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight == 0)
+                {
+                    return null;
+                }
+
                 renderTarget = new RenderTarget2D(
                     gameContext.Graphics.GraphicsDevice,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
@@ -40,6 +46,12 @@ namespace Protogame
                 if (renderTarget != null)
                 {
                     renderTarget.Dispose();
+                }
+
+                if (gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth == 0 &&
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight == 0)
+                {
+                    return null;
                 }
 
                 renderTarget = new RenderTarget2D(

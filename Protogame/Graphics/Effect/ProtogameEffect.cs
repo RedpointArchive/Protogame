@@ -56,7 +56,7 @@ namespace Protogame
 
         public void LoadParameterSet(IRenderContext renderContext, IEffectParameterSet effectParameters, bool skipMatricSync)
         {
-            if (!skipMatricSync && !effectParameters.IsLocked)
+            if (!skipMatricSync)
             {
                 if (effectParameters.HasSemantic<IWorldViewProjectionEffectSemantic>())
                 {
@@ -78,6 +78,8 @@ namespace Protogame
 
             private List<IEffectSemantic> _semantics;
 
+            private Dictionary<Type, IEffectSemantic> _semanticsByType;
+
             public ProtogameParameterSet(ProtogameEffect protogameEffect)
             {
                 _writableParameters = new OrderedDictionary();
@@ -88,6 +90,7 @@ namespace Protogame
                     var nativeParameter = protogameEffect.NativeEffect.Parameters[i];
                     _writableParameters.Add(nativeParameter.Name, new ProtogameEffectWriteableParameter(
                         this, 
+                        nativeParameter,
                         nativeParameter.Name,
                         nativeParameter.ParameterClass,
                         nativeParameter.ParameterType));
@@ -115,6 +118,11 @@ namespace Protogame
                 for (var i = 0; i < _writableParameters.Count; i++)
                 {
                     var parameter = (ProtogameEffectWriteableParameter) _writableParameters[i];
+                    if (IsWorldViewProjectionParameter(parameter))
+                    {
+                        // World view projection parameters are managed by the batcher.
+                        continue;
+                    }
                     switch (parameter.InternalType)
                     {
                         case ProtogameEffectWriteableParameterInternalType.Unset:
@@ -152,9 +160,12 @@ namespace Protogame
 
             public void Lock(IRenderContext renderContext)
             {
-                foreach (var semantic in _semantics)
+                if (!_locked)
                 {
-                    semantic.OnApply(renderContext);
+                    foreach (var semantic in _semantics)
+                    {
+                        semantic.OnApply(renderContext);
+                    }
                 }
 
                 _locked = true;
@@ -165,12 +176,24 @@ namespace Protogame
                 _locked = false;
             }
 
+            private bool IsWorldViewProjectionParameter(ProtogameEffectWriteableParameter wp)
+            {
+                return wp.Name == "WorldViewProj" || wp.Name == "World" || wp.Name == "View" || wp.Name == "Projection";
+            }
+
             public int GetStateHash()
             {
                 var h = _writableParameters.Count ^ 397;
                 for (var i = 0; i < _writableParameters.Count; i++)
                 {
-                    h += ((ProtogameEffectWriteableParameter)_writableParameters[i]).GetStateHash();
+                    var wp = (ProtogameEffectWriteableParameter) _writableParameters[i];
+                    if (IsWorldViewProjectionParameter(wp))
+                    {
+                        // Exclude parameters relating to view-world-projection matrices, these are managed by the batcher
+                        // and don't make sense when considering state caching.
+                        continue;
+                    }
+                    h += wp.GetStateHash();
                 }
                 return h;
             }
@@ -200,6 +223,7 @@ namespace Protogame
             private class ProtogameEffectWriteableParameter : IEffectWritableParameter
             {
                 private readonly ProtogameParameterSet _protogameParameterSet;
+                private readonly EffectParameter _nativeParameter;
                 private readonly string _name;
                 public Texture2D _texture2D;
                 public Vector4 _vector4;
@@ -213,14 +237,18 @@ namespace Protogame
 
                 public ProtogameEffectWriteableParameter(
                     ProtogameParameterSet protogameParameterSet,
+                    EffectParameter nativeParameter, 
                     string name,
                     EffectParameterClass parameterClass,
                     EffectParameterType parameterType)
                 {
                     _protogameParameterSet = protogameParameterSet;
+                    _nativeParameter = nativeParameter;
                     _name = name;
                     _nameStateHash = _name.GetHashCode() ^ 397;
                 }
+
+                public EffectParameter NativeParameter => _nativeParameter;
 
                 public string Name => _name;
 

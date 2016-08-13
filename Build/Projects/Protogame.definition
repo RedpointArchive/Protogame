@@ -254,6 +254,7 @@
     <Compile Include="Component\INetworkedComponent.cs" />
     <Compile Include="Component\IPhysicalComponent.cs" />
     <Compile Include="Component\IPrerenderableComponent.cs" />
+    <Compile Include="Component\IQueryableComponent.cs" />
     <Compile Include="Component\IRenderableComponent.cs" />
     <Compile Include="Component\IServerUpdatableComponent.cs" />
     <Compile Include="Component\IUpdatableComponent.cs" />

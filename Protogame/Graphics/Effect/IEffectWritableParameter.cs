@@ -20,5 +20,7 @@ namespace Protogame
         void SetValue(Matrix[] matrices);
 
         void SetValue(Color color);
+
+        EffectParameter NativeParameter { get; }
     }
 }

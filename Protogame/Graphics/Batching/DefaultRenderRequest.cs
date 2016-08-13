@@ -29,14 +29,6 @@ namespace Protogame
             PrimitiveType = primitiveType;
             Instances = instances;
 
-            if (EffectParameterSet.HasSemantic<IWorldViewProjectionEffectSemantic>())
-            {
-                var semantic = EffectParameterSet.GetSemantic<IWorldViewProjectionEffectSemantic>();
-                semantic.View = renderContext.View;
-                semantic.Projection = renderContext.Projection;
-                semantic.World = Matrix.Identity; // This is handled by the batcher; set it to identity so we can batch requests properly.
-            }
-
             // Now that the parameter set has been used in a request, prevent it
             // from being changed.
             EffectParameterSet.Lock(renderContext);

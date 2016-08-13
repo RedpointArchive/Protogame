@@ -70,9 +70,12 @@ namespace Protogame
             {
                 if (_isSRTMatrix)
                 {
-                    _srtLocalPosition = value;
-                    _isCachedSRTLocalMatrixUpToDate = false;
-                    _isCachedRTLocalMatrixUpToDate = false;
+                    if (_srtLocalPosition != value)
+                    {
+                        _srtLocalPosition = value;
+                        _isCachedSRTLocalMatrixUpToDate = false;
+                        _isCachedRTLocalMatrixUpToDate = false;
+                    }
                 }
                 else
                 {
@@ -98,9 +101,12 @@ namespace Protogame
             {
                 if (_isSRTMatrix)
                 {
-                    _srtLocalRotation = value;
-                    _isCachedSRTLocalMatrixUpToDate = false;
-                    _isCachedRTLocalMatrixUpToDate = false;
+                    if (_srtLocalRotation != value)
+                    {
+                        _srtLocalRotation = value;
+                        _isCachedSRTLocalMatrixUpToDate = false;
+                        _isCachedRTLocalMatrixUpToDate = false;
+                    }
                 }
                 else
                 {
@@ -126,8 +132,11 @@ namespace Protogame
             {
                 if (_isSRTMatrix)
                 {
-                    _srtLocalScale = value;
-                    _isCachedSRTLocalMatrixUpToDate = false;
+                    if (_srtLocalScale != value)
+                    {
+                        _srtLocalScale = value;
+                        _isCachedSRTLocalMatrixUpToDate = false;
+                    }
                 }
                 else
                 {

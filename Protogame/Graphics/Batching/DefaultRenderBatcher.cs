@@ -84,16 +84,17 @@ namespace Protogame
 
                         int pc;
                         SetupForRequest(renderContext, request, out pc, false);
+                        request.Effect.NativeEffect.Parameters["View"]?.SetValue(renderContext.View);
+                        request.Effect.NativeEffect.Parameters["Projection"]?.SetValue(renderContext.Projection);
 
 #if PLATFORM_WINDOWS
-                        // TODO: Not quite working yet...
                         var allowInstancedCalls = false;
 #else
                         var allowInstancedCalls = false;
 #endif
                         
                         if (allowInstancedCalls &&
-                            request.Effect.Techniques[request.TechniqueName + "Batched"] != null)
+                            request.Effect.NativeEffect.Techniques[request.TechniqueName + "Batched"] != null)
                         {
 #if PLATFORM_WINDOWS
                             if (_vertexBuffer == null ||
@@ -114,7 +115,7 @@ namespace Protogame
                                 new VertexBufferBinding(request.MeshVertexBuffer),
                                 new VertexBufferBinding(_vertexBuffer, 0, 1));
 
-                            foreach (var pass in request.Effect.NativeEffect.Techniques[request.TechniqueName].Passes)
+                            foreach (var pass in request.Effect.NativeEffect.Techniques[request.TechniqueName + "Batched"].Passes)
                             {
                                 pass.Apply();
 
@@ -288,6 +289,8 @@ namespace Protogame
             }
 
             request.Effect.LoadParameterSet(renderContext, request.EffectParameterSet, true);
+            request.Effect.NativeEffect.Parameters["View"]?.SetValue(renderContext.View);
+            request.Effect.NativeEffect.Parameters["Projection"]?.SetValue(renderContext.Projection);
         }
 
         public void RenderRequestImmediate(IRenderContext renderContext, IRenderRequest request)

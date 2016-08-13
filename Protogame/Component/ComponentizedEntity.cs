@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Protoinject;
 
 namespace Protogame
@@ -43,26 +44,6 @@ namespace Protogame
         private readonly IHierarchy _hierarchy;
 
         /// <summary>
-        /// The component callable for handling updatable components.
-        /// </summary>
-        private readonly IComponentCallable<IGameContext, IUpdateContext> _update;
-
-        /// <summary>
-        /// The component callable for handling server-side updatable components.
-        /// </summary>
-        private readonly IComponentCallable<IServerContext, IUpdateContext> _serverUpdate;
-
-        /// <summary>
-        /// The component callable for handling prerenderable components.
-        /// </summary>
-        private readonly IComponentCallable<IGameContext, IRenderContext> _prerender;
-
-        /// <summary>
-        /// The component callable for handling renderable components.
-        /// </summary>
-        private readonly IComponentCallable<IGameContext, IRenderContext> _render;
-
-        /// <summary>
         /// The component callable for handling event handling components.
         /// </summary>
         private readonly IComponentCallable<IGameContext, IEventEngine<IGameContext>, Event, EventState> _handleEvent;
@@ -93,6 +74,34 @@ namespace Protogame
         private readonly IComponentCallable<List<ILight>> _getLights;
 
         /// <summary>
+        /// This interface gets get called very frequently, so we optimize their invocation by
+        /// iterating over them and calling them directly rather than using the <c>RegisterCallable</c>
+        /// infrastructure.
+        /// </summary>
+        private IUpdatableComponent[] _updatableComponents = new IUpdatableComponent[0];
+
+        /// <summary>
+        /// This interface gets called very frequently, so we optimize their invocation by
+        /// iterating over them and calling them directly rather than using the <c>RegisterCallable</c>
+        /// infrastructure.
+        /// </summary>
+        private IServerUpdatableComponent[] _serverUpdatableComponents = new IServerUpdatableComponent[0];
+
+        /// <summary>
+        /// This interface gets get called very frequently, so we optimize their invocation by
+        /// iterating over them and calling them directly rather than using the <c>RegisterCallable</c>
+        /// infrastructure.
+        /// </summary>
+        private IRenderableComponent[] _renderableComponents = new IRenderableComponent[0];
+
+        /// <summary>
+        /// This interface gets get called very frequently, so we optimize their invocation by
+        /// iterating over them and calling them directly rather than using the <c>RegisterCallable</c>
+        /// infrastructure.
+        /// </summary>
+        private IPrerenderableComponent[] _prerenderableComponents = new IPrerenderableComponent[0];
+
+        /// <summary>
         /// Initializes a new <see cref="ComponentizedEntity"/>.
         /// <para>
         /// Componentized entities are entities which automatically support the attachment
@@ -103,19 +112,25 @@ namespace Protogame
         protected ComponentizedEntity()
         {
             Transform = new DefaultTransform();
-
-            _update = RegisterCallable<IUpdatableComponent, IGameContext, IUpdateContext>((t, g, u) => t.Update(this, g, u));
-            _serverUpdate = RegisterCallable<IServerUpdatableComponent, IServerContext, IUpdateContext>((t, s, u) => t.Update(this, s, u));
-            _prerender = RegisterCallable<IPrerenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Prerender(this, g, r));
-            _render = RegisterCallable<IRenderableComponent, IGameContext, IRenderContext>((t, g, r) => t.Render(this, g, r));
+            
             _handleEvent = RegisterCallable<IEventfulComponent, IGameContext, IEventEngine<IGameContext>, Event, EventState>(EventCallback);
             _handleMessageRecievedClient = RegisterCallable<INetworkedComponent, IGameContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState>(ClientMessageCallback);
             _handleMessageRecievedServer = RegisterCallable<INetworkedComponent, IServerContext, IUpdateContext, MxDispatcher, MxClient, byte[], uint, EventState>(ServerMessageCallback);
             _networkIdentifiableClient = RegisterCallable<INetworkIdentifiable, IGameContext, IUpdateContext, int, int>((c, g, u, i, ft) => c.ReceiveNetworkIDFromServer(g, u, i, ft));
             _networkIdentifiableServer = RegisterCallable<INetworkIdentifiable, IServerContext, IUpdateContext, MxClient, int>((c, s, u, mc, i) => c.ReceivePredictedNetworkIDFromClient(s, u, mc, i));
             _getLights = RegisterCallable<ILightableComponent, List<ILight>>(GetLightCallback);
+
+            OnComponentsChanged();
         }
 
+        protected override void OnComponentsChanged()
+        {
+            _updatableComponents = Components.OfType<IUpdatableComponent>().ToArray();
+            _serverUpdatableComponents = Components.OfType<IServerUpdatableComponent>().ToArray();
+            _renderableComponents = Components.OfType<IRenderableComponent>().ToArray();
+            _prerenderableComponents = Components.OfType<IPrerenderableComponent>().ToArray();
+        }
+        
         /// <summary>
         /// Renders the entity.
         /// </summary>
@@ -123,7 +138,13 @@ namespace Protogame
         /// <param name="renderContext">The current render context.</param>
         public virtual void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            _render.Invoke(gameContext, renderContext);
+            if (EnabledInterfaces.Contains(typeof(IRenderableComponent)))
+            {
+                for (var i = 0; i < _renderableComponents.Length; i++)
+                {
+                    _renderableComponents[i].Render(this, gameContext, renderContext);
+                }
+            }
         }
 
         /// <summary>
@@ -131,9 +152,15 @@ namespace Protogame
         /// </summary>
         /// <param name="gameContext">The current game context.</param>
         /// <param name="renderContext">The current render context.</param>
-        public void Prerender(IGameContext gameContext, IRenderContext renderContext)
+        public virtual void Prerender(IGameContext gameContext, IRenderContext renderContext)
         {
-            _prerender.Invoke(gameContext, renderContext);
+            if (EnabledInterfaces.Contains(typeof(IPrerenderableComponent)))
+            {
+                for (var i = 0; i < _prerenderableComponents.Length; i++)
+                {
+                    _prerenderableComponents[i].Prerender(this, gameContext, renderContext);
+                }
+            }
         }
 
         /// <summary>
@@ -143,7 +170,13 @@ namespace Protogame
         /// <param name="updateContext">The current update context.</param>
         public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            _update.Invoke(gameContext, updateContext);
+            if (EnabledInterfaces.Contains(typeof(IUpdatableComponent)))
+            {
+                for (var i = 0; i < _updatableComponents.Length; i++)
+                {
+                    _updatableComponents[i].Update(this, gameContext, updateContext);
+                }
+            }
         }
 
         /// <summary>
@@ -153,7 +186,13 @@ namespace Protogame
         /// <param name="updateContext">The current update context.</param>
         public virtual void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
-            _serverUpdate.Invoke(serverContext, updateContext);
+            if (EnabledInterfaces.Contains(typeof(IServerUpdatableComponent)))
+            {
+                for (var i = 0; i < _serverUpdatableComponents.Length; i++)
+                {
+                    _serverUpdatableComponents[i].Update(this, serverContext, updateContext);
+                }
+            }
         }
 
         /// <summary>
@@ -184,12 +223,17 @@ namespace Protogame
         /// <returns>Whether or not the event was consumed.</returns>
         public virtual bool Handle(IGameContext context, IEventEngine<IGameContext> eventEngine, Event @event)
         {
-            var state = new EventState
+            if (EnabledInterfaces.Contains(typeof(IEventfulComponent)))
             {
-                Consumed = false
-            };
-            _handleEvent.Invoke(context, eventEngine, @event, state);
-            return state.Consumed;
+                var state = new EventState
+                {
+                    Consumed = false
+                };
+                _handleEvent.Invoke(context, eventEngine, @event, state);
+                return state.Consumed;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -221,15 +265,22 @@ namespace Protogame
             public bool Consumed { get; set; }
         }
 
+        private static ILight[] _emptyLights = new ILight[0];
+
         /// <summary>
         /// Returns lights defined on this entity and it's components.
         /// </summary>
         /// <returns>A list of lights to be used in rendering.</returns>
         public virtual IEnumerable<ILight> GetLights()
         {
-            var list = new List<ILight>();
-            _getLights.Invoke(list);
-            return list;
+            if (EnabledInterfaces.Contains(typeof(ILightableComponent)))
+            {
+                var list = new List<ILight>();
+                _getLights.Invoke(list);
+                return list;
+            }
+
+            return _emptyLights;
         }
 
         /// <summary>
@@ -364,7 +415,10 @@ namespace Protogame
         /// <param name="initialFrameTick"></param>
         public virtual void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier, int initialFrameTick)
         {
-            _networkIdentifiableClient.Invoke(gameContext, updateContext, identifier, initialFrameTick);
+            if (EnabledInterfaces.Contains(typeof(INetworkIdentifiable)))
+            {
+                _networkIdentifiableClient.Invoke(gameContext, updateContext, identifier, initialFrameTick);
+            }
         }
 
         /// <summary>
@@ -377,7 +431,10 @@ namespace Protogame
         public virtual void ReceivePredictedNetworkIDFromClient(IServerContext serverContext, IUpdateContext updateContext, MxClient client,
             int predictedIdentifier)
         {
-            _networkIdentifiableServer.Invoke(serverContext, updateContext, client, predictedIdentifier);
+            if (EnabledInterfaces.Contains(typeof(INetworkIdentifiable)))
+            {
+                _networkIdentifiableServer.Invoke(serverContext, updateContext, client, predictedIdentifier);
+            }
         }
 
         /// <summary>
@@ -389,5 +446,71 @@ namespace Protogame
         {
             synchronisationApi.Synchronise("transform", 5, Transform, x => Transform.Assign(x), 500);
         }
+
+        #region Override Detection
+
+        private bool _isOverriddenCacheSet;
+        private bool _isUpdateOverridden;
+        private bool _isServerUpdateOverridden;
+        private bool _isRenderOverridden;
+        private bool _isPrerenderOverridden;
+        private bool _isEventHandleOverridden;
+        private bool _isReceiveNetworkIdFromServerOverridden;
+        private bool _isReceivePredictedNetworkIdFromClientOverridden;
+        private bool _isGetLightsOverridden;
+
+        protected override void AddAdditionalEnabledInterfaces(HashSet<Type> enabledInterfaces)
+        {
+            if (!_isOverriddenCacheSet)
+            {
+                _isUpdateOverridden = GetType().GetMethod("Update", new [] { typeof(IGameContext), typeof(IUpdateContext) }).DeclaringType != typeof(ComponentizedEntity);
+                _isServerUpdateOverridden = GetType().GetMethod("Update", new[] { typeof(IGameContext), typeof(IUpdateContext) }).DeclaringType != typeof(ComponentizedEntity);
+                _isRenderOverridden = GetType().GetMethod("Render").DeclaringType != typeof(ComponentizedEntity);
+                _isPrerenderOverridden = GetType().GetMethod("Prerender").DeclaringType != typeof(ComponentizedEntity);
+                _isEventHandleOverridden = GetType().GetMethod("Handle", new[] { typeof(IGameContext), typeof(IEventEngine<IGameContext>), typeof(Event) }).DeclaringType != typeof(ComponentizedEntity);
+                _isReceiveNetworkIdFromServerOverridden = GetType().GetMethod("ReceiveNetworkIDFromServer").DeclaringType != typeof(ComponentizedEntity);
+                _isReceivePredictedNetworkIdFromClientOverridden = GetType().GetMethod("ReceivePredictedNetworkIDFromClient").DeclaringType != typeof(ComponentizedEntity);
+                _isGetLightsOverridden = GetType().GetMethod("GetLights").DeclaringType != typeof(ComponentizedEntity);
+
+                _isOverriddenCacheSet = true;
+            }
+
+            if (_isUpdateOverridden && !enabledInterfaces.Contains(typeof(IUpdatableComponent)))
+            {
+                enabledInterfaces.Add(typeof(IUpdatableComponent));
+            }
+
+            if (_isServerUpdateOverridden && !enabledInterfaces.Contains(typeof(IServerUpdatableComponent)))
+            {
+                enabledInterfaces.Add(typeof(IServerUpdatableComponent));
+            }
+
+            if (_isRenderOverridden && !enabledInterfaces.Contains(typeof(IRenderableComponent)))
+            {
+                enabledInterfaces.Add(typeof(IRenderableComponent));
+            }
+
+            if (_isPrerenderOverridden && !enabledInterfaces.Contains(typeof(IPrerenderableComponent)))
+            {
+                enabledInterfaces.Add(typeof(IPrerenderableComponent));
+            }
+
+            if (_isEventHandleOverridden && !enabledInterfaces.Contains(typeof(IEventListener<IGameContext>)))
+            {
+                enabledInterfaces.Add(typeof(IEventListener<IGameContext>));
+            }
+
+            if ((_isReceiveNetworkIdFromServerOverridden || _isReceivePredictedNetworkIdFromClientOverridden) && !enabledInterfaces.Contains(typeof(INetworkIdentifiable)))
+            {
+                enabledInterfaces.Add(typeof(INetworkIdentifiable));
+            }
+
+            if (_isGetLightsOverridden && !enabledInterfaces.Contains(typeof(ILightableComponent)))
+            {
+                enabledInterfaces.Add(typeof(ILightableComponent));
+            }
+        }
+
+        #endregion
     }
 }
