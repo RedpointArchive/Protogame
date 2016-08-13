@@ -477,17 +477,29 @@ namespace Protogame
                 }
             }
 
-            // Check if we need to generate bitangents/binormals and tangents.
+            // Check indices count.
             Vector3[] generatedTangents = null;
             Vector3[] generatedBitangents = null;
-            if (!mesh.HasTangentBasis && mesh.HasNormals && mesh.HasTextureCoords(0))
+            var indices = mesh.GetIndices();
+            if (indices.Length%3 != 0)
             {
-                var positions = mesh.Vertices.Select(x => new Vector3(x.X, x.Y, x.Z)).ToArray();
-                var indices = mesh.GetIndices();
-                var normals = mesh.Normals.Select(x => new Vector3(x.X, x.Y, x.Z)).ToArray();
-                var texCoords = mesh.TextureCoordinateChannels[0].Select(x => new Vector2(x.X, x.Y)).ToArray();
-                MeshHelper.CalculateTangentFrames(
-                    positions, indices, normals, texCoords, out generatedTangents, out generatedBitangents);
+                Console.WriteLine(
+                    "WARNING: Model does not have triplets of indices, which means the loaded model has likely not " +
+                    "triangulated.  Automatic calculation of tangents and bitangents is not possible, and the model " +
+                    "will most likely not render correctly in-game.");
+            }
+            else
+            {
+                // Check if we need to generate bitangents/binormals and tangents.
+                if (!mesh.HasTangentBasis && mesh.HasNormals && mesh.HasTextureCoords(0))
+                {
+                    var positions = mesh.Vertices.Select(x => new Vector3(x.X, x.Y, x.Z)).ToArray();
+                    var normals = mesh.Normals.Select(x => new Vector3(x.X, x.Y, x.Z)).ToArray();
+                    var texCoords = mesh.TextureCoordinateChannels[0].Select(x => new Vector2(x.X, x.Y)).ToArray();
+                    
+                    MeshHelper.CalculateTangentFrames(
+                        positions, indices, normals, texCoords, out generatedTangents, out generatedBitangents);
+                }
             }
 
             // If we have no possibility of obtaining tangent and bitangent information,
