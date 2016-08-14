@@ -39,6 +39,11 @@
         private Dictionary<object, VertexBuffer> _cachedVertexBuffers;
 
         /// <summary>
+        /// The cached model vertex mapping.
+        /// </summary>
+        private ModelVertexMapping _cachedModelVertexMapping;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Model"/> class.
         /// </summary>
         /// <param name="availableAnimations">
@@ -247,30 +252,34 @@
             else
             {
                 // Find the vertex mapping configuration for this model.
-                var modelConfiguration =
-                    _modelRenderConfigurations.Select(x => x.GetVertexMappingToGPU(this, effect)).FirstOrDefault(x => x != null);
-                if (modelConfiguration == null)
+                if (_cachedModelVertexMapping == null)
                 {
-                    throw new InvalidOperationException(
-                        "No implementation of IModelRenderConfiguration could provide a vertex " +
-                        "mapping for this model.  You must implement IModelRenderConfiguration " +
-                        "and bind it in the dependency injection system, so that the engine is " +
-                        "aware of how to map vertices in models to parameters in effects.");
+                    _cachedModelVertexMapping =
+                        _modelRenderConfigurations.Select(x => x.GetVertexMappingToGPU(this, effect))
+                            .FirstOrDefault(x => x != null);
+                    if (_cachedModelVertexMapping == null)
+                    {
+                        throw new InvalidOperationException(
+                            "No implementation of IModelRenderConfiguration could provide a vertex " +
+                            "mapping for this model.  You must implement IModelRenderConfiguration " +
+                            "and bind it in the dependency injection system, so that the engine is " +
+                            "aware of how to map vertices in models to parameters in effects.");
+                    }
                 }
 
-                var mappedVerticies = Array.CreateInstance(modelConfiguration.VertexType, Vertexes.Length);
+                var mappedVerticies = Array.CreateInstance(_cachedModelVertexMapping.VertexType, Vertexes.Length);
                 for (var i = 0; i < Vertexes.Length; i++)
                 {
-                    var vertex = modelConfiguration.MappingFunction(Vertexes[i]);
+                    var vertex = _cachedModelVertexMapping.MappingFunction(Vertexes[i]);
                     mappedVerticies.SetValue(vertex, i);
                 }
 
                 vertexBuffer = new VertexBuffer(
                     renderContext.GraphicsDevice,
-                    modelConfiguration.VertexDeclaration,
+                    _cachedModelVertexMapping.VertexDeclaration,
                     Vertexes.Length,
                     BufferUsage.WriteOnly);
-                vertexBuffer.GetType().GetMethods().First(x => x.Name == "SetData" && x.GetParameters().Length == 1).MakeGenericMethod(modelConfiguration.VertexType).Invoke(
+                vertexBuffer.GetType().GetMethods().First(x => x.Name == "SetData" && x.GetParameters().Length == 1).MakeGenericMethod(_cachedModelVertexMapping.VertexType).Invoke(
                     vertexBuffer,
                     new[] { mappedVerticies });
                 _cachedVertexBuffers[effect] = vertexBuffer;
@@ -299,7 +308,30 @@
                 vertexBuffer,
                 IndexBuffer,
                 PrimitiveType.TriangleList,
-                renderContext.World*transform);
+                renderContext.World*transform, (m, vb, ib) =>
+                {
+                    var mappedVerticies = Array.CreateInstance(_cachedModelVertexMapping.VertexType, Vertexes.Length * m.Count);
+                    var mappedIndicies = new int[Indices.Length*m.Count];
+
+                    for (var im = 0; im < m.Count; im++)
+                    {
+                        for (var i = 0; i < Vertexes.Length; i++)
+                        {
+                            var vertex = _cachedModelVertexMapping.MappingFunction(Vertexes[i].Transform(m[im]));
+                            mappedVerticies.SetValue(vertex, im*Vertexes.Length+i);
+                        }
+
+                        for (var i = 0; i < Indices.Length; i++)
+                        {
+                            mappedIndicies[im*Vertexes.Length + i] = Indices[i] + Vertexes.Length*im;
+                        }
+                    }
+
+                    vb.GetType().GetMethods().First(x => x.Name == "SetData" && x.GetParameters().Length == 1).MakeGenericMethod(_cachedModelVertexMapping.VertexType).Invoke(
+                        vb,
+                        new[] { mappedVerticies });
+                    ib.SetData(mappedIndicies);
+                });
         }
     }
 }

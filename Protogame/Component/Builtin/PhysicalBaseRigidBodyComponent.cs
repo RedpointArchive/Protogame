@@ -42,6 +42,14 @@ namespace Protogame
             }
         }
 
+        /// <summary>
+        /// By setting this flag, the physics engine won't synchronise this physics component
+        /// beyond on the initial synchronisation.  If you have static geometry in your scene
+        /// which is flagged as <see cref="Static"/> and which you know will not move, you should
+        /// set this option to true to optimize game performance.
+        /// </summary>
+        public bool StaticAndImmovable { get; set; }
+
         public bool Static
         {
             get { return _rigidBody.IsStatic; }
@@ -130,7 +138,7 @@ namespace Protogame
                     {
                         UpdateRigidBodyShape(transformComponent.Transform);
 
-                        _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent);
+                        _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent, StaticAndImmovable);
                         _addedRigidBody = true;
                     }
                 }

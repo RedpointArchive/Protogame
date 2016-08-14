@@ -17,7 +17,7 @@ namespace Protogame
         public override void Load(IKernel kernel)
         {
             base.Load(kernel);
-
+            
             kernel.Bind<I2DRenderUtilities>().To<Default2DRenderUtilities>();
             kernel.Bind<I3DRenderUtilities>().To<Default3DRenderUtilities>();
             kernel.Bind<IAudioUtilities>().To<DefaultAudioUtilities>();

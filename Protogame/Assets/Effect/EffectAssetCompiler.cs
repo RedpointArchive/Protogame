@@ -5,7 +5,6 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 
 namespace Protogame
 {
@@ -14,15 +13,6 @@ namespace Protogame
     /// </summary>
     public class EffectAssetCompiler : IAssetCompiler<EffectAsset>
     {
-        /// <summary>
-        /// The compile.
-        /// </summary>
-        /// <param name="asset">
-        /// The asset.
-        /// </param>
-        /// <param name="platform">
-        /// The platform.
-        /// </param>
         public void Compile(EffectAsset asset, TargetPlatform platform)
         {
             if (string.IsNullOrEmpty(asset.Code))
@@ -43,12 +33,45 @@ namespace Protogame
 
             var tempOutputPath = Path.GetTempFileName();
 
-            var processor = new EffectProcessor();
-            var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
-            context.ActualOutputFilename = tempOutputPath;
-            var content = processor.Process(output, context);
+            var debugContent = EffectCompilerHelper.Compile(
+                output,
+                tempOutputPath,
+                platform,
+                true,
+                string.Empty);
+            var releaseContent = EffectCompilerHelper.Compile(
+                output,
+                tempOutputPath,
+                platform,
+                false,
+                string.Empty);
 
-            asset.PlatformData = new PlatformData { Platform = platform, Data = content.GetEffectCode() };
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(stream))
+                {
+                    // Magic flag that indicates new compiled effect format.
+                    writer.Write((uint)0x12345678);
+
+                    // Version 1 of new effect format.
+                    writer.Write((uint)1);
+
+                    var debugCode = debugContent.GetEffectCode();
+                    var releaseCode = releaseContent.GetEffectCode();
+
+                    writer.Write(debugCode.Length);
+                    writer.Write(debugCode);
+                    writer.Write(releaseCode.Length);
+                    writer.Write(releaseCode);
+
+                    var p = stream.Position;
+                    var b = new byte[p];
+                    stream.Seek(0, SeekOrigin.Begin);
+                    stream.Read(b, 0, b.Length);
+
+                    asset.PlatformData = new PlatformData { Platform = platform, Data = b };
+                }
+            }
 
             File.Delete(tempPath);
             File.Delete(tempOutputPath);

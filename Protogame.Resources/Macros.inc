@@ -1,4 +1,5 @@
-﻿// -----------------------------------------------------------------------------
+﻿#line 1 "Macros.fx"
+// -----------------------------------------------------------------------------
 // These are utility macros that are provided to all effects compiled under Protogame.
 // They are used to target different shader profiles depending on whether compilation
 // is for DX11 or OpenGL.
@@ -7,6 +8,10 @@
 //
 // This file is included automatically as a literal prefix for all effect code.
 // -----------------------------------------------------------------------------
+
+#if defined(__INTELLISENSE__)
+#define SM4 1
+#endif
 
 // Keep this in sync with RenderPipelineTechniqueName.
 #define RENDER_PASS_TYPE_FORWARD Forward
@@ -77,6 +82,6 @@
 
 #define PROTOGAME_SAMPLE_TEXTURE(Name, texCoord)  (tex2D(Name, texCoord))
 #define PROTOGAME_SAMPLE_CUBEMAP(Name, texCoord)  (texCUBE(Name, texCoord))
-#define PROTOGAME_LOAD_TEXTURE(Name, texCoord)  (tex2D(Name, texCoord))
+#define PROTOGAME_LOAD_TEXTURE(Name, texCoord)  (float3(tex2D(Name, texCoord), 0))
 
 #endif

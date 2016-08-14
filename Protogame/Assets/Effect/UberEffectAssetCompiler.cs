@@ -4,10 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 
 namespace Protogame
 {
@@ -21,7 +19,7 @@ namespace Protogame
             }
 
             var allPassed = true;
-            var effectCodes = new Dictionary<string, Tuple<string, byte[]>>();
+            var effectCodes = new Dictionary<string, Tuple<string, byte[], byte[]>>();
             foreach (var rawLine in asset.Code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var line = rawLine.Trim();
@@ -57,12 +55,20 @@ namespace Protogame
 
                     output.Identity = new ContentIdentity(tempPath);
 
-                    var processor = new EffectProcessor();
-                    processor.Defines = defines;
-                    var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
-                    context.ActualOutputFilename = tempOutputPath;
-                    var content = processor.Process(output, context);
-                    effectCodes[name] = new Tuple<string, byte[]>(defines, content.GetEffectCode());
+                    var debugContent = EffectCompilerHelper.Compile(
+                        output,
+                        tempOutputPath,
+                        platform,
+                        true,
+                        defines);
+                    var releaseContent = EffectCompilerHelper.Compile(
+                        output,
+                        tempOutputPath,
+                        platform,
+                        false,
+                        defines);
+                    
+                    effectCodes[name] = new Tuple<string, byte[], byte[]>(defines, debugContent.GetEffectCode(), releaseContent.GetEffectCode());
                     Console.Write("done.");
                 }
                 catch (InvalidContentException ex)
@@ -97,7 +103,7 @@ namespace Protogame
             {
                 using (var writer = new BinaryWriter(memory))
                 {
-                    writer.Write((uint)1);
+                    writer.Write((uint)2);
                     writer.Write((uint)effectCodes.Count);
                     foreach (var kv in effectCodes)
                     {
@@ -105,6 +111,8 @@ namespace Protogame
                         writer.Write(kv.Value.Item1);
                         writer.Write(kv.Value.Item2.Length);
                         writer.Write(kv.Value.Item2);
+                        writer.Write(kv.Value.Item3.Length);
+                        writer.Write(kv.Value.Item3);
                     }
 
                     var len = memory.Position;

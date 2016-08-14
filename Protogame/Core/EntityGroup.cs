@@ -16,6 +16,16 @@ namespace Protogame
 
         private readonly HashSet<Type> _enabledInterfaces = new HashSet<Type>();
 
+        private bool _hasRenderableComponentDescendants;
+
+        private bool _hasPrerenderableComponentDescendants;
+
+        private bool _hasUpdatableComponentDescendants;
+
+        private bool _hasServerUpdatableComponentDescendants;
+
+        private bool _hasLightableComponentDescendants;
+
         public EntityGroup(INode node, IEditorQuery<EntityGroup> editorQuery)
         {
             _node = node;
@@ -52,6 +62,12 @@ namespace Protogame
                     _enabledInterfaces.UnionWith(children[i].GetType().GetInterfaces());
                 }
             }
+
+            _hasRenderableComponentDescendants = _enabledInterfaces.Contains(typeof(IRenderableComponent));
+            _hasPrerenderableComponentDescendants = _enabledInterfaces.Contains(typeof(IPrerenderableComponent));
+            _hasUpdatableComponentDescendants = _enabledInterfaces.Contains(typeof(IUpdatableComponent));
+            _hasServerUpdatableComponentDescendants = _enabledInterfaces.Contains(typeof(IServerUpdatableComponent));
+            _hasLightableComponentDescendants = _enabledInterfaces.Contains(typeof(ILightableComponent));
         }
 
         private void ChildrenChanged(object sender, EventArgs e)
@@ -69,7 +85,7 @@ namespace Protogame
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
-            if (EnabledInterfaces.Contains(typeof(IServerUpdatableComponent)))
+            if (_hasServerUpdatableComponentDescendants)
             {
                 for (var i = 0; i < _entityCache.Length; i++)
                 {
@@ -80,7 +96,7 @@ namespace Protogame
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            if (EnabledInterfaces.Contains(typeof(IRenderableComponent)))
+            if (_hasRenderableComponentDescendants)
             {
                 for (var i = 0; i < _entityCache.Length; i++)
                 {
@@ -91,7 +107,7 @@ namespace Protogame
 
         public void Prerender(IGameContext gameContext, IRenderContext renderContext)
         {
-            if (EnabledInterfaces.Contains(typeof(IPrerenderableComponent)))
+            if (_hasPrerenderableComponentDescendants)
             {
                 foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IPrerenderableEntity>())
                 {
@@ -102,7 +118,7 @@ namespace Protogame
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            if (EnabledInterfaces.Contains(typeof(IUpdatableComponent)))
+            if (_hasUpdatableComponentDescendants)
             {
                 for (var i = 0; i < _entityCache.Length; i++)
                 {
@@ -142,7 +158,7 @@ namespace Protogame
 
         public IEnumerable<ILight> GetLights()
         {
-            if (EnabledInterfaces.Contains(typeof(ILightableComponent)))
+            if (_hasLightableComponentDescendants)
             {
                 foreach (var child in _node.Children.Select(x => x.UntypedValue).OfType<IHasLights>())
                 {

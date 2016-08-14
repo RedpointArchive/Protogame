@@ -8,10 +8,13 @@ namespace Protogame
 
         private readonly IAssetContentManager _assetContentManager;
 
-        public UberEffectAssetLoader(IKernel kernel, IAssetContentManager assetContentManager)
+        private readonly IRawLaunchArguments _rawLaunchArguments;
+
+        public UberEffectAssetLoader(IKernel kernel, IAssetContentManager assetContentManager, IRawLaunchArguments rawLaunchArguments)
         {
             _kernel = kernel;
-            this._assetContentManager = assetContentManager;
+            _assetContentManager = assetContentManager;
+            _rawLaunchArguments = rawLaunchArguments;
         }
 
         public bool CanHandle(IRawAsset data)
@@ -31,14 +34,14 @@ namespace Protogame
         
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
-            return new UberEffectAsset(_kernel, this._assetContentManager, name, string.Empty, null, false);
+            return new UberEffectAsset(_kernel, _assetContentManager, _rawLaunchArguments, name, string.Empty, null, false);
         }
         
         public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
             if (data is CompiledAsset)
             {
-                return new UberEffectAsset(_kernel, this._assetContentManager, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
+                return new UberEffectAsset(_kernel, _assetContentManager, _rawLaunchArguments, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
             }
 
             PlatformData platformData = null;
@@ -53,7 +56,8 @@ namespace Protogame
 
             var effect = new UberEffectAsset(
                 _kernel,
-                this._assetContentManager, 
+                _assetContentManager,
+                _rawLaunchArguments,
                 name,
                 data.GetProperty<string>("Code"), 
                 platformData, 

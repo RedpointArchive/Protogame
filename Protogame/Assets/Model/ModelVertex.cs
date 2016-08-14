@@ -40,35 +40,35 @@ namespace Protogame
         /// <summary>
         /// The 3D position in space of this vertex, if specified.
         /// </summary>
-        public Vector3? Position { get; }
+        public Vector3? Position;
 
         /// <summary>
         /// The normal of the vertex, if specified.
         /// </summary>
-        public Vector3? Normal { get; }
+        public Vector3? Normal;
 
         /// <summary>
         /// The tangent of the vertex, if specified.
         /// </summary>
-        public Vector3? Tangent { get; }
+        public Vector3? Tangent;
 
         /// <summary>
         /// The bitangent of the vertex, if specified.
         /// </summary>
-        public Vector3? BiTangent { get; }
+        public Vector3? BiTangent;
 
         /// <summary>
         /// The color channels associated with the vertex.  A vertex
         /// can have zero or more color channels.
         /// </summary>
-        public Color[] Colors { get; }
+        public Color[] Colors;
 
         /// <summary>
         /// The 2D texture coordinates associated with the vertex.  These
         /// texture coordinates are often refered to as UV-coordinates.  A
         /// vertex can have zero or more texture coordinate channels.
         /// </summary>
-        public Vector2[] TexCoordsUV { get; }
+        public Vector2[] TexCoordsUV;
 
         /// <summary>
         /// The 3D texture coordinates associated with the vertex.  These
@@ -78,7 +78,7 @@ namespace Protogame
         /// non-texture data in these channels.  A vertex can have zero or
         /// more texture coordinate channels.
         /// </summary>
-        public Vector3[] TexCoordsUVW { get; }
+        public Vector3[] TexCoordsUVW;
 
         /// <summary>
         /// The indicies of the bones associated with this vertex.  This
@@ -86,7 +86,7 @@ namespace Protogame
         /// configured in the model.  If there are no bones in the model,
         /// or this vertex isn't affected by bones, this value is null.
         /// </summary>
-        public Byte4? BoneIndices { get; }
+        public Byte4? BoneIndices;
 
         /// <summary>
         /// The weights of the bones associated with this vertex.  This
@@ -94,7 +94,7 @@ namespace Protogame
         /// configured in the model.  If there are no bones in the model,
         /// or this vertex isn't affected by bones, this value is null.
         /// </summary>
-        public Vector4? BoneWeights { get; }
+        public Vector4? BoneWeights;
 
         /// <summary>
         /// Provides a very basic representation of the vertex (just the
@@ -104,6 +104,25 @@ namespace Protogame
         public override string ToString()
         {
             return Position?.ToString() ?? "(no position)";
+        }
+
+        /// <summary>
+        /// Transforms the current model vertex by the matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public ModelVertex Transform(Matrix matrix)
+        {
+            return new ModelVertex(
+                Position == null ? null : (Vector3?)Vector3.Transform(Position.Value, matrix),
+                Normal == null ? null : (Vector3?)Vector3.TransformNormal(Normal.Value, matrix),
+                Tangent == null ? null : (Vector3?)Vector3.TransformNormal(Tangent.Value, matrix),
+                BiTangent == null ? null : (Vector3?)Vector3.TransformNormal(BiTangent.Value, matrix),
+                Colors,
+                TexCoordsUV,
+                TexCoordsUVW,
+                BoneIndices,
+                BoneWeights);
         }
     }
 }

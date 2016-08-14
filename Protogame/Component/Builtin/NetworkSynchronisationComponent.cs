@@ -27,6 +27,9 @@ namespace Protogame
 
         private bool _isRunningOnClient;
 
+        private bool _serverOnly;
+        private bool _enabled;
+
         public NetworkSynchronisationComponent(
             IConsoleHandle consoleHandle,
             INetworkEngine networkEngine,
@@ -44,16 +47,16 @@ namespace Protogame
             _synchronisedData = new Dictionary<string, SynchronisedData>();
             _synchronisedDataToTransmit = new List<SynchronisedData>();
 
-            Enabled = true;
+            _enabled = true;
         }
         
-        public bool Enabled { get; set; }
+        public bool Enabled { get { return _enabled; } set { _enabled = value; } }
 
         /// <summary>
         /// Whether this entity and it's components only exist on the server.  If this
         /// is set to true, no data is sent to clients about this entity.
         /// </summary>
-        public bool ServerOnly { get; set; }
+        public bool ServerOnly { get { return _serverOnly; } set { _serverOnly = value; } }
 
         /// <summary>
         /// Whether this entity only exists on the server and the authoritive client.  If
@@ -84,7 +87,7 @@ namespace Protogame
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
-            if (!Enabled)
+            if (!_enabled || _serverOnly)
             {
                 return;
             }
@@ -128,7 +131,7 @@ namespace Protogame
 
         public void Update(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext)
         {
-            if (!Enabled)
+            if (!_enabled)
             {
                 return;
             }
@@ -142,7 +145,7 @@ namespace Protogame
                 _networkEngine.RegisterObjectAsNetworkId(_uniqueIdentifierForEntity.Value, entity);
             }
 
-            if (ServerOnly)
+            if (_serverOnly)
             {
                 return;
             }
@@ -192,7 +195,7 @@ namespace Protogame
         public bool ReceiveMessage(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext, MxDispatcher dispatcher, MxClient server,
             byte[] payload, uint protocolId)
         {
-            if (!Enabled)
+            if (!_enabled)
             {
                 return false;
             }
@@ -231,7 +234,7 @@ namespace Protogame
 
         public bool ReceiveMessage(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext, MxDispatcher dispatcher, MxClient client, byte[] payload, uint protocolId)
         {
-            if (!Enabled)
+            if (!_enabled)
             {
                 return false;
             }
@@ -294,7 +297,7 @@ namespace Protogame
 
         public void ReceiveNetworkIDFromServer(IGameContext gameContext, IUpdateContext updateContext, int identifier, int initialFrameTick)
         {
-            if (!Enabled)
+            if (!_enabled)
             {
                 return;
             }
@@ -306,7 +309,7 @@ namespace Protogame
         public void ReceivePredictedNetworkIDFromClient(IServerContext serverContext, IUpdateContext updateContext, MxClient client,
             int predictedIdentifier)
         {
-            if (!Enabled)
+            if (!_enabled)
             {
                 return;
             }
@@ -323,7 +326,7 @@ namespace Protogame
 
         public void Synchronise<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
         {
-            if (!Enabled)
+            if (!_enabled)
             {
                 return;
             }
@@ -333,7 +336,7 @@ namespace Protogame
 
         public void SynchroniseToOwner<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
         {
-            if (!Enabled)
+            if (!_enabled)
             {
                 return;
             }
@@ -343,7 +346,7 @@ namespace Protogame
 
         public void SynchroniseToNonOwner<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
         {
-            if (!Enabled)
+            if (!_enabled)
             {
                 return;
             }
@@ -731,7 +734,7 @@ namespace Protogame
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
-            if (!Enabled)
+            if (!_enabled || _serverOnly)
             {
                 return;
             }

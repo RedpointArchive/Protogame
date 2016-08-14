@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
@@ -13,30 +15,32 @@ namespace Protogame
 
         void QueueRequest(IRenderContext renderContext, IRenderRequest request);
 
-        void FlushRequests(IRenderContext renderContext);
+        void FlushRequests(IGameContext gameContext, IRenderContext renderContext);
 
         void RenderRequestImmediate(IRenderContext renderContext, IRenderRequest request);
 
         IRenderRequest CreateSingleRequest(
             IRenderContext renderContext,
-            RasterizerState rasterizerState,
-            BlendState blendState, 
+            RasterizerState rasterizerState, 
+            BlendState blendState,
             DepthStencilState depthStencilState,
-            IEffect effect,
-            IEffectParameterSet effectParameterSet,
+            IEffect effect, 
+            IEffectParameterSet effectParameterSet, 
             VertexBuffer meshVertexBuffer,
-            IndexBuffer meshIndexBuffer,
+            IndexBuffer meshIndexBuffer, 
             PrimitiveType primitiveType,
-            Matrix world);
+            Matrix world, 
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers);
 
         IRenderRequest CreateSingleRequestFromState(
-            IRenderContext renderContext,
-            IEffect effect,
-            IEffectParameterSet effectParameterSet,
+            IRenderContext renderContext, 
+            IEffect effect, 
+            IEffectParameterSet effectParameterSet, 
             VertexBuffer meshVertexBuffer, 
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
-            Matrix world);
+            Matrix world, 
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers);
 
         IRenderRequest CreateInstancedRequest(
             IRenderContext renderContext,
@@ -48,7 +52,8 @@ namespace Protogame
             VertexBuffer meshVertexBuffer,
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
-            Matrix[] instanceWorldTransforms);
+            Matrix[] instanceWorldTransforms,
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers);
 
         IRenderRequest CreateInstancedRequestFromState(
             IRenderContext renderContext,
@@ -57,6 +62,7 @@ namespace Protogame
             VertexBuffer meshVertexBuffer, 
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType, 
-            Matrix[] instancedWorldTransforms);
+            Matrix[] instancedWorldTransforms,
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers);
     }
 }

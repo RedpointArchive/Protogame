@@ -358,6 +358,7 @@
                         var effect = new EffectAsset(
                             null,
                             null,
+                            null,
                             "effect",
                             input,
                             null,

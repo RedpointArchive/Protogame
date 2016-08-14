@@ -1,3 +1,4 @@
+using System;
 using Jitter;
 using Jitter.Dynamics;
 
@@ -57,9 +58,9 @@ namespace Protogame
             }
         }
 
-        public void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform)
+        public void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform, bool staticAndImmovable)
         {
-            _shadowWorld.RegisterRigidBodyForHasMatrix(rigidBody, hasTransform);
+            _shadowWorld.RegisterRigidBodyForHasMatrix(rigidBody, hasTransform, staticAndImmovable);
         }
 
         public void UnregisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform)
@@ -75,6 +76,11 @@ namespace Protogame
         public JitterWorld GetInternalPhysicsWorld()
         {
             return _shadowWorld.GetJitterWorld();
+        }
+
+        public PhysicsMetrics GetPhysicsMetrics()
+        {
+            return _shadowWorld.GetPhysicsMetrics();
         }
     }
 }

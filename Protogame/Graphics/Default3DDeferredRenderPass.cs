@@ -164,7 +164,7 @@ namespace Protogame
             IRenderContext renderContext, 
             IRenderPass nextPass)
         {
-            _renderBatcher.FlushRequests(renderContext);
+            _renderBatcher.FlushRequests(gameContext, renderContext);
             
             renderContext.PopRenderTarget();
 
@@ -204,7 +204,7 @@ namespace Protogame
 
             renderContext.GraphicsDevice.BlendState = _lightBlendState;
             renderContext.GraphicsDevice.DepthStencilState = _lightDepthStencilState;
-
+            
             foreach (var light in lights)
             {
                 light.Render(gameContext, renderContext, lightContext);

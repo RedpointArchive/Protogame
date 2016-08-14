@@ -85,6 +85,10 @@ namespace Protogame
                 _writableParameters = new OrderedDictionary();
                 _semantics = new List<IEffectSemantic>();
 
+#if DEBUG
+                GraphicsMetricsProfilerVisualiser.ParameterSetsCreated++;
+#endif
+
                 for (var i = 0; i < protogameEffect.NativeEffect.Parameters.Count; i++)
                 {
                     var nativeParameter = protogameEffect.NativeEffect.Parameters[i];

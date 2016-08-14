@@ -1,6 +1,9 @@
 using Protoinject;
 using System;
+using System.Diagnostics;
+using System.IO;
 using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
 
 namespace Protogame
 {    
@@ -9,10 +12,13 @@ namespace Protogame
         private readonly IKernel _kernel;
         
         private readonly IAssetContentManager _assetContentManager;
-        
+
+        private readonly IRawLaunchArguments _rawLaunchArguments;
+
         public EffectAsset(
             IKernel kernel,
-            IAssetContentManager assetContentManager, 
+            IAssetContentManager assetContentManager,
+            IRawLaunchArguments rawLaunchArguments,
             string name, 
             string code, 
             PlatformData platformData, 
@@ -23,6 +29,7 @@ namespace Protogame
             this.PlatformData = platformData;
             _kernel = kernel;
             this._assetContentManager = assetContentManager;
+            _rawLaunchArguments = rawLaunchArguments;
             this.SourcedFromRaw = sourcedFromRaw;
 
             if (this.PlatformData != null)
@@ -96,10 +103,46 @@ namespace Protogame
                 if (graphicsDeviceProvider != null && graphicsDeviceProvider.GraphicsDevice != null)
                 {
                     var graphicsDevice = graphicsDeviceProvider.GraphicsDevice;
-                    
-                    // Use the new EffectWithSemantics class that allows for extensible semantics.
+
                     var availableSemantics = _kernel.GetAll<IEffectSemantic>();
-                    this.Effect = new ProtogameEffect(graphicsDevice, this.PlatformData.Data, this.Name, availableSemantics);
+
+                    using (var stream = new MemoryStream(this.PlatformData.Data))
+                    {
+                        using (var reader = new BinaryReader(stream))
+                        {
+                            if (reader.ReadUInt32() == (uint) 0x12345678)
+                            {
+                                // This is the new effect format that supports storing both debug
+                                // and release builds of the shader code.
+                                switch (reader.ReadUInt32())
+                                {
+                                    case 1:
+                                        var debugLength = reader.ReadInt32();
+                                        var debugCode = reader.ReadBytes(debugLength);
+                                        var releaseLength = reader.ReadInt32();
+                                        var releaseCode = reader.ReadBytes(releaseLength);
+                                        if (_rawLaunchArguments.Arguments.Contains("--debug-shaders"))
+                                        {
+                                            this.Effect = new ProtogameEffect(graphicsDevice, debugCode,
+                                                this.Name, availableSemantics);
+                                        }
+                                        else
+                                        {
+                                            this.Effect = new ProtogameEffect(graphicsDevice, releaseCode,
+                                                this.Name, availableSemantics);
+                                        }
+                                        break;
+                                    default:
+                                        throw new NotSupportedException("Unknown version of effect binary data.");
+                                }
+                            }
+                            else
+                            {
+                                // This is a legacy shader with no versioning.
+                                this.Effect = new ProtogameEffect(graphicsDevice, this.PlatformData.Data, this.Name, availableSemantics);
+                            }
+                        }
+                    }
                 }
             }
         }

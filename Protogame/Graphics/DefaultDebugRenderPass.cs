@@ -25,10 +25,10 @@ namespace Protogame
         }
 
         public bool IsPostProcessingPass => false;
-        public bool SkipWorldRenderBelow => false;
-        public bool SkipWorldRenderAbove => false;
-        public bool SkipEntityRender => false;
-        public bool SkipEngineHookRender => false;
+        public bool SkipWorldRenderBelow => EnabledLayers.Count == 0;
+        public bool SkipWorldRenderAbove => EnabledLayers.Count == 0;
+        public bool SkipEntityRender => EnabledLayers.Count == 0;
+        public bool SkipEngineHookRender => EnabledLayers.Count == 0;
         public string EffectTechniqueName => RenderPipelineTechniqueName.Forward;
 
         public List<IDebugLayer> EnabledLayers { get; }

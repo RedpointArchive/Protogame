@@ -2,6 +2,7 @@ using Protoinject;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Cloo;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,10 +13,13 @@ namespace Protogame
         private readonly IKernel _kernel;
         
         private readonly IAssetContentManager _assetContentManager;
-        
+
+        private readonly IRawLaunchArguments _rawLaunchArguments;
+
         public UberEffectAsset(
             IKernel kernel,
             IAssetContentManager assetContentManager, 
+            IRawLaunchArguments rawLaunchArguments,
             string name, 
             string code, 
             PlatformData platformData, 
@@ -26,6 +30,7 @@ namespace Protogame
             PlatformData = platformData;
             _kernel = kernel;
             _assetContentManager = assetContentManager;
+            _rawLaunchArguments = rawLaunchArguments;
             SourcedFromRaw = sourcedFromRaw;
 
             if (PlatformData != null)
@@ -97,22 +102,52 @@ namespace Protogame
                     {
                         using (var reader = new BinaryReader(memory))
                         {
-                            if (reader.ReadUInt32() != 1)
+                            switch (reader.ReadUInt32())
                             {
-                                throw new InvalidOperationException("Unexpected version number for uber effect.");
-                            }
+                                case 1:
+                                {
+                                    var count = reader.ReadUInt32();
+                                    for (var i = 0; i < count; i++)
+                                    {
+                                        var name = reader.ReadString();
+                                        var defines = reader.ReadString();
+                                        var dataLength = reader.ReadInt32();
+                                        var data = reader.ReadBytes(dataLength);
 
-                            var count = reader.ReadUInt32();
-                            for (var i = 0; i < count; i++)
-                            {
-                                var name = reader.ReadString();
-                                var defines = reader.ReadString();
-                                var dataLength = reader.ReadInt32();
-                                var data = reader.ReadBytes(dataLength);
+                                        // Use the new EffectWithSemantics class that allows for extensible semantics.
+                                        var availableSemantics = _kernel.GetAll<IEffectSemantic>();
+                                        Effects[name] = new ProtogameEffect(graphicsDevice, data, Name + ":" + name,
+                                            availableSemantics);
+                                    }
+                                    break;
+                                }
+                                case 2:
+                                {
 
-                                // Use the new EffectWithSemantics class that allows for extensible semantics.
-                                var availableSemantics = _kernel.GetAll<IEffectSemantic>();
-                                Effects[name] = new ProtogameEffect(graphicsDevice, data, Name + ":" + name, availableSemantics);
+                                    var count = reader.ReadUInt32();
+                                    for (var i = 0; i < count; i++)
+                                    {
+                                        var name = reader.ReadString();
+                                        var defines = reader.ReadString();
+                                        var debugDataLength = reader.ReadInt32();
+                                        var debugData = reader.ReadBytes(debugDataLength);
+                                        var releaseDataLength = reader.ReadInt32();
+                                        var releaseData = reader.ReadBytes(releaseDataLength);
+
+                                        // Use the new EffectWithSemantics class that allows for extensible semantics.
+                                        var availableSemantics = _kernel.GetAll<IEffectSemantic>();
+                                        Effects[name] = new ProtogameEffect(
+                                            graphicsDevice,
+                                            _rawLaunchArguments.Arguments.Contains("--debug-shaders")
+                                                ? debugData
+                                                : releaseData,
+                                            Name + ":" + name,
+                                            availableSemantics);
+                                    }
+                                    break;
+                                }
+                                default:
+                                    throw new InvalidOperationException("Unexpected version number for uber effect.");
                             }
                         }
                     }

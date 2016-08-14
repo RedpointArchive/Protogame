@@ -2,112 +2,46 @@ using Protoinject;
 
 namespace Protogame
 {
-    /// <summary>
-    /// The effect asset loader.
-    /// </summary>
     public class EffectAssetLoader : IAssetLoader
     {
         private readonly IKernel _kernel;
+        
+        private readonly IAssetContentManager _assetContentManager;
 
-        /// <summary>
-        /// The m_ asset content manager.
-        /// </summary>
-        private readonly IAssetContentManager m_AssetContentManager;
+        private readonly IRawLaunchArguments _rawLaunchArguments;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EffectAssetLoader"/> class.
-        /// </summary>
-        /// <param name="assetContentManager">
-        /// The asset content manager.
-        /// </param>
-        /// <param name="kernel">
-        /// The dependency injection kernel.
-        /// </param>
-        public EffectAssetLoader(IKernel kernel, IAssetContentManager assetContentManager)
+        public EffectAssetLoader(IKernel kernel, IAssetContentManager assetContentManager, IRawLaunchArguments rawLaunchArguments)
         {
             _kernel = kernel;
-            this.m_AssetContentManager = assetContentManager;
+            _assetContentManager = assetContentManager;
+            _rawLaunchArguments = rawLaunchArguments;
         }
-
-        /// <summary>
-        /// The can handle.
-        /// </summary>
-        /// <param name="data">
-        /// The data.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
+        
         public bool CanHandle(IRawAsset data)
         {
             return data.GetProperty<string>("Loader") == typeof(EffectAssetLoader).FullName;
         }
-
-        /// <summary>
-        /// The can new.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
+        
         public bool CanNew()
         {
             return true;
         }
-
-        /// <summary>
-        /// The get default.
-        /// </summary>
-        /// <param name="assetManager">
-        /// The asset manager.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IAsset"/>.
-        /// </returns>
+        
         public IAsset GetDefault(IAssetManager assetManager, string name)
         {
             return null;
         }
-
-        /// <summary>
-        /// The get new.
-        /// </summary>
-        /// <param name="assetManager">
-        /// The asset manager.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IAsset"/>.
-        /// </returns>
+        
         public IAsset GetNew(IAssetManager assetManager, string name)
         {
-            return new EffectAsset(_kernel, this.m_AssetContentManager, name, string.Empty, null, false);
+            return new EffectAsset(_kernel, _assetContentManager, _rawLaunchArguments, name, string.Empty, null, false);
         }
-
-        /// <summary>
-        /// The handle.
-        /// </summary>
-        /// <param name="assetManager">
-        /// The asset manager.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <param name="data">
-        /// The data.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IAsset"/>.
-        /// </returns>
+        
         public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
         {
             if (data is CompiledAsset)
             {
-                return new EffectAsset(_kernel, this.m_AssetContentManager, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
+                return new EffectAsset(_kernel, _assetContentManager, _rawLaunchArguments, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
             }
 
             PlatformData platformData = null;
@@ -122,7 +56,8 @@ namespace Protogame
 
             var effect = new EffectAsset(
                 _kernel,
-                this.m_AssetContentManager, 
+                _assetContentManager, 
+                _rawLaunchArguments,
                 name,
                 data.GetProperty<string>("Code"), 
                 platformData, 

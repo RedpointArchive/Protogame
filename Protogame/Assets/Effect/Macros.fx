@@ -9,6 +9,10 @@
 // This file is included automatically as a literal prefix for all effect code.
 // -----------------------------------------------------------------------------
 
+#if defined(__INTELLISENSE__)
+#define PLATFORM_WINDOWS 1
+#endif
+
 // Keep this in sync with RenderPipelineTechniqueName.
 #define RENDER_PASS_TYPE_FORWARD Forward
 #define RENDER_PASS_TYPE_FORWARD_BATCHED ForwardBatched
@@ -20,7 +24,7 @@
 #define RENDER_PASS_TYPE_POSTPROCESS PostProcess
 
 // Declare macros to abstract shader models.
-#ifdef SM4
+#if defined(PLATFORM_WINDOWS) || defined(PLATFORM_WINDOWSPHONE8) || defined(PLATFORM_WINDOWSSTOREAPP)
 #define PROTOGAME_VERTEX_HIGH_SHADER vs_4_0_level_9_3
 #define PROTOGAME_PIXEL_HIGH_SHADER ps_4_0_level_9_3
 #define PROTOGAME_VERTEX_LOW_SHADER vs_4_0_level_9_1

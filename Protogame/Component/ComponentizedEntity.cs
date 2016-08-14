@@ -101,6 +101,16 @@ namespace Protogame
         /// </summary>
         private IPrerenderableComponent[] _prerenderableComponents = new IPrerenderableComponent[0];
 
+        private bool _hasRenderableComponentDescendants;
+
+        private bool _hasPrerenderableComponentDescendants;
+
+        private bool _hasUpdatableComponentDescendants;
+
+        private bool _hasServerUpdatableComponentDescendants;
+
+        private bool _hasLightableComponentDescendants;
+
         /// <summary>
         /// Initializes a new <see cref="ComponentizedEntity"/>.
         /// <para>
@@ -138,7 +148,7 @@ namespace Protogame
         /// <param name="renderContext">The current render context.</param>
         public virtual void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            if (EnabledInterfaces.Contains(typeof(IRenderableComponent)))
+            if (_hasRenderableComponentDescendants)
             {
                 for (var i = 0; i < _renderableComponents.Length; i++)
                 {
@@ -154,7 +164,7 @@ namespace Protogame
         /// <param name="renderContext">The current render context.</param>
         public virtual void Prerender(IGameContext gameContext, IRenderContext renderContext)
         {
-            if (EnabledInterfaces.Contains(typeof(IPrerenderableComponent)))
+            if (_hasPrerenderableComponentDescendants)
             {
                 for (var i = 0; i < _prerenderableComponents.Length; i++)
                 {
@@ -170,7 +180,7 @@ namespace Protogame
         /// <param name="updateContext">The current update context.</param>
         public virtual void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            if (EnabledInterfaces.Contains(typeof(IUpdatableComponent)))
+            if (_hasUpdatableComponentDescendants)
             {
                 for (var i = 0; i < _updatableComponents.Length; i++)
                 {
@@ -186,7 +196,7 @@ namespace Protogame
         /// <param name="updateContext">The current update context.</param>
         public virtual void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
-            if (EnabledInterfaces.Contains(typeof(IServerUpdatableComponent)))
+            if (_hasServerUpdatableComponentDescendants)
             {
                 for (var i = 0; i < _serverUpdatableComponents.Length; i++)
                 {
@@ -273,7 +283,7 @@ namespace Protogame
         /// <returns>A list of lights to be used in rendering.</returns>
         public virtual IEnumerable<ILight> GetLights()
         {
-            if (EnabledInterfaces.Contains(typeof(ILightableComponent)))
+            if (_hasLightableComponentDescendants)
             {
                 var list = new List<ILight>();
                 _getLights.Invoke(list);
@@ -509,6 +519,12 @@ namespace Protogame
             {
                 enabledInterfaces.Add(typeof(ILightableComponent));
             }
+
+            _hasRenderableComponentDescendants = enabledInterfaces.Contains(typeof(IRenderableComponent));
+            _hasPrerenderableComponentDescendants = enabledInterfaces.Contains(typeof(IPrerenderableComponent));
+            _hasUpdatableComponentDescendants = enabledInterfaces.Contains(typeof(IUpdatableComponent));
+            _hasServerUpdatableComponentDescendants = enabledInterfaces.Contains(typeof(IServerUpdatableComponent));
+            _hasLightableComponentDescendants = enabledInterfaces.Contains(typeof(ILightableComponent));
         }
 
         #endregion

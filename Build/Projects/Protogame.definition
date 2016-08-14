@@ -54,6 +54,7 @@
     <Compile Include="Assets\Effect\EffectAssetLoader.cs" />
     <Compile Include="Assets\Effect\EffectAssetRemoteCompiler.cs" />
     <Compile Include="Assets\Effect\EffectAssetSaver.cs" />
+    <Compile Include="Assets\Effect\EffectCompilerHelper.cs" />
     <Compile Include="Assets\Effect\RawEffectLoadStrategy.cs" />
     <Compile Include="Assets\Effect\UberEffectAsset.cs" />
     <Compile Include="Assets\Effect\UberEffectAssetCompiler.cs" />
@@ -294,6 +295,7 @@
     <Compile Include="Core\DefaultFinalTransform.cs" />
     <Compile Include="Core\DefaultGameContext.cs" />
     <Compile Include="Core\DefaultKeyboardStringReader.cs" />
+    <Compile Include="Core\DefaultRawLaunchArguments.cs" />
     <Compile Include="Core\DefaultRenderContextImplementationUtilities.cs" />
     <Compile Include="Core\DefaultStringSanitizer.cs" />
     <Compile Include="Core\DefaultTileUtilities.cs" />
@@ -326,6 +328,7 @@
     <Compile Include="Core\IHasVelocity.cs" />
     <Compile Include="Core\IKeyboardStringReader.cs" />
     <Compile Include="Core\IPrerenderableEntity.cs" />
+    <Compile Include="Core\IRawLaunchArguments.cs" />
     <Compile Include="Core\IRenderContext.cs" />
     <Compile Include="Core\IRenderContextImplementationUtilities.cs" />
     <Compile Include="Core\ISolidEntity.cs" />
@@ -618,6 +621,7 @@
     <Compile Include="Physics\PhysicsCharacterController.cs" />
     <Compile Include="Physics\PhysicsDebugDraw.cs" />
     <Compile Include="Physics\PhysicsEngineHook.cs" />
+    <Compile Include="Physics\PhysicsMetrics.cs" />
     <Compile Include="Physics\PhysicsShadowWorld.cs" />
     <Compile Include="Physics\ProtogamePhysicsIoCModule.cs" />
     <Compile Include="Platform\AndroidGameWindow.cs" />
@@ -639,6 +643,7 @@
     <Compile Include="Profiling\IMemoryProfiler.cs" />
     <Compile Include="Profiling\INetworkTrafficProfilerVisualiser.cs" />
     <Compile Include="Profiling\IOperationCostProfilerVisualiser.cs" />
+    <Compile Include="Profiling\IPhysicsMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\IProfiler.cs" />
     <Compile Include="Profiling\IProfilerRenderPass.cs" />
     <Compile Include="Profiling\IProfilerVisualiser.cs" />
@@ -649,6 +654,7 @@
     <Compile Include="Profiling\NullProfiler.cs" />
     <Compile Include="Profiling\NullProfilerHandle.cs" />
     <Compile Include="Profiling\OperationCostProfilerVisualiser.cs" />
+    <Compile Include="Profiling\PhysicsMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\ProtogamePerformanceIoCModule.cs" />
     <Compile Include="Profiling\ProtogameProfilingModule.cs" />
     <Compile Include="Resources\Resource.Designer.cs">

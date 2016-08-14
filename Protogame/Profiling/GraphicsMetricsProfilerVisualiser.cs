@@ -11,6 +11,10 @@ namespace Protogame
         private readonly IRenderBatcher _renderBatcher;
         private readonly FontAsset _defaultFont;
 
+        public static ulong ParameterSetsCreated = 0;
+
+        public static ulong RenderRequestsCreated = 0;
+
         public GraphicsMetricsProfilerVisualiser(
             IAssetManagerProvider assetManagerProvider,
             I2DRenderUtilities renderUtilities,
@@ -27,7 +31,7 @@ namespace Protogame
 
         public int GetHeight(int backBufferHeight)
         {
-            return 80;
+            return 100;
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, Rectangle rectangle)
@@ -51,6 +55,9 @@ namespace Protogame
                 new Tuple<string, ulong>("bch", _renderBatcher.LastBatchCount),
                 new Tuple<string, ulong>("apy", _renderBatcher.LastApplyCount),
                 new Tuple<string, ulong>("sav", _renderBatcher.LastBatchSaveCount),
+                null,
+                new Tuple<string, ulong>("pscr", ParameterSetsCreated),
+                new Tuple<string, ulong>("rrcr", RenderRequestsCreated),
             };
 
             for (var i = 0; i < metrics.Length; i++)
@@ -58,12 +65,20 @@ namespace Protogame
                 var y = i / 4 * 20;
                 var x = i%4*((rectangle.Width - 4) / 4);
 
+                if (metrics[i] == null)
+                {
+                    continue;
+                }
+
                 _renderUtilities.RenderText(
                     renderContext,
                     new Vector2(rectangle.X + x, rectangle.Y + y),
                     metrics[i].Item1 + ": " + metrics[i].Item2,
                     _defaultFont);
             }
+
+            ParameterSetsCreated = 0;
+            RenderRequestsCreated = 0;
         }
     }
 }

@@ -8,6 +8,8 @@ namespace Protogame
 
         private readonly ModelAsset _pointLightSphereModel;
 
+        private readonly IEffectParameterSet _parameterSet;
+
         public DefaultStandardPointLight(
             IAssetManagerProvider assetManagerProvider,
             Vector3 lightPosition,
@@ -22,6 +24,8 @@ namespace Protogame
 
             _pointLightEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.PointLight");
             _pointLightSphereModel = assetManagerProvider.GetAssetManager().Get<ModelAsset>("model.LightSphere");
+
+            _parameterSet = _pointLightEffect.Effect.CreateParameterSet();
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, ILightContext lightContext)
@@ -29,20 +33,20 @@ namespace Protogame
             var oldRasterizerState = renderContext.GraphicsDevice.RasterizerState;
             var oldWorld = renderContext.World;
 
-            var parameterSet = _pointLightEffect.Effect.CreateParameterSet();
-            parameterSet["Color"]?.SetValue(lightContext.DeferredColorMap);
-            parameterSet["Normal"]?.SetValue(lightContext.DeferredNormalMap);
-            parameterSet["Depth"]?.SetValue(lightContext.DeferredDepthMap);
-            parameterSet["Specular"]?.SetValue(lightContext.DeferredSpecularMap);
-            parameterSet["CameraPosition"]?.SetValue(renderContext.CameraPosition);
-            parameterSet["LightPosition"]?.SetValue(LightPosition);
-            parameterSet["LightColor"]?.SetValue(LightColor.ToVector3());
-            parameterSet["LightRadius"]?.SetValue(LightRadius);
-            parameterSet["LightIntensity"]?.SetValue(LightIntensity);
-            parameterSet["LightInvertViewProjection"]?.SetValue(Matrix.Invert(renderContext.View * renderContext.Projection));
-            parameterSet["World"]?.SetValue(renderContext.World);
-            parameterSet["View"]?.SetValue(renderContext.View);
-            parameterSet["Projection"]?.SetValue(renderContext.Projection);
+            _parameterSet.Unlock();
+            _parameterSet["Color"]?.SetValue(lightContext.DeferredColorMap);
+            _parameterSet["Normal"]?.SetValue(lightContext.DeferredNormalMap);
+            _parameterSet["Depth"]?.SetValue(lightContext.DeferredDepthMap);
+            _parameterSet["Specular"]?.SetValue(lightContext.DeferredSpecularMap);
+            _parameterSet["CameraPosition"]?.SetValue(renderContext.CameraPosition);
+            _parameterSet["LightPosition"]?.SetValue(LightPosition);
+            _parameterSet["LightColor"]?.SetValue(LightColor.ToVector3());
+            _parameterSet["LightRadius"]?.SetValue(LightRadius);
+            _parameterSet["LightIntensity"]?.SetValue(LightIntensity);
+            _parameterSet["LightInvertViewProjection"]?.SetValue(Matrix.Invert(renderContext.View * renderContext.Projection));
+            _parameterSet["World"]?.SetValue(renderContext.World);
+            _parameterSet["View"]?.SetValue(renderContext.View);
+            _parameterSet["Projection"]?.SetValue(renderContext.Projection);
             
             // If we are inside the lighting sphere, we need to invert the culling mode so
             // that we see the inside faces of the model.
@@ -63,7 +67,7 @@ namespace Protogame
                 renderContext.PushRenderTarget(lightContext.DiffuseLightRenderTarget, lightContext.SpecularLightRenderTarget);
             }
 
-            _pointLightSphereModel.Render(renderContext, _pointLightEffect.Effect, parameterSet, Matrix.Identity);
+            _pointLightSphereModel.Render(renderContext, _pointLightEffect.Effect, _parameterSet, Matrix.Identity);
 
             if (lightContext.DiffuseLightRenderTarget != null && lightContext.SpecularLightRenderTarget != null)
             {

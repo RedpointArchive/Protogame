@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Jitter;
 using Jitter.Collision;
 using Jitter.Dynamics;
@@ -18,11 +20,17 @@ namespace Protogame
 
         private readonly JitterWorld _physicsWorld;
 
-        private readonly List<KeyValuePair<RigidBody, IHasTransform>> _rigidBodyMappings;
+        private readonly List<RigidBodyMapping> _rigidBodyMappings;
 
         private Dictionary<int, Quaternion> _lastFrameRotation;
 
         private Dictionary<int, Vector3> _lastFramePosition;
+
+        private PhysicsMetrics _physicsMetrics = new PhysicsMetrics();
+
+        private Stopwatch _stopwatch = new Stopwatch();
+
+        private Thread _physicsThread;
 
         public PhysicsShadowWorld(IPhysicsEngine physicsEngine, IDebugRenderer debugRenderer)
         {
@@ -39,10 +47,34 @@ namespace Protogame
 
             _physicsWorld.Gravity = new JVector(0, -4f, 0);
 
-            _rigidBodyMappings = new List<KeyValuePair<RigidBody, IHasTransform>>();
+            _rigidBodyMappings = new List<RigidBodyMapping>();
 
             _lastFramePosition = new Dictionary<int, Vector3>();
             _lastFrameRotation = new Dictionary<int, Quaternion>();
+        }
+
+        private class RigidBodyMapping
+        {
+            public RigidBodyMapping(RigidBody rigidBody, IHasTransform hasTransform, bool staticAndImmovable)
+            {
+                RigidBody = rigidBody;
+                HasTransform = hasTransform;
+                StaticAndImmovable = staticAndImmovable;
+                PerformedInitialSync = false;
+            }
+
+            public RigidBody RigidBody { get; set; }
+
+            public IHasTransform HasTransform { get; set; }
+
+            public bool StaticAndImmovable { get; set; }
+
+            public bool PerformedInitialSync { get; set; }
+
+            public override string ToString()
+            {
+                return StaticAndImmovable ? "(static and immovable)" : "(dynamic / static)";
+            }
         }
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
@@ -60,10 +92,28 @@ namespace Protogame
             var originalRotation = new Dictionary<int, Quaternion>();
             var originalPosition = new Dictionary<int, Vector3>();
 
+            _stopwatch.Start();
+            _physicsMetrics.StaticImmovableObjects = 0;
+            _physicsMetrics.PhysicsObjects = 0;
+
             foreach (var kv in _rigidBodyMappings)
             {
-                var rigidBody = kv.Key;
-                var hasMatrix = kv.Value;
+                if (kv.StaticAndImmovable)
+                {
+                    _physicsMetrics.StaticImmovableObjects++;
+                }
+                else
+                {
+                    _physicsMetrics.PhysicsObjects++;
+                }
+
+                if (kv.StaticAndImmovable && kv.PerformedInitialSync)
+                {
+                    continue;
+                }
+
+                var rigidBody = kv.RigidBody;
+                var hasMatrix = kv.HasTransform;
 
                 // Sync game world to physics system.
                 var rot = hasMatrix.FinalTransform.AbsoluteRotation;
@@ -110,12 +160,25 @@ namespace Protogame
             _lastFramePosition.Clear();
             _lastFrameRotation.Clear();
 
+            _stopwatch.Stop();
+            _physicsMetrics.SyncToPhysicsTime = _stopwatch.Elapsed.TotalMilliseconds;
+            _stopwatch.Restart();
+
             _physicsWorld.Step(totalSecondsElapsed, true);
+
+            _stopwatch.Stop();
+            _physicsMetrics.PhysicsStepTime = _stopwatch.Elapsed.TotalMilliseconds;
+            _stopwatch.Restart();
 
             foreach (var kv in _rigidBodyMappings)
             {
-                var rigidBody = kv.Key;
-                var hasMatrix = kv.Value;
+                if (kv.StaticAndImmovable && kv.PerformedInitialSync)
+                {
+                    continue;
+                }
+
+                var rigidBody = kv.RigidBody;
+                var hasMatrix = kv.HasTransform;
 
                 // Calculate the changes that the physics system made in world space.
                 var oldWorldRot = Quaternion.Normalize(originalRotation[rigidBody.GetHashCode()]);
@@ -133,7 +196,16 @@ namespace Protogame
                 // Save the current rotation / position for the next frame.
                 _lastFramePosition[rigidBody.GetHashCode()] = hasMatrix.Transform.LocalPosition;
                 _lastFrameRotation[rigidBody.GetHashCode()] = hasMatrix.Transform.LocalRotation;
+
+                if (kv.StaticAndImmovable && !kv.PerformedInitialSync)
+                {
+                    kv.PerformedInitialSync = true;
+                }
             }
+
+            _stopwatch.Stop();
+            _physicsMetrics.SyncFromPhysicsTime = _stopwatch.Elapsed.TotalMilliseconds;
+            _stopwatch.Reset();
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)
@@ -146,13 +218,13 @@ namespace Protogame
                 {
                     foreach (var kv in _rigidBodyMappings)
                     {
-                        if (!kv.Key.EnableDebugDraw)
+                        if (!kv.RigidBody.EnableDebugDraw)
                         {
-                            kv.Key.EnableDebugDraw = true;
+                            kv.RigidBody.EnableDebugDraw = true;
                         }
 
-                        var drawer = new PhysicsDebugDraw(renderContext, _debugRenderer, !kv.Key.IsStaticOrInactive);
-                        kv.Key.DebugDraw(drawer);
+                        var drawer = new PhysicsDebugDraw(renderContext, _debugRenderer, !kv.RigidBody.IsStaticOrInactive);
+                        kv.RigidBody.DebugDraw(drawer);
                     }
                 }
             }
@@ -163,9 +235,9 @@ namespace Protogame
             
         }
 
-        public void RegisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform)
+        public void RegisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform, bool staticAndImmovable)
         {
-            _rigidBodyMappings.Add(new KeyValuePair<RigidBody, IHasTransform>(rigidBody, hasTransform));
+            _rigidBodyMappings.Add(new RigidBodyMapping(rigidBody, hasTransform, staticAndImmovable));
             _physicsWorld.AddBody(rigidBody);
         }
 
@@ -176,8 +248,13 @@ namespace Protogame
 
         public void UnregisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform)
         {
-            _rigidBodyMappings.RemoveAll(x => x.Key == rigidBody && x.Value == hasTransform);
+            _rigidBodyMappings.RemoveAll(x => x.RigidBody == rigidBody && x.HasTransform == hasTransform);
             _physicsWorld.RemoveBody(rigidBody);
+        }
+
+        public PhysicsMetrics GetPhysicsMetrics()
+        {
+            return _physicsMetrics;
         }
     }
 }

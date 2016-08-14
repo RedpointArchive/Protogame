@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -26,5 +27,9 @@ namespace Protogame
         PrimitiveType PrimitiveType { get; }
 
         Matrix[] Instances { get; }
+
+        void ComputeInstancesToCustomBuffers(List<Matrix> matrices, VertexBuffer vertexBuffer, IndexBuffer indexBuffer);
+
+        bool SupportsComputingInstancesToCustomBuffers { get; }
     }
 }

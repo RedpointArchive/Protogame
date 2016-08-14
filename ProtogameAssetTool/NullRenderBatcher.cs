@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Protogame;
@@ -18,7 +19,7 @@ namespace ProtogameAssetTool
             throw new NotSupportedException();
         }
 
-        public void FlushRequests(IRenderContext renderContext)
+        public void FlushRequests(IGameContext gameContext, IRenderContext renderContext)
         {
             throw new NotSupportedException();
         }
@@ -28,16 +29,12 @@ namespace ProtogameAssetTool
             throw new NotSupportedException();
         }
 
-        public IRenderRequest CreateSingleRequest(IRenderContext renderContext, RasterizerState rasterizerState, BlendState blendState,
-            DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet,
-            VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world)
+        public IRenderRequest CreateSingleRequest(IRenderContext renderContext, RasterizerState rasterizerState, BlendState blendState, DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
             throw new NotSupportedException();
         }
 
-        public IRenderRequest CreateSingleRequestFromState(IRenderContext renderContext, IEffect effect,
-            IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer,
-            PrimitiveType primitiveType, Matrix world)
+        public IRenderRequest CreateSingleRequestFromState(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
             throw new NotSupportedException();
         }
@@ -45,14 +42,13 @@ namespace ProtogameAssetTool
         public IRenderRequest CreateInstancedRequest(IRenderContext renderContext, RasterizerState rasterizerState,
             BlendState blendState, DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType,
-            Matrix[] instanceWorldTransforms)
+            Matrix[] instanceWorldTransforms,
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
             throw new NotSupportedException();
         }
 
-        public IRenderRequest CreateInstancedRequestFromState(IRenderContext renderContext, IEffect effect,
-            IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer,
-            PrimitiveType primitiveType, Matrix[] instancedWorldTransforms)
+        public IRenderRequest CreateInstancedRequestFromState(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix[] instancedWorldTransforms, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
             throw new NotSupportedException();
         }

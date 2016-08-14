@@ -9,10 +9,12 @@ namespace Protogame
     public class DefaultRenderBatcher : IRenderBatcher
     {
         private readonly IProfiler _profiler;
+        private readonly IRenderAutoCache _renderAutoCache;
 
-        public DefaultRenderBatcher(IProfiler profiler)
+        public DefaultRenderBatcher(IProfiler profiler, IRenderAutoCache renderAutoCache)
         {
             _profiler = profiler;
+            _renderAutoCache = renderAutoCache;
         }
 
         private Dictionary<int, IRenderRequest> _requestLookup = new Dictionary<int, IRenderRequest>();
@@ -37,30 +39,34 @@ namespace Protogame
 
         public void QueueRequest(IRenderContext renderContext, IRenderRequest request)
         {
-            using (_profiler.Measure("render-queue"))
+            if (renderContext.IsCurrentRenderPass<I3DBatchedRenderPass>())
             {
-                if (renderContext.IsCurrentRenderPass<I3DBatchedRenderPass>())
+                if (!_requestLookup.ContainsKey(request.StateHash))
                 {
-                    if (!_requestLookup.ContainsKey(request.StateHash))
-                    {
-                        _requestLookup[request.StateHash] = request;
-                    }
+                    _requestLookup[request.StateHash] = request;
+                }
 
-                    if (!_requestInstances.ContainsKey(request.StateHash))
-                    {
-                        _requestInstances[request.StateHash] = new List<Matrix>();
-                    }
+                if (!_requestInstances.ContainsKey(request.StateHash))
+                {
+                    _requestInstances[request.StateHash] = new List<Matrix>();
+                }
 
+                if (request.Instances.Length > 1)
+                {
                     _requestInstances[request.StateHash].AddRange(request.Instances);
                 }
                 else
                 {
-                    RenderRequestImmediate(renderContext, request);
+                    _requestInstances[request.StateHash].Add(request.Instances[0]);
                 }
+            }
+            else
+            {
+                RenderRequestImmediate(renderContext, request);
             }
         }
 
-        public void FlushRequests(IRenderContext renderContext)
+        public void FlushRequests(IGameContext gameContext, IRenderContext renderContext)
         {
             LastBatchCount = 0;
             LastApplyCount = 0;
@@ -107,6 +113,7 @@ namespace Protogame
                                     _vertexDeclaration,
                                     _requestInstances[kv.Key].Count,
                                     BufferUsage.WriteOnly);
+                                _vertexBufferLastInstanceCount = _requestInstances[kv.Key].Count;
                             }
 
                             var matrices = _requestInstances[kv.Key];
@@ -132,23 +139,85 @@ namespace Protogame
                         }
                         else
                         {
-                            renderContext.GraphicsDevice.SetVertexBuffer(request.MeshVertexBuffer);
-
-                            foreach (var instance in _requestInstances[kv.Key])
+                            // If there's less than 5 instances, just push the draw calls to the GPU.
+                            if (_requestInstances[kv.Key].Count <= 5 || !request.SupportsComputingInstancesToCustomBuffers)
                             {
-                                request.Effect.NativeEffect.Parameters["World"]?.SetValue(instance);
+                                renderContext.GraphicsDevice.SetVertexBuffer(request.MeshVertexBuffer);
 
-                                foreach (var pass in request.Effect.NativeEffect.Techniques[request.TechniqueName].Passes)
+                                foreach (var instance in _requestInstances[kv.Key])
+                                {
+                                    request.Effect.NativeEffect.Parameters["World"]?.SetValue(instance);
+
+                                    foreach (var pass in request.Effect.NativeEffect.Techniques[request.TechniqueName].Passes)
+                                    {
+                                        pass.Apply();
+
+                                        LastApplyCount++;
+
+                                        renderContext.GraphicsDevice.DrawIndexedPrimitives(
+                                            request.PrimitiveType,
+                                            0,
+                                            0,
+                                            pc);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var buffersNeedComputing = false;
+                                var vertexBuffer = _renderAutoCache.AutoCache("renderbatcher-" + kv.Key, new object[]
+                                {
+                                    _requestInstances[kv.Key].Count,
+                                    request.MeshVertexBuffer.VertexCount,
+                                    request.MeshVertexBuffer.VertexDeclaration
+                                }, gameContext, () =>
+                                {
+                                    buffersNeedComputing = true;
+                                    return new VertexBuffer(
+                                        renderContext.GraphicsDevice,
+                                        request.MeshVertexBuffer.VertexDeclaration,
+                                        _requestInstances[kv.Key].Count*request.MeshVertexBuffer.VertexCount,
+                                        BufferUsage.WriteOnly);
+                                });
+                                var indexBuffer = _renderAutoCache.AutoCache("renderbatcher-" + kv.Key, new object[]
+                                {
+                                    _requestInstances[kv.Key].Count,
+                                    request.MeshVertexBuffer.VertexCount,
+                                }, gameContext, () =>
+                                {
+                                    buffersNeedComputing = true;
+                                    return new IndexBuffer(
+                                        renderContext.GraphicsDevice,
+                                        IndexElementSize.ThirtyTwoBits,
+                                        _requestInstances[kv.Key].Count*request.MeshIndexBuffer.IndexCount,
+                                        BufferUsage.WriteOnly);
+                                });
+
+                                if (buffersNeedComputing)
+                                {
+                                    // Compute a pre-transformed vertex and index buffer for rendering.
+                                    request.ComputeInstancesToCustomBuffers(
+                                        _requestInstances[kv.Key],
+                                        vertexBuffer,
+                                        indexBuffer);
+                                }
+
+                                renderContext.GraphicsDevice.SetVertexBuffer(vertexBuffer);
+                                renderContext.GraphicsDevice.Indices = indexBuffer;
+                                request.Effect.NativeEffect.Parameters["World"]?.SetValue(Matrix.Identity);
+
+                                foreach (
+                                    var pass in
+                                        request.Effect.NativeEffect.Techniques[request.TechniqueName].Passes
+                                    )
                                 {
                                     pass.Apply();
-
-                                    LastApplyCount++;
 
                                     renderContext.GraphicsDevice.DrawIndexedPrimitives(
                                         request.PrimitiveType,
                                         0,
                                         0,
-                                        pc);
+                                        pc * _requestInstances[kv.Key].Count);
                                 }
                             }
                         }
@@ -165,14 +234,15 @@ namespace Protogame
         public IRenderRequest CreateSingleRequest(
             IRenderContext renderContext,
             RasterizerState rasterizerState, 
-            BlendState blendState,
-            DepthStencilState depthStencilState,
+            BlendState blendState, 
+            DepthStencilState depthStencilState, 
             IEffect effect,
             IEffectParameterSet effectParameterSet,
-            VertexBuffer meshVertexBuffer,
-            IndexBuffer meshIndexBuffer, 
+            VertexBuffer meshVertexBuffer, 
+            IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
-            Matrix world)
+            Matrix world, 
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
             return new DefaultRenderRequest(
                 renderContext,
@@ -185,17 +255,19 @@ namespace Protogame
                 meshVertexBuffer,
                 meshIndexBuffer,
                 primitiveType,
-                new [] { world });
+                new [] { world },
+                computeCombinedBuffers);
         }
 
         public IRenderRequest CreateSingleRequestFromState(
             IRenderContext renderContext,
-            IEffect effect,
-            IEffectParameterSet effectParameterSet,
-            VertexBuffer meshVertexBuffer,
-            IndexBuffer meshIndexBuffer,
-            PrimitiveType primitiveType,
-            Matrix world)
+            IEffect effect, 
+            IEffectParameterSet effectParameterSet, 
+            VertexBuffer meshVertexBuffer, 
+            IndexBuffer meshIndexBuffer, 
+            PrimitiveType primitiveType, 
+            Matrix world, 
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
             return CreateSingleRequest(
                 renderContext,
@@ -207,7 +279,8 @@ namespace Protogame
                 meshVertexBuffer,
                 meshIndexBuffer,
                 primitiveType,
-                world);
+                world, 
+                computeCombinedBuffers);
         }
         
         public IRenderRequest CreateInstancedRequest(
@@ -220,7 +293,8 @@ namespace Protogame
             VertexBuffer meshVertexBuffer, 
             IndexBuffer meshIndexBuffer, 
             PrimitiveType primitiveType,
-            Matrix[] instanceWorldTransforms)
+            Matrix[] instanceWorldTransforms,
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
             return new DefaultRenderRequest(
                 renderContext,
@@ -233,17 +307,19 @@ namespace Protogame
                 meshVertexBuffer,
                 meshIndexBuffer,
                 primitiveType,
-                instanceWorldTransforms);
+                instanceWorldTransforms,
+                computeCombinedBuffers);
         }
 
         public IRenderRequest CreateInstancedRequestFromState(
-            IRenderContext renderContext,
+            IRenderContext renderContext, 
             IEffect effect,
             IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer,
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
-            Matrix[] instancedWorldTransforms)
+            Matrix[] instancedWorldTransforms,
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
             return CreateInstancedRequest(
                 renderContext,
@@ -255,7 +331,8 @@ namespace Protogame
                 meshVertexBuffer,
                 meshIndexBuffer,
                 primitiveType,
-                instancedWorldTransforms);
+                instancedWorldTransforms,
+                computeCombinedBuffers);
         }
 
         private void SetupForRequest(IRenderContext renderContext, IRenderRequest request, out int pc, bool setVertexBuffers)

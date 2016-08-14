@@ -549,7 +549,8 @@ namespace Protogame
                     vertexes,
                     indicies,
                     PrimitiveType.TriangleList,
-                    transform));
+                    transform, 
+                    null));
         }
 
         /// <summary>

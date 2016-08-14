@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -5,19 +7,26 @@ namespace Protogame
 {
     public class DefaultRenderRequest : IRenderRequest
     {
+        private readonly Action<List<Matrix>, VertexBuffer, IndexBuffer> _computeCombinedBuffers;
+
         public DefaultRenderRequest(
             IRenderContext renderContext,
             RasterizerState rasterizerState,
             BlendState blendState,
             DepthStencilState depthStencilState,
             IEffect effect,
-            string techniqueName,
+            string techniqueName, 
             IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer,
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
-            Matrix[] instances)
+            Matrix[] instances, 
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
         {
+#if DEBUG
+            GraphicsMetricsProfilerVisualiser.RenderRequestsCreated++;
+#endif
+
             RasterizerState = rasterizerState;
             BlendState = blendState;
             DepthStencilState = depthStencilState;
@@ -28,6 +37,7 @@ namespace Protogame
             MeshIndexBuffer = meshIndexBuffer;
             PrimitiveType = primitiveType;
             Instances = instances;
+            _computeCombinedBuffers = computeCombinedBuffers;
 
             // Now that the parameter set has been used in a request, prevent it
             // from being changed.
@@ -66,5 +76,12 @@ namespace Protogame
         public PrimitiveType PrimitiveType { get; set; }
 
         public Matrix[] Instances { get; }
+
+        public void ComputeInstancesToCustomBuffers(List<Matrix> matrices, VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
+        {
+            _computeCombinedBuffers(matrices, vertexBuffer, indexBuffer);
+        }
+
+        public bool SupportsComputingInstancesToCustomBuffers => _computeCombinedBuffers != null;
     }
 }

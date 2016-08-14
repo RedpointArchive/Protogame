@@ -81,6 +81,7 @@ public static class Program
     {
 #endif
         var kernel = new StandardKernel();
+        kernel.Bind<IRawLaunchArguments>().ToMethod(x => new DefaultRawLaunchArguments(args)).InSingletonScope();
         
 		Func<System.Reflection.Assembly, Type[]> TryGetTypes = assembly =>
 		{

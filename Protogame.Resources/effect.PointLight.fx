@@ -115,6 +115,7 @@ PixelShaderOutput DeferredPixelShader(VertexShaderOutput input)
 
 	// Read depth.
 	float depthVal = PROTOGAME_SAMPLE_TEXTURE(Depth, texCoord).r;
+	//float depthVal = PROTOGAME_LOAD_TEXTURE(Depth, float3(input.ScreenPosition.xy, 0)).r;
 
 	// Compute screen-space position.
 	float4 position;
@@ -127,7 +128,7 @@ PixelShaderOutput DeferredPixelShader(VertexShaderOutput input)
 	position /= position.w;
 
 	// Calculate surface to light vector.
-	float3 lightVector = LightPosition - position;
+	float3 lightVector = LightPosition - position.xyz;
 
 	// Compute attenuation based on distance (linear attenuation).
 	float attenuation = saturate(1.0f - length(lightVector) / LightRadius);
