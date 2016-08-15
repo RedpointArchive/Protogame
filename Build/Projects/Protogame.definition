@@ -764,6 +764,7 @@
     <Compile Include="Server\Null3DRenderUtilities.cs" />
     <Compile Include="Server\NullAudioUtilities.cs" />
     <Compile Include="Server\NullKeyboardStringReader.cs" />
+    <Compile Include="Server\NullRenderBatcher.cs" />
     <Compile Include="Server\NullRenderContext.cs" />
     <Compile Include="Server\ProtogameServerIoCModule.cs" />
     <Compile Include="Server\ProtogameServerModule.cs" />

@@ -39,6 +39,7 @@ namespace Protogame
             kernel.Bind<IConsoleHandle>().To<DefaultConsoleHandle>().InTransientScope();
 
             kernel.Bind<IRenderContext>().To<NullRenderContext>();
+            kernel.Bind<IRenderBatcher>().To<NullRenderBatcher>();
 
             kernel.Bind<IGraphicsFactory>().ToFactoryNotSupported();
             kernel.Bind<ILightFactory>().ToFactoryNotSupported();

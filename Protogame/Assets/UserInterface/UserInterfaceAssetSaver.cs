@@ -4,7 +4,7 @@
     {
         public bool CanHandle(IAsset asset)
         {
-            return asset is LevelAsset;
+            return asset is UserInterfaceAsset;
         }
         
         public IRawAsset Handle(IAsset asset, AssetTarget target)

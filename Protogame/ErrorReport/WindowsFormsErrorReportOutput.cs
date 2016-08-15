@@ -13,9 +13,25 @@ namespace Protogame
             // Start Win Forms in a seperate thread so that it's responsive to user feedback.
             var thread = new Thread(() =>
             {
-                var message = "---------------- ERROR LOG -----------------\r\n\r\n" + 
-                    ex.Message + "\r\n" + ex.StackTrace + 
-                    "\r\n\r\n--------------------------------------------\r\n";
+                string message;
+                var aggregateException = ex as AggregateException;
+                if (aggregateException != null)
+                {
+                    message = "---------------- ERROR LOG -----------------\r\n\r\n" +
+                              ex.Message + "\r\n" + ex.StackTrace + "\r\n\r\n";
+                    foreach (var exx in aggregateException.InnerExceptions)
+                    {
+                        message += exx.Message + "\r\n" + exx.StackTrace + "\r\n\r\n";
+                    }
+
+                    message += "--------------------------------------------\r\n";
+                }
+                else
+                {
+                    message = "---------------- ERROR LOG -----------------\r\n\r\n" +
+                              ex.Message + "\r\n" + ex.StackTrace +
+                              "\r\n\r\n--------------------------------------------\r\n";
+                }
 
                 var textArea = new System.Windows.Forms.TextBox();
                 textArea.Multiline = true;

@@ -15,7 +15,7 @@ namespace Protogame
             _renderUtilities = renderUtilities;
 
             Enabled = true;
-            Effect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects["Color"];
+            Effect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects?["Color"];
         }
 
         public Color Color { get; set; }
