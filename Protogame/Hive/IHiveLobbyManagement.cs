@@ -14,7 +14,7 @@ namespace Protogame
     {
         /// <summary>
         /// Creates a new game lobby owned by the user session.  Note that this does NOT
-        /// automatically join you to the lobby, you need to call <see cref="JoinLobby"/>
+        /// automatically join you to the lobby, you need to call <see cref="JoinLobby(TempSessionWithSecrets,LobbyInfo)"/>
         /// after this.
         /// </summary>
         /// <param name="userSession">The user session that will own this lobby.</param>
@@ -48,6 +48,14 @@ namespace Protogame
         /// <param name="lobby">The lobby to join.</param>
         /// <returns>Information about the connected user session.</returns>
         Task<ConnectedSession> JoinLobby(TempSessionWithSecrets userSession, LobbyInfo lobby);
+
+        /// <summary>
+        /// Joins the specified lobby.
+        /// </summary>
+        /// <param name="userSession">The user session that will join the lobby.</param>
+        /// <param name="lobbyId">The ID of the lobby to join.</param>
+        /// <returns>Information about the connected user session.</returns>
+        Task<ConnectedSession> JoinLobby(TempSessionWithSecrets userSession, string lobbyId);
 
         /// <summary>
         /// Leaves the specified lobby.

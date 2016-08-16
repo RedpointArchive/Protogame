@@ -516,10 +516,12 @@
     <Compile Include="Graphics\Shader\UnifiedShaderVersionException.cs" />
     <Compile Include="Graphics\Vertex\VertexPositionNormalColor.cs" />
     <Compile Include="Hive\DefaultHiveLobbyManagement.cs" />
+    <Compile Include="Hive\DefaultHiveNATPunchthrough.cs" />
     <Compile Include="Hive\DefaultHivePublicAuthentication.cs" />
     <Compile Include="Hive\DefaultHiveSessionManagement.cs" />
     <Compile Include="Hive\HiveEngineHook.cs" />
     <Compile Include="Hive\IHiveLobbyManagement.cs" />
+    <Compile Include="Hive\IHiveNATPunchthrough.cs" />
     <Compile Include="Hive\IHivePublicAuthentication.cs" />
     <Compile Include="Hive\IHiveSessionManagement.cs" />
     <Compile Include="Hive\ProtogameHiveModule.cs" />

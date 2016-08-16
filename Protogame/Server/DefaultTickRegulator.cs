@@ -30,6 +30,8 @@ namespace Protogame
             _ticksPerSecond = ticksPerSecond;
         }
 
+        public bool EmitSlowTicks { get; set; }
+
         public void WaitUntilReady()
         {
             var now = DateTime.Now;
@@ -51,21 +53,25 @@ namespace Protogame
             }
             else
             {
-                if (_lastActualTime != null)
+                if (EmitSlowTicks)
                 {
-                    var timeSpan = (int)(now - _lastActualTime.Value).TotalMilliseconds;
-                    if (timeSpan > targetSpan)
+                    if (_lastActualTime != null)
+                    {
+                        var timeSpan = (int) (now - _lastActualTime.Value).TotalMilliseconds;
+                        if (timeSpan > targetSpan)
+                        {
+                            Console.WriteLine(
+                                "WARNING: Tick took " + (int) (now - _lastActualTime.Value).TotalMilliseconds
+                                + "ms, which is longer than " + (1000f/_ticksPerSecond) + "ms (currently behind by " +
+                                -amount + "ms).");
+                        }
+                    }
+                    else
                     {
                         Console.WriteLine(
-                            "WARNING: Tick took " + (int) (now - _lastActualTime.Value).TotalMilliseconds
-                            + "ms, which is longer than " + (1000f/_ticksPerSecond) + "ms (currently behind by " +
-                            -amount + "ms).");
+                            "WARNING: Currently behind in ticks, target per frame is " + (1000f/_ticksPerSecond) +
+                            "ms, behind by " + -amount + "ms.");
                     }
-                }
-                else
-                {
-                    Console.WriteLine(
-                        "WARNING: Currently behind in ticks, target per frame is " + (1000f / _ticksPerSecond) + "ms, behind by " + -amount + "ms.");
                 }
 
                 // Adjust the next start time so that we wait less.  This allows us to "catch up" on ticks, ensuring

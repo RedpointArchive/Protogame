@@ -43,6 +43,13 @@ namespace Protogame
             return await lobbyApi.SessionPutAsync(lobby.Id, userSession.Id);
         }
 
+        public async Task<ConnectedSession> JoinLobby(TempSessionWithSecrets userSession, string lobbyId)
+        {
+            var lobbyApi = new LobbyApi();
+            lobbyApi.Configuration.ApiKey["api_key"] = userSession.ApiKey;
+            return await lobbyApi.SessionPutAsync(lobbyId, userSession.Id);
+        }
+
         public async Task LeaveLobby(TempSessionWithSecrets userSession, LobbyInfo lobby)
         {
             var lobbyApi = new LobbyApi();
