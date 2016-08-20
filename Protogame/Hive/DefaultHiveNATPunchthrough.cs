@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using HiveMP.NATPunchthrough.Api;
+using HiveMP.NATPunchthrough.Model;
 using HiveMP.TemporarySession.Model;
 
 namespace Protogame
@@ -25,10 +27,17 @@ namespace Protogame
             return await PerformNATPunchthrough(userSession, null, timeout);
         }
 
+        public async Task<List<NATEndpoint>> LookupEndpoints(TempSessionWithSecrets userSession, string targetSession)
+        {
+            var natPunchthroughApi = new NATPunchthroughApi();
+            natPunchthroughApi.Configuration.ApiKey["api_key"] = userSession.ApiKey;
+            return await natPunchthroughApi.EndpointsGetAsync(targetSession);
+        }
+
         private async Task<int> PerformNATPunchthrough(TempSessionWithSecrets userSession, int? specificUdpPort, int timeout)
         {
             var natPunchthroughApi = new NATPunchthroughApi();
-            natPunchthroughApi.Configuration.ApiKey.Add("api_key", userSession.ApiKey);
+            natPunchthroughApi.Configuration.ApiKey["api_key"] = userSession.ApiKey;
 
             var start = DateTime.UtcNow;
             

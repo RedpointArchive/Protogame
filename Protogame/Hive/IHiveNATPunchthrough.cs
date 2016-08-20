@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using HiveMP.NATPunchthrough.Model;
 using HiveMP.TemporarySession.Model;
 
 namespace Protogame
@@ -38,6 +40,6 @@ namespace Protogame
         /// <param name="userSession">The authenticated user session.</param>
         /// <param name="targetSession">The target session to lookup endpoints registered via NAT punchthrough.</param>
         /// <returns>A list of registered endpoints.</returns>
-        //Task<NATEndpoint> LookupEndpoints(TempSessionWithSecrets userSession, string targetSession);
+        Task<List<NATEndpoint>> LookupEndpoints(TempSessionWithSecrets userSession, string targetSession);
     }
 }

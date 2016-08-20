@@ -14,8 +14,8 @@
     <Package Uri="https://protobuild.org/hach-que/Prototest" Folder="Prototest" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/AStarPathFinder" Folder="AStarPathFinder" GitRef="master" />
     <Package Uri="https://protobuild.org/hach-que/Protoinject" Folder="Protoinject" GitRef="master" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.TemporarySession" Folder="HiveMP.TemporarySession" GitRef="1.5.1" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.NATPunchthrough" Folder="HiveMP.NATPunchthrough" GitRef="1.4.0" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Lobby" Folder="HiveMP.Lobby" GitRef="0.2.3" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.TemporarySession" Folder="HiveMP.TemporarySession" GitRef="1.5.2" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.NATPunchthrough" Folder="HiveMP.NATPunchthrough" GitRef="1.5.0" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Lobby" Folder="HiveMP.Lobby" GitRef="0.3.0" />
   </Packages>
 </Module>
