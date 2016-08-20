@@ -17,5 +17,6 @@
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.TemporarySession" Folder="HiveMP.TemporarySession" GitRef="1.5.2" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.NATPunchthrough" Folder="HiveMP.NATPunchthrough" GitRef="1.5.0" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Lobby" Folder="HiveMP.Lobby" GitRef="0.3.0" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Attribute" Folder="HiveMP.Attribute" GitRef="0.2.0" />
   </Packages>
 </Module>

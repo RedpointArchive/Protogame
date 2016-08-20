@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using HiveMP.Lobby.Api;
 using HiveMP.Lobby.Model;

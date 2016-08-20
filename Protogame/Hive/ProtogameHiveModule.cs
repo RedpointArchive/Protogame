@@ -13,6 +13,7 @@ namespace Protogame
             kernel.Bind<IHiveSessionManagement>().To<DefaultHiveSessionManagement>().InSingletonScope();
             kernel.Bind<IHiveLobbyManagement>().To<DefaultHiveLobbyManagement>().InSingletonScope();
             kernel.Bind<IHiveNATPunchthrough>().To<DefaultHiveNATPunchthrough>().InSingletonScope();
+            kernel.Bind<IHiveAttributeManagement>().To<DefaultHiveAttributeManagement>().InSingletonScope();
             kernel.Bind<IEngineHook>().To<HiveEngineHook>();
         }
     }
