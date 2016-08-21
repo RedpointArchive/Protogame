@@ -85,5 +85,13 @@ namespace Protogame
         /// <param name="userSession">The user session (used for authentication).</param>
         /// <param name="lobby">The lobby to retrieve connected sessions for.</param>
         Task<IEnumerable<ConnectedSession>> GetSessionsInLobby(TempSessionWithSecrets userSession, LobbyInfo lobby);
+
+        /// <summary>
+        /// Gets all of the connected sessions in the game lobby.  You do not have to be joined to
+        /// a game lobby to query the connected sessions.
+        /// </summary>
+        /// <param name="userSession">The user session (used for authentication).</param>
+        /// <param name="lobbyId">The lobby to retrieve connected sessions for.</param>
+        Task<IEnumerable<ConnectedSession>> GetSessionsInLobby(TempSessionWithSecrets userSession, string lobbyId);
     }
 }
