@@ -7,5 +7,7 @@ namespace Protogame
         bool Enabled { get; set; }
 
         List<IProfilerVisualiser> Visualisers { get; }
+
+        ProfilerPosition Position { get; set; }
     }
 }

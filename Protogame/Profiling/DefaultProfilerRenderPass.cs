@@ -26,11 +26,14 @@ namespace Protogame
 
             Enabled = true;
             Visualisers = new List<IProfilerVisualiser>();
+            Position = ProfilerPosition.TopLeft;
         }
 
         public bool Enabled { get; set; }
 
         public List<IProfilerVisualiser> Visualisers { get; }
+
+        public ProfilerPosition Position { get; set; }
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass,
             RenderTarget2D postProcessingSource)
@@ -54,9 +57,9 @@ namespace Protogame
             {
                 var height = visualiser.GetHeight(renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight);
                 var rect = new Rectangle(
-                    0,
+                    Position == ProfilerPosition.TopLeft ? 0 : (renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth - 300),
                     y,
-                    300 /* renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth */,
+                    300,
                     height);
 
                 // Draw a background for the profiler.

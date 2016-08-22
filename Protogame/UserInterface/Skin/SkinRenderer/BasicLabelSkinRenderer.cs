@@ -6,11 +6,16 @@ namespace Protogame
     public class BasicLabelSkinRenderer : ISkinRenderer<Label>
     {
         private readonly I2DRenderUtilities _renderUtilities;
+        private readonly ILayoutPosition _layoutPosition;
         private readonly FontAsset _fontAsset;
 
-        public BasicLabelSkinRenderer(I2DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
+        public BasicLabelSkinRenderer(
+            I2DRenderUtilities renderUtilities, 
+            IAssetManagerProvider assetManagerProvider,
+            ILayoutPosition layoutPosition)
         {
             _renderUtilities = renderUtilities;
+            _layoutPosition = layoutPosition;
             _fontAsset = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
         }
 
@@ -18,7 +23,7 @@ namespace Protogame
         {
             _renderUtilities.RenderText(
                 renderContext,
-                new Vector2(layout.Center.X, layout.Center.Y),
+                _layoutPosition.GetPositionInLayout(layout, label.HorizontalAlignment ?? HorizontalAlignment.Center, label.VerticalAlignment ?? VerticalAlignment.Center),
                 label.Text,
                 _fontAsset,
                 label.HorizontalAlignment ?? HorizontalAlignment.Center,

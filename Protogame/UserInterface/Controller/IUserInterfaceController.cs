@@ -1,5 +1,4 @@
 using System;
-using HiveMP.Lobby.Model;
 
 namespace Protogame
 {
@@ -9,6 +8,6 @@ namespace Protogame
 
         IContainer LoadUserFragment(string name);
 
-        void RegisterBehaviour<TContainerType>(string name, UserInterfaceBehaviourEvent @event, Action<TContainerType, IUserInterfaceController, IGameContext, IUpdateContext> callback);
+        void RegisterBehaviour<TContainerType>(string name, UserInterfaceBehaviourEvent @event, UserInterfaceBehaviourHandler<TContainerType> callback);
     }
 }

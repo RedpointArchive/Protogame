@@ -68,6 +68,7 @@ namespace Protogame
             kernel.Bind<IBasicSkinHelper>().To<BasicSkinHelper>().InSingletonScope();
             kernel.Bind<ISkinLayout>().To<BasicSkinLayout>().InSingletonScope();
             kernel.Bind<ISkinDelegator>().To<DefaultSkinDelegator>().InSingletonScope();
+            kernel.Bind<ILayoutPosition>().To<DefaultLayoutPosition>().InSingletonScope();
         }
     }
 }

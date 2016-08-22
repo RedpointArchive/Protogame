@@ -660,6 +660,7 @@
     <Compile Include="Profiling\NullProfilerHandle.cs" />
     <Compile Include="Profiling\OperationCostProfilerVisualiser.cs" />
     <Compile Include="Profiling\PhysicsMetricsProfilerVisualiser.cs" />
+    <Compile Include="Profiling\ProfilerPosition.cs" />
     <Compile Include="Profiling\ProtogamePerformanceIoCModule.cs" />
     <Compile Include="Profiling\ProtogameProfilingModule.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
@@ -825,10 +826,13 @@
     <Compile Include="UserInterface\Controller\NodeProcessor\ListItemUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\ListViewUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\TextBoxUserInterfaceNodeProcessor.cs" />
+    <Compile Include="UserInterface\Controller\UserInterfaceBehaviourHandler.cs" />
     <Compile Include="UserInterface\Core\CanvasEntity.cs" />
+    <Compile Include="UserInterface\Core\DefaultLayoutPosition.cs" />
     <Compile Include="UserInterface\Core\FocusExtensions.cs" />
     <Compile Include="UserInterface\Core\IHasCanvases.cs" />
     <Compile Include="UserInterface\Core\IHasDesiredSize.cs" />
+    <Compile Include="UserInterface\Core\ILayoutPosition.cs" />
     <Compile Include="UserInterface\Core\SelectedItemChangedEventArgs.cs" />
     <Compile Include="UserInterface\Core\SelectedItemChangedEventHandler.cs" />
     <Compile Include="UserInterface\Core\UserInterfaceBehaviourEvent.cs" />

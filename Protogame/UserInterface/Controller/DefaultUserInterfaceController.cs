@@ -14,7 +14,7 @@ namespace Protogame
         private readonly UserInterfaceAsset _userInterfaceAsset;
 
         private readonly
-            Dictionary<string, Dictionary<UserInterfaceBehaviourEvent, Action<object, IUserInterfaceController, IGameContext, IUpdateContext>>>
+            Dictionary<string, Dictionary<UserInterfaceBehaviourEvent, UserInterfaceBehaviourHandler<object>>>
             _registeredBehaviours;
 
         private readonly Dictionary<object, string[]> _containerBehaviours;
@@ -32,7 +32,7 @@ namespace Protogame
             _hierarchy = hierarchy;
             _node = node;
             _userInterfaceAsset = userInterfaceAsset;
-            _registeredBehaviours = new Dictionary<string, Dictionary<UserInterfaceBehaviourEvent, Action<object, IUserInterfaceController, IGameContext, IUpdateContext>>>();
+            _registeredBehaviours = new Dictionary<string, Dictionary<UserInterfaceBehaviourEvent, UserInterfaceBehaviourHandler<object>>>();
             _containerBehaviours = new Dictionary<object, string[]>();
             _availableFragments = new Dictionary<string, XmlNode>();
             _firedCreatedEventsForContainers = new HashSet<IContainer>();
@@ -194,11 +194,11 @@ namespace Protogame
             }
         }
 
-        public void RegisterBehaviour<TContainerType>(string name, UserInterfaceBehaviourEvent @event, Action<TContainerType, IUserInterfaceController, IGameContext, IUpdateContext> callback)
+        public void RegisterBehaviour<TContainerType>(string name, UserInterfaceBehaviourEvent @event, UserInterfaceBehaviourHandler<TContainerType> callback)
         {
             if (!_registeredBehaviours.ContainsKey(name))
             {
-                _registeredBehaviours[name] = new Dictionary<UserInterfaceBehaviourEvent, Action<object, IUserInterfaceController, IGameContext, IUpdateContext>>();
+                _registeredBehaviours[name] = new Dictionary<UserInterfaceBehaviourEvent, UserInterfaceBehaviourHandler<object>>();
             }
 
             _registeredBehaviours[name][@event] = (o, t, g, u) => { callback((TContainerType) o, t, g, u); };
