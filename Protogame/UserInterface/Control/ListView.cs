@@ -1,108 +1,63 @@
-﻿namespace Protogame
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
-    /// <summary>
-    /// The list view.
-    /// </summary>
+namespace Protogame
+{    
     public class ListView : IContainer, IHasDesiredSize
     {
-        /// <summary>
-        /// The m_ items.
-        /// </summary>
-        private readonly List<IContainer> m_Items = new List<IContainer>();
-
-        /// <summary>
-        /// The p_ selected item.
-        /// </summary>
-        private IContainer p_SelectedItem;
-
-        /// <summary>
-        /// The selected item changed.
-        /// </summary>
+        private readonly List<IContainer> _items = new List<IContainer>();
+        
+        private IContainer _selectedItem;
+        
         public event SelectedItemChangedEventHandler<IContainer> SelectedItemChanged;
-
-        /// <summary>
-        /// Gets the children.
-        /// </summary>
-        /// <value>
-        /// The children.
-        /// </value>
-        public IContainer[] Children
-        {
-            get
-            {
-                return this.m_Items.Cast<IContainer>().ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether focused.
-        /// </summary>
-        /// <value>
-        /// The focused.
-        /// </value>
+        
+        public IContainer[] Children => _items.Cast<IContainer>().ToArray();
+        
         public bool Focused { get; set; }
-
-        /// <summary>
-        /// Gets or sets the order.
-        /// </summary>
-        /// <value>
-        /// The order.
-        /// </value>
+        
         public int Order { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent.
-        /// </summary>
-        /// <value>
-        /// The parent.
-        /// </value>
+        
         public IContainer Parent { get; set; }
 
-        /// <summary>
-        /// Gets or sets the selected item.
-        /// </summary>
-        /// <value>
-        /// The selected item.
-        /// </value>
+        public object Userdata { get; set; }
+        
         public IContainer SelectedItem
         {
             get
             {
-                return this.p_SelectedItem;
+                return _selectedItem;
             }
 
             set
             {
-                this.p_SelectedItem = value;
-                if (this.SelectedItemChanged != null)
-                {
-                    this.SelectedItemChanged(this, new SelectedItemChangedEventArgs<IContainer>(value));
-                }
+                _selectedItem = value;
+                SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs<IContainer>(value));
 
                 this.Focus();
             }
         }
 
-        public int? GetDesiredWidth(ISkin skin)
+        public int? GetDesiredWidth(ISkinLayout skin)
         {
             return null;
         }
 
-        public int? GetDesiredHeight(ISkin skin)
+        public int? GetDesiredHeight(ISkinLayout skin)
         {
             var current = 0;
-            foreach (var item in this.m_Items)
+            foreach (var item in _items)
             {
                 var desiredSize = item as IHasDesiredSize;
-                if (desiredSize != null && desiredSize.GetDesiredHeight(skin) != null)
+                if (desiredSize?.GetDesiredHeight(skin) != null)
                 {
-                    current += desiredSize.GetDesiredHeight(skin).Value;
+                    var desiredHeight = desiredSize.GetDesiredHeight(skin);
+                    if (desiredHeight != null)
+                    {
+                        current += desiredHeight.Value;
+                    }
                 }
                 else
                 {
@@ -111,22 +66,12 @@
             }
             return current;
         }
-
-        /// <summary>
-        /// The add child.
-        /// </summary>
-        /// <param name="item">
-        /// The item.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
+        
         public void AddChild(IContainer item)
         {
             if (item == null)
             {
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             }
 
             if (item.Parent != null)
@@ -134,139 +79,83 @@
                 throw new InvalidOperationException();
             }
 
-            this.m_Items.Add(item);
+            _items.Add(item);
             item.Parent = this;
         }
-
-        /// <summary>
-        /// The draw.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        public void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        
+        public void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
-            skin.DrawListView(context, layout, this);
-            foreach (var kv in this.GetChildrenWithLayouts(skin, layout))
+            skinDelegator.Render(context, layout, this);
+            foreach (var kv in GetChildrenWithLayouts(skinLayout, layout))
             {
-                kv.Item.Draw(context, skin, kv.Layout.Value);
+                if (kv.Layout != null)
+                {
+                    kv.Item.Render(context, skinLayout, skinDelegator, kv.Layout.Value);
+                }
             }
         }
 
-        /// <summary>
-        /// The get children with layouts.
-        /// </summary>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IEnumerable"/>.
-        /// </returns>
-        public IEnumerable<ListEntry> GetChildrenWithLayouts(ISkin skin, Rectangle layout)
+        public IEnumerable<ListEntry> GetChildrenWithLayouts(ISkinLayout skinLayout, Rectangle layout)
         {
-            var list = this.m_Items.Select(x => new ListEntry { Item = x }).ToList();
+            var list = _items.Select(x => new ListEntry { Item = x }).ToList();
             var current = layout.Y;
-            for (var i = 0; i < list.Count; i++)
+            foreach (var item in list)
             {
-                list[i].Layout = new Rectangle(
-                    layout.X + skin.ListHorizontalPadding, 
-                    current + skin.ListVerticalPadding, 
-                    layout.Width - skin.ListHorizontalPadding * 2, 
-                    skin.HeightForTreeItem);
-                yield return list[i];
+                item.Layout = new Rectangle(
+                    layout.X + skinLayout.ListHorizontalPadding, 
+                    current + skinLayout.ListVerticalPadding, 
+                    layout.Width - skinLayout.ListHorizontalPadding * 2,
+                    skinLayout.HeightForTreeItem);
+                yield return item;
 
-                var desiredSize = list[i].Item as IHasDesiredSize;
-                if (desiredSize != null && desiredSize.GetDesiredHeight(skin) != null)
+                var desiredSize = item.Item as IHasDesiredSize;
+                if (desiredSize?.GetDesiredHeight(skinLayout) != null)
                 {
-                    current += desiredSize.GetDesiredHeight(skin).Value;
+                    var desiredHeight = desiredSize.GetDesiredHeight(skinLayout);
+                    if (desiredHeight != null)
+                    {
+                        current += desiredHeight.Value;
+                    }
                 }
                 else
                 {
-                    current += skin.HeightForTreeItem;
+                    current += skinLayout.HeightForTreeItem;
                 }
             }
         }
-
-        /// <summary>
-        /// The remove all children.
-        /// </summary>
+        
         public void RemoveAllChildren()
         {
-            foreach (var item in this.m_Items)
+            foreach (var item in _items)
             {
                 item.Parent = null;
             }
 
-            this.m_Items.Clear();
+            _items.Clear();
         }
-
-        /// <summary>
-        /// The remove child.
-        /// </summary>
-        /// <param name="item">
-        /// The item.
-        /// </param>
-        public void RemoveChild(ListItem item)
+        
+        public void RemoveChild(IContainer item)
         {
-            this.m_Items.Remove(item);
+            _items.Remove(item);
             item.Parent = null;
         }
-
-        /// <summary>
-        /// The update.
-        /// </summary>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        /// <param name="gameTime">
-        /// The game time.
-        /// </param>
-        /// <param name="stealFocus">
-        /// The steal focus.
-        /// </param>
-        public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
+        
+        public void Update(ISkinLayout skinLayout, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
-            foreach (var kv in this.GetChildrenWithLayouts(skin, layout))
+            foreach (var kv in GetChildrenWithLayouts(skinLayout, layout))
             {
-                kv.Item.Update(skin, kv.Layout.Value, gameTime, ref stealFocus);
+                if (kv.Layout != null)
+                {
+                    kv.Item.Update(skinLayout, kv.Layout.Value, gameTime, ref stealFocus);
+                }
             }
         }
-
-        /// <summary>
-        /// Requests that the UI container handle the specified event or return false.
-        /// </summary>
-        /// <param name="skin">
-        /// The UI skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout for the element.
-        /// </param>
-        /// <param name="context">
-        /// The current game context.
-        /// </param>
-        /// <param name="event">
-        /// The event that was raised.
-        /// </param>
-        /// <returns>
-        /// Whether or not this UI element handled the event.
-        /// </returns>
-        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        
+        public bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
         {
-            foreach (var kv in this.GetChildrenWithLayouts(skin, layout))
+            foreach (var kv in GetChildrenWithLayouts(skinLayout, layout))
             {
-                if (kv.Item.HandleEvent(skin, kv.Layout.Value, context, @event))
+                if (kv.Layout != null && kv.Item.HandleEvent(skinLayout, kv.Layout.Value, context, @event))
                 {
                     return true;
                 }
@@ -277,22 +166,22 @@
             {
                 var upPressed = keyPressEvent.Key == Keys.Up;
                 var downPressed = keyPressEvent.Key == Keys.Down;
-                if (this.SelectedItem != null && (upPressed || downPressed))
+                if (SelectedItem != null && (upPressed || downPressed))
                 {
-                    var list = this.m_Items.Select(x => new ListEntry { Item = x }).ToList();
-                    var current = list.IndexOf(list.First(x => this.SelectedItem == x.Item));
+                    var list = _items.Select(x => new ListEntry { Item = x }).ToList();
+                    var current = list.IndexOf(list.First(x => SelectedItem == x.Item));
                     if (upPressed)
                     {
                         current -= 1;
                     }
-                    else if (downPressed)
+                    else
                     {
                         current += 1;
                     }
 
                     if (current >= 0 && current < list.Count)
                     {
-                        this.SelectedItem = list[current].Item;
+                        SelectedItem = list[current].Item;
 
                         return true;
                     }
@@ -301,20 +190,11 @@
 
             return false;
         }
-
-        /// <summary>
-        /// The list entry.
-        /// </summary>
+        
         public class ListEntry
         {
-            /// <summary>
-            /// The item.
-            /// </summary>
             public IContainer Item;
-
-            /// <summary>
-            /// The layout.
-            /// </summary>
+            
             public Rectangle? Layout;
         }
     }

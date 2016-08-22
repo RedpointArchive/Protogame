@@ -1,17 +1,15 @@
+using System.Linq;
+using Protoinject;
+
 namespace Protogame
 {
-    using System.Linq;
-    using Protoinject;
-
     /// <summary>
     /// Listens for incoming events and directs them to UI elements.
     /// </summary>
+    /// <module>User Interface</module>
     public class UIEventListener : IEventListener<IGameContext>
     {
-        /// <summary>
-        /// The current skin being used by the UI system.
-        /// </summary>
-        private readonly ISkin m_Skin;
+        private readonly ISkinLayout _skinLayout;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UIEventListener"/> class.
@@ -19,9 +17,9 @@ namespace Protogame
         /// <param name="skin">
         /// The skin being used by the UI system.
         /// </param>
-        public UIEventListener([Optional] ISkin skin, IKernel kernel)
+        public UIEventListener([Optional] ISkinLayout skinLayout, IKernel kernel)
         {
-            this.m_Skin = skin ?? ProtogameUIIoCModule.GetDefaultSkin(kernel);
+            _skinLayout = skinLayout ?? new BasicSkinLayout();
         }
 
         /// <summary>
@@ -46,7 +44,7 @@ namespace Protogame
             {
                 foreach (var kv in worldHasCanvases.Canvases)
                 {
-                    if (kv.Key.HandleEvent(this.m_Skin, kv.Value, context, @event))
+                    if (kv.Key.HandleEvent(_skinLayout, kv.Value, context, @event))
                     {
                         return true;
                     }
@@ -55,7 +53,7 @@ namespace Protogame
 
             foreach (var kv in context.World.GetEntitiesForWorld(context.Hierarchy).OfType<IHasCanvases>().SelectMany(x => x.Canvases))
             {
-                if (kv.Key.HandleEvent(this.m_Skin, kv.Value, context, @event))
+                if (kv.Key.HandleEvent(_skinLayout, kv.Value, context, @event))
                 {
                     return true;
                 }

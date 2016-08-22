@@ -1,106 +1,47 @@
+using System;
+using Microsoft.Xna.Framework;
+
 namespace Protogame
 {
-    using System;
-    using Microsoft.Xna.Framework;
-
-    /// <summary>
-    /// The single container.
-    /// </summary>
     public class SingleContainer : IContainer, IHasDesiredSize
     {
-        /// <summary>
-        /// The m_ child.
-        /// </summary>
-        private IContainer m_Child;
+        private IContainer _child;
 
         public int? DesiredWidth { get; set; }
 
         public int? DesiredHeight { get; set; }
-
-        /// <summary>
-        /// Gets the children.
-        /// </summary>
-        /// <value>
-        /// The children.
-        /// </value>
-        public IContainer[] Children
-        {
-            get
-            {
-                return new[] { this.m_Child };
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether focused.
-        /// </summary>
-        /// <value>
-        /// The focused.
-        /// </value>
+        
+        public IContainer[] Children => new[] { _child };
+        
         public bool Focused { get; set; }
-
-        /// <summary>
-        /// Gets or sets the order.
-        /// </summary>
-        /// <value>
-        /// The order.
-        /// </value>
+        
         public int Order { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent.
-        /// </summary>
-        /// <value>
-        /// The parent.
-        /// </value>
+        
         public IContainer Parent { get; set; }
 
-        public int? GetDesiredWidth(ISkin skin)
+        public object Userdata { get; set; }
+
+        public int? GetDesiredWidth(ISkinLayout skinLayout)
         {
-            return this.DesiredWidth;
+            return DesiredWidth;
         }
 
-        public int? GetDesiredHeight(ISkin skin)
+        public int? GetDesiredHeight(ISkinLayout skinLayout)
         {
-            return this.DesiredHeight;
+            return DesiredHeight;
         }
-
-        /// <summary>
-        /// The draw.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        public virtual void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        
+        public virtual void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
-            skin.DrawSingleContainer(context, layout, this);
-            if (this.m_Child != null)
-            {
-                this.m_Child.Draw(context, skin, layout);
-            }
+            skinDelegator.Render(context, layout, this);
+            _child?.Render(context, skinLayout, skinDelegator, layout);
         }
-
-        /// <summary>
-        /// The set child.
-        /// </summary>
-        /// <param name="child">
-        /// The child.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
+        
         public void SetChild(IContainer child)
         {
             if (child == null)
             {
-                throw new ArgumentNullException("child");
+                throw new ArgumentNullException(nameof(child));
             }
 
             if (child.Parent != null)
@@ -108,59 +49,18 @@ namespace Protogame
                 throw new InvalidOperationException();
             }
 
-            this.m_Child = child;
-            this.m_Child.Parent = this;
+            _child = child;
+            _child.Parent = this;
         }
-
-        /// <summary>
-        /// The update.
-        /// </summary>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        /// <param name="gameTime">
-        /// The game time.
-        /// </param>
-        /// <param name="stealFocus">
-        /// The steal focus.
-        /// </param>
-        public virtual void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
+        
+        public virtual void Update(ISkinLayout skinLayout, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
-            if (this.m_Child != null)
-            {
-                this.m_Child.Update(skin, layout, gameTime, ref stealFocus);
-            }
+            _child?.Update(skinLayout, layout, gameTime, ref stealFocus);
         }
-
-        /// <summary>
-        /// Requests that the UI container handle the specified event or return false.
-        /// </summary>
-        /// <param name="skin">
-        /// The UI skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout for the element.
-        /// </param>
-        /// <param name="context">
-        /// The current game context.
-        /// </param>
-        /// <param name="event">
-        /// The event that was raised.
-        /// </param>
-        /// <returns>
-        /// Whether or not this UI element handled the event.
-        /// </returns>
-        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        
+        public bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
         {
-            if (this.m_Child != null)
-            {
-                return this.m_Child.HandleEvent(skin, layout, context, @event);
-            }
-
-            return false;
+            return _child != null && _child.HandleEvent(skinLayout, layout, context, @event);
         }
     }
 }

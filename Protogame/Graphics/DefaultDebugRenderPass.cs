@@ -88,6 +88,10 @@ namespace Protogame
             var world = renderContext.World;
             renderContext.World = Matrix.Identity;
 
+            _basicEffect.NativeEffect.Parameters["World"].SetValue(renderContext.World);
+            _basicEffect.NativeEffect.Parameters["View"].SetValue(renderContext.View);
+            _basicEffect.NativeEffect.Parameters["Projection"].SetValue(renderContext.Projection);
+
             foreach (var pass in _basicEffect.NativeEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();

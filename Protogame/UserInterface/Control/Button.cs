@@ -1,135 +1,41 @@
-namespace Protogame
-{
-    using System;
-    using Microsoft.Xna.Framework;
+using System;
+using Microsoft.Xna.Framework;
 
-    /// <summary>
-    /// The button.
-    /// </summary>
+namespace Protogame
+{    
     public class Button : IContainer
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Button"/> class.
-        /// </summary>
         public Button()
         {
-            this.State = ButtonUIState.None;
+            State = ButtonUIState.None;
         }
-
-        /// <summary>
-        /// The click.
-        /// </summary>
+        
         public event EventHandler Click;
 
-        /// <summary>
-        /// Gets the children.
-        /// </summary>
-        /// <value>
-        /// The children.
-        /// </value>
-        public IContainer[] Children
-        {
-            get
-            {
-                return new IContainer[0];
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether focused.
-        /// </summary>
-        /// <value>
-        /// The focused.
-        /// </value>
+        public IContainer[] Children => IContainerConstant.EmptyContainers;
+        
         public bool Focused { get; set; }
-
-        /// <summary>
-        /// Gets or sets the order.
-        /// </summary>
-        /// <value>
-        /// The order.
-        /// </value>
+        
         public int Order { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent.
-        /// </summary>
-        /// <value>
-        /// The parent.
-        /// </value>
+        
         public IContainer Parent { get; set; }
 
-        /// <summary>
-        /// Gets the state.
-        /// </summary>
-        /// <value>
-        /// The state.
-        /// </value>
+        public object Userdata { get; set; }
+        
         public ButtonUIState State { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the text.
-        /// </summary>
-        /// <value>
-        /// The text.
-        /// </value>
+        
         public string Text { get; set; }
-
-        /// <summary>
-        /// The draw.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        public virtual void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        
+        public virtual void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
-            skin.DrawButton(context, layout, this);
+            skinDelegator.Render(context, layout, this);
         }
-
-        /// <summary>
-        /// The update.
-        /// </summary>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        /// <param name="gameTime">
-        /// The game time.
-        /// </param>
-        /// <param name="stealFocus">
-        /// The steal focus.
-        /// </param>
-        public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
+        
+        public void Update(ISkinLayout skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
         }
-
-        /// <summary>
-        /// Requests that the UI container handle the specified event or return false.
-        /// </summary>
-        /// <param name="skin">
-        /// The UI skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout for the element.
-        /// </param>
-        /// <param name="context">
-        /// The current game context.
-        /// </param>
-        /// <param name="event">
-        /// The event that was raised.
-        /// </param>
-        /// <returns>
-        /// Whether or not this UI element handled the event.
-        /// </returns>
-        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        
+        public bool HandleEvent(ISkinLayout skin, Rectangle layout, IGameContext context, Event @event)
         {
             var mouseEvent = @event as MouseEvent;
             var mousePressEvent = @event as MousePressEvent;
@@ -176,16 +82,16 @@ namespace Protogame
             {
                 if (mouseMoveEvent != null)
                 {
-                    this.State = ButtonUIState.Hover;
+                    State = ButtonUIState.Hover;
                 }
                 else if ((mousePressEvent != null && mousePressEvent.Button == MouseButton.Left) || touchPressEvent != null)
                 {
-                    if (this.Click != null && this.State != ButtonUIState.Clicked)
+                    if (Click != null && State != ButtonUIState.Clicked)
                     {
-                        this.Click(this, new EventArgs());
+                        Click(this, new EventArgs());
                     }
 
-                    this.State = ButtonUIState.Clicked;
+                    State = ButtonUIState.Clicked;
                     this.Focus();
 
                     return true;
@@ -193,20 +99,20 @@ namespace Protogame
             }
             else if (mouseMoveEvent != null)
             {
-                this.State = ButtonUIState.None;
+                State = ButtonUIState.None;
             }
 
             if (mouseReleaseEvent != null && mouseReleaseEvent.Button == MouseButton.Left)
             {
                 if (touchHeldEvent == null || !layout.Contains(x, y))
                 {
-                    this.State = ButtonUIState.None;
+                    State = ButtonUIState.None;
                 }
             }
 
             if (touchReleaseEvent != null && layout.Contains(x, y))
             {
-                this.State = ButtonUIState.None;
+                State = ButtonUIState.None;
             }
 
             return false;

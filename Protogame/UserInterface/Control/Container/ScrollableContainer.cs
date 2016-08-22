@@ -7,17 +7,23 @@ namespace Protogame
 {
     public class ScrollableContainer : IContainer
     {
-        private IContainer m_Child;
+        private IContainer _child;
 
-        private RenderTarget2D m_RenderTarget;
+        private RenderTarget2D _renderTarget;
 
-        public IContainer[] Children
-        {
-            get
-            {
-                return new[] { this.m_Child };
-            }
-        }
+        private bool _isHorizontalScrolling;
+
+        private int _horizontalScrollOffset;
+
+        private int _horizontalScrollStart;
+
+        private bool _isVerticalScrolling;
+
+        private int _verticalScrollOffset;
+
+        private int _verticalScrollStart;
+
+        public IContainer[] Children => new[] { _child };
 
         public bool Focused { get; set; }
 
@@ -25,34 +31,30 @@ namespace Protogame
 
         public IContainer Parent { get; set; }
 
-        /// <summary>
-        /// The scroll percentage between 0f and 1f.
-        /// </summary>
-        /// <value>The scroll x.</value>
+        public object Userdata { get; set; }
+        
         public float ScrollX { get; set; }
-
-        /// <summary>
-        /// The scroll percentage between 0f and 1f.
-        /// </summary>
-        /// <value>The scroll x.</value>
+        
         public float ScrollY { get; set; }
 
-        public virtual void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        public RenderTarget2D ChildContent => _renderTarget;
+
+        public virtual void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
-            var layoutWidth = layout.Width - skin.HorizontalScrollBarHeight;
-            var layoutHeight = layout.Height - skin.VerticalScrollBarWidth;
+            var layoutWidth = layout.Width - skinLayout.HorizontalScrollBarHeight;
+            var layoutHeight = layout.Height - skinLayout.VerticalScrollBarWidth;
 
             int childWidth, childHeight;
-            if (this.m_Child == null || !(this.m_Child is IHasDesiredSize))
+            if (!(_child is IHasDesiredSize))
             {
                 childWidth = layoutWidth;
                 childHeight = layoutHeight;
             }
             else
             {
-                var hasDesiredSize = this.m_Child as IHasDesiredSize;
-                childWidth = hasDesiredSize.GetDesiredWidth(skin) ?? layoutWidth;
-                childHeight = hasDesiredSize.GetDesiredHeight(skin) ?? layoutHeight;
+                var hasDesiredSize = (IHasDesiredSize) _child;
+                childWidth = hasDesiredSize.GetDesiredWidth(skinLayout) ?? layoutWidth;
+                childHeight = hasDesiredSize.GetDesiredHeight(skinLayout) ?? layoutHeight;
                 if (childWidth < layoutWidth)
                 {
                     childWidth = layoutWidth;
@@ -63,49 +65,45 @@ namespace Protogame
                 }
             }
 
-            if (this.m_RenderTarget == null || this.m_RenderTarget.Width != childWidth ||
-                this.m_RenderTarget.Height != childHeight)
+            if (_renderTarget == null || _renderTarget.Width != childWidth ||
+                _renderTarget.Height != childHeight)
             {
-                if (this.m_RenderTarget != null)
-                {
-                    this.m_RenderTarget.Dispose();
-                }
+                _renderTarget?.Dispose();
 
-                this.m_RenderTarget = new RenderTarget2D(
+                _renderTarget = new RenderTarget2D(
                     context.GraphicsDevice,
                     Math.Max(1, childWidth),
                     Math.Max(1, childHeight));
             }
-
-            skin.BeforeRenderTargetChange(context);
-            context.PushRenderTarget(this.m_RenderTarget);
+            
+            context.SpriteBatch.End();
+            context.PushRenderTarget(_renderTarget);
             context.GraphicsDevice.Clear(Color.Transparent);
-            skin.AfterRenderTargetChange(context);
+            context.SpriteBatch.Begin();
+
             try
             {
-                if (this.m_Child != null)
-                {
-                    this.m_Child.Draw(
-                        context,
-                        skin,
-                        new Rectangle(0, 0, childWidth, childHeight));
-                }
+                _child?.Render(
+                    context,
+                    skinLayout,
+                    skinDelegator,
+                    new Rectangle(0, 0, childWidth, childHeight));
             }
             finally
             {
-                skin.BeforeRenderTargetChange(context);
+                context.SpriteBatch.End();
                 context.PopRenderTarget();
-                skin.AfterRenderTargetChange(context);
+                context.SpriteBatch.Begin();
             }
 
-            skin.DrawScrollableContainer(context, layout, this, this.m_RenderTarget);
+            skinDelegator.Render(context, layout, this);
         }
 
         public void SetChild(IContainer child)
         {
             if (child == null)
             {
-                throw new ArgumentNullException("child");
+                throw new ArgumentNullException(nameof(child));
             }
 
             if (child.Parent != null)
@@ -113,178 +111,162 @@ namespace Protogame
                 throw new InvalidOperationException();
             }
 
-            this.m_Child = child;
-            this.m_Child.Parent = this;
+            _child = child;
+            _child.Parent = this;
         }
 
-        public virtual void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
+        public virtual void Update(ISkinLayout skinLayout, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
-            if (this.m_Child != null)
-            {
-                this.m_Child.Update(skin, layout, gameTime, ref stealFocus);
-            }
+            _child?.Update(skinLayout, layout, gameTime, ref stealFocus);
         }
 
-        private bool m_IsHorizontalScrolling;
-
-        private int m_HorizontalScrollOffset;
-
-        private int m_HorizontalScrollStart;
-
-        private bool m_IsVerticalScrolling;
-
-        private int m_VerticalScrollOffset;
-
-        private int m_VerticalScrollStart;
-
-        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        public bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
         {
-            if (this.m_RenderTarget == null)
+            if (_renderTarget == null)
             {
                 return false;
             }
 
-            var layoutWidth = layout.Width - skin.HorizontalScrollBarHeight;
-            var layoutHeight = layout.Height - skin.VerticalScrollBarWidth;
+            var layoutWidth = layout.Width - skinLayout.HorizontalScrollBarHeight;
+            var layoutHeight = layout.Height - skinLayout.VerticalScrollBarWidth;
 
-            if (this.m_IsVerticalScrolling)
+            if (_isVerticalScrolling)
             {
                 var mouseMoveEvent = @event as MouseMoveEvent;
                 var mouseReleaseEvent = @event as MouseReleaseEvent;
 
                 if (mouseMoveEvent != null)
                 {
-                    var newVerticalScrollbarPosition = mouseMoveEvent.Y - layout.Y - this.m_VerticalScrollOffset;
+                    var newVerticalScrollbarPosition = mouseMoveEvent.Y - layout.Y - _verticalScrollOffset;
                     newVerticalScrollbarPosition = MathHelper.Clamp(
                         newVerticalScrollbarPosition,
                         0,
-                        layoutHeight - (int)((layoutHeight / (float)this.m_RenderTarget.Height) * layoutHeight));
-                    this.ScrollY = newVerticalScrollbarPosition /
-                        (layoutHeight - ((layoutHeight / (float)this.m_RenderTarget.Height) * layoutHeight));
+                        layoutHeight - (int)(layoutHeight / (float)_renderTarget.Height * layoutHeight));
+                    ScrollY = newVerticalScrollbarPosition /
+                        (layoutHeight - layoutHeight / (float)_renderTarget.Height * layoutHeight);
                     return true;
                 }
-                else if (mouseReleaseEvent != null)
+
+                if (mouseReleaseEvent?.Button == MouseButton.Left)
                 {
-                    if (mouseReleaseEvent.Button == MouseButton.Left)
-                    {
-                        this.m_IsVerticalScrolling = false;
-                    }
+                    _isVerticalScrolling = false;
                 }
             }
-            else if (this.m_IsHorizontalScrolling)
+            else if (_isHorizontalScrolling)
             {
                 var mouseMoveEvent = @event as MouseMoveEvent;
                 var mouseReleaseEvent = @event as MouseReleaseEvent;
 
                 if (mouseMoveEvent != null)
                 {
-                    var newHorizontalScrollbarPosition = mouseMoveEvent.X - layout.X - this.m_HorizontalScrollOffset;
+                    var newHorizontalScrollbarPosition = mouseMoveEvent.X - layout.X - _horizontalScrollOffset;
                     newHorizontalScrollbarPosition = MathHelper.Clamp(
                         newHorizontalScrollbarPosition,
                         0,
-                        layoutWidth - (int)((layoutWidth / (float)this.m_RenderTarget.Width) * layoutWidth));
-                    this.ScrollX = newHorizontalScrollbarPosition /
-                        (layoutWidth - ((layoutWidth / (float)this.m_RenderTarget.Width) * layoutWidth));
+                        layoutWidth - (int)(layoutWidth / (float)_renderTarget.Width * layoutWidth));
+                    ScrollX = newHorizontalScrollbarPosition /
+                        (layoutWidth - layoutWidth / (float)_renderTarget.Width * layoutWidth);
                     return true;
                 }
-                else if (mouseReleaseEvent != null)
+
+                if (mouseReleaseEvent?.Button == MouseButton.Left)
                 {
-                    if (mouseReleaseEvent.Button == MouseButton.Left)
-                    {
-                        this.m_IsHorizontalScrolling = false;
-                    }
+                    _isHorizontalScrolling = false;
                 }
             }
-            else if (!this.m_IsHorizontalScrolling && !this.m_IsVerticalScrolling)
+            else if (!_isHorizontalScrolling && !_isVerticalScrolling)
             {
                 var mousePressEvent = @event as MousePressEvent;
 
                 var horizontalScrollBarRectangle = new Rectangle(
-                    (int)(layout.X + this.ScrollX * (layoutWidth - ((layoutWidth / (float)this.m_RenderTarget.Width) * layoutWidth))),
-                    layout.Y + layout.Height - skin.HorizontalScrollBarHeight,
-                    (int)((layoutWidth / (float)this.m_RenderTarget.Width) * layoutWidth),
-                    skin.HorizontalScrollBarHeight);
+                    (int)(layout.X + ScrollX * (layoutWidth - layoutWidth / (float)_renderTarget.Width * layoutWidth)),
+                    layout.Y + layout.Height - skinLayout.HorizontalScrollBarHeight,
+                    (int)(layoutWidth / (float)_renderTarget.Width * layoutWidth),
+                    skinLayout.HorizontalScrollBarHeight);
                 var verticalScrollBarRectangle = new Rectangle(
-                    layout.X + layout.Width - skin.VerticalScrollBarWidth,
-                    (int)(layout.Y + this.ScrollY * (layoutHeight - ((layoutHeight / (float)this.m_RenderTarget.Height) * layoutHeight))),
-                    skin.VerticalScrollBarWidth,
-                    (int)((layoutHeight / (float)this.m_RenderTarget.Height) * layoutHeight));
+                    layout.X + layout.Width - skinLayout.VerticalScrollBarWidth,
+                    (int)(layout.Y + ScrollY * (layoutHeight - layoutHeight / (float)_renderTarget.Height * layoutHeight)),
+                    skinLayout.VerticalScrollBarWidth,
+                    (int)(layoutHeight / (float)_renderTarget.Height * layoutHeight));
                
                 if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
                 {
                     if (horizontalScrollBarRectangle.Contains(mousePressEvent.MouseState.Position))
                     {
-                        if (this.m_RenderTarget.Width > layout.Width)
+                        if (_renderTarget.Width > layout.Width)
                         {
-                            this.m_IsHorizontalScrolling = true;
-                            this.m_HorizontalScrollOffset = mousePressEvent.MouseState.Position.X - horizontalScrollBarRectangle.X;
-                            this.m_HorizontalScrollStart = mousePressEvent.MouseState.Position.X;
+                            _isHorizontalScrolling = true;
+                            _horizontalScrollOffset = mousePressEvent.MouseState.Position.X - horizontalScrollBarRectangle.X;
+                            _horizontalScrollStart = mousePressEvent.MouseState.Position.X;
                         }
 
                         return true;
                     }
-                    else if (verticalScrollBarRectangle.Contains(mousePressEvent.MouseState.Position))
+
+                    if (verticalScrollBarRectangle.Contains(mousePressEvent.MouseState.Position))
                     {
-                        if (this.m_RenderTarget.Height > layout.Height)
+                        if (_renderTarget.Height > layout.Height)
                         {
-                            this.m_IsVerticalScrolling = true;
-                            this.m_VerticalScrollOffset = mousePressEvent.MouseState.Position.Y - verticalScrollBarRectangle.Y;
-                            this.m_VerticalScrollStart = mousePressEvent.MouseState.Position.Y;
+                            _isVerticalScrolling = true;
+                            _verticalScrollOffset = mousePressEvent.MouseState.Position.Y - verticalScrollBarRectangle.Y;
+                            _verticalScrollStart = mousePressEvent.MouseState.Position.Y;
                         }
 
                         return true;
                     }
                 }
 
-                if (this.m_Child != null)
+                if (_child == null)
                 {
-                    var mouseEvent = @event as MouseEvent;
+                    return false;
+                }
 
-                    MouseState originalState = default(MouseState);
-                    int scrollXPixels = 0, scrollYPixels = 0;
-                    if (mouseEvent != null)
+                var mouseEvent = @event as MouseEvent;
+
+                var originalState = default(MouseState);
+                int scrollXPixels = 0, scrollYPixels = 0;
+                if (mouseEvent != null)
+                {
+                    scrollXPixels = (int)(ScrollX * (Math.Max(_renderTarget.Width, layoutWidth) - layoutWidth));
+                    scrollYPixels = (int)(ScrollY * (Math.Max(_renderTarget.Height, layoutHeight) - layoutHeight));
+
+                    originalState = mouseEvent.MouseState;
+                    mouseEvent.MouseState = new MouseState(
+                        mouseEvent.MouseState.X + scrollXPixels,
+                        mouseEvent.MouseState.Y + scrollYPixels,
+                        mouseEvent.MouseState.ScrollWheelValue,
+                        mouseEvent.MouseState.LeftButton,
+                        mouseEvent.MouseState.MiddleButton,
+                        mouseEvent.MouseState.RightButton,
+                        mouseEvent.MouseState.XButton1,
+                        mouseEvent.MouseState.XButton2);
+
+                    var mouseMoveEvent = @event as MouseMoveEvent;
+
+                    if (mouseMoveEvent != null)
                     {
-                        scrollXPixels = (int)(this.ScrollX * (System.Math.Max(this.m_RenderTarget.Width, layoutWidth) - layoutWidth));
-                        scrollYPixels = (int)(this.ScrollY * (System.Math.Max(this.m_RenderTarget.Height, layoutHeight) - layoutHeight));
-
-                        originalState = mouseEvent.MouseState;
-                        mouseEvent.MouseState = new Microsoft.Xna.Framework.Input.MouseState(
-                            mouseEvent.MouseState.X + scrollXPixels,
-                            mouseEvent.MouseState.Y + scrollYPixels,
-                            mouseEvent.MouseState.ScrollWheelValue,
-                            mouseEvent.MouseState.LeftButton,
-                            mouseEvent.MouseState.MiddleButton,
-                            mouseEvent.MouseState.RightButton,
-                            mouseEvent.MouseState.XButton1,
-                            mouseEvent.MouseState.XButton2);
-
-                        var mouseMoveEvent = @event as MouseMoveEvent;
-
-                        if (mouseMoveEvent != null)
-                        {
-                            mouseMoveEvent.LastX += scrollXPixels;
-                            mouseMoveEvent.LastY += scrollYPixels;
-                            mouseMoveEvent.X += scrollXPixels;
-                            mouseMoveEvent.Y += scrollYPixels;
-                        }
+                        mouseMoveEvent.LastX += scrollXPixels;
+                        mouseMoveEvent.LastY += scrollYPixels;
+                        mouseMoveEvent.X += scrollXPixels;
+                        mouseMoveEvent.Y += scrollYPixels;
                     }
+                }
 
-                    var result = this.m_Child.HandleEvent(skin, layout, context, @event);
+                _child.HandleEvent(skinLayout, layout, context, @event);
 
-                    // Restore event state.
-                    if (mouseEvent != null)
+                // Restore event state.
+                if (mouseEvent != null)
+                {
+                    mouseEvent.MouseState = originalState;
+
+                    var mouseMoveEvent = @event as MouseMoveEvent;
+
+                    if (mouseMoveEvent != null)
                     {
-                        mouseEvent.MouseState = originalState;
-
-                        var mouseMoveEvent = @event as MouseMoveEvent;
-
-                        if (mouseMoveEvent != null)
-                        {
-                            mouseMoveEvent.LastX -= scrollXPixels;
-                            mouseMoveEvent.LastY -= scrollYPixels;
-                            mouseMoveEvent.X -= scrollXPixels;
-                            mouseMoveEvent.Y -= scrollYPixels;
-                        }
+                        mouseMoveEvent.LastX -= scrollXPixels;
+                        mouseMoveEvent.LastY -= scrollYPixels;
+                        mouseMoveEvent.X -= scrollXPixels;
+                        mouseMoveEvent.Y -= scrollYPixels;
                     }
                 }
             }

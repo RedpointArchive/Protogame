@@ -14,7 +14,7 @@ namespace Protogame
         private readonly UserInterfaceAsset _userInterfaceAsset;
 
         private readonly
-            Dictionary<string, Dictionary<UserInterfaceBehaviourEvent, Action<object, IGameContext, IUpdateContext>>>
+            Dictionary<string, Dictionary<UserInterfaceBehaviourEvent, Action<object, IUserInterfaceController, IGameContext, IUpdateContext>>>
             _registeredBehaviours;
 
         private readonly Dictionary<object, string[]> _containerBehaviours;
@@ -23,6 +23,8 @@ namespace Protogame
         private IUpdateContext _currentUpdateContext;
         private bool _loadedUserInterface;
         private CanvasEntity _canvasEntity;
+        private Dictionary<string, XmlNode> _availableFragments;
+        private HashSet<IContainer> _firedCreatedEventsForContainers;
 
         public DefaultUserInterfaceController(IKernel kernel, IHierarchy hierarchy, INode node, UserInterfaceAsset userInterfaceAsset)
         {
@@ -30,8 +32,10 @@ namespace Protogame
             _hierarchy = hierarchy;
             _node = node;
             _userInterfaceAsset = userInterfaceAsset;
-            _registeredBehaviours = new Dictionary<string, Dictionary<UserInterfaceBehaviourEvent, Action<object, IGameContext, IUpdateContext>>>();
+            _registeredBehaviours = new Dictionary<string, Dictionary<UserInterfaceBehaviourEvent, Action<object, IUserInterfaceController, IGameContext, IUpdateContext>>>();
             _containerBehaviours = new Dictionary<object, string[]>();
+            _availableFragments = new Dictionary<string, XmlNode>();
+            _firedCreatedEventsForContainers = new HashSet<IContainer>();
         }
         
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
@@ -43,28 +47,36 @@ namespace Protogame
             {
                 LoadUserInterface(gameContext);
                 _loadedUserInterface = true;
-
-                foreach (var kv in _containerBehaviours)
-                {
-                    var sender = kv.Key;
-
-                    foreach (var behaviour in kv.Value)
-                    {
-                        if (!_registeredBehaviours.ContainsKey(behaviour))
-                        {
-                            continue;
-                        }
-
-                        if (!_registeredBehaviours[behaviour].ContainsKey(UserInterfaceBehaviourEvent.Create))
-                        {
-                            continue;
-                        }
-
-                        _registeredBehaviours[behaviour][UserInterfaceBehaviourEvent.Create](sender, _currentGameContext, _currentUpdateContext);
-                    }
-                }
             }
-            
+
+            foreach (var kv in _containerBehaviours)
+            {
+                var sender = (IContainer)kv.Key;
+
+                if (_firedCreatedEventsForContainers.Contains(sender))
+                {
+                    continue;
+                }
+
+                foreach (var behaviour in kv.Value)
+                {
+                    if (!_registeredBehaviours.ContainsKey(behaviour))
+                    {
+                        continue;
+                    }
+
+                    if (!_registeredBehaviours[behaviour].ContainsKey(UserInterfaceBehaviourEvent.Create))
+                    {
+                        continue;
+                    }
+
+                    _registeredBehaviours[behaviour][UserInterfaceBehaviourEvent.Create](sender, this,
+                        _currentGameContext, _currentUpdateContext);
+                }
+
+                _firedCreatedEventsForContainers.Add(sender);
+            }
+
             foreach (var kv in _containerBehaviours)
             {
                 var sender = kv.Key;
@@ -81,7 +93,7 @@ namespace Protogame
                         continue;
                     }
 
-                    _registeredBehaviours[behaviour][UserInterfaceBehaviourEvent.GameUpdate](sender, _currentGameContext, _currentUpdateContext);
+                    _registeredBehaviours[behaviour][UserInterfaceBehaviourEvent.GameUpdate](sender, this, _currentGameContext, _currentUpdateContext);
                 }
             }
         }
@@ -91,12 +103,42 @@ namespace Protogame
             var document = new XmlDocument();
             document.LoadXml(_userInterfaceAsset.UserInterfaceData);
 
-            var root = ProcessElement(document.DocumentElement?.FirstChild);
-            if (root is Canvas)
+            var childNodes = document.DocumentElement?.ChildNodes;
+            if (childNodes == null)
             {
-                _canvasEntity = _kernel.Get<CanvasEntity>(_hierarchy.Lookup(gameContext.World));
-                _canvasEntity.Canvas = (Canvas)root;
+                return;
             }
+
+            foreach (var element in childNodes.OfType<XmlElement>())
+            {
+                if (element.Name == "canvas")
+                {
+                    if (_canvasEntity == null)
+                    {
+                        var root = ProcessElement(element);
+                        if (root is Canvas)
+                        {
+                            _canvasEntity = _kernel.Get<CanvasEntity>(_hierarchy.Lookup(gameContext.World));
+                            _canvasEntity.Canvas = (Canvas) root;
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("User interface file declares more than one canvas.");
+                    }
+                }
+                else if (element.Name == "fragment")
+                {
+                    _availableFragments[element.GetAttribute("name")] = element;
+                }
+            }
+        }
+
+        public IContainer LoadUserFragment(string name)
+        {
+            var c = ((CanvasFragment)ProcessElement(_availableFragments[name])).Children[0];
+            c.Parent = null;
+            return c;
         }
 
         private IContainer ProcessElement(XmlNode xmlNode)
@@ -148,18 +190,18 @@ namespace Protogame
                     continue;
                 }
 
-                _registeredBehaviours[behaviour][ev](sender, _currentGameContext, _currentUpdateContext);
+                _registeredBehaviours[behaviour][ev](sender, this, _currentGameContext, _currentUpdateContext);
             }
         }
 
-        public void RegisterBehaviour<TContainerType>(string name, UserInterfaceBehaviourEvent @event, Action<TContainerType, IGameContext, IUpdateContext> callback)
+        public void RegisterBehaviour<TContainerType>(string name, UserInterfaceBehaviourEvent @event, Action<TContainerType, IUserInterfaceController, IGameContext, IUpdateContext> callback)
         {
             if (!_registeredBehaviours.ContainsKey(name))
             {
-                _registeredBehaviours[name] = new Dictionary<UserInterfaceBehaviourEvent, Action<object, IGameContext, IUpdateContext>>();
+                _registeredBehaviours[name] = new Dictionary<UserInterfaceBehaviourEvent, Action<object, IUserInterfaceController, IGameContext, IUpdateContext>>();
             }
 
-            _registeredBehaviours[name][@event] = (o, g, u) => { callback((TContainerType) o, g, u); };
+            _registeredBehaviours[name][@event] = (o, t, g, u) => { callback((TContainerType) o, t, g, u); };
         }
 
         public void Dispose()

@@ -1,138 +1,44 @@
-namespace Protogame
-{
-	using System;
+using System;
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-	using System.Windows.Forms;
+using System.Windows.Forms;
 #endif
-    using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 
-    /// <summary>
-    /// The file select.
-    /// </summary>
+namespace Protogame
+{	
     public class FileSelect : IContainer
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileSelect"/> class.
-        /// </summary>
         public FileSelect()
         {
-            this.State = ButtonUIState.None;
+            State = ButtonUIState.None;
         }
-
-        /// <summary>
-        /// The changed.
-        /// </summary>
+        
         public event EventHandler Changed;
 
-        /// <summary>
-        /// Gets the children.
-        /// </summary>
-        /// <value>
-        /// The children.
-        /// </value>
-        public IContainer[] Children
-        {
-            get
-            {
-                return new IContainer[0];
-            }
-        }
+        public IContainer[] Children => IContainerConstant.EmptyContainers;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether focused.
-        /// </summary>
-        /// <value>
-        /// The focused.
-        /// </value>
         public bool Focused { get; set; }
-
-        /// <summary>
-        /// Gets or sets the order.
-        /// </summary>
-        /// <value>
-        /// The order.
-        /// </value>
+        
         public int Order { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent.
-        /// </summary>
-        /// <value>
-        /// The parent.
-        /// </value>
+        
         public IContainer Parent { get; set; }
 
-        /// <summary>
-        /// Gets or sets the path.
-        /// </summary>
-        /// <value>
-        /// The path.
-        /// </value>
+        public object Userdata { get; set; }
+        
         public string Path { get; set; }
-
-        /// <summary>
-        /// Gets the state.
-        /// </summary>
-        /// <value>
-        /// The state.
-        /// </value>
+        
         public ButtonUIState State { get; private set; }
-
-        /// <summary>
-        /// The draw.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        public void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        
+        public void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
-            skin.DrawFileSelect(context, layout, this);
+            skinDelegator.Render(context, layout, this);
         }
-
-        /// <summary>
-        /// The update.
-        /// </summary>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        /// <param name="gameTime">
-        /// The game time.
-        /// </param>
-        /// <param name="stealFocus">
-        /// The steal focus.
-        /// </param>
-        public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
+        
+        public void Update(ISkinLayout skinLayout, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
         }
-
-        /// <summary>
-        /// Requests that the UI container handle the specified event or return false.
-        /// </summary>
-        /// <param name="skin">
-        /// The UI skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout for the element.
-        /// </param>
-        /// <param name="context">
-        /// The current game context.
-        /// </param>
-        /// <param name="event">
-        /// The event that was raised.
-        /// </param>
-        /// <returns>
-        /// Whether or not this UI element handled the event.
-        /// </returns>
-        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        
+        public bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
         {
             var mouseEvent = @event as MouseEvent;
             var mousePressEvent = @event as MousePressEvent;
@@ -148,11 +54,11 @@ namespace Protogame
             {
                 if (mouseMoveEvent != null)
                 {
-                    this.State = ButtonUIState.Hover;
+                    State = ButtonUIState.Hover;
                 }
                 else if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
                 {
-                    this.State = ButtonUIState.Clicked;
+                    State = ButtonUIState.Clicked;
                     this.Focus();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
@@ -160,10 +66,10 @@ namespace Protogame
                     {
                         if (openFileDialog.ShowDialog() == DialogResult.OK)
                         {
-                            this.Path = openFileDialog.FileName;
-                            if (this.Changed != null)
+                            Path = openFileDialog.FileName;
+                            if (Changed != null)
                             {
-                                this.Changed(this, new EventArgs());
+                                Changed(this, new EventArgs());
                             }
                         }
 
@@ -176,12 +82,12 @@ namespace Protogame
             }
             else
             {
-                this.State = ButtonUIState.None;
+                State = ButtonUIState.None;
             }
 
             if (mouseReleaseEvent != null && mouseReleaseEvent.Button == MouseButton.Left)
             {
-                this.State = ButtonUIState.None;
+                State = ButtonUIState.None;
             }
 
             return false;

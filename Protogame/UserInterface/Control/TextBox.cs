@@ -1,177 +1,67 @@
-namespace Protogame
-{
-    using System;
-    using System.Text;
-    using Microsoft.Xna.Framework;
+using System;
+using System.Text;
+using Microsoft.Xna.Framework;
 
 #if PLATFORM_ANDROID
-    using Android.Content;
-    using Android.Views.InputMethods;
-    #endif
+using Android.Content;
+using Android.Views.InputMethods;
+#endif
 
-    /// <summary>
-    /// The text box.
-    /// </summary>
+namespace Protogame
+{
     public class TextBox : IContainer
     {
-        /// <summary>
-        /// The m_ keyboard reader.
-        /// </summary>
-        private readonly DefaultKeyboardStringReader m_KeyboardReader = new DefaultKeyboardStringReader();
-
-        /// <summary>
-        /// The m_ previous value.
-        /// </summary>
-        private string m_PreviousValue = string.Empty;
-
-        /// <summary>
-        /// The m_ text builder.
-        /// </summary>
-        private StringBuilder m_TextBuilder = new StringBuilder();
-
-        /// <summary>
-        /// The text changed.
-        /// </summary>
+        private readonly DefaultKeyboardStringReader _keyboardReader = new DefaultKeyboardStringReader();
+        
+        private string _previousValue = string.Empty;
+        
+        private StringBuilder _textBuilder = new StringBuilder();
+        
         public event EventHandler TextChanged;
 
-        /// <summary>
-        /// Gets the children.
-        /// </summary>
-        /// <value>
-        /// The children.
-        /// </value>
-        public IContainer[] Children
-        {
-            get
-            {
-                return new IContainer[0];
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether focused.
-        /// </summary>
-        /// <value>
-        /// The focused.
-        /// </value>
+        public IContainer[] Children => IContainerConstant.EmptyContainers;
+        
         public bool Focused { get; set; }
-
-        /// <summary>
-        /// Gets or sets the hint.
-        /// </summary>
-        /// <value>
-        /// The hint.
-        /// </value>
+        
         public string Hint { get; set; }
-
-        /// <summary>
-        /// Gets or sets the order.
-        /// </summary>
-        /// <value>
-        /// The order.
-        /// </value>
+        
         public int Order { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parent.
-        /// </summary>
-        /// <value>
-        /// The parent.
-        /// </value>
+        
         public IContainer Parent { get; set; }
 
-        /// <summary>
-        /// Gets or sets the text.
-        /// </summary>
-        /// <value>
-        /// The text.
-        /// </value>
+        public object Userdata { get; set; }
+        
         public string Text
         {
             get
             {
-                return this.m_TextBuilder.ToString();
+                return _textBuilder.ToString();
             }
-
             set
             {
-                var oldValue = this.m_TextBuilder.ToString();
-                this.m_TextBuilder = new StringBuilder(value);
-                this.m_PreviousValue = value;
+                var oldValue = _textBuilder.ToString();
+                _textBuilder = new StringBuilder(value);
+                _previousValue = value;
                 if (oldValue != value)
                 {
-                    if (this.TextChanged != null)
-                    {
-                        this.TextChanged(this, new EventArgs());
-                    }
+                    TextChanged?.Invoke(this, new EventArgs());
                 }
             }
         }
-
-        /// <summary>
-        /// Gets or sets the update counter.
-        /// </summary>
-        /// <value>
-        /// The update counter.
-        /// </value>
+        
         public int UpdateCounter { get; set; }
-
-        /// <summary>
-        /// The draw.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        public void Draw(IRenderContext context, ISkin skin, Rectangle layout)
+        
+        public void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
-            skin.DrawTextBox(context, layout, this);
+            skinDelegator.Render(context, layout, this);
         }
-
-        /// <summary>
-        /// The update.
-        /// </summary>
-        /// <param name="skin">
-        /// The skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout.
-        /// </param>
-        /// <param name="gameTime">
-        /// The game time.
-        /// </param>
-        /// <param name="stealFocus">
-        /// The steal focus.
-        /// </param>
-        public void Update(ISkin skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
+        
+        public void Update(ISkinLayout skin, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
-            this.UpdateCounter++;
+            UpdateCounter++;
         }
-
-        /// <summary>
-        /// Requests that the UI container handle the specified event or return false.
-        /// </summary>
-        /// <param name="skin">
-        /// The UI skin.
-        /// </param>
-        /// <param name="layout">
-        /// The layout for the element.
-        /// </param>
-        /// <param name="context">
-        /// The current game context.
-        /// </param>
-        /// <param name="event">
-        /// The event that was raised.
-        /// </param>
-        /// <returns>
-        /// Whether or not this UI element handled the event.
-        /// </returns>
-        public bool HandleEvent(ISkin skin, Rectangle layout, IGameContext context, Event @event)
+        
+        public bool HandleEvent(ISkinLayout skin, Rectangle layout, IGameContext context, Event @event)
         {
             var mousePressEvent = @event as MousePressEvent;
             var touchPressEvent = @event as TouchPressEvent;
@@ -192,19 +82,19 @@ namespace Protogame
                 {
                     this.Focus();
 
-                    #if PLATFORM_ANDROID
+#if PLATFORM_ANDROID
                     var manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
                     manager.ShowSoftInput(((Microsoft.Xna.Framework.AndroidGameWindow)context.Game.Window).GameViewAsView, ShowFlags.Forced);
-                    #endif
+#endif
 
                     return true;
                 }
                 else
                 {
-                    #if PLATFORM_ANDROID
+#if PLATFORM_ANDROID
                     var manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
                     manager.HideSoftInputFromWindow(((Microsoft.Xna.Framework.AndroidGameWindow)context.Game.Window).GameViewAsView.WindowToken, HideSoftInputFlags.None);
-                    #endif
+#endif
                 }
             }
 
@@ -213,18 +103,15 @@ namespace Protogame
             if (keyEvent != null)
             {
                 var keyboard = keyEvent.KeyboardState;
-                if (this.Focused)
+                if (Focused)
                 {
-                    this.m_KeyboardReader.Process(keyboard, context.GameTime, this.m_TextBuilder);
-                    if (this.m_TextBuilder.ToString() != this.m_PreviousValue)
+                    _keyboardReader.Process(keyboard, context.GameTime, _textBuilder);
+                    if (_textBuilder.ToString() != _previousValue)
                     {
-                        if (this.TextChanged != null)
-                        {
-                            this.TextChanged(this, new EventArgs());
-                        }
+                        TextChanged?.Invoke(this, new EventArgs());
                     }
 
-                    this.m_PreviousValue = this.m_TextBuilder.ToString();
+                    _previousValue = _textBuilder.ToString();
 
                     return true;
                 }

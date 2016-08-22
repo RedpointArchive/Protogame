@@ -2,9 +2,9 @@
 {
     public interface IHasDesiredSize
     {
-        int? GetDesiredWidth(ISkin skin);
+        int? GetDesiredWidth(ISkinLayout skin);
 
-        int? GetDesiredHeight(ISkin skin);
+        int? GetDesiredHeight(ISkinLayout skin);
     }
 }
 
