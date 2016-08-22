@@ -350,16 +350,16 @@ namespace Protogame
             switch (request.PrimitiveType)
             {
                 case PrimitiveType.TriangleStrip:
-                    pc = request.MeshVertexBuffer.VertexCount - 2;
+                    pc = request.MeshIndexBuffer.IndexCount - 2;
                     break;
                 case PrimitiveType.TriangleList:
-                    pc = request.MeshVertexBuffer.VertexCount / 3;
+                    pc = request.MeshIndexBuffer.IndexCount / 3;
                     break;
                 case PrimitiveType.LineStrip:
-                    pc = request.MeshVertexBuffer.VertexCount - 1;
+                    pc = request.MeshIndexBuffer.IndexCount - 1;
                     break;
                 case PrimitiveType.LineList:
-                    pc = request.MeshVertexBuffer.VertexCount / 2;
+                    pc = request.MeshIndexBuffer.IndexCount / 2;
                     break;
                 default:
                     throw new InvalidOperationException("Unknown primitive type!");
