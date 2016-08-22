@@ -573,7 +573,9 @@ namespace Protogame
                                 // Or to put it another way, if we're not on the client and we know the client has
                                 // authority, only transmit data for the first time because the client will make 
                                 // decisions from that point onwards.
-                                if (isFromClient || clientAuthoritiveMode != ClientAuthoritiveMode.TrustClient)
+                                if (isFromClient || clientAuthoritiveMode != ClientAuthoritiveMode.TrustClient ||
+                                    (clientAuthoritiveMode == ClientAuthoritiveMode.TrustClient &&
+                                    !endpoint.Equals(ClientOwnership)))
                                 {
                                     var lastValue = data.LastValue;
                                     var currentValue = data.CurrentValue;
