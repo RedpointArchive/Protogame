@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using HiveMP.NATPunchthrough.Model;
 using HiveMP.TemporarySession.Model;
@@ -21,7 +22,7 @@ namespace Protogame
         /// <returns>The asynchronous task that indicates completion.</returns>
         /// <exception cref="InvalidOperationException">The server provided an invalid NAT negotiation response.</exception>
         /// <exception cref="TimeoutException">The NAT punchthrough failed to complete before the timeout occurred.</exception>
-        Task PerformNATPunchthrough(TempSessionWithSecrets userSession, int udpPort, int timeout);
+        Task PerformNATPunchthrough(TempSessionWithSecrets userSession, UdpClient udpClient, int timeout);
 
         /// <summary>
         /// Performs NAT punchthrough for the given user session with traffic from a dynamically allocated port.
@@ -31,7 +32,7 @@ namespace Protogame
         /// <returns>The dynamically allocated port to send future traffic from.</returns>
         /// <exception cref="InvalidOperationException">The server provided an invalid NAT negotiation response.</exception>
         /// <exception cref="TimeoutException">The NAT punchthrough failed to complete before the timeout occurred.</exception>
-        Task<int> PerformNATPunchthrough(TempSessionWithSecrets userSession, int timeout);
+        Task<UdpClient> PerformNATPunchthrough(TempSessionWithSecrets userSession, int timeout);
 
         /// <summary>
         /// Looks up registered NAT endpoints for the given target session.  You can use this

@@ -36,7 +36,6 @@ namespace Protogame
         /// </param>
         public MxDispatcher(int port)
         {
-            Port = port;
             _udpClient = new UdpClient(port) { Client = { Blocking = false } };
             _mxClientGroups = new Dictionary<string, MxClientGroup>();
             _closed = false;
@@ -47,9 +46,19 @@ namespace Protogame
         }
 
         /// <summary>
-        /// The port that this dispatcher recieves messages on.
+        /// Initializes a new instance of the <see cref="MxDispatcher"/> class.
         /// </summary>
-        public int Port { get; private set; }
+        public MxDispatcher(UdpClient client)
+        {
+            client.Client.Blocking = false;
+            _udpClient = client;
+            _mxClientGroups = new Dictionary<string, MxClientGroup>();
+            _closed = false;
+            _explicitlyDisconnected = new List<IPEndPoint>();
+
+            _mxClientGroups.Add(MxClientGroup.Ungrouped, new MxClientGroup(this, MxClientGroup.Ungrouped));
+            _mxClientGroupLock = new object();
+        }
 
         /// <summary>
         /// Raised when an Mx client connects.
