@@ -17,7 +17,7 @@ namespace Protogame
         /// The number of packets that can be missed in an Update() call
         /// before this client is considered to be disconnected from the target endpoint.
         /// </summary>
-        private readonly int _disconnectLimit;
+        private int _disconnectLimit;
 
         /// <summary>
         /// The limit at which point the DisconnectWarning events will be raised.
@@ -249,6 +249,15 @@ namespace Protogame
         /// call <see cref="MxDispatcher.PlaceInGroup"/>.
         /// </summary>
         public MxClientGroup Group { get; set; }
+
+        /// <summary>
+        /// The disconnection timeout limit.
+        /// </summary>
+        public int DisconnectLimit
+        {
+            get { return _disconnectLimit; }
+            set { _disconnectLimit = value; }
+        }
 
         /// <summary>
         /// Whether or not this client has ever received a packet.  When a group is isolating
