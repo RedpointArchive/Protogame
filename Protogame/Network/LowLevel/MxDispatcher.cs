@@ -43,6 +43,8 @@
         /// </summary>
         private bool m_Closed;
 
+        private List<IPEndPoint> _explicitlyDisconnected;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MxDispatcher"/> class.
         /// </summary>
@@ -56,6 +58,7 @@
             this.m_MxClients = new Dictionary<IPEndPoint, MxClient>();
             this.m_Reliabilities = new Dictionary<IPEndPoint, MxReliability>();
             this.m_Closed = false;
+            _explicitlyDisconnected = new List<IPEndPoint>();
         }
 
         /// <summary>
@@ -185,6 +188,11 @@
         {
             this.AssertNotClosed();
 
+            if (_explicitlyDisconnected.Contains(endpoint))
+            {
+                _explicitlyDisconnected.Remove(endpoint);
+            }
+
             this.m_MxClients[endpoint] = new MxClient(
                 this, 
                 endpoint, 
@@ -227,6 +235,8 @@
                 this.UnregisterFromEvents(reliability);
                 this.m_Reliabilities.Remove(endpoint);
             }
+            
+            _explicitlyDisconnected.Add(endpoint);
         }
 
         /// <summary>
@@ -339,6 +349,12 @@
                 }
                 else
                 {
+                    if (_explicitlyDisconnected.Contains(receive))
+                    {
+                        // Explicitly ignore this client and prevent it from reconnecting.
+                        continue;
+                    }
+
                     // Create a new client for this address.
                     this.m_MxClients.Add(receive, new MxClient(this, receive, this.m_UdpClient));
                     
