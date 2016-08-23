@@ -22,7 +22,7 @@ namespace Protogame
         /// <summary>
         /// The limit at which point the DisconnectWarning events will be raised.
         /// </summary>
-        private readonly int _disconnectWarningLimit;
+        private int _disconnectWarningLimit;
 
         /// <summary>
         /// The dispatcher associated with this client.
@@ -258,6 +258,20 @@ namespace Protogame
             get { return _disconnectLimit; }
             set { _disconnectLimit = value; }
         }
+
+        /// <summary>
+        /// The disconnection timeout warning limit.
+        /// </summary>
+        public int DisconnectWarningLimit
+        {
+            get { return _disconnectWarningLimit; }
+            set { _disconnectWarningLimit = value; }
+        }
+
+        /// <summary>
+        /// The disconnection accumulator.
+        /// </summary>
+        public int DisconnectAccumulator => _disconnectAccumulator;
 
         /// <summary>
         /// Whether or not this client has ever received a packet.  When a group is isolating
