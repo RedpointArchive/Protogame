@@ -29,7 +29,7 @@ namespace Protogame
 
         int ClientRenderDelayTicks { get; set; }
 
-        void Send<T>(MxDispatcher dispatcher, IPEndPoint target, T message, bool reliable = false);
+        void Send<T>(MxDispatcher dispatcher, MxClientGroup target, T message, bool reliable = false);
 
         IEnumerable<INetworkFrame> GetRecentFrames();
 

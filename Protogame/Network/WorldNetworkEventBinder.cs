@@ -43,6 +43,7 @@ namespace Protogame
                     if (_networkEngine.FindObjectByNetworkId(createEntityMessage.EntityID) != null)
                     {
                         // This entity was already created on the client, so we ignore it.
+                        _consoleHandle.Log("Got entity create message, but ignored it because the client already knows about it.");
                         return true;
                     }
 
@@ -58,12 +59,14 @@ namespace Protogame
 
                     if (spawnedEntity != null)
                     {
+                        _consoleHandle.Log("Assigned initial transform to the entity.");
                         spawnedEntity.Transform.Assign(createEntityMessage.InitialTransform.DeserializeFromNetwork());
                     }
 
                     var networkIdentifiableEntity = spawnedEntity as INetworkIdentifiable;
                     if (networkIdentifiableEntity != null)
                     {
+                        _consoleHandle.Log("Recieved network ID: " + createEntityMessage.EntityID);
                         networkIdentifiableEntity.ReceiveNetworkIDFromServer(
                             networkReceiveEvent.GameContext,
                             networkReceiveEvent.UpdateContext,

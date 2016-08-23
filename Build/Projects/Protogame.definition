@@ -575,6 +575,7 @@
     <Compile Include="Network\LowLevel\MxClient.cs" />
     <Compile Include="Network\LowLevel\MxClientEventArgs.cs" />
     <Compile Include="Network\LowLevel\MxClientEventHandler.cs" />
+    <Compile Include="Network\LowLevel\MxClientGroup.cs" />
     <Compile Include="Network\LowLevel\MxDisconnectEventArgs.cs" />
     <Compile Include="Network\LowLevel\MxDisconnectEventHandler.cs" />
     <Compile Include="Network\LowLevel\MxDispatcher.cs" />

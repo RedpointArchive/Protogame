@@ -102,12 +102,13 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
                 dispatcher1.MessageReceived +=
                     (sender, args) => { receivedText = Encoding.ASCII.GetString(args.Payload); };
 
-                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9013));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9013));
+                var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(
-                    new IPEndPoint(IPAddress.Loopback, 9013), 
+                    clientGroup, 
                     Encoding.ASCII.GetBytes(Text), 
                     true);
 
@@ -166,12 +167,13 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                         receivedText = Encoding.ASCII.GetString(args.Payload);
                     };
 
-                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9017));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9017));
+                var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
                 dispatcher2.Send(
-                    new IPEndPoint(IPAddress.Loopback, 9017),
+                    clientGroup,
                     Encoding.ASCII.GetBytes(text),
                     true);
 
@@ -208,11 +210,12 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                 dispatcher1.MessageReceived +=
                     (sender, args) => { receivedText = Encoding.ASCII.GetString(args.Payload); };
 
-                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9021));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9021));
+                var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
-                dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9021), Encoding.ASCII.GetBytes(Text));
+                dispatcher2.Send(clientGroup, Encoding.ASCII.GetBytes(Text));
 
                 _assert.Null(receivedText);
 
@@ -253,11 +256,12 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                     acknowledged = true; 
                 };
 
-                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9033));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9033));
+                var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
-                dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9033), Encoding.ASCII.GetBytes(Text));
+                dispatcher2.Send(clientGroup, Encoding.ASCII.GetBytes(Text));
 
                 _assert.Null(receivedText);
 
@@ -303,11 +307,12 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                     }
                 };
 
-                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9027));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9027));
+                var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
 
-                dispatcher2.Send(new IPEndPoint(IPAddress.Loopback, 9027), bytes);
+                dispatcher2.Send(clientGroup, bytes);
 
                 _assert.Null(receivedText);
 

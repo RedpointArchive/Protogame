@@ -17,7 +17,7 @@ namespace Protogame
 
         private int? _uniqueIdentifierForEntity;
 
-        private readonly List<IPEndPoint> _clientsEntityIsKnownOn;
+        private readonly HashSet<MxClientGroup> _clientsEntityIsKnownOn;
 
         private readonly Dictionary<string, SynchronisedData> _synchronisedData;
         private readonly List<SynchronisedData> _synchronisedDataToTransmit;
@@ -43,7 +43,7 @@ namespace Protogame
             _networkMessageSerialization = networkMessageSerialization;
             _debugRenderer = debugRenderer;
 
-            _clientsEntityIsKnownOn = new List<IPEndPoint>();
+            _clientsEntityIsKnownOn = new HashSet<MxClientGroup>();
             _synchronisedData = new Dictionary<string, SynchronisedData>();
             _synchronisedDataToTransmit = new List<SynchronisedData>();
 
@@ -67,13 +67,13 @@ namespace Protogame
         public bool OnlySendToAuthoritiveClient { get; set; }
 
         /// <summary>
-        /// The client which owns this entity.  If <see cref="ClientAuthoritiveMode"/> is
+        /// The client group which owns this entity.  If <see cref="ClientAuthoritiveMode"/> is
         /// anything other than <c>None</c>, then this indicates which clients can modify
         /// information about this entity on the server.  If this is <c>null</c> while
         /// <see cref="ClientAuthoritiveMode"/> is anything other than <c>None</c>, then any
         /// client can modify this entity.
         /// </summary>
-        public IPEndPoint ClientOwnership { get; set; }
+        public MxClientGroup ClientOwnership { get; set; }
 
         /// <summary>
         /// The authority level given to clients over this entity.
@@ -153,23 +153,25 @@ namespace Protogame
             // Sync the entity to the client if it hasn't been already.
             foreach (var dispatcher in _networkEngine.CurrentDispatchers)
             {
-                // TODO: Tracking clients by endpoint almost certainly needs to change...
-                foreach (var endpoint in dispatcher.Endpoints)
+                foreach (var group in dispatcher.ValidClientGroups)
                 {
                     if (ClientAuthoritiveMode != ClientAuthoritiveMode.None &&
                         ClientOwnership != null && 
                         OnlySendToAuthoritiveClient)
                     {
-                        if (!ClientOwnership.Equals(endpoint))
+                        if (ClientOwnership != group)
                         {
                             // This client doesn't own the entity, and this entity is only
                             // synchronised with clients that own it.
+                            _consoleHandle.Log("Entity is owned by " + ClientOwnership + ", and target client is " + group + " who doesn't own it, so I'm not syncing it.");
                             continue;
                         }
                     }
 
-                    if (!_clientsEntityIsKnownOn.Contains(endpoint))
+                    if (!_clientsEntityIsKnownOn.Contains(group))
                     {
+                        _consoleHandle.Log("Entity is not known to " + group + ", sending creation message.");
+
                         // Send an entity creation message to the client.
                         var createMessage = new EntityCreateMessage
                         {
@@ -180,11 +182,11 @@ namespace Protogame
                         };
                         _networkEngine.Send(
                             dispatcher,
-                            endpoint,
+                            group,
                             createMessage,
                             true);
 
-                        _clientsEntityIsKnownOn.Add(endpoint);
+                        _clientsEntityIsKnownOn.Add(group);
                     }
                 }
             }
@@ -228,7 +230,7 @@ namespace Protogame
                 _synchronisationContext.DeclareSynchronisedProperties(this);
             }
 
-            AssignMessageToSyncData(propertyMessage, _synchronisedData, server.Endpoint);
+            AssignMessageToSyncData(propertyMessage, _synchronisedData, server.Group);
             return true;
         }
 
@@ -253,7 +255,7 @@ namespace Protogame
                 case ClientAuthoritiveMode.TrustClient:
                     {
                         // Check to see if the message is coming from a client that has authority.
-                        if (ClientOwnership != null && !ClientOwnership.Equals(client.Endpoint))
+                        if (ClientOwnership != null && ClientOwnership != client.Group)
                         {
                             // We don't trust this message.
                             return false;
@@ -283,7 +285,7 @@ namespace Protogame
                             _synchronisationContext.DeclareSynchronisedProperties(this);
                         }
 
-                        AssignMessageToSyncData(propertyMessage, _synchronisedData, client.Endpoint);
+                        AssignMessageToSyncData(propertyMessage, _synchronisedData, client.Group);
                         return true;
                     }
                 case ClientAuthoritiveMode.ReplayInputs:
@@ -379,9 +381,9 @@ namespace Protogame
                 _synchronisedData[contextFullName] = new SynchronisedData
                 {
                     Name = contextFullName,
-                    HasPerformedInitialSync = new Dictionary<IPEndPoint, bool>(),
-                    HasReceivedInitialSync = new Dictionary<IPEndPoint, bool>(),
-                    LastFrameSynced = new Dictionary<IPEndPoint, int>()
+                    HasPerformedInitialSync = new Dictionary<MxClientGroup, bool>(),
+                    HasReceivedInitialSync = new Dictionary<MxClientGroup, bool>(),
+                    LastFrameSynced = new Dictionary<MxClientGroup, int>()
                 };
 
                 entry = _synchronisedData[contextFullName];
@@ -464,15 +466,15 @@ namespace Protogame
 
             public object CurrentValue;
 
-            public Dictionary<IPEndPoint, int> LastFrameSynced;
+            public Dictionary<MxClientGroup, int> LastFrameSynced;
 
-            public Dictionary<IPEndPoint, bool> HasPerformedInitialSync;
+            public Dictionary<MxClientGroup, bool> HasPerformedInitialSync;
 
             public Action<object> SetValueDelegate;
 
             public bool IsActiveInSynchronisation;
 
-            public Dictionary<IPEndPoint, bool> HasReceivedInitialSync;
+            public Dictionary<MxClientGroup, bool> HasReceivedInitialSync;
 
             public ITimeMachine TimeMachine;
 
@@ -507,14 +509,13 @@ namespace Protogame
             // Sync properties to each client.
             foreach (var dispatcher in _networkEngine.CurrentDispatchers)
             {
-                // TODO: Tracking clients by endpoint almost certainly needs to change...
-                foreach (var endpoint in dispatcher.Endpoints)
+                foreach (var group in dispatcher.ValidClientGroups)
                 {
                     if (ClientAuthoritiveMode != ClientAuthoritiveMode.None &&
                         ClientOwnership != null &&
                         OnlySendToAuthoritiveClient)
                     {
-                        if (!ClientOwnership.Equals(endpoint))
+                        if (ClientOwnership != group)
                         {
                             // This client doesn't own the entity, and this entity is only
                             // synchronised with clients that own it.
@@ -522,7 +523,7 @@ namespace Protogame
                         }
                     }
 
-                    if (isFromClient || _clientsEntityIsKnownOn.Contains(endpoint))
+                    if (isFromClient || _clientsEntityIsKnownOn.Contains(group))
                     {
                         if (_synchronisedData.Count > 0)
                         {
@@ -537,7 +538,7 @@ namespace Protogame
                                 // this particular client.
                                 if (data.SynchronisationTargets == SynchroniseTargets.OwningClient &&
                                     (ClientOwnership == null ||
-                                     !ClientOwnership.Equals(endpoint)))
+                                     !(ClientOwnership == group)))
                                 {
                                     // This data should only be synchronised to the owning client, and
                                     // we are not the owning client.
@@ -545,7 +546,7 @@ namespace Protogame
                                 }
                                 else if (data.SynchronisationTargets == SynchroniseTargets.NonOwningClients &&
                                     (ClientOwnership == null ||
-                                     ClientOwnership.Equals(endpoint)))
+                                     ClientOwnership == group))
                                 {
                                     // This data should only be synchronised to non-owning clients, and
                                     // we either are the owning client, or no client ownership has been set.
@@ -554,17 +555,17 @@ namespace Protogame
 
                                 // If we're on the client and we haven't had an initial piece of data from the server,
                                 // we never synchronise because we don't know what the initial value is.
-                                if (isFromClient && !data.HasReceivedInitialSync.GetOrDefault(endpoint, false))
+                                if (isFromClient && !data.HasReceivedInitialSync.GetOrDefault(group, false))
                                 {
                                     continue;
                                 }
 
                                 // If we haven't performed the initial synchronisation, we always transmit the data.
-                                if (!data.HasPerformedInitialSync.GetOrDefault(endpoint, false))
+                                if (!data.HasPerformedInitialSync.GetOrDefault(group, false))
                                 {
                                     _networkEngine.LogSynchronisationEvent(
                                         "Must send property '" + data.Name + "' on entity ID " + _uniqueIdentifierForEntity + 
-                                        " because the endpoint " + endpoint + " has not received it's initial sync.");
+                                        " because the endpoint " + group + " has not received it's initial sync.");
                                     needsSync = true;
                                 }
 
@@ -575,7 +576,7 @@ namespace Protogame
                                 // decisions from that point onwards.
                                 if (isFromClient || clientAuthoritiveMode != ClientAuthoritiveMode.TrustClient ||
                                     (clientAuthoritiveMode == ClientAuthoritiveMode.TrustClient &&
-                                    !endpoint.Equals(ClientOwnership)))
+                                    group != ClientOwnership))
                                 {
                                     var lastValue = data.LastValue;
                                     var currentValue = data.CurrentValue;
@@ -593,13 +594,13 @@ namespace Protogame
 
                                     if (!Equals(lastValue, currentValue))
                                     {
-                                        if (data.LastFrameSynced.GetOrDefault(endpoint, 0) + data.FrameInterval < currentTick)
+                                        if (data.LastFrameSynced.GetOrDefault(group, 0) + data.FrameInterval < currentTick)
                                         {
                                             _networkEngine.LogSynchronisationEvent(
                                                 "Sending property '" + data.Name + "' on entity ID " + _uniqueIdentifierForEntity +
                                                 " because the value has changed (old value: " + lastValue + ", new value: " + currentValue + ")," +
-                                                " and the next frame synced target for endpoint " + endpoint + "" +
-                                                " is " + (data.LastFrameSynced.GetOrDefault(endpoint, 0) + data.FrameInterval) + "" +
+                                                " and the next frame synced target for group " + group + "" +
+                                                " is " + (data.LastFrameSynced.GetOrDefault(group, 0) + data.FrameInterval) + "" +
                                                 " and the current tick is " + currentTick + ".");
                                             needsSync = true;
                                         }
@@ -623,12 +624,12 @@ namespace Protogame
                                 message.IsClientMessage = isFromClient;
 
                                 bool reliable;
-                                AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick, endpoint, out reliable);
+                                AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick, group, out reliable);
 
                                 // Send an entity properties message to the client.
                                 _networkEngine.Send(
                                     dispatcher,
-                                    endpoint,
+                                    group,
                                     message,
                                     reliable);
                             }

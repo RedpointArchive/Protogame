@@ -1,12 +1,12 @@
-﻿namespace Protogame
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 
+namespace Protogame
+{
     /// <summary>
     /// A client on the Mx protocol.
     /// </summary>
@@ -17,57 +17,57 @@
         /// The number of packets that can be missed in an Update() call
         /// before this client is considered to be disconnected from the target endpoint.
         /// </summary>
-        private readonly int m_DisconnectLimit;
+        private readonly int _disconnectLimit;
 
         /// <summary>
         /// The limit at which point the DisconnectWarning events will be raised.
         /// </summary>
-        private readonly int m_DisconnectWarningLimit;
+        private readonly int _disconnectWarningLimit;
 
         /// <summary>
         /// The dispatcher associated with this client.
         /// </summary>
-        private readonly MxDispatcher m_Dispatcher;
+        private readonly MxDispatcher _dispatcher;
 
         /// <summary>
         /// The packets real time that are currently waiting to be sent by this client.
         /// </summary>
-        private readonly Queue<byte[]> m_PendingRealtimeSendPackets;
+        private readonly Queue<byte[]> _pendingRealtimeSendPackets;
 
         /// <summary>
         /// The packets reliable that are currently waiting to be sent by this client.
         /// </summary>
-        private readonly Queue<byte[]> m_PendingReliableSendPackets;
+        private readonly Queue<byte[]> _pendingReliableSendPackets;
 
         /// <summary>
         /// The round trip time queue, which is used to calculate a moving average
         /// of the round trip time as packets arrive.
         /// </summary>
-        private readonly List<ulong> m_RTTQueue;
+        private readonly List<ulong> _rttQueue;
 
         /// <summary>
         /// The round trip time threshold, which determines the point at which flow control
         /// will switch to "bad" mode.
         /// </summary>
-        private readonly double m_RTTThreshold;
+        private readonly double _rttThreshold;
 
         /// <summary>
         /// The receive queue that caches what packets this client has acknowledges, such
         /// that the queue can be sent on outgoing packets.
         /// </summary>
-        private readonly List<bool> m_ReceiveQueue;
+        private readonly List<bool> _receiveQueue;
 
         /// <summary>
         /// The packets that were received by the dispatcher and enqueued for
         /// handling by this client.
         /// </summary>
-        private readonly Queue<byte[]> m_ReceivedPackets;
+        private readonly Queue<byte[]> _receivedPackets;
 
         /// <summary>
-        /// The same as m_SendQueue, except that it stores the protocol and payload as the value.  This
+        /// The same as _sendQueue, except that it stores the protocol and payload as the value.  This
         /// is used to construct MessageLost events as required.
         /// </summary>
-        private readonly Dictionary<uint, KeyValuePair<uint, byte[][]>> m_SendMessageQueue;
+        private readonly Dictionary<uint, KeyValuePair<uint, byte[][]>> _sendMessageQueue;
 
         /// <summary>
         /// The send queue that has messages added to it when we send a message; it is a
@@ -77,118 +77,119 @@
         /// remote machine are assumed to have timed out after 1 second.
         /// </para>
         /// </summary>
-        private readonly Dictionary<uint, ulong> m_SendQueue;
+        private readonly Dictionary<uint, ulong> _sendQueue;
 
         /// <summary>
         /// The shared UDP client, provided by the dispatcher, that is used to send outgoing messages.
         /// </summary>
-        private readonly UdpClient m_SharedUdpClient;
+        private readonly UdpClient _sharedUdpClient;
 
         /// <summary>
         /// The target endpoint that we are connected to.
         /// </summary>
-        private readonly IPEndPoint m_TargetEndPoint;
+        private readonly IPEndPoint _targetEndPoint;
 
         /// <summary>
         /// The delta time since the last Update() call.
         /// </summary>
-        private double m_DeltaTime;
+        private double _deltaTime;
 
         /// <summary>
         /// The disconnect accumulator; when this reaches the disconnect limit, this client is considered
         /// to be disconnected from the target end point.
         /// </summary>
-        private int m_DisconnectAccumulator;
+        private int _disconnectAccumulator;
 
         /// <summary>
         /// The good conditions time measurement for flow control.
         /// </summary>
-        private double m_FCGoodConditionsTime;
+        private double _fcGoodConditionsTime;
 
         /// <summary>
         /// Whether or not the flow control system is currently in good mode.
         /// </summary>
-        private bool m_FCIsGoodSendMode;
+        private bool _fcIsGoodSendMode;
 
         /// <summary>
         /// The penalty reduction accumulator for flow control.
         /// </summary>
-        private double m_FCPenaltyReductionAccumulator;
+        private double _fcPenaltyReductionAccumulator;
 
         /// <summary>
         /// The penalty time for flow control.
         /// </summary>
-        private double m_FCPenaltyTime;
+        private double _fcPenaltyTime;
 
         /// <summary>
         /// The time that the Update() method was last called.
         /// </summary>
-        private DateTime m_LastCall;
+        private DateTime _lastCall;
 
         /// <summary>
         /// The local sequence number for outgoing packets.
         /// </summary>
-        private uint m_LocalSequenceNumber;
+        private uint _localSequenceNumber;
 
         /// <summary>
         /// The remote sequence number for incoming packets.
         /// </summary>
-        private uint m_RemoteSequenceNumber;
+        private uint _remoteSequenceNumber;
 
         /// <summary>
         /// The send accumulator, which is used to determine how many packets we need to
         /// send in a given Update() call (such that on average we send out with a constant
         /// frequency).
         /// </summary>
-        private double m_SendAccumulator;
+        private double _sendAccumulator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MxClient"/> class.
         /// </summary>
         /// <param name="dispatcher">
-        /// The dispatcher that is creating this client.
+        ///     The dispatcher that is creating this client.
         /// </param>
+        /// <param name="mxClientGroup"></param>
         /// <param name="target">
-        /// The target endpoint for the Mx client.
+        ///     The target endpoint for the Mx client.
         /// </param>
         /// <param name="sharedUdpClient">
-        /// The shared UDP client with which to send messages.
+        ///     The shared UDP client with which to send messages.
         /// </param>
-        public MxClient(
-            MxDispatcher dispatcher, 
-            IPEndPoint target, 
-            UdpClient sharedUdpClient)
+        public MxClient(MxDispatcher dispatcher, MxClientGroup mxClientGroup, IPEndPoint target, UdpClient sharedUdpClient)
         {
-            this.m_Dispatcher = dispatcher;
-            this.m_TargetEndPoint = target;
-            this.m_SharedUdpClient = sharedUdpClient;
-            this.m_ReceivedPackets = new Queue<byte[]>();
-            this.m_PendingRealtimeSendPackets = new Queue<byte[]>();
-            this.m_PendingReliableSendPackets = new Queue<byte[]>();
-            this.m_LastCall = DateTime.Now;
-            this.m_DeltaTime = 1000.0 / 30.0;
+            _dispatcher = dispatcher;
+            Group = mxClientGroup;
+            _targetEndPoint = target;
+            _sharedUdpClient = sharedUdpClient;
+            _receivedPackets = new Queue<byte[]>();
+            _pendingRealtimeSendPackets = new Queue<byte[]>();
+            _pendingReliableSendPackets = new Queue<byte[]>();
+            _lastCall = DateTime.Now;
+            _deltaTime = 1000.0 / 30.0;
 
             // Initialize connection information.
-            this.m_DisconnectAccumulator = 0;
-            this.m_DisconnectLimit = 900;
-            this.m_DisconnectWarningLimit = 30;
-            this.m_ReceiveQueue = new List<bool>();
+            _disconnectAccumulator = 0;
+            _disconnectLimit = 900;
+            _disconnectWarningLimit = 30;
+            _receiveQueue = new List<bool>();
             for (var i = 0; i < 32; i++)
             {
-                this.m_ReceiveQueue.Add(false);
+                _receiveQueue.Add(false);
             }
 
-            this.m_RTTQueue = new List<ulong>();
-            this.m_SendQueue = new Dictionary<uint, ulong>();
-            this.m_SendMessageQueue = new Dictionary<uint, KeyValuePair<uint, byte[][]>>();
-            this.m_LocalSequenceNumber = 0;
-            this.m_RemoteSequenceNumber = uint.MaxValue;
-            this.m_SendAccumulator = 0;
-            this.m_RTTThreshold = 250.0;
-            this.m_FCIsGoodSendMode = false;
-            this.m_FCPenaltyTime = 4.0;
-            this.m_FCGoodConditionsTime = 0;
-            this.m_FCPenaltyReductionAccumulator = 0;
+            _rttQueue = new List<ulong>();
+            _sendQueue = new Dictionary<uint, ulong>();
+            _sendMessageQueue = new Dictionary<uint, KeyValuePair<uint, byte[][]>>();
+            _localSequenceNumber = 0;
+            _remoteSequenceNumber = uint.MaxValue;
+            _sendAccumulator = 0;
+            _rttThreshold = 250.0;
+            _fcIsGoodSendMode = false;
+            _fcPenaltyTime = 4.0;
+            _fcGoodConditionsTime = 0;
+            _fcPenaltyReductionAccumulator = 0;
+
+            HasReceivedPacket = false;
         }
 
         /// <summary>
@@ -231,7 +232,7 @@
         {
             get
             {
-                return new IPEndPoint(this.m_TargetEndPoint.Address, this.m_TargetEndPoint.Port);
+                return new IPEndPoint(_targetEndPoint.Address, _targetEndPoint.Port);
             }
         }
 
@@ -244,6 +245,20 @@
         public float Latency { get; private set; }
 
         /// <summary>
+        /// The group that this Mx client is in.  You should not set this directly; instead
+        /// call <see cref="MxDispatcher.PlaceInGroup"/>.
+        /// </summary>
+        public MxClientGroup Group { get; set; }
+
+        /// <summary>
+        /// Whether or not this client has ever received a packet.  When a group is isolating
+        /// connections via <see cref="MxClientGroup.Isolate"/>, it checks this value to see
+        /// whether or not the client has had successful communications as opposed to simply
+        /// not having timed out yet.
+        /// </summary>
+        public bool HasReceivedPacket { get; private set; }
+
+        /// <summary>
         /// Enqueues a byte array to be handled in the receiving logic when Update() is called.
         /// </summary>
         /// <param name="packet">
@@ -251,7 +266,8 @@
         /// </param>
         public void EnqueueReceive(byte[] packet)
         {
-            this.m_ReceivedPackets.Enqueue(packet);
+            HasReceivedPacket = true;
+            _receivedPackets.Enqueue(packet);
         }
 
         /// <summary>
@@ -267,11 +283,11 @@
         {
             if (protocol == MxMessage.RealtimeProtocol)
             {
-                this.m_PendingRealtimeSendPackets.Enqueue(packet);
+                _pendingRealtimeSendPackets.Enqueue(packet);
             }
             else if (protocol == MxMessage.ReliableProtocol)
             {
-                this.m_PendingReliableSendPackets.Enqueue(packet);
+                _pendingReliableSendPackets.Enqueue(packet);
             }
             else
             {
@@ -284,42 +300,42 @@
         /// </summary>
         public void Update()
         {
-            this.m_DeltaTime = (DateTime.Now - this.m_LastCall).TotalMilliseconds;
-            this.m_LastCall = DateTime.Now;
+            _deltaTime = (DateTime.Now - _lastCall).TotalMilliseconds;
+            _lastCall = DateTime.Now;
 
-            if (this.m_DisconnectAccumulator > this.m_DisconnectWarningLimit)
+            if (_disconnectAccumulator > _disconnectWarningLimit)
             {
-                this.OnDisconnectWarning(
+                OnDisconnectWarning(
                     new MxDisconnectEventArgs
                     {
                         Client = this, 
-                        DisconnectAccumulator = this.m_DisconnectAccumulator, 
-                        DisconnectTimeout = this.m_DisconnectLimit, 
-                        IsDisconnected = this.m_DisconnectAccumulator > this.m_DisconnectLimit
+                        DisconnectAccumulator = _disconnectAccumulator, 
+                        DisconnectTimeout = _disconnectLimit, 
+                        IsDisconnected = _disconnectAccumulator > _disconnectLimit
                     });
             }
 
-            if (this.m_DisconnectAccumulator > this.m_DisconnectLimit)
+            if (_disconnectAccumulator > _disconnectLimit)
             {
-                this.m_Dispatcher.Disconnect(this.m_TargetEndPoint);
+                _dispatcher.Disconnect(this);
                 return;
             }
 
-            this.UpdateFlowControl();
+            UpdateFlowControl();
 
-            foreach (var kv in this.m_SendQueue.ToArray())
+            foreach (var kv in _sendQueue.ToArray())
             {
                 var idx = kv.Key;
 
-                if (this.GetUnixTimestamp() - kv.Value > 1000)
+                if (GetUnixTimestamp() - kv.Value > 1000)
                 {
-                    this.HandleLostMessage(idx);
+                    HandleLostMessage(idx);
                 }
             }
 
-            this.PerformSend();
+            PerformSend();
 
-            this.PerformReceive();
+            PerformReceive();
         }
 
         /// <summary>
@@ -330,7 +346,7 @@
         /// </param>
         protected virtual void OnDisconnectWarning(MxDisconnectEventArgs e)
         {
-            var handler = this.DisconnectWarning;
+            var handler = DisconnectWarning;
             if (handler != null)
             {
                 handler(this, e);
@@ -345,7 +361,7 @@
         /// </param>
         protected virtual void OnMessageAcknowledged(MxMessageEventArgs e)
         {
-            var handler = this.MessageAcknowledged;
+            var handler = MessageAcknowledged;
             if (handler != null)
             {
                 handler(this, e);
@@ -360,7 +376,7 @@
         /// </param>
         protected virtual void OnMessageLost(MxMessageEventArgs e)
         {
-            var handler = this.MessageLost;
+            var handler = MessageLost;
             if (handler != null)
             {
                 handler(this, e);
@@ -375,7 +391,7 @@
         /// </param>
         protected virtual void OnMessageReceived(MxMessageReceiveEventArgs e)
         {
-            var handler = this.MessageReceived;
+            var handler = MessageReceived;
             if (handler != null)
             {
                 handler(this, e);
@@ -390,7 +406,7 @@
         /// </param>
         protected virtual void OnMessageSent(MxMessageEventArgs e)
         {
-            var handler = this.MessageSent;
+            var handler = MessageSent;
             if (handler != null)
             {
                 handler(this, e);
@@ -405,12 +421,12 @@
         /// </returns>
         private double GetRTT()
         {
-            var totalRtt = this.m_RTTQueue.Aggregate(0Lu, (current, val) => current + val);
+            var totalRtt = _rttQueue.Aggregate(0Lu, (current, val) => current + val);
             var avgRtt = 0.0;
 
-            if (this.m_RTTQueue.Count > 0)
+            if (_rttQueue.Count > 0)
             {
-                avgRtt = totalRtt / (double)this.m_RTTQueue.Count;
+                avgRtt = totalRtt / (double)_rttQueue.Count;
             }
 
             return avgRtt;
@@ -424,7 +440,7 @@
         /// </returns>
         private double GetSendTime()
         {
-            return this.m_FCIsGoodSendMode ? 1000.0 / 20 : 1000.0 / 10;
+            return _fcIsGoodSendMode ? 1000.0 / 20 : 1000.0 / 10;
         }
 
         /// <summary>
@@ -447,13 +463,13 @@
         /// </param>
         private void HandleLostMessage(uint idx)
         {
-            var payloads = this.m_SendMessageQueue[idx];
-            this.m_SendQueue.Remove(idx);
-            this.m_SendMessageQueue.Remove(idx);
+            var payloads = _sendMessageQueue[idx];
+            _sendQueue.Remove(idx);
+            _sendMessageQueue.Remove(idx);
 
             foreach (var payload in payloads.Value)
             {
-                this.OnMessageLost(new MxMessageEventArgs { Client = this, Payload = payload, ProtocolID = payloads.Key });
+                OnMessageLost(new MxMessageEventArgs { Client = this, Payload = payload, ProtocolID = payloads.Key });
             }
         }
 
@@ -462,15 +478,15 @@
         /// </summary>
         private void OnFlowControlChanged()
         {
-            var handler = this.FlowControlChanged;
+            var handler = FlowControlChanged;
             if (handler != null)
             {
                 handler(
                     this, 
                     new FlowControlChangedEventArgs
                     {
-                        IsGoodSendMode = this.m_FCIsGoodSendMode, 
-                        PenaltyTime = this.m_FCPenaltyTime
+                        IsGoodSendMode = _fcIsGoodSendMode, 
+                        PenaltyTime = _fcPenaltyTime
                     });
             }
         }
@@ -480,15 +496,15 @@
         /// </summary>
         private void PerformReceive()
         {
-            if (this.m_ReceivedPackets.Count == 0)
+            if (_receivedPackets.Count == 0)
             {
-                this.m_DisconnectAccumulator++;
+                _disconnectAccumulator++;
                 return;
             }
 
-            foreach (var packet in this.m_ReceivedPackets)
+            foreach (var packet in _receivedPackets)
             {
-                this.m_DisconnectAccumulator = 0;
+                _disconnectAccumulator = 0;
 
                 using (var memory = new MemoryStream(packet))
                 {
@@ -507,7 +523,7 @@
 
                     var difference = MxUtility.GetSequenceNumberDifference(
                         message.Sequence, 
-                        this.m_RemoteSequenceNumber);
+                        _remoteSequenceNumber);
 
                     if (difference > 0)
                     {
@@ -517,7 +533,7 @@
                         // the missing messages.
                         for (var i = 0; i < difference - 1; i++)
                         {
-                            this.PushIntoQueue(this.m_ReceiveQueue, false);
+                            PushIntoQueue(_receiveQueue, false);
                         }
                         
                         // We push the "true" value for this message after
@@ -525,7 +541,7 @@
                         // it if the event callbacks do not want us to).
 
                         // Check based on items in the queue.
-                        foreach (var kv in this.m_SendQueue.ToArray())
+                        foreach (var kv in _sendQueue.ToArray())
                         {
                             var idx = kv.Key;
 
@@ -538,58 +554,58 @@
                             if (message.DidAck(idx))
                             {
                                 // We already checked for existance of the key above.
-                                var sendTimestamp = this.m_SendQueue[idx];
-                                var rtt = this.GetUnixTimestamp() - sendTimestamp;
-                                this.PushIntoQueue(this.m_RTTQueue, rtt);
+                                var sendTimestamp = _sendQueue[idx];
+                                var rtt = GetUnixTimestamp() - sendTimestamp;
+                                PushIntoQueue(_rttQueue, rtt);
 
-                                var payloads = this.m_SendMessageQueue[idx];
-                                this.m_SendQueue.Remove(idx);
-                                this.m_SendMessageQueue.Remove(idx);
+                                var payloads = _sendMessageQueue[idx];
+                                _sendQueue.Remove(idx);
+                                _sendMessageQueue.Remove(idx);
 
-                                this.Latency = rtt;
+                                Latency = rtt;
 
                                 foreach (var payload in payloads.Value)
                                 {
-                                    this.OnMessageAcknowledged(
+                                    OnMessageAcknowledged(
                                         new MxMessageEventArgs { Client = this, Payload = payload, ProtocolID = payloads.Key });
                                 }
                             }
                             else
                             {
-                                this.HandleLostMessage(idx);
+                                HandleLostMessage(idx);
                             }
                         }
 
-                        foreach (var kv in this.m_SendQueue.ToArray())
+                        foreach (var kv in _sendQueue.ToArray())
                         {
                             var idx = kv.Key;
 
                             if (MxUtility.GetSequenceNumberDifference(message.Ack - MxUtility.UIntBitsize, idx) > 0)
                             {
-                                this.HandleLostMessage(idx);
+                                HandleLostMessage(idx);
                             }
                         }
 
-                        this.m_RemoteSequenceNumber = message.Sequence;
+                        _remoteSequenceNumber = message.Sequence;
 
                         var doNotAcknowledge = false;
 
                         foreach (var payload in message.Payloads)
                         {
                             var eventArgs = new MxMessageReceiveEventArgs { Client = this, Payload = payload.Data, DoNotAcknowledge = doNotAcknowledge, ProtocolID = message.ProtocolID };
-                            this.OnMessageReceived(eventArgs);
+                            OnMessageReceived(eventArgs);
                             doNotAcknowledge = eventArgs.DoNotAcknowledge;
                         }
 
                         if (!doNotAcknowledge)
                         {
-                            this.PushIntoQueue(this.m_ReceiveQueue, true);
+                            PushIntoQueue(_receiveQueue, true);
                         }
                     }
                 }
             }
 
-            this.m_ReceivedPackets.Clear();
+            _receivedPackets.Clear();
         }
 
         /// <summary>
@@ -597,14 +613,14 @@
         /// </summary>
         private void PerformSend()
         {
-            this.m_SendAccumulator += this.m_DeltaTime;
+            _sendAccumulator += _deltaTime;
 
-            while (this.m_SendAccumulator >= this.GetSendTime())
+            while (_sendAccumulator >= GetSendTime())
             {
                 var queues = new[]
                 {
-                    new KeyValuePair<uint, Queue<byte[]>>(MxMessage.RealtimeProtocol, this.m_PendingRealtimeSendPackets),
-                    new KeyValuePair<uint, Queue<byte[]>>(MxMessage.ReliableProtocol, this.m_PendingReliableSendPackets)
+                    new KeyValuePair<uint, Queue<byte[]>>(MxMessage.RealtimeProtocol, _pendingRealtimeSendPackets),
+                    new KeyValuePair<uint, Queue<byte[]>>(MxMessage.ReliableProtocol, _pendingReliableSendPackets)
                 };
 
                 foreach (var item in queues)
@@ -634,10 +650,10 @@
                         {
                             ProtocolID = protocol,
                             Payloads = packets.Select(x => new MxPayload { Data = x }).ToArray(),
-                            Sequence = this.m_LocalSequenceNumber,
-                            Ack = this.m_RemoteSequenceNumber
+                            Sequence = _localSequenceNumber,
+                            Ack = _remoteSequenceNumber
                         };
-                        message.SetAckBitfield(this.m_ReceiveQueue.ToArray());
+                        message.SetAckBitfield(_receiveQueue.ToArray());
 
                         var serializer = new MxMessageSerializer();
                         serializer.Serialize(memory, message);
@@ -655,10 +671,10 @@
                         {
                             try
                             {
-                                this.m_SharedUdpClient.Send(bytes, bytes.Length, this.m_TargetEndPoint);
-                                this.m_SendQueue.Add(this.m_LocalSequenceNumber, this.GetUnixTimestamp());
-                                this.m_SendMessageQueue.Add(this.m_LocalSequenceNumber, new KeyValuePair<uint, byte[][]>(protocol, packets));
-                                this.m_LocalSequenceNumber++;
+                                _sharedUdpClient.Send(bytes, bytes.Length, _targetEndPoint);
+                                _sendQueue.Add(_localSequenceNumber, GetUnixTimestamp());
+                                _sendMessageQueue.Add(_localSequenceNumber, new KeyValuePair<uint, byte[][]>(protocol, packets));
+                                _localSequenceNumber++;
 
                                 if (protocol == MxMessage.ReliableProtocol)
                                 {
@@ -681,7 +697,7 @@
                                 // Raise the OnMessageSent event.
                                 foreach (var packet in packets)
                                 {
-                                    this.OnMessageSent(new MxMessageEventArgs { Client = this, Payload = packet });
+                                    OnMessageSent(new MxMessageEventArgs { Client = this, Payload = packet });
                                 }
                             }
                             catch (SocketException)
@@ -696,7 +712,7 @@
                     }
                 }
 
-                this.m_SendAccumulator -= this.m_DeltaTime;
+                _sendAccumulator -= _deltaTime;
             }
         }
 
@@ -728,59 +744,59 @@
         /// </summary>
         private void UpdateFlowControl()
         {
-            if (this.m_FCIsGoodSendMode)
+            if (_fcIsGoodSendMode)
             {
-                if (this.GetRTT() > this.m_RTTThreshold)
+                if (GetRTT() > _rttThreshold)
                 {
-                    this.m_FCIsGoodSendMode = false;
-                    if (this.m_FCGoodConditionsTime < 10 && this.m_FCPenaltyTime < 60)
+                    _fcIsGoodSendMode = false;
+                    if (_fcGoodConditionsTime < 10 && _fcPenaltyTime < 60)
                     {
-                        this.m_FCPenaltyTime *= 2;
-                        if (this.m_FCPenaltyTime > 60)
+                        _fcPenaltyTime *= 2;
+                        if (_fcPenaltyTime > 60)
                         {
-                            this.m_FCPenaltyTime = 60;
+                            _fcPenaltyTime = 60;
                         }
                     }
 
-                    this.m_FCGoodConditionsTime = 0;
-                    this.m_FCPenaltyReductionAccumulator = 0;
-                    this.OnFlowControlChanged();
+                    _fcGoodConditionsTime = 0;
+                    _fcPenaltyReductionAccumulator = 0;
+                    OnFlowControlChanged();
                 }
                 else
                 {
-                    this.m_FCGoodConditionsTime += this.m_DeltaTime;
-                    this.m_FCPenaltyReductionAccumulator += this.m_DeltaTime;
-                    if (this.m_FCPenaltyReductionAccumulator > 10 && this.m_FCPenaltyTime > 1)
+                    _fcGoodConditionsTime += _deltaTime;
+                    _fcPenaltyReductionAccumulator += _deltaTime;
+                    if (_fcPenaltyReductionAccumulator > 10 && _fcPenaltyTime > 1)
                     {
-                        this.m_FCPenaltyTime /= 2;
-                        if (this.m_FCPenaltyTime < 1)
+                        _fcPenaltyTime /= 2;
+                        if (_fcPenaltyTime < 1)
                         {
-                            this.m_FCPenaltyTime = 1;
+                            _fcPenaltyTime = 1;
                         }
 
-                        this.OnFlowControlChanged();
-                        this.m_FCPenaltyReductionAccumulator = 0;
+                        OnFlowControlChanged();
+                        _fcPenaltyReductionAccumulator = 0;
                     }
                 }
 
                 return;
             }
 
-            if (this.GetRTT() < this.m_RTTThreshold)
+            if (GetRTT() < _rttThreshold)
             {
-                this.m_FCGoodConditionsTime += this.m_DeltaTime;
+                _fcGoodConditionsTime += _deltaTime;
             }
             else
             {
-                this.m_FCGoodConditionsTime = 0;
+                _fcGoodConditionsTime = 0;
             }
 
-            if (this.m_FCGoodConditionsTime > this.m_FCPenaltyTime)
+            if (_fcGoodConditionsTime > _fcPenaltyTime)
             {
-                this.m_FCGoodConditionsTime = 0;
-                this.m_FCPenaltyReductionAccumulator = 0;
-                this.m_FCIsGoodSendMode = true;
-                this.OnFlowControlChanged();
+                _fcGoodConditionsTime = 0;
+                _fcPenaltyReductionAccumulator = 0;
+                _fcIsGoodSendMode = true;
+                OnFlowControlChanged();
             }
         }
     }

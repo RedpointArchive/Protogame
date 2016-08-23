@@ -211,8 +211,15 @@ namespace Protogame
             }
         }
 
-        public void Send<T>(MxDispatcher dispatcher, IPEndPoint target, T message, bool reliable = false)
+        public void Send<T>(MxDispatcher dispatcher, MxClientGroup target, T message, bool reliable = false)
         {
+            if (target.RealtimeClients.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "Attempted to send message to group " + target +
+                    ", but it has no clients.");
+            }
+
             var serialized = _networkMessageSerialization.Serialize(message);
             dispatcher.Send(target, serialized, reliable);
 

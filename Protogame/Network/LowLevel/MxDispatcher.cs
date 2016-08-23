@@ -1,11 +1,12 @@
-﻿namespace Protogame
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 
+namespace Protogame
+{
     /// <summary>
     /// The Mx dispatcher; this handles receiving messages on the UDP client and dispatching
     /// them to the correct connected Mx client.
@@ -13,37 +14,19 @@
     /// <module>Network</module>
     public class MxDispatcher
     {
-        /// <summary>
-        /// A list of currently connected Mx clients.
-        /// </summary>
-        private readonly Dictionary<IPEndPoint, MxClient> m_MxClients;
-
-        /// <summary>
-        /// A list of reliability objects that provide reliability for Mx clients.
-        /// </summary>
-        private readonly Dictionary<IPEndPoint, MxReliability> m_Reliabilities;
-
-        /// <summary>
-        /// The UDP client that messages will be received on.
-        /// </summary>
-        private readonly UdpClient m_UdpClient;
-
-        /// <summary>
-        /// The total number of unreliable bytes received during the last frame.
-        /// </summary>
-        private int m_BytesLastReceived;
-
-        /// <summary>
-        /// The total number of unreliable bytes sent during the last frame.
-        /// </summary>
-        private int m_BytesLastSent;
-
-        /// <summary>
-        /// Whether this dispatcher has been closed.
-        /// </summary>
-        private bool m_Closed;
+        private readonly Dictionary<string, MxClientGroup> _mxClientGroups;
+        
+        private readonly UdpClient _udpClient;
+        
+        private int _bytesLastReceived;
+        
+        private int _bytesLastSent;
+        
+        private bool _closed;
 
         private List<IPEndPoint> _explicitlyDisconnected;
+
+        private object _mxClientGroupLock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MxDispatcher"/> class.
@@ -54,11 +37,13 @@
         public MxDispatcher(int port)
         {
             Port = port;
-            this.m_UdpClient = new UdpClient(port) { Client = { Blocking = false } };
-            this.m_MxClients = new Dictionary<IPEndPoint, MxClient>();
-            this.m_Reliabilities = new Dictionary<IPEndPoint, MxReliability>();
-            this.m_Closed = false;
+            _udpClient = new UdpClient(port) { Client = { Blocking = false } };
+            _mxClientGroups = new Dictionary<string, MxClientGroup>();
+            _closed = false;
             _explicitlyDisconnected = new List<IPEndPoint>();
+
+            _mxClientGroups.Add(MxClientGroup.Ungrouped, new MxClientGroup(this, MxClientGroup.Ungrouped));
+            _mxClientGroupLock = new object();
         }
 
         /// <summary>
@@ -117,27 +102,14 @@
         /// <value>
         /// Whether or not this dispatcher has been closed.
         /// </value>
-        public bool Closed
-        {
-            get
-            {
-                return this.m_Closed;
-            }
-        }
+        public bool Closed => _closed;
 
         /// <summary>
-        /// Gets an enumeration of the endpoints of all connected clients.
+        /// Retrieves the client group for the given identifier.
         /// </summary>
-        /// <value>
-        /// An enumeration of the endpoints of all connected clients.
-        /// </value>
-        public IEnumerable<IPEndPoint> Endpoints
-        {
-            get
-            {
-                return this.m_MxClients.Keys.ToList();
-            }
-        }
+        /// <param name="identifier">The identifier for the group.</param>
+        /// <returns>The Mx client group.</returns>
+        public MxClientGroup this[string identifier] => _mxClientGroups[identifier];
 
         /// <summary>
         /// Gets an enumeration of the latencies for all connected endpoints.
@@ -145,13 +117,13 @@
         /// <value>
         /// An enumeration of the latencies for all connected endpoints.
         /// </value>
-        public IEnumerable<KeyValuePair<IPEndPoint, float>> Latencies
+        public IEnumerable<KeyValuePair<MxClientGroup, float>> Latencies
         {
             get
             {
                 return
-                    this.m_MxClients.Select(
-                        x => new KeyValuePair<IPEndPoint, float>(x.Key, x.Value.Latency)).ToArray();
+                    _mxClientGroups.Select(
+                        x => new KeyValuePair<MxClientGroup, float>(x.Value, x.Value.RealtimeClients.Average(y => y.Latency))).ToArray();
             }
         }
 
@@ -160,19 +132,84 @@
         /// </summary>
         public void Close()
         {
-            this.m_UdpClient.Close();
+            _udpClient.Close();
 
-            foreach (var endpoint in this.Endpoints)
+            foreach (var group in _mxClientGroups)
             {
-                this.Disconnect(endpoint);
+                Disconnect(group.Value);
             }
 
-            this.m_MxClients.Clear();
-            this.m_Reliabilities.Clear();
+            _mxClientGroups.Clear();
 
-            this.m_Closed = true;
+            _closed = true;
         }
 
+        /// <summary>
+        /// Places the specified Mx client in the specified group.
+        /// </summary>
+        /// <param name="client">The Mx client.</param>
+        /// <param name="identifier">The group identifier.</param>
+        public MxClientGroup PlaceInGroup(MxClient client, string identifier)
+        {
+            if (client.Group.Identifier == identifier)
+            {
+                return client.Group;
+            }
+
+            if (!_mxClientGroups.ContainsKey(identifier))
+            {
+                _mxClientGroups[identifier] = new MxClientGroup(this, identifier);
+            }
+
+            var reliability = client.Group.ReliableClients.First(x => x.Client == client);
+
+            client.Group.RealtimeClients.Remove(client);
+            client.Group.ReliableClients.Remove(reliability);
+            client.Group = _mxClientGroups[identifier];
+            client.Group.RealtimeClients.Add(client);
+            client.Group.ReliableClients.Add(reliability);
+
+            return client.Group;
+        }
+
+        private MxClient ThreadSafeGetOrCreateClient(IPEndPoint endpoint)
+        {
+            MxClient client;
+
+            lock (_mxClientGroupLock)
+            {
+                client =
+                    _mxClientGroups
+                        .Select(x => x.Value.RealtimeClients.FirstOrDefault(y => y.Endpoint.ToString() == endpoint.ToString()))
+                        .FirstOrDefault(x => x != null);
+                if (client != null)
+                {
+                    return client;
+                }
+
+                if (_explicitlyDisconnected.Contains(endpoint))
+                {
+                    return null;
+                }
+
+                client = new MxClient(
+                    this,
+                    _mxClientGroups[MxClientGroup.Ungrouped],
+                    endpoint,
+                    _udpClient);
+                _mxClientGroups[MxClientGroup.Ungrouped].RealtimeClients.Add(client);
+                RegisterForEvents(client);
+
+                var reliability = new MxReliability(client);
+                _mxClientGroups[MxClientGroup.Ungrouped].ReliableClients.Add(reliability);
+                RegisterForEvents(reliability);
+            }
+
+            OnClientConnected(client);
+
+            return client;
+        }
+        
         /// <summary>
         /// Explicitly connect to the specified endpoint, assuming there is an Mx dispatcher
         /// at the specified address.
@@ -184,102 +221,85 @@
         /// <param name="endpoint">
         /// The endpoint to connect to.
         /// </param>
-        public void Connect(IPEndPoint endpoint)
+        public MxClient Connect(IPEndPoint endpoint)
         {
-            this.AssertNotClosed();
+            AssertNotClosed();
 
-            if (_explicitlyDisconnected.Contains(endpoint))
+            lock (_mxClientGroupLock)
             {
-                _explicitlyDisconnected.Remove(endpoint);
+                if (_explicitlyDisconnected.Contains(endpoint))
+                {
+                    _explicitlyDisconnected.Remove(endpoint);
+                }
             }
 
-            this.m_MxClients[endpoint] = new MxClient(
-                this, 
-                endpoint, 
-                this.m_UdpClient);
-            this.RegisterForEvents(this.m_MxClients[endpoint]);
-
-            this.m_Reliabilities[endpoint] = new MxReliability(this.m_MxClients[endpoint]);
-            this.RegisterForEvents(this.m_Reliabilities[endpoint]);
-
-            this.OnClientConnected(this.m_MxClients[endpoint]);
+            var client = ThreadSafeGetOrCreateClient(endpoint);
+            if (client == null)
+            {
+                throw new InvalidOperationException("Client was requested disconnect before connection was created.");
+            }
+            return client;
         }
 
         /// <summary>
-        /// Disconnect the current client from the specified endpoint.  This method is automatically
-        /// called by the Mx client when it detects that it can not send any further messages.
-        /// <para>
-        /// There is generally no reason to call this method, unless you are sure that the remote
-        /// machine will no longer send any more messages.  If the remote machine sends more messages
-        /// after calling this method, then the remote machine will automatically reconnect.
-        /// </para>
+        /// Disconnects the entire Mx client group, disconnecting
+        /// all clients inside it.
         /// </summary>
-        /// <param name="endpoint">
-        /// The endpoint to disconnect from.
-        /// </param>
-        public void Disconnect(IPEndPoint endpoint)
+        /// <param name="clientGroup">The client group.</param>
+        public void Disconnect(MxClientGroup clientGroup)
         {
-            this.AssertNotClosed();
-
-            if (this.m_MxClients.ContainsKey(endpoint))
+            foreach (var client in clientGroup.RealtimeClients.ToArray())
             {
-                var realtimeClient = this.m_MxClients[endpoint];
-                this.UnregisterFromEvents(realtimeClient);
-                this.m_MxClients.Remove(endpoint);
-                this.OnClientDisconnected(realtimeClient);
+                Disconnect(client);
             }
-
-            if (this.m_Reliabilities.ContainsKey(endpoint))
-            {
-                var reliability = this.m_Reliabilities[endpoint];
-                this.UnregisterFromEvents(reliability);
-                this.m_Reliabilities.Remove(endpoint);
-            }
-            
-            _explicitlyDisconnected.Add(endpoint);
         }
 
         /// <summary>
-        /// The get bytes last received and reset.
+        /// Disconnects the specified Mx client.  This removes it from
+        /// the group that owns it, and prevents it from reconnecting to
+        /// this dispatcher implicitly.
         /// </summary>
-        /// <returns>
-        /// The <see cref="int"/>.
-        /// </returns>
+        /// <param name="client">The client.</param>
+        public void Disconnect(MxClient client)
+        {
+            AssertNotClosed();
+
+            lock (_mxClientGroupLock)
+            {
+                var reliability = client.Group.ReliableClients.First(x => x.Client == client);
+
+                var group = client.Group;
+                group.RealtimeClients.Remove(client);
+                group.ReliableClients.Remove(reliability);
+
+                UnregisterFromEvents(client);
+                UnregisterFromEvents(reliability);
+
+                _explicitlyDisconnected.Add(client.Endpoint);
+            }
+
+            OnClientDisconnected(client);
+        }
+        
         public int GetBytesLastReceivedAndReset()
         {
-            var value = this.m_BytesLastReceived;
-            this.m_BytesLastReceived = 0;
+            var value = _bytesLastReceived;
+            _bytesLastReceived = 0;
             return value;
         }
-
-        /// <summary>
-        /// The get bytes last sent and reset.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="int"/>.
-        /// </returns>
+        
         public int GetBytesLastSentAndReset()
         {
-            var value = this.m_BytesLastSent;
-            this.m_BytesLastSent = 0;
+            var value = _bytesLastSent;
+            _bytesLastSent = 0;
             return value;
-        }
-
-        /// <summary>
-        /// Returns the Mx client for the given endpoint.
-        /// </summary>
-        /// <param name="endpoint">The IP endpoint.</param>
-        /// <returns>The Mx client.</returns>
-        public MxClient GetRealtimeClient(IPEndPoint endpoint)
-        {
-            return this.m_MxClients[endpoint];
         }
 
         /// <summary>
         /// Queue a packet for sending to the specified endpoint.
         /// </summary>
-        /// <param name="endpoint">
-        /// The endpoint of the client to send to.
+        /// <param name="group">
+        /// The group to send the message to.
         /// </param>
         /// <param name="packet">
         /// The associated data to send.
@@ -288,25 +308,47 @@
         /// Whether or not this message should be sent reliably and intact.  This also
         /// permits messages larger than 512 bytes to be sent.
         /// </param>
-        public void Send(IPEndPoint endpoint, byte[] packet, bool reliable = false)
+        public void Send(MxClientGroup group, byte[] packet, bool reliable = false)
         {
-            this.AssertNotClosed();
+            if (group.Identifier == MxClientGroup.Ungrouped)
+            {
+                throw new InvalidOperationException(
+                    "You must group clients before sending packets to them.  Either " +
+                    "call PlaceInGroup immediately after Connect, or call PlaceInGroup " +
+                    "in the ClientConnected handler.");
+            }
+
+            foreach (var client in group.RealtimeClients)
+            {
+                Send(client, packet, reliable);
+            }
+        }
+
+        /// <summary>
+        /// Queue a packet for sending to the specified client.
+        /// </summary>
+        /// <param name="client">
+        /// The client to send the message to.
+        /// </param>
+        /// <param name="packet">
+        /// The associated data to send.
+        /// </param>
+        /// <param name="reliable">
+        /// Whether or not this message should be sent reliably and intact.  This also
+        /// permits messages larger than 512 bytes to be sent.
+        /// </param>
+        public void Send(MxClient client, byte[] packet, bool reliable = false)
+        {
+            AssertNotClosed();
 
             if (!reliable)
-            {
-                if (this.m_MxClients.ContainsKey(endpoint))
-                {
-                    var client = this.m_MxClients[endpoint];
-                    client.EnqueueSend(packet, MxMessage.RealtimeProtocol);
-                }
+            { 
+                client.EnqueueSend(packet, MxMessage.RealtimeProtocol);
             }
             else
             {
-                if (this.m_Reliabilities.ContainsKey(endpoint))
-                {
-                    var reliability = this.m_Reliabilities[endpoint];
-                    reliability.Send(packet);
-                }
+                var reliability = client.Group.ReliableClients.First(x => x.Client == client);
+                reliability.Send(packet);
             }
         }
 
@@ -315,14 +357,14 @@
         /// </summary>
         public void Update()
         {
-            this.AssertNotClosed();
+            AssertNotClosed();
 
             // Receive as many messages from the connection as we possibly
             // can, and dispatch them to the correct MxClient.
             while (true)
             {
                 var receive = (IPEndPoint)null;
-                var packet = this.ReceiveNonBlocking(this.m_UdpClient, ref receive);
+                var packet = ReceiveNonBlocking(_udpClient, ref receive);
                 if (packet == null)
                 {
                     break;
@@ -338,46 +380,34 @@
                 if (packet.Length == 2 && packet[0] == 0x12 && packet[1] == 0x34)
                 {
                     // This sends back 0x56, 0x78.
-                    this.m_UdpClient.Send(new byte[] { 0x56, 0x78 }, 2, receive);
+                    _udpClient.Send(new byte[] { 0x56, 0x78 }, 2, receive);
                     continue;
                 }
 
-                if (this.m_MxClients.ContainsKey(receive))
+                var client = ThreadSafeGetOrCreateClient(receive);
+                if (client == null)
                 {
-                    // Dispatch to an existing client.
-                    this.m_MxClients[receive].EnqueueReceive(packet);
+                    // Client has been explicitly disconnected previously; ignore.
+                    continue;
                 }
-                else
-                {
-                    if (_explicitlyDisconnected.Contains(receive))
-                    {
-                        // Explicitly ignore this client and prevent it from reconnecting.
-                        continue;
-                    }
 
-                    // Create a new client for this address.
-                    this.m_MxClients.Add(receive, new MxClient(this, receive, this.m_UdpClient));
-                    
-                    this.RegisterForEvents(this.m_MxClients[receive]);
-
-                    this.m_Reliabilities.Add(receive, new MxReliability(this.m_MxClients[receive]));
-                    this.RegisterForEvents(this.m_Reliabilities[receive]);
-
-                    this.m_MxClients[receive].EnqueueReceive(packet);
-                    this.OnClientConnected(this.m_MxClients[receive]);
-                }
+                client.EnqueueReceive(packet);
             }
 
-            // Update all of the clients.
-            foreach (var client in this.m_MxClients.Values.ToArray())
+            // Update all of the client groups.
+            foreach (var group in _mxClientGroups.ToArray())
             {
-                client.Update();
-            }
+                // Update all of the clients.
+                foreach (var client in group.Value.RealtimeClients.ToArray())
+                {
+                    client.Update();
+                }
 
-            // Update all of the reliabilities if needed.
-            foreach (var reliability in this.m_Reliabilities.Select(x => x.Value).ToArray())
-            {
-                reliability.Update();
+                // Update all of the reliabilities if needed.
+                foreach (var reliability in group.Value.ReliableClients.ToArray())
+                {
+                    reliability.Update();
+                }
             }
         }
 
@@ -389,11 +419,8 @@
         /// </param>
         protected virtual void OnClientConnected(MxClient client)
         {
-            var handler = this.ClientConnected;
-            if (handler != null)
-            {
-                handler(this, new MxClientEventArgs { Client = client });
-            }
+            var handler = ClientConnected;
+            handler?.Invoke(this, new MxClientEventArgs { Client = client });
         }
 
         /// <summary>
@@ -404,11 +431,8 @@
         /// </param>
         protected virtual void OnClientDisconnectWarning(MxDisconnectEventArgs e)
         {
-            var handler = this.ClientDisconnectWarning;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = ClientDisconnectWarning;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -419,11 +443,8 @@
         /// </param>
         protected virtual void OnClientDisconnected(MxClient client)
         {
-            var handler = this.ClientDisconnected;
-            if (handler != null)
-            {
-                handler(this, new MxClientEventArgs { Client = client });
-            }
+            var handler = ClientDisconnected;
+            handler?.Invoke(this, new MxClientEventArgs { Client = client });
         }
 
         /// <summary>
@@ -434,11 +455,8 @@
         /// </param>
         protected virtual void OnMessageAcknowledged(MxMessageEventArgs e)
         {
-            var handler = this.MessageAcknowledged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = MessageAcknowledged;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -449,11 +467,8 @@
         /// </param>
         protected virtual void OnMessageLost(MxMessageEventArgs e)
         {
-            var handler = this.MessageLost;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = MessageLost;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -464,13 +479,10 @@
         /// </param>
         protected virtual void OnMessageReceived(MxMessageEventArgs e)
         {
-            this.m_BytesLastReceived += e.Payload.Length;
+            _bytesLastReceived += e.Payload.Length;
 
-            var handler = this.MessageReceived;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = MessageReceived;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -481,13 +493,10 @@
         /// </param>
         protected virtual void OnMessageSent(MxMessageEventArgs e)
         {
-            this.m_BytesLastSent += e.Payload.Length;
+            _bytesLastSent += e.Payload.Length;
 
-            var handler = this.MessageSent;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = MessageSent;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -498,11 +507,8 @@
         /// </param>
         protected virtual void OnReliableReceivedProgress(MxReliabilityTransmitEventArgs e)
         {
-            var handler = this.ReliableReceivedProgress;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = ReliableReceivedProgress;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -513,11 +519,8 @@
         /// </param>
         protected virtual void OnReliableSendProgress(MxReliabilityTransmitEventArgs e)
         {
-            var handler = this.ReliableSendProgress;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            var handler = ReliableSendProgress;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -528,7 +531,7 @@
         /// </exception>
         private void AssertNotClosed()
         {
-            if (this.m_Closed)
+            if (_closed)
             {
                 throw new InvalidOperationException("You can not use an MxDispatcher once it has been closed.");
             }
@@ -545,7 +548,7 @@
         /// </param>
         private void OnClientDisconnectWarning(object sender, MxDisconnectEventArgs e)
         {
-            this.OnClientDisconnectWarning(e);
+            OnClientDisconnectWarning(e);
         }
 
         /// <summary>
@@ -563,7 +566,7 @@
             // reliability layer.
             if (e.ProtocolID == MxMessage.RealtimeProtocol)
             {
-                this.OnMessageAcknowledged(e);
+                OnMessageAcknowledged(e);
             }
         }
 
@@ -582,7 +585,7 @@
             // reliability layer.
             if (e.ProtocolID == MxMessage.RealtimeProtocol)
             {
-                this.OnMessageLost(e);
+                OnMessageLost(e);
             }
         }
 
@@ -601,7 +604,7 @@
             // reliability layer.
             if (e.ProtocolID == MxMessage.RealtimeProtocol)
             {
-                this.OnMessageReceived(e);
+                OnMessageReceived(e);
             }
         }
 
@@ -620,7 +623,7 @@
             // reliability layer.
             if (e.ProtocolID == MxMessage.RealtimeProtocol)
             {
-                this.OnMessageSent(e);
+                OnMessageSent(e);
             }
         }
 
@@ -635,7 +638,7 @@
         /// </param>
         private void OnReliabilityFragmentReceived(object sender, MxReliabilityTransmitEventArgs e)
         {
-            this.OnReliableReceivedProgress(e);
+            OnReliableReceivedProgress(e);
         }
 
         /// <summary>
@@ -649,7 +652,7 @@
         /// </param>
         private void OnReliabilityFragmentSent(object sender, MxReliabilityTransmitEventArgs e)
         {
-            this.OnReliableSendProgress(e);
+            OnReliableSendProgress(e);
         }
 
         /// <summary>
@@ -663,7 +666,7 @@
         /// </param>
         private void OnReliabilityMessageAcknowledged(object sender, MxMessageEventArgs e)
         {
-            this.OnMessageAcknowledged(e);
+            OnMessageAcknowledged(e);
         }
 
         /// <summary>
@@ -677,7 +680,7 @@
         /// </param>
         private void OnReliabilityMessageReceived(object sender, MxMessageEventArgs e)
         {
-            this.OnMessageReceived(e);
+            OnMessageReceived(e);
         }
 
         /// <summary>
@@ -746,11 +749,11 @@
         /// </param>
         private void RegisterForEvents(MxClient client)
         {
-            client.MessageSent += this.OnClientMessageSent;
-            client.MessageReceived += this.OnClientMessageReceived;
-            client.MessageLost += this.OnClientMessageLost;
-            client.MessageAcknowledged += this.OnClientMessageAcknowledged;
-            client.DisconnectWarning += this.OnClientDisconnectWarning;
+            client.MessageSent += OnClientMessageSent;
+            client.MessageReceived += OnClientMessageReceived;
+            client.MessageLost += OnClientMessageLost;
+            client.MessageAcknowledged += OnClientMessageAcknowledged;
+            client.DisconnectWarning += OnClientDisconnectWarning;
         }
 
         /// <summary>
@@ -761,10 +764,10 @@
         /// </param>
         private void RegisterForEvents(MxReliability reliability)
         {
-            reliability.MessageAcknowledged += this.OnReliabilityMessageAcknowledged;
-            reliability.MessageReceived += this.OnReliabilityMessageReceived;
-            reliability.FragmentReceived += this.OnReliabilityFragmentReceived;
-            reliability.FragmentSent += this.OnReliabilityFragmentSent;
+            reliability.MessageAcknowledged += OnReliabilityMessageAcknowledged;
+            reliability.MessageReceived += OnReliabilityMessageReceived;
+            reliability.FragmentReceived += OnReliabilityFragmentReceived;
+            reliability.FragmentSent += OnReliabilityFragmentSent;
         }
 
         /// <summary>
@@ -775,11 +778,11 @@
         /// </param>
         private void UnregisterFromEvents(MxClient client)
         {
-            client.MessageSent -= this.OnClientMessageSent;
-            client.MessageReceived -= this.OnClientMessageReceived;
-            client.MessageLost -= this.OnClientMessageLost;
-            client.MessageAcknowledged -= this.OnClientMessageAcknowledged;
-            client.DisconnectWarning -= this.OnClientDisconnectWarning;
+            client.MessageSent -= OnClientMessageSent;
+            client.MessageReceived -= OnClientMessageReceived;
+            client.MessageLost -= OnClientMessageLost;
+            client.MessageAcknowledged -= OnClientMessageAcknowledged;
+            client.DisconnectWarning -= OnClientDisconnectWarning;
         }
 
         /// <summary>
@@ -790,10 +793,26 @@
         /// </param>
         private void UnregisterFromEvents(MxReliability reliability)
         {
-            reliability.MessageAcknowledged -= this.OnReliabilityMessageAcknowledged;
-            reliability.MessageAcknowledged -= this.OnReliabilityMessageReceived;
-            reliability.FragmentReceived -= this.OnReliabilityFragmentReceived;
-            reliability.FragmentSent -= this.OnReliabilityFragmentSent;
+            reliability.MessageAcknowledged -= OnReliabilityMessageAcknowledged;
+            reliability.MessageAcknowledged -= OnReliabilityMessageReceived;
+            reliability.FragmentReceived -= OnReliabilityFragmentReceived;
+            reliability.FragmentSent -= OnReliabilityFragmentSent;
+        }
+
+        public IEnumerable<MxClientGroup> AllClientGroups
+        {
+            get
+            {
+                return _mxClientGroups.Values;
+            }
+        }
+
+        public IEnumerable<MxClientGroup> ValidClientGroups
+        {
+            get
+            {
+                return _mxClientGroups.Where(x => x.Key != MxClientGroup.Ungrouped).Select(x => x.Value);
+            }
         }
     }
 }

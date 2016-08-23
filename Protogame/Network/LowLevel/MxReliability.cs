@@ -56,7 +56,7 @@
         /// Initializes a new instance of the <see cref="MxReliability"/> class.
         /// </summary>
         /// <param name="client">
-        /// The client that this reliability class is associated with.
+        ///     The client that this reliability class is associated with.
         /// </param>
         public MxReliability(MxClient client)
         {
@@ -91,6 +91,11 @@
         /// Raised when a message has been received by this client.
         /// </summary>
         public event MxMessageEventHandler MessageReceived;
+
+        /// <summary>
+        /// The underlying Mx client instance.
+        /// </summary>
+        public MxClient Client => m_Client;
 
         /// <summary>
         /// Sends data to the associated client reliably.

@@ -9,7 +9,7 @@ namespace Protogame
 {
 	public partial class NetworkSynchronisationComponent 
 	{
-		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick, IPEndPoint endpoint, out bool mustBeReliable)
+		private void AssignSyncDataToMessage(List<SynchronisedData> dataList, EntityPropertiesMessage message, int frameTick, MxClientGroup endpoint, out bool mustBeReliable)
 		{
 			mustBeReliable = false;
 
@@ -299,7 +299,7 @@ namespace Protogame
 			}
 		}
 		
-		private void AssignMessageToSyncData(EntityPropertiesMessage message, Dictionary<string, SynchronisedData> fullDataList, IPEndPoint endpoint)
+		private void AssignMessageToSyncData(EntityPropertiesMessage message, Dictionary<string, SynchronisedData> fullDataList, MxClientGroup endpoint)
 		{
 			
 			var currentString = 0;
