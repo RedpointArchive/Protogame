@@ -287,7 +287,7 @@ namespace Protogame
                         {
                             if (material.TextureSpecular.TextureAsset != null)
                             {
-                                _lastCachedSpecularColorMapTexture = material.TextureNormal.TextureAsset;
+                                _lastCachedSpecularColorMapTexture = material.TextureSpecular.TextureAsset;
                             }
                             else
                             {
