@@ -516,6 +516,7 @@
     <Compile Include="Graphics\Shader\UnifiedShaderParsingUnexpectedTokenException.cs" />
     <Compile Include="Graphics\Shader\UnifiedShaderVersionException.cs" />
     <Compile Include="Graphics\Vertex\VertexPositionNormalColor.cs" />
+    <Compile Include="Hive\BackgroundNATPunchthrough.cs" />
     <Compile Include="Hive\DefaultHiveAttributeManagement.cs" />
     <Compile Include="Hive\DefaultHiveLobbyManagement.cs" />
     <Compile Include="Hive\DefaultHiveNATPunchthrough.cs" />

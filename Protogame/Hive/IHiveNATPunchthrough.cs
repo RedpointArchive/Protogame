@@ -17,7 +17,7 @@ namespace Protogame
         /// Performs NAT punchthrough for the given user session with traffic from a specific port.
         /// </summary>
         /// <param name="userSession">The authenticated user session.</param>
-        /// <param name="udpPort">The UDP port that traffic will be sent from in the game.</param>
+        /// <param name="udpClient">The UDP client that traffic will be sent from in the game.</param>
         /// <param name="timeout">The timeout before giving up on NAT punchthrough (in milliseconds).  If this value is <c>0</c>, then no timeout applies.</param>
         /// <returns>The asynchronous task that indicates completion.</returns>
         /// <exception cref="InvalidOperationException">The server provided an invalid NAT negotiation response.</exception>
@@ -42,5 +42,11 @@ namespace Protogame
         /// <param name="targetSession">The target session to lookup endpoints registered via NAT punchthrough.</param>
         /// <returns>A list of registered endpoints.</returns>
         Task<List<NATEndpoint>> LookupEndpoints(TempSessionWithSecrets userSession, string targetSession);
+
+        Task<BackgroundNATPunchthrough> StartBackgroundNATPunchthrough(TempSessionWithSecrets userSession, UdpClient udpClient);
+
+        Task<BackgroundNATPunchthrough> StartBackgroundNATPunchthrough(TempSessionWithSecrets userSession);
+
+        Task StopBackgroundNATPunchthrough(BackgroundNATPunchthrough backgroundNatPunchthrough);
     }
 }

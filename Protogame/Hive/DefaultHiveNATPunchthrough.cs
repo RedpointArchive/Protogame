@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using HiveMP.NATPunchthrough.Api;
 using HiveMP.NATPunchthrough.Model;
@@ -34,6 +35,77 @@ namespace Protogame
             return await natPunchthroughApi.EndpointsGetAsync(targetSession);
         }
 
+        public async Task<BackgroundNATPunchthrough> StartBackgroundNATPunchthrough(TempSessionWithSecrets userSession, UdpClient udpClient)
+        {
+            // Do the first operation inline, because we need to send at least one packet to
+            // give the UDP client a port.
+            await PerformNATPunchthroughInternal(userSession, udpClient, 60000);
+
+            var backgroundPunchthrough = new BackgroundNATPunchthrough(userSession, udpClient);
+            var thread = new Thread(() => ContinuousNATPunchthrough(backgroundPunchthrough));
+            thread.Name = "NAT Punchthrough";
+            thread.IsBackground = true;
+            thread.Start();
+            return backgroundPunchthrough;
+        }
+
+        public async Task<BackgroundNATPunchthrough> StartBackgroundNATPunchthrough(TempSessionWithSecrets userSession)
+        {
+            var udpClient = new UdpClient();
+            
+            // Do the first operation inline, because we need to send at least one packet to
+            // give the UDP client a port.
+            await PerformNATPunchthroughInternal(userSession, udpClient, 60000);
+                        
+            var backgroundPunchthrough = new BackgroundNATPunchthrough(userSession, udpClient);
+            var thread = new Thread(() => ContinuousNATPunchthrough(backgroundPunchthrough));
+            thread.Name = "NAT Punchthrough";
+            thread.IsBackground = true;
+            thread.Start();
+            return backgroundPunchthrough;
+        }
+
+        public async Task StopBackgroundNATPunchthrough(BackgroundNATPunchthrough backgroundNatPunchthrough)
+        {
+            backgroundNatPunchthrough.ShouldStop = true;
+        }
+
+        private void ContinuousNATPunchthrough(BackgroundNATPunchthrough punchthrough)
+        {
+            var natPunchthroughApi = new NATPunchthroughApi();
+            natPunchthroughApi.Configuration.ApiKey["api_key"] = punchthrough.UserSession.ApiKey;
+
+            while (!punchthrough.ShouldStop)
+            {
+                var udpClient = punchthrough.UdpClient;
+
+                while (true)
+                {
+                    var negotation = natPunchthroughApi.PunchthroughPut(punchthrough.UserSession.Id);
+                    if (negotation.Port == null)
+                    {
+                        throw new InvalidOperationException();
+                    }
+
+                    udpClient.Send(
+                        negotation.Message,
+                        negotation.Message.Length,
+                        negotation.Host,
+                        negotation.Port.Value);
+
+                    Thread.Sleep(1000);
+
+                    if (natPunchthroughApi.PunchthroughGet(punchthrough.UserSession.Id) == true)
+                    {
+                        // NAT punchthrough completed successfully.
+                        continue;
+                    }
+
+                    Thread.Sleep(1000);
+                }
+            }
+        }
+
         private async Task<UdpClient> PerformNATPunchthroughInternal(TempSessionWithSecrets userSession, UdpClient specificUdpClient, int timeout)
         {
             var natPunchthroughApi = new NATPunchthroughApi();
@@ -57,7 +129,7 @@ namespace Protogame
                     negotation.Host,
                     negotation.Port.Value);
 
-                await Task.Delay(1000);
+                await Task.Delay(100);
 
                 if (await natPunchthroughApi.PunchthroughGetAsync(userSession.Id) == true)
                 {
@@ -70,7 +142,7 @@ namespace Protogame
                     throw new TimeoutException("Unable to perform NAT punchthrough before the timeout occurred.");
                 }
 
-                await Task.Delay(1000);
+                await Task.Delay(100);
             }
         }
     }
