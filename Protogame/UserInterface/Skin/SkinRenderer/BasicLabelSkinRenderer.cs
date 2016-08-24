@@ -25,10 +25,12 @@ namespace Protogame
                 renderContext,
                 _layoutPosition.GetPositionInLayout(layout, label.HorizontalAlignment ?? HorizontalAlignment.Center, label.VerticalAlignment ?? VerticalAlignment.Center),
                 label.Text,
-                _fontAsset,
+                label.Font ?? _fontAsset,
                 label.HorizontalAlignment ?? HorizontalAlignment.Center,
                 label.VerticalAlignment ?? VerticalAlignment.Center,
-                label.OverrideColor);
+                label.TextColor,
+                label.RenderShadow ?? true,
+                label.ShadowColor);
         }
 
         public Vector2 MeasureText(IRenderContext renderContext, string text, Label container)

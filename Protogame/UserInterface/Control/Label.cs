@@ -16,11 +16,17 @@ namespace Protogame
 
         public string Text { get; set; }
         
-        public Color? OverrideColor { get; set; }
+        public Color? TextColor { get; set; }
 
         public HorizontalAlignment? HorizontalAlignment { get; set; }
 
         public VerticalAlignment? VerticalAlignment { get; set; }
+
+        public FontAsset Font { get; set; }
+
+        public bool? RenderShadow { get; set; }
+
+        public Color? ShadowColor { get; set; }
 
         public void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {

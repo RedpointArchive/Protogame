@@ -791,6 +791,7 @@
     <Compile Include="UserInterface\Control\ButtonUIState.cs" />
     <Compile Include="UserInterface\Control\Canvas.cs" />
     <Compile Include="UserInterface\Control\CanvasFragment.cs" />
+    <Compile Include="UserInterface\Control\Container\AdjustedContainer.cs" />
     <Compile Include="UserInterface\Control\Container\BaseContainer.cs" />
     <Compile Include="UserInterface\Control\Container\EmptyContainer.cs" />
     <Compile Include="UserInterface\Control\Container\FixedContainer.cs" />
@@ -798,6 +799,7 @@
     <Compile Include="UserInterface\Control\Container\HorizontalContainer.cs" />
     <Compile Include="UserInterface\Control\Container\IContainer.cs" />
     <Compile Include="UserInterface\Control\Container\IContainerConstant.cs" />
+    <Compile Include="UserInterface\Control\Container\RelativeContainer.cs" />
     <Compile Include="UserInterface\Control\Container\ScrollableContainer.cs" />
     <Compile Include="UserInterface\Control\Container\SingleContainer.cs" />
     <Compile Include="UserInterface\Control\Container\VerticalContainer.cs" />
@@ -823,6 +825,8 @@
     <Compile Include="UserInterface\Controller\NodeProcessor\CanvasFragmentUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\CanvasUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\ContainerUserInterfaceNodeProcessor.cs" />
+    <Compile Include="UserInterface\Controller\NodeProcessor\DefaultNodeColorParser.cs" />
+    <Compile Include="UserInterface\Controller\NodeProcessor\INodeColorParser.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\IUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\LabelUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\ListItemUserInterfaceNodeProcessor.cs" />
@@ -846,6 +850,7 @@
     <Compile Include="UserInterface\Skin\DefaultSkinDelegator.cs" />
     <Compile Include="UserInterface\Skin\ISkinDelegator.cs" />
     <Compile Include="UserInterface\Skin\ISkinRenderer.cs" />
+    <Compile Include="UserInterface\Skin\SkinRenderer\BasicAdjustedContainerSkinRenderer.cs" />
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicAudioPlayerSkinRenderer.cs" />
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicButtonSkinRenderer.cs" />
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicCanvasSkinRenderer.cs" />
@@ -860,6 +865,7 @@
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicListViewSkinRenderer.cs" />
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicMainMenuSkinRenderer.cs" />
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicMenuItemSkinRenderer.cs" />
+    <Compile Include="UserInterface\Skin\SkinRenderer\BasicRelativeContainerSkinRenderer.cs" />
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicScrollableContainerSkinRenderer.cs" />
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicSingleContainerSkinRenderer.cs" />
     <Compile Include="UserInterface\Skin\SkinRenderer\BasicSkinHelper.cs" />

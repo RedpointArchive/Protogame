@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
@@ -42,6 +43,32 @@ namespace Protogame
                     };
                     container = scrollableContainer;
                     break;
+                case "relative":
+                    var relativeContainer = new RelativeContainer();
+                    processChild = (childNode, childContainer) =>
+                    {
+                        relativeContainer.AddChild(childContainer, new Rectangle(
+                            GetAttribute(childNode, "x"),
+                            GetAttribute(childNode, "y"),
+                            GetAttribute(childNode, "width"),
+                            GetAttribute(childNode, "height")));
+                    };
+                    container = relativeContainer;
+                    break;
+                case "adjusted":
+                    var adjustedContainer = new AdjustedContainer(new Point(
+                        GetAttribute(node, "anchorX"),
+                        GetAttribute(node, "anchorY")));
+                    processChild = (childNode, childContainer) =>
+                    {
+                        adjustedContainer.AddChild(childContainer, new Rectangle(
+                            GetAttribute(childNode, "x"),
+                            GetAttribute(childNode, "y"),
+                            GetAttribute(childNode, "width"),
+                            GetAttribute(childNode, "height")));
+                    };
+                    container = adjustedContainer;
+                    break;
                 case "empty":
                     container = new EmptyContainer();
                     processChild = (childNode, childContainer) => { };
@@ -52,6 +79,18 @@ namespace Protogame
             }
 
             return container;
+        }
+
+        private int GetAttribute(XmlNode childNode, string name)
+        {
+            var v = childNode?.Attributes?[name]?.Value;
+            if (v == null)
+            {
+                return 0;
+            }
+
+            int vv;
+            return int.TryParse(v, out vv) ? vv : 0;
         }
     }
 }

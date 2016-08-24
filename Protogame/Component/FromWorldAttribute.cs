@@ -1,4 +1,5 @@
-﻿using Protoinject;
+﻿using System;
+using Protoinject;
 
 namespace Protogame
 {
@@ -22,9 +23,9 @@ namespace Protogame
                 return (current, mapping) =>
                 {
                     var c = current;
-                    while (c != null && typeof (IWorld).IsAssignableFrom(c.Type))
+                    while (c != null && !typeof (IWorld).IsAssignableFrom(c.Type))
                     {
-                        c = current.Parent;
+                        c = c.Parent;
                     }
                     return c;
                 };

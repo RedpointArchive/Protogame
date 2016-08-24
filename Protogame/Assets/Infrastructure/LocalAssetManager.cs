@@ -214,7 +214,7 @@ namespace Protogame
                         this.m_Assets.Remove(asset);
                         if (assetObj != null)
                         {
-                            ((LocalAsset)assetObj).Dirty();
+                            ((LocalAsset) assetObj).Dirty();
                         }
                     }
                     catch (KeyNotFoundException)
@@ -222,6 +222,18 @@ namespace Protogame
                         // Attempted to dirty an asset that doesn't exist
                         // Just ignore this error
                     }
+                }
+            }
+            else
+            {
+                try
+                {
+                    this.m_Assets.Remove(asset);
+                }
+                catch (KeyNotFoundException)
+                {
+                    // Attempted to dirty an asset that doesn't exist
+                    // Just ignore this error
                 }
             }
         }

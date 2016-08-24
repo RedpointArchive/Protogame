@@ -22,9 +22,9 @@ namespace Protogame
                 return (current, mapping) =>
                 {
                     var c = current;
-                    while (c != null && typeof (ICoreGame).IsAssignableFrom(c.Type))
+                    while (c != null && !typeof (ICoreGame).IsAssignableFrom(c.Type))
                     {
-                        c = current.Parent;
+                        c = c.Parent;
                     }
                     return c;
                 };

@@ -662,7 +662,7 @@ namespace Protogame
 
                         return onlyFirst ? 
                             (entitiesMatchingType.FirstOrDefault()?.Handle(gameContext, gameEventEngine, @event) ?? false) : 
-                            entitiesMatchingType.Select(entity => entity.Handle(gameContext, gameEventEngine, @event)).Any(handled => handled);
+                            entitiesMatchingType.ToArray().Select(entity => entity.Handle(gameContext, gameEventEngine, @event)).Any(handled => handled);
                     });
             }
         }

@@ -81,7 +81,16 @@ namespace Protogame
 
                 while (true)
                 {
-                    var negotation = natPunchthroughApi.PunchthroughPut(punchthrough.UserSession.Id);
+                    NATNegotation negotation;
+                    try
+                    {
+                        negotation = natPunchthroughApi.PunchthroughPut(punchthrough.UserSession.Id);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
                     if (negotation.Port == null)
                     {
                         throw new InvalidOperationException();
@@ -95,9 +104,16 @@ namespace Protogame
 
                     Thread.Sleep(1000);
 
-                    if (natPunchthroughApi.PunchthroughGet(punchthrough.UserSession.Id) == true)
+                    try
                     {
-                        // NAT punchthrough completed successfully.
+                        if (natPunchthroughApi.PunchthroughGet(punchthrough.UserSession.Id) == true)
+                        {
+                            // NAT punchthrough completed successfully.
+                            continue;
+                        }
+                    }
+                    catch
+                    {
                         continue;
                     }
 

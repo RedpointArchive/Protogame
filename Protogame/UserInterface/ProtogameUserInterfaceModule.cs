@@ -7,7 +7,7 @@ namespace Protogame
         public void Load(IKernel kernel)
         {
             kernel.Bind<IUserInterfaceFactory>().ToFactory();
-            kernel.Bind<IUserInterfaceController>().To<DefaultUserInterfaceController>();
+            kernel.Bind<IUserInterfaceController>().To<DefaultUserInterfaceController>().AllowManyPerScope();
 
             kernel.Bind<IUserInterfaceNodeProcessor>()
                 .To<CanvasUserInterfaceNodeProcessor>()
@@ -42,6 +42,7 @@ namespace Protogame
                 .Named("fragment")
                 .InSingletonScope();
 
+            kernel.Bind<ISkinRenderer<AdjustedContainer>>().To<BasicAdjustedContainerSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<AudioPlayer>>().To<BasicAudioPlayerSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<Button>>().To<BasicButtonSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<Canvas>>().To<BasicCanvasSkinRenderer>().InSingletonScope();
@@ -56,6 +57,7 @@ namespace Protogame
             kernel.Bind<ISkinRenderer<ListView>>().To<BasicListViewSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<MainMenu>>().To<BasicMainMenuSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<MenuItem>>().To<BasicMenuItemSkinRenderer>().InSingletonScope();
+            kernel.Bind<ISkinRenderer<RelativeContainer>>().To<BasicRelativeContainerSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<ScrollableContainer>>().To<BasicScrollableContainerSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<SingleContainer>>().To<BasicSingleContainerSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<TextBox>>().To<BasicTextBoxSkinRenderer>().InSingletonScope();
@@ -69,6 +71,7 @@ namespace Protogame
             kernel.Bind<ISkinLayout>().To<BasicSkinLayout>().InSingletonScope();
             kernel.Bind<ISkinDelegator>().To<DefaultSkinDelegator>().InSingletonScope();
             kernel.Bind<ILayoutPosition>().To<DefaultLayoutPosition>().InSingletonScope();
+            kernel.Bind<INodeColorParser>().To<DefaultNodeColorParser>().InSingletonScope();
         }
     }
 }
