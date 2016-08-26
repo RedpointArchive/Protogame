@@ -3,7 +3,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class Render3DCubeComponent : IRenderableComponent, IEnabledComponent
+    public class Render3DCubeComponent : IRenderableComponent, IEnabledComponent, IHasTransform
     {
         private readonly INode _node;
 
@@ -16,6 +16,7 @@ namespace Protogame
 
             Enabled = true;
             Effect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects?["Color"];
+            Transform = new DefaultTransform();
         }
 
         public Color Color { get; set; }
@@ -23,6 +24,10 @@ namespace Protogame
         public IEffect Effect { get; set; }
 
         public bool Enabled { get; set; }
+
+        public ITransform Transform { get; }
+
+        public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
@@ -33,18 +38,12 @@ namespace Protogame
 
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
-                var matrix = Matrix.Identity;
-                var matrixComponent = _node.Parent?.UntypedValue as IHasTransform;
-                if (matrixComponent != null)
-                {
-                    matrix *= matrixComponent.FinalTransform.AbsoluteMatrix;
-                }
                 _renderUtilities.RenderCube(
                     renderContext,
                     Effect,
                     Effect.CreateParameterSet(),
                     Matrix.CreateTranslation(-0.5f, -0.5f, -0.5f) *
-                    matrix, 
+                    FinalTransform.AbsoluteMatrix, 
                     Color);
             }
         }
