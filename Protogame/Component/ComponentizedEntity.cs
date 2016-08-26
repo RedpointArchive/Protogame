@@ -474,7 +474,7 @@ namespace Protogame
             if (!_isOverriddenCacheSet)
             {
                 _isUpdateOverridden = GetType().GetMethod("Update", new [] { typeof(IGameContext), typeof(IUpdateContext) }).DeclaringType != typeof(ComponentizedEntity);
-                _isServerUpdateOverridden = GetType().GetMethod("Update", new[] { typeof(IGameContext), typeof(IUpdateContext) }).DeclaringType != typeof(ComponentizedEntity);
+                _isServerUpdateOverridden = GetType().GetMethod("Update", new[] { typeof(IServerContext), typeof(IUpdateContext) }).DeclaringType != typeof(ComponentizedEntity);
                 _isRenderOverridden = GetType().GetMethod("Render").DeclaringType != typeof(ComponentizedEntity);
                 _isPrerenderOverridden = GetType().GetMethod("Prerender").DeclaringType != typeof(ComponentizedEntity);
                 _isEventHandleOverridden = GetType().GetMethod("Handle", new[] { typeof(IGameContext), typeof(IEventEngine<IGameContext>), typeof(Event) }).DeclaringType != typeof(ComponentizedEntity);
