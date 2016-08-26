@@ -16,5 +16,8 @@ namespace Protogame
 
         [ProtoMember(4)]
         public int FrameTick;
+
+        [ProtoMember(5)]
+        public int MessageOrder;
     }
 }

@@ -336,6 +336,12 @@ namespace Protogame
 				var syncData = fullDataList[message.PropertyNames[i]];
 				var hasValue = false;
 				object value = null;
+				
+				if (message.MessageOrder <= syncData.LastMessageOrder)
+				{
+					// This property is already at a later version.
+					continue;
+				}
 
 				switch (message.PropertyTypes[i])
 				{
@@ -447,6 +453,7 @@ namespace Protogame
 				if (hasValue)
 				{
 					syncData.LastValueFromServer = value;
+					syncData.LastMessageOrder = message.MessageOrder;
 
 					if (syncData.TimeMachine == null)
 					{

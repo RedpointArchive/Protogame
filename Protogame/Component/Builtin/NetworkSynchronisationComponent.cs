@@ -24,6 +24,7 @@ namespace Protogame
         private ISynchronisedObject _synchronisationContext;
 
         private int _localTick;
+        private int _messageOrder;
 
         private bool _isRunningOnClient;
 
@@ -178,7 +179,8 @@ namespace Protogame
                             EntityID = _uniqueIdentifierForEntity.Value,
                             EntityType = entity.GetType().AssemblyQualifiedName,
                             InitialTransform = entity.Transform.SerializeToNetwork(),
-                            FrameTick = _localTick
+                            FrameTick = _localTick,
+                            MessageOrder = _messageOrder++,
                         };
                         _networkEngine.Send(
                             dispatcher,
@@ -479,6 +481,8 @@ namespace Protogame
             public ITimeMachine TimeMachine;
 
             public SynchroniseTargets SynchronisationTargets;
+
+            public int LastMessageOrder = -1;
         }
 
         #region Synchronisation Preperation
@@ -622,6 +626,7 @@ namespace Protogame
                                 message.PropertyNames = new string[_synchronisedDataToTransmit.Count];
                                 message.PropertyTypes = new int[_synchronisedDataToTransmit.Count];
                                 message.IsClientMessage = isFromClient;
+                                message.MessageOrder = _messageOrder++;
 
                                 bool reliable;
                                 AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick, group, out reliable);

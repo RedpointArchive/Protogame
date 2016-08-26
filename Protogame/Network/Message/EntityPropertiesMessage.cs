@@ -34,6 +34,8 @@ namespace Protogame
         /// </summary>
         [ProtoMember(13)] public bool IsClientMessage;
 
+        [ProtoMember(14)] public int MessageOrder;
+
         public const int PropertyTypeNone = 0;
 
         public const int PropertyTypeNull = 1;

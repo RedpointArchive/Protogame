@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Protoinject;
 
@@ -11,6 +12,7 @@ namespace Protogame
         private INetworkMessageSerialization _networkMessageSerialization;
         private INetworkEngine _networkEngine;
         private IConsoleHandle _consoleHandle;
+        private Dictionary<int, List<Tuple<int, Event>>> _pendingEntityPropertyMessages;
 
         public int Priority => 150;
 
@@ -21,6 +23,7 @@ namespace Protogame
             _networkMessageSerialization = kernel.Get<INetworkMessageSerialization>();
             _networkEngine = kernel.Get<INetworkEngine>();
             _consoleHandle = kernel.Get<IConsoleHandle>(kernel.Hierarchy.Lookup(this));
+            _pendingEntityPropertyMessages = new Dictionary<int, List<Tuple<int, Event>>>();
         }
 
         public bool Handle(INetworkEventContext context, IEventEngine<INetworkEventContext> eventEngine, Event @event)
@@ -43,7 +46,6 @@ namespace Protogame
                     if (_networkEngine.FindObjectByNetworkId(createEntityMessage.EntityID) != null)
                     {
                         // This entity was already created on the client, so we ignore it.
-                        _consoleHandle.Log("Got entity create message, but ignored it because the client already knows about it.");
                         return true;
                     }
 
@@ -59,19 +61,33 @@ namespace Protogame
 
                     if (spawnedEntity != null)
                     {
-                        _consoleHandle.Log("Assigned initial transform to the entity.");
                         spawnedEntity.Transform.Assign(createEntityMessage.InitialTransform.DeserializeFromNetwork());
                     }
 
                     var networkIdentifiableEntity = spawnedEntity as INetworkIdentifiable;
                     if (networkIdentifiableEntity != null)
                     {
-                        _consoleHandle.Log("Recieved network ID: " + createEntityMessage.EntityID);
                         networkIdentifiableEntity.ReceiveNetworkIDFromServer(
                             networkReceiveEvent.GameContext,
                             networkReceiveEvent.UpdateContext,
                             createEntityMessage.EntityID,
                             createEntityMessage.FrameTick);
+                    }
+
+                    // Send any pending property messages?
+                    var networkEventListener = spawnedEntity as IEventListener<INetworkEventContext>;
+                    if (networkEventListener != null)
+                    {
+                        if (_pendingEntityPropertyMessages.ContainsKey(createEntityMessage.EntityID))
+                        {
+                            foreach (var propertyMessage in _pendingEntityPropertyMessages[createEntityMessage.EntityID]
+                                .Where(x => x.Item1 > createEntityMessage.MessageOrder).OrderBy(x => x.Item1))
+                            {
+                                networkEventListener.Handle(context, eventEngine, propertyMessage.Item2);
+                            }
+
+                            _pendingEntityPropertyMessages.Remove(createEntityMessage.EntityID);
+                        }
                     }
 
                     return true;
@@ -87,7 +103,12 @@ namespace Protogame
                     }
                     else
                     {
-                        _consoleHandle.Log("warning: got property message for missing entity {0}", entityPropertiesMessage.EntityID);
+                        if (!_pendingEntityPropertyMessages.ContainsKey(entityPropertiesMessage.EntityID))
+                        {
+                            _pendingEntityPropertyMessages[entityPropertiesMessage.EntityID] = new List<Tuple<int, Event>>();
+                        }
+
+                        _pendingEntityPropertyMessages[entityPropertiesMessage.EntityID].Add(new Tuple<int, Event>(entityPropertiesMessage.MessageOrder, networkReceiveEvent));
                     }
                 }
             }
