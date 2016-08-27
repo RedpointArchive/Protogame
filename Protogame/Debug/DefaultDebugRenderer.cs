@@ -1,14 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
     public class DefaultDebugRenderer : IDebugRenderer
     {
-        public DefaultDebugRenderer()
-        {
-            
-        }
-
         public void RenderDebugLine(IRenderContext renderContext, Vector3 point1, Vector3 point2, Color color1, Color color2)
         {
             if (renderContext.IsCurrentRenderPass<IDebugRenderPass>())
