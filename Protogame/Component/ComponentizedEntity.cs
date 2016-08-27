@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jitter.Dynamics;
 using Protoinject;
 
 namespace Protogame
@@ -17,8 +18,7 @@ namespace Protogame
     /// additional behaviour and presentation on entities without deriving new classes,
     /// or implementing full dependency injected services (with appropriate bindings).
     /// You can register components on a componetized entity by calling
-    /// <see cref="ComponentizedObject.RegisterPrivateComponent"/> or
-    /// <see cref="ComponentizedObject.RegisterPublicComponent"/> on this object.
+    /// <see cref="ComponentizedObject.RegisterComponent"/> on this object.
     /// </para>
     /// <para>
     /// You can also support additional component types and callbacks through the use
@@ -29,7 +29,7 @@ namespace Protogame
     /// </summary>
     /// <module>Component</module>
     [InjectFieldsForBaseObjectInProtectedConstructor]
-    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject, IPrerenderableEntity
+    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IEventListener<IPhysicsEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject, IPrerenderableEntity
     {
         /// <summary>
         /// The dependency injection node, which is automatically set by the kernel
@@ -101,6 +101,13 @@ namespace Protogame
         /// </summary>
         private IPrerenderableComponent[] _prerenderableComponents = new IPrerenderableComponent[0];
 
+        /// <summary>
+        /// This interface gets get called very frequently, so we optimize their invocation by
+        /// iterating over them and calling them directly rather than using the <c>RegisterCallable</c>
+        /// infrastructure.
+        /// </summary>
+        private ICollidableComponent[] _collidableComponents = new ICollidableComponent[0];
+
         private bool _hasRenderableComponentDescendants;
 
         private bool _hasPrerenderableComponentDescendants;
@@ -110,6 +117,8 @@ namespace Protogame
         private bool _hasServerUpdatableComponentDescendants;
 
         private bool _hasLightableComponentDescendants;
+
+        private bool _hasCollidableComponentDescendants;
 
         /// <summary>
         /// Initializes a new <see cref="ComponentizedEntity"/>.
@@ -139,6 +148,7 @@ namespace Protogame
             _serverUpdatableComponents = Components.OfType<IServerUpdatableComponent>().ToArray();
             _renderableComponents = Components.OfType<IRenderableComponent>().ToArray();
             _prerenderableComponents = Components.OfType<IPrerenderableComponent>().ToArray();
+            _collidableComponents = Components.OfType<ICollidableComponent>().ToArray();
         }
         
         /// <summary>
@@ -303,6 +313,107 @@ namespace Protogame
         {
             lightList.AddRange(component.GetLights());
         }
+        
+        /// <summary>
+        /// Handles physics events from an event engine.  This implementation propagates events through the
+        /// component hierarchy to components that implement <see cref="ICollidableComponent"/>.
+        /// </summary>
+        /// <param name="context">The current game context.</param>
+        /// <param name="eventEngine">The event engine from which the event was fired.</param>
+        /// <param name="event">The physics event that is to be handled.</param>
+        /// <returns>Whether or not the event was consumed.</returns>
+        public virtual bool Handle(IPhysicsEventContext context, IEventEngine<IPhysicsEventContext> eventEngine, Event @event)
+        {
+            if (_hasCollidableComponentDescendants)
+            {
+                var physicsCollisionBeginEvent = @event as PhysicsCollisionBeginEvent;
+                var physicsCollisionEndEvent = @event as PhysicsCollisionEndEvent;
+                if (physicsCollisionBeginEvent == null && physicsCollisionEndEvent == null)
+                {
+                    return false;
+                }
+
+                if (physicsCollisionBeginEvent != null)
+                {
+                    CollisionBegin(
+                        physicsCollisionBeginEvent.GameContext,
+                        physicsCollisionBeginEvent.ServerContext,
+                        physicsCollisionBeginEvent.UpdateContext,
+                        physicsCollisionBeginEvent.Owner1,
+                        physicsCollisionBeginEvent.Owner2,
+                        physicsCollisionBeginEvent.Body1,
+                        physicsCollisionBeginEvent.Body2);
+                }
+
+                if (physicsCollisionEndEvent != null)
+                {
+                    CollisionEnd(
+                        physicsCollisionEndEvent.GameContext,
+                        physicsCollisionEndEvent.ServerContext,
+                        physicsCollisionEndEvent.UpdateContext,
+                        physicsCollisionEndEvent.Owner1,
+                        physicsCollisionEndEvent.Owner2,
+                        physicsCollisionEndEvent.Body1,
+                        physicsCollisionEndEvent.Body2);
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// This method is called by the physics system when a collision involving one of this component's
+        /// parents and another object with a rigid body starts occurring.
+        /// </summary>
+        /// <param name="gameContext">The current game context, or null if running on a server.</param>
+        /// <param name="serverContext">The current server context, or null if running on a client.</param>
+        /// <param name="updateContext">The current update context.</param>
+        /// <param name="owner1">The owner of the first rigid body.  This is NOT necessarily one of the component's parents.</param>
+        /// <param name="owner2">The owner of the second rigid body.  This is NOT necessarily one of the component's parents.</param>
+        /// <param name="body1">The rigid body of the first object.</param>
+        /// <param name="body2">The rigid body of the second object.</param>
+        public virtual void CollisionBegin(IGameContext gameContext, IServerContext serverContext,
+            IUpdateContext updateContext, object owner1, object owner2, RigidBody body1, RigidBody body2)
+        {
+            for (var i = 0; i < _collidableComponents.Length; i++)
+            {
+                _collidableComponents[i].CollisionBegin(
+                    gameContext,
+                    serverContext,
+                    updateContext,
+                    owner1,
+                    owner2,
+                    body1,
+                    body2);
+            }
+        }
+
+        /// <summary>
+        /// This method is called by the physics system when a collision involving one of this component's
+        /// parents and another object with a rigid body finishes (i.e. the rigid bodies have seperated from their collision).
+        /// </summary>
+        /// <param name="gameContext">The current game context, or null if running on a server.</param>
+        /// <param name="serverContext">The current server context, or null if running on a client.</param>
+        /// <param name="updateContext">The current update context.</param>
+        /// <param name="owner1">The owner of the first rigid body.  This is NOT necessarily one of the component's parents.</param>
+        /// <param name="owner2">The owner of the second rigid body.  This is NOT necessarily one of the component's parents.</param>
+        /// <param name="body1">The rigid body of the first object.</param>
+        /// <param name="body2">The rigid body of the second object.</param>
+        public virtual void CollisionEnd(IGameContext gameContext, IServerContext serverContext,
+            IUpdateContext updateContext, object owner1, object owner2, RigidBody body1, RigidBody body2)
+        {
+            for (var i = 0; i < _collidableComponents.Length; i++)
+            {
+                _collidableComponents[i].CollisionEnd(
+                    gameContext,
+                    serverContext,
+                    updateContext,
+                    owner1,
+                    owner2,
+                    body1,
+                    body2);
+            }
+        }
 
         /// <summary>
         /// Handles network events from an event engine.  This implementation propagates events through the
@@ -465,6 +576,8 @@ namespace Protogame
         private bool _isRenderOverridden;
         private bool _isPrerenderOverridden;
         private bool _isEventHandleOverridden;
+        private bool _isCollisionBeginOverridden;
+        private bool _isCollisionEndOverridden;
         private bool _isReceiveNetworkIdFromServerOverridden;
         private bool _isReceivePredictedNetworkIdFromClientOverridden;
         private bool _isGetLightsOverridden;
@@ -478,6 +591,26 @@ namespace Protogame
                 _isRenderOverridden = GetType().GetMethod("Render").DeclaringType != typeof(ComponentizedEntity);
                 _isPrerenderOverridden = GetType().GetMethod("Prerender").DeclaringType != typeof(ComponentizedEntity);
                 _isEventHandleOverridden = GetType().GetMethod("Handle", new[] { typeof(IGameContext), typeof(IEventEngine<IGameContext>), typeof(Event) }).DeclaringType != typeof(ComponentizedEntity);
+                _isCollisionBeginOverridden = GetType().GetMethod("CollisionBegin", new[]
+                {
+                    typeof(IGameContext),
+                    typeof(IServerContext),
+                    typeof(IUpdateContext),
+                    typeof(object),
+                    typeof(object),
+                    typeof(RigidBody),
+                    typeof(RigidBody), 
+                }).DeclaringType != typeof(ComponentizedEntity);
+                _isCollisionEndOverridden = GetType().GetMethod("CollisionEnd", new[]
+                {
+                    typeof(IGameContext),
+                    typeof(IServerContext),
+                    typeof(IUpdateContext),
+                    typeof(object),
+                    typeof(object),
+                    typeof(RigidBody),
+                    typeof(RigidBody),
+                }).DeclaringType != typeof(ComponentizedEntity);
                 _isReceiveNetworkIdFromServerOverridden = GetType().GetMethod("ReceiveNetworkIDFromServer").DeclaringType != typeof(ComponentizedEntity);
                 _isReceivePredictedNetworkIdFromClientOverridden = GetType().GetMethod("ReceivePredictedNetworkIDFromClient").DeclaringType != typeof(ComponentizedEntity);
                 _isGetLightsOverridden = GetType().GetMethod("GetLights").DeclaringType != typeof(ComponentizedEntity);
@@ -505,6 +638,11 @@ namespace Protogame
                 enabledInterfaces.Add(typeof(IPrerenderableComponent));
             }
 
+            if ((_isCollisionBeginOverridden || _isCollisionEndOverridden) && !enabledInterfaces.Contains(typeof(ICollidableComponent)))
+            {
+                enabledInterfaces.Add(typeof(ICollidableComponent));
+            }
+
             if (_isEventHandleOverridden && !enabledInterfaces.Contains(typeof(IEventListener<IGameContext>)))
             {
                 enabledInterfaces.Add(typeof(IEventListener<IGameContext>));
@@ -525,6 +663,7 @@ namespace Protogame
             _hasUpdatableComponentDescendants = enabledInterfaces.Contains(typeof(IUpdatableComponent));
             _hasServerUpdatableComponentDescendants = enabledInterfaces.Contains(typeof(IServerUpdatableComponent));
             _hasLightableComponentDescendants = enabledInterfaces.Contains(typeof(ILightableComponent));
+            _hasCollidableComponentDescendants = enabledInterfaces.Contains(typeof(ICollidableComponent));
         }
 
         #endregion

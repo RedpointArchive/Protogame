@@ -1,47 +1,60 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using Jitter;
 using Jitter.Collision;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Microsoft.Xna.Framework;
+using Protoinject;
 
 namespace Protogame
 {
     public class PhysicsShadowWorld : IDisposable
     {
-        private readonly IPhysicsEngine _physicsEngine;
-        private readonly IDebugRenderer _debugRenderer;
+        private readonly IEventEngine<IPhysicsEventContext> _physicsEventEngine;
+        private readonly IHierarchy _hierarchy;
 
-        private readonly CollisionSystemPersistentSAP _collisionSystem;
+        private readonly IDebugRenderer _debugRenderer;
 
         private readonly JitterWorld _physicsWorld;
 
         private readonly List<RigidBodyMapping> _rigidBodyMappings;
 
-        private Dictionary<int, Quaternion> _lastFrameRotation;
+        private readonly Dictionary<int, Quaternion> _lastFrameRotation;
 
-        private Dictionary<int, Vector3> _lastFramePosition;
+        private readonly Dictionary<int, Vector3> _lastFramePosition;
 
-        private PhysicsMetrics _physicsMetrics = new PhysicsMetrics();
+        private readonly Dictionary<int, WeakReference<IHasTransform>> _transformCache;
 
-        private Stopwatch _stopwatch = new Stopwatch();
+        private readonly PhysicsMetrics _physicsMetrics = new PhysicsMetrics();
 
-        private Thread _physicsThread;
+        private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public PhysicsShadowWorld(IPhysicsEngine physicsEngine, IDebugRenderer debugRenderer)
+        private readonly DefaultPhysicsEventContext _physicsEventContext = new DefaultPhysicsEventContext();
+
+        private IGameContext _gameContext;
+
+        private IServerContext _serverContext;
+
+        private IUpdateContext _updateContext;
+
+        public PhysicsShadowWorld(IEventEngine<IPhysicsEventContext> physicsEventEngine, IHierarchy hierarchy, IDebugRenderer debugRenderer)
         {
-            _physicsEngine = physicsEngine;
+            _physicsEventEngine = physicsEventEngine;
+            _hierarchy = hierarchy;
             _debugRenderer = debugRenderer;
-            _collisionSystem = new CollisionSystemPersistentSAP
+
+            var collisionSystem = new CollisionSystemPersistentSAP
             {
                 EnableSpeculativeContacts = true
             };
 
-            _physicsWorld = new JitterWorld(_collisionSystem);
+            _physicsWorld = new JitterWorld(collisionSystem);
             _physicsWorld.ContactSettings.MaterialCoefficientMixing =
                 ContactSettings.MaterialCoefficientMixingType.TakeMinimum;
 
@@ -51,6 +64,58 @@ namespace Protogame
 
             _lastFramePosition = new Dictionary<int, Vector3>();
             _lastFrameRotation = new Dictionary<int, Quaternion>();
+            _transformCache = new Dictionary<int, WeakReference<IHasTransform>>();
+
+            _physicsWorld.Events.BodiesBeginCollide += EventsOnBodiesBeginCollide;
+            _physicsWorld.Events.BodiesEndCollide += EventsOnBodiesEndCollide;
+        }
+
+        private void EventsOnBodiesBeginCollide(RigidBody body1, RigidBody body2)
+        {
+            if (body1.Tag != null && body2.Tag != null)
+            {
+                var node1 = _hierarchy.Lookup(body1.Tag);
+                var node2 = _hierarchy.Lookup(body2.Tag);
+
+                if (node1 != null && node2 != null)
+                {
+                    // TODO: This is pretty silly.  It should just be the nodes, not their parents.
+                    var parent1 = node1.Parent ?? node1;
+                    var parent2 = node2.Parent ?? node2;
+
+                    var owner1 = parent1.UntypedValue;
+                    var owner2 = parent2.UntypedValue;
+
+                    var @event = new PhysicsCollisionBeginEvent(_gameContext, _serverContext, _updateContext, body1,
+                        body2, owner1, owner2);
+
+                    _physicsEventEngine.Fire(_physicsEventContext, @event);
+                }
+            }
+        }
+
+        private void EventsOnBodiesEndCollide(RigidBody body1, RigidBody body2)
+        {
+            if (body1.Tag != null && body2.Tag != null)
+            {
+                var node1 = _hierarchy.Lookup(body1.Tag);
+                var node2 = _hierarchy.Lookup(body2.Tag);
+
+                if (node1 != null && node2 != null)
+                {
+                    // TODO: This is pretty silly.  It should just be the nodes, not their parents.
+                    var parent1 = node1.Parent ?? node1;
+                    var parent2 = node2.Parent ?? node2;
+
+                    var owner1 = parent1.UntypedValue;
+                    var owner2 = parent2.UntypedValue;
+
+                    var @event = new PhysicsCollisionEndEvent(_gameContext, _serverContext, _updateContext, body1, body2,
+                        owner1, owner2);
+
+                    _physicsEventEngine.Fire(_physicsEventContext, @event);
+                }
+            }
         }
 
         private class RigidBodyMapping
@@ -79,11 +144,15 @@ namespace Protogame
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
+            _serverContext = serverContext;
+            _updateContext = updateContext;
             Update((float)serverContext.GameTime.ElapsedGameTime.TotalSeconds);
         }
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
+            _gameContext = gameContext;
+            _updateContext = updateContext;
             Update((float) gameContext.GameTime.ElapsedGameTime.TotalSeconds);
         }
 
@@ -113,11 +182,14 @@ namespace Protogame
                 }
 
                 var rigidBody = kv.RigidBody;
-                var hasMatrix = kv.HasTransform;
+                var hasTransform = kv.HasTransform;
+
+                // Put the lookup in the transform cache.
+                _transformCache[rigidBody.GetHashCode()] = new WeakReference<IHasTransform>(hasTransform);
 
                 // Sync game world to physics system.
-                var rot = hasMatrix.FinalTransform.AbsoluteRotation;
-                var pos = hasMatrix.FinalTransform.AbsolutePosition;
+                var rot = hasTransform.FinalTransform.AbsoluteRotation;
+                var pos = hasTransform.FinalTransform.AbsolutePosition;
                 originalRotation[rigidBody.GetHashCode()] = rot;
                 originalPosition[rigidBody.GetHashCode()] = pos;
 
@@ -126,7 +198,7 @@ namespace Protogame
                 if (_lastFramePosition.ContainsKey(rigidBody.GetHashCode()))
                 {
                     var lastPosition = _lastFramePosition[rigidBody.GetHashCode()];
-                    if ((lastPosition - hasMatrix.Transform.LocalPosition).LengthSquared() > 0.0001f)
+                    if ((lastPosition - hasTransform.Transform.LocalPosition).LengthSquared() > 0.0001f)
                     {
                         rigidBody.Position = pos.ToJitterVector();
                     }
@@ -143,7 +215,7 @@ namespace Protogame
                     var lastRotation = _lastFrameRotation[rigidBody.GetHashCode()];
 
                     var a = Quaternion.Normalize(lastRotation);
-                    var b = Quaternion.Normalize(hasMatrix.Transform.LocalRotation);
+                    var b = Quaternion.Normalize(hasTransform.Transform.LocalRotation);
                     var closeness = 1 - (a.X*b.X + a.Y*b.Y + a.Z*b.Z + a.W*b.W);
 
                     if (closeness > 0.0001f)
@@ -232,7 +304,6 @@ namespace Protogame
 
         public void Dispose()
         {
-            
         }
 
         public void RegisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform, bool staticAndImmovable)
