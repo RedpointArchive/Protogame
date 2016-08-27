@@ -1,5 +1,6 @@
 ﻿using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Protoinject;
 
 namespace Protogame
@@ -15,10 +16,11 @@ namespace Protogame
 
         private bool _addedRigidBody;
 
-        private bool _hasSetRotationOnRigidBody;
-
         private bool _didUpdateSync;
+
         private bool _enabled;
+
+        private bool _pureCollider;
 
         internal PhysicalBaseRigidBodyComponent(INode node, IPhysicsEngine physicsEngine)
         {
@@ -49,6 +51,38 @@ namespace Protogame
         /// set this option to true to optimize game performance.
         /// </summary>
         public bool StaticAndImmovable { get; set; }
+
+        /// <summary>
+        /// By setting this flag, the physics engine won't move this rigid body, and this rigid
+        /// body won't exert forces on any other rigid body, but collisions will still be detected
+        /// and raised as events on the parent object in the hierarchy.
+        /// </summary>
+        public bool PureCollider
+        {
+            get { return _pureCollider; }
+            set
+            {
+                if (_pureCollider != value)
+                {
+                    _pureCollider = value;
+                    UpdatePureCollider();
+                }
+            }
+        }
+
+        private void UpdatePureCollider()
+        {
+            if (_pureCollider)
+            {
+                _rigidBody.PureCollider = true;
+                _rigidBody.AffectedByGravity = false;
+            }
+            else
+            {
+                _rigidBody.PureCollider = false;
+                _rigidBody.AffectedByGravity = true;
+            }
+        }
 
         public bool Static
         {
