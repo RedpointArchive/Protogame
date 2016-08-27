@@ -19,19 +19,28 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
+
+// ReSharper disable CheckNamespace
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
+
+#pragma warning disable 1591
+
 namespace Protogame
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Input;
-    using Keys = Microsoft.Xna.Framework.Input.Keys;
-
     /// <summary>
-    /// The default keyboard string reader.
+    /// The default implementation of <see cref="IKeyboardStringReader"/>.
     /// </summary>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IKeyboardStringReader</interface_ref>
     public class DefaultKeyboardStringReader : IKeyboardStringReader
     {
         // Not super happy about having to do this, but it was either this or a giant switch statement and this kept
@@ -39,7 +48,7 @@ namespace Protogame
         /// <summary>
         /// The alphabet key map.
         /// </summary>
-        private static readonly Dictionary<Keys, Tuple<char, char>> alphabetKeyMap =
+        private static readonly Dictionary<Keys, Tuple<char, char>> AlphabetKeyMap =
             new Dictionary<Keys, Tuple<char, char>>
             {
                 { Keys.Q, new Tuple<char, char>('q', 'Q') }, 
@@ -73,7 +82,7 @@ namespace Protogame
         /// <summary>
         /// The num pad key map.
         /// </summary>
-        private static readonly Dictionary<Keys, char> numPadKeyMap = new Dictionary<Keys, char>
+        private static readonly Dictionary<Keys, char> NumPadKeyMap = new Dictionary<Keys, char>
         {
             { Keys.NumPad0, '0' }, 
             { Keys.NumPad1, '1' }, 
@@ -91,7 +100,7 @@ namespace Protogame
         /// <summary>
         /// The num pad math key map.
         /// </summary>
-        private static readonly Dictionary<Keys, char> numPadMathKeyMap = new Dictionary<Keys, char>
+        private static readonly Dictionary<Keys, char> NumPadMathKeyMap = new Dictionary<Keys, char>
         {
             { Keys.Divide, '/' }, 
             { Keys.Multiply, '*' }, 
@@ -102,7 +111,7 @@ namespace Protogame
         /// <summary>
         /// The symbol number key map.
         /// </summary>
-        private static readonly Dictionary<Keys, Tuple<char, char>> symbolNumberKeyMap =
+        private static readonly Dictionary<Keys, Tuple<char, char>> SymbolNumberKeyMap =
             new Dictionary<Keys, Tuple<char, char>>
             {
                 { Keys.OemTilde, new Tuple<char, char>('`', '~') }, 
@@ -133,7 +142,7 @@ namespace Protogame
         /// <summary>
         /// The pressed keys.
         /// </summary>
-        private readonly Dictionary<Keys, double> pressedKeys;
+        private readonly Dictionary<Keys, double> _pressedKeys;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultKeyboardStringReader"/> class. 
@@ -141,9 +150,9 @@ namespace Protogame
         /// </summary>
         public DefaultKeyboardStringReader()
         {
-            this.FirstRepeatKeyInterval = 450;
-            this.RepeatKeyInterval = 50;
-            this.pressedKeys = new Dictionary<Keys, double>();
+            FirstRepeatKeyInterval = 450;
+            RepeatKeyInterval = 50;
+            _pressedKeys = new Dictionary<Keys, double>();
         }
 
         /// <summary>
@@ -184,17 +193,17 @@ namespace Protogame
             var shift = keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift);
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-            var capsLock = System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock);
-            var numLock = System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.NumLock);
+            var capsLock = Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock);
+            var numLock = Control.IsKeyLocked(System.Windows.Forms.Keys.NumLock);
 #else
 			var capsLock = false;
 			var numLock = false;
 #endif
 
             // remove any keys that aren't down anymore from pressed keys
-            foreach (var key in this.pressedKeys.Keys.Except(keys).ToArray())
+            foreach (var key in _pressedKeys.Keys.Except(keys).ToArray())
             {
-                this.pressedKeys.Remove(key);
+                _pressedKeys.Remove(key);
             }
 
             foreach (var key in keys)
@@ -202,15 +211,15 @@ namespace Protogame
                 // if the key wasn't pressed the last go round process it and set the repeat time to the
                 // current time + the first repeat interval.  Otherwise process it and set the repeat time
                 // to the current time + the repeat key interval.
-                if (!this.pressedKeys.Keys.Any(k => k == key))
+                if (!_pressedKeys.Keys.Any(k => k == key))
                 {
-                    this.ProcessKey(key, shift, capsLock, numLock, text);
-                    this.pressedKeys[key] = time.TotalGameTime.TotalMilliseconds + this.FirstRepeatKeyInterval;
+                    ProcessKey(key, shift, capsLock, numLock, text);
+                    _pressedKeys[key] = time.TotalGameTime.TotalMilliseconds + FirstRepeatKeyInterval;
                 }
-                else if (time.TotalGameTime.TotalMilliseconds > this.pressedKeys[key])
+                else if (time.TotalGameTime.TotalMilliseconds > _pressedKeys[key])
                 {
-                    this.ProcessKey(key, shift, capsLock, numLock, text);
-                    this.pressedKeys[key] = time.TotalGameTime.TotalMilliseconds + this.RepeatKeyInterval;
+                    ProcessKey(key, shift, capsLock, numLock, text);
+                    _pressedKeys[key] = time.TotalGameTime.TotalMilliseconds + RepeatKeyInterval;
                 }
             }
         }
@@ -236,26 +245,26 @@ namespace Protogame
         private char? GetCharacter(Keys key, bool shift, bool capsLock, bool numLock)
         {
             var newChar = new char?();
-            if (alphabetKeyMap.Keys.Contains(key))
+            if (AlphabetKeyMap.Keys.Contains(key))
             {
-                var characterMap = alphabetKeyMap[key];
+                var characterMap = AlphabetKeyMap[key];
                 newChar = (shift ^ capsLock) ? characterMap.Item2 : characterMap.Item1;
             }
-            else if (symbolNumberKeyMap.Keys.Contains(key))
+            else if (SymbolNumberKeyMap.Keys.Contains(key))
             {
-                var characterMap = symbolNumberKeyMap[key];
+                var characterMap = SymbolNumberKeyMap[key];
                 newChar = shift ? characterMap.Item2 : characterMap.Item1;
             }
-            else if (numPadKeyMap.ContainsKey(key))
+            else if (NumPadKeyMap.ContainsKey(key))
             {
                 if (numLock)
                 {
-                    newChar = numPadKeyMap[key];
+                    newChar = NumPadKeyMap[key];
                 }
             }
-            else if (numPadMathKeyMap.ContainsKey(key))
+            else if (NumPadMathKeyMap.ContainsKey(key))
             {
-                newChar = numPadMathKeyMap[key];
+                newChar = NumPadMathKeyMap[key];
             }
 
             return newChar;
@@ -286,7 +295,7 @@ namespace Protogame
                 text = text.Remove(text.Length - 1, 1);
             }
 
-            var newChar = this.GetCharacter(key, shift, capsLock, numLock);
+            var newChar = GetCharacter(key, shift, capsLock, numLock);
 
             if (newChar.HasValue)
             {

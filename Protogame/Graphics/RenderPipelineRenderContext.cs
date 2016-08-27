@@ -19,8 +19,7 @@ namespace Protogame
         /// The rendering pipeline.
         /// </summary>
         private readonly IRenderPipeline _renderPipeline;
-
-        private readonly IRenderContextImplementationUtilities _renderContextImplementationUtilities;
+        
         private readonly IEffectSemantic[] _availableSemantics;
         
         /// <summary>
@@ -54,11 +53,9 @@ namespace Protogame
         /// <param name="availableSemantics">The available effect semantics in the game.</param>
         public RenderPipelineRenderContext(
             IRenderPipeline renderPipeline,
-            IRenderContextImplementationUtilities renderContextImplementationUtilities,
             IEffectSemantic[] availableSemantics)
         {
             _renderPipeline = renderPipeline;
-            _renderContextImplementationUtilities = renderContextImplementationUtilities;
             _availableSemantics = availableSemantics;
         }
 

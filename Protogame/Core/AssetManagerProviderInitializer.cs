@@ -1,7 +1,16 @@
-﻿using Protoinject;
+﻿// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using Protoinject;
 
 namespace Protogame
 {
+    /// <summary>
+    /// The default implementation of <see cref="IAssetManagerProviderInitializer"/>.
+    /// </summary>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IAssetManagerProviderInitializer</interface_ref>
     public class AssetManagerProviderInitializer : IAssetManagerProviderInitializer
     {
         private readonly IKernel _kernel;

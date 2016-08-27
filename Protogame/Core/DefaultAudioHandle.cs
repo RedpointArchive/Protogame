@@ -1,62 +1,47 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using Microsoft.Xna.Framework.Audio;
+
 namespace Protogame
 {
-    using Microsoft.Xna.Framework.Audio;
-
     /// <summary>
-    /// The default audio handle.
+    /// The default implementation of <see cref="IAudioHandle"/>.
     /// </summary>
+    /// <module>Audio</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IAudioHandle</interface_ref>
     public class DefaultAudioHandle : IAudioHandle
     {
-        /// <summary>
-        /// The m_ instance.
-        /// </summary>
-        private readonly SoundEffectInstance m_Instance;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultAudioHandle"/> class.
-        /// </summary>
-        /// <param name="asset">
-        /// The asset.
-        /// </param>
+        private readonly SoundEffectInstance _instance;
+        
         public DefaultAudioHandle(AudioAsset asset)
         {
-            this.m_Instance = asset.Audio.CreateInstance();
+            _instance = asset.Audio.CreateInstance();
         }
-
-        /// <summary>
-        /// The loop.
-        /// </summary>
+        
         public void Loop()
         {
-            this.m_Instance.IsLooped = true;
-            if (this.m_Instance.State == SoundState.Playing)
+            _instance.IsLooped = true;
+            if (_instance.State == SoundState.Playing)
             {
-                this.m_Instance.Play();
+                _instance.Play();
             }
         }
-
-        /// <summary>
-        /// The pause.
-        /// </summary>
+        
         public void Pause()
         {
-            this.m_Instance.Pause();
+            _instance.Pause();
         }
-
-        /// <summary>
-        /// The play.
-        /// </summary>
+        
         public void Play()
         {
-            this.m_Instance.Play();
+            _instance.Play();
         }
-
-        /// <summary>
-        /// The stop.
-        /// </summary>
+        
         public void Stop()
         {
-            this.m_Instance.Stop();
+            _instance.Stop();
         }
     }
 }

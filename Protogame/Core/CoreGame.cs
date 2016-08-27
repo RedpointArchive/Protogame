@@ -1,11 +1,13 @@
+// ReSharper disable CheckNamespace
+
+using System;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Protoinject;
+
 namespace Protogame
 {
-    using System;
-    using System.Linq;
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics;
-    using Protoinject;
-
     /// <summary>
     /// The core Protogame game implementation.  You should derive your Game class from this
     /// implementation.
@@ -37,13 +39,13 @@ namespace Protogame
         /// <para>
         /// In the new rendering system, you need to add render passes to the render pipeline
         /// of your game to indicate how things will be rendered.  Use
-        /// <see cref="IRenderPipeline.AddRenderPass"/> to add passes to the render pipeline.
+        /// <see cref="IRenderPipeline.AddFixedRenderPass"/> or
+        /// <see cref="IRenderPipeline.AppendTransientRenderPass"/> to add passes to the render pipeline.
         /// </para>
         /// </summary>
         /// <param name="pipeline">The render pipeline to configure.</param>
         /// <param name="kernel">
-        /// The dependency injection kernel, on which you can call 
-        /// <see cref="ResolutionExtensions.Get{T}(IResolutionRoot, IParameter[])"/> to create
+        /// The dependency injection kernel, on which you can call <c>Get</c> on to create
         /// new render passes for adding to the pipeline.
         /// </param>
         protected abstract void ConfigureRenderPipeline(IRenderPipeline pipeline, IKernel kernel);
@@ -55,7 +57,7 @@ namespace Protogame
         /// <param name="pipeline">The render pipeline to configure.</param>
         protected sealed override void InternalConfigureRenderPipeline(IRenderPipeline pipeline)
         {
-            this.ConfigureRenderPipeline(pipeline, _kernel);
+            ConfigureRenderPipeline(pipeline, _kernel);
         }
 
     }
@@ -82,47 +84,42 @@ namespace Protogame
         /// <summary>
         /// The dependency injection kernel.
         /// </summary>
-        private readonly IKernel m_Kernel;
+        private readonly IKernel _kernel;
 
         /// <summary>
         /// The graphics device manager instance.
         /// </summary>
-        private readonly GraphicsDeviceManager m_GraphicsDeviceManager;
+        private readonly GraphicsDeviceManager _graphicsDeviceManager;
 
         /// <summary>
         /// The current profiler instance.
         /// </summary>
-        private readonly IProfiler m_Profiler;
+        private readonly IProfiler _profiler;
 
         /// <summary>
         /// The current analytics engine instance.
         /// </summary>
-        private readonly IAnalyticsEngine m_AnalyticsEngine;
-
-        /// <summary>
-        /// The current analytics initializer instance.
-        /// </summary>
-        private readonly IAnalyticsInitializer m_AnalyticsInitializer;
+        private readonly IAnalyticsEngine _analyticsEngine;
 
         /// <summary>
         /// The total number of frames that have elapsed since the last second interval.
         /// </summary>
-        private int m_TotalFrames;
+        private int _totalFrames;
 
         /// <summary>
         /// The total amount of time that has elapsed since the last second interval.
         /// </summary>
-        private float m_ElapsedTime;
+        private float _elapsedTime;
 
         /// <summary>
         /// An array of the engine hooks that are loaded.
         /// </summary>
-        private IEngineHook[] m_EngineHooks;
+        private IEngineHook[] _engineHooks;
 
         /// <summary>
         /// The current hierarchical node of the game in the dependency injection system.
         /// </summary>
-        private INode m_Current;
+        private readonly INode _node;
 
         /// <summary>
         /// Gets the current game context.  You should not generally access this property; outside
@@ -153,13 +150,12 @@ namespace Protogame
         /// The current update context.
         /// </value>
         public IRenderContext RenderContext { get; private set; }
-
+        
         /// <summary>
-        /// Initializes a new instance of the <see cref="CoreGame{TInitialWorld,TWorldManager}"/> class. 
+        /// Initializes an instance of a game in Protogame.  This constructor is always called
+        /// as the base constructor to your game implementation.
         /// </summary>
-        /// <param name="kernel">
-        /// The dependency injection kernel.
-        /// </param>
+        /// <param name="kernel">The dependency injection kernel to use.</param>
         protected CoreGame(IKernel kernel)
         {
 #if PLATFORM_MACOS
@@ -174,43 +170,44 @@ namespace Protogame
             }
 #endif
 
-            this.m_Kernel = kernel;
-            this.m_Current = this.m_Kernel.CreateEmptyNode("Game");
+            _kernel = kernel;
+            _node = _kernel.CreateEmptyNode("Game");
 
-            this.m_GraphicsDeviceManager = new GraphicsDeviceManager(this);
-            PrepareGraphicsDeviceManager(this.m_GraphicsDeviceManager);
-            this.m_GraphicsDeviceManager.PreparingDeviceSettings +=
+            _graphicsDeviceManager = new GraphicsDeviceManager(this);
+            // ReSharper disable once VirtualMemberCallInConstructor
+            PrepareGraphicsDeviceManager(_graphicsDeviceManager);
+            _graphicsDeviceManager.PreparingDeviceSettings +=
                 (sender, e) =>
                 {
-                    this.PrepareDeviceSettings(e.GraphicsDeviceInformation);
+                    PrepareDeviceSettings(e.GraphicsDeviceInformation);
                 };
 
-            this.m_Profiler = kernel.TryGet<IProfiler>(this.m_Current);
-            if (this.m_Profiler == null)
+            _profiler = kernel.TryGet<IProfiler>(_node);
+            if (_profiler == null)
             {
                 kernel.Bind<IProfiler>().To<NullProfiler>();
-                this.m_Profiler = kernel.Get<IProfiler>(this.m_Current);
+                _profiler = kernel.Get<IProfiler>(_node);
             }
 
-            this.m_AnalyticsEngine = kernel.TryGet<IAnalyticsEngine>(this.m_Current);
-            if (this.m_AnalyticsEngine == null)
+            _analyticsEngine = kernel.TryGet<IAnalyticsEngine>(_node);
+            if (_analyticsEngine == null)
             {
                 kernel.Bind<IAnalyticsEngine>().To<NullAnalyticsEngine>();
-                this.m_AnalyticsEngine = kernel.Get<IAnalyticsEngine>(this.m_Current);
+                _analyticsEngine = kernel.Get<IAnalyticsEngine>(_node);
             }
 
-            this.m_AnalyticsInitializer = kernel.TryGet<IAnalyticsInitializer>(this.m_Current);
-            if (this.m_AnalyticsInitializer == null)
+            var analyticsInitializer = kernel.TryGet<IAnalyticsInitializer>(_node);
+            if (analyticsInitializer == null)
             {
                 kernel.Bind<IAnalyticsInitializer>().To<NullAnalyticsInitializer>();
-                this.m_AnalyticsInitializer = kernel.Get<IAnalyticsInitializer>(this.m_Current);
+                analyticsInitializer = kernel.Get<IAnalyticsInitializer>(_node);
             }
 
-            this.m_AnalyticsInitializer.Initialize(this.m_AnalyticsEngine);
+            analyticsInitializer.Initialize(_analyticsEngine);
 
             // TODO: Fix this because it means we can't have more than one game using the same IoC container.
-            var assetContentManager = new AssetContentManager(this.Services);
-            this.Content = assetContentManager;
+            var assetContentManager = new AssetContentManager(Services);
+            Content = assetContentManager;
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
         }
 
@@ -228,13 +225,7 @@ namespace Protogame
         /// <value>
         /// The graphics device manager.
         /// </value>
-        public GraphicsDeviceManager GraphicsDeviceManager
-        {
-            get
-            {
-                return this.m_GraphicsDeviceManager;
-            }
-        }
+        public GraphicsDeviceManager GraphicsDeviceManager => _graphicsDeviceManager;
 
         /// <summary>
         /// The number of frames to skip before updating or rendering.
@@ -247,19 +238,19 @@ namespace Protogame
         protected override void LoadContent()
         {
             // The interception library can't properly intercept class types, which
-            // means we can't simply do this.m_Kernel.Get<TInitialWorld>() because
+            // means we can't simply do _kernel.Get<TInitialWorld>() because
             // none of the calls will be intercepted.  Instead, we need to bind the
             // IWorld and IWorldManager to their initial types and then unbind them
             // after they've been constructed.
-            this.m_Kernel.Bind<IWorld>().To<TInitialWorld>();
-            this.m_Kernel.Bind<IWorldManager>().To<TWorldManager>();
-            var world = this.m_Kernel.Get<IWorld>(this.m_Current);
-            var worldManager = this.m_Kernel.Get<IWorldManager>(this.m_Current);
-            this.m_Kernel.Unbind<IWorld>();
-            this.m_Kernel.Unbind<IWorldManager>();
+            _kernel.Bind<IWorld>().To<TInitialWorld>();
+            _kernel.Bind<IWorldManager>().To<TWorldManager>();
+            var world = _kernel.Get<IWorld>(_node);
+            var worldManager = _kernel.Get<IWorldManager>(_node);
+            _kernel.Unbind<IWorld>();
+            _kernel.Unbind<IWorldManager>();
 
             // Construct a platform-independent game window.
-            this.Window = this.ConstructGameWindow();
+            Window = ConstructGameWindow();
 
 #if PLATFORM_ANDROID
             // On Android, disable viewport / backbuffer scaling because we expect games
@@ -283,9 +274,9 @@ namespace Protogame
                 shouldHandleResize = false;
                 var width = base.Window.ClientBounds.Width;
                 var height = base.Window.ClientBounds.Height;
-                this.GameContext.Graphics.PreferredBackBufferWidth = width;
-                this.GameContext.Graphics.PreferredBackBufferHeight = height;
-                this.GameContext.Graphics.ApplyChanges();
+                GameContext.Graphics.PreferredBackBufferWidth = width;
+                GameContext.Graphics.PreferredBackBufferHeight = height;
+                GameContext.Graphics.ApplyChanges();
                 shouldHandleResize = true;
             };
 
@@ -297,7 +288,7 @@ namespace Protogame
                 form.FormClosing += (sender, args) =>
                 {
                     bool cancel;
-                    this.CloseRequested(out cancel);
+                    CloseRequested(out cancel);
 
                     if (cancel)
                     {
@@ -308,13 +299,13 @@ namespace Protogame
 #endif
 
             // Create the game context.
-            this.GameContext = this.m_Kernel.Get<IGameContext>(
-                this.m_Current,
+            GameContext = _kernel.Get<IGameContext>(
+                _node,
                 new NamedConstructorArgument("game", this), 
-                new NamedConstructorArgument("graphics", this.m_GraphicsDeviceManager), 
+                new NamedConstructorArgument("graphics", _graphicsDeviceManager), 
                 new NamedConstructorArgument("world", world), 
                 new NamedConstructorArgument("worldManager", worldManager), 
-                new NamedConstructorArgument("window", this.ConstructGameWindow()));
+                new NamedConstructorArgument("window", ConstructGameWindow()));
 
             // If we are using the new rendering pipeline, we need to ensure that
             // the rendering context and the render pipeline world manager share
@@ -327,25 +318,25 @@ namespace Protogame
             }
 
             // Create the update and render contexts.
-            this.UpdateContext = this.m_Kernel.Get<IUpdateContext>(this.m_Current);
-            this.RenderContext = this.m_Kernel.Get<IRenderContext>(
-                this.m_Current,
+            UpdateContext = _kernel.Get<IUpdateContext>(_node);
+            RenderContext = _kernel.Get<IRenderContext>(
+                _node,
                 new NamedConstructorArgument("renderPipeline", renderPipeline));
 
             // Configure the render pipeline if possible.
             if (renderPipeline != null)
             {
-                this.InternalConfigureRenderPipeline(renderPipeline);
+                InternalConfigureRenderPipeline(renderPipeline);
             }
 
             // Retrieve all engine hooks.  These can be set up by additional modules
             // to change runtime behaviour.
-            this.m_EngineHooks =
-                this.m_Kernel.GetAll<IEngineHook>(this.m_Current, null, null,
+            _engineHooks =
+                _kernel.GetAll<IEngineHook>(_node, null, null,
                     new IInjectionAttribute[] {new FromGameAttribute()}).ToArray();
 
             // Register with analytics services.
-            this.m_AnalyticsEngine.LogGameplayEvent("Game:Start");
+            _analyticsEngine.LogGameplayEvent("Game:Start");
         }
 
         /// <summary>
@@ -368,16 +359,13 @@ namespace Protogame
         /// <param name="disposing">No documentation.</param>
         protected override void Dispose(bool disposing)
         {
-            if (this.GameContext != null && this.GameContext.World != null)
-            {
-                this.GameContext.World.Dispose();
-            }
+            GameContext?.World?.Dispose();
 
-            if (this.m_AnalyticsEngine != null)
+            if (_analyticsEngine != null)
             {
-                this.m_AnalyticsEngine.LogGameplayEvent("Game:Stop");
+                _analyticsEngine.LogGameplayEvent("Game:Stop");
 
-                this.m_AnalyticsEngine.FlushAndStop();
+                _analyticsEngine.FlushAndStop();
             }
 
             base.Dispose(disposing);
@@ -391,38 +379,38 @@ namespace Protogame
         /// </param>
         protected override void Update(GameTime gameTime)
         {
-            using (this.m_Profiler.Measure("update", this.GameContext.FrameCount.ToString()))
+            using (_profiler.Measure("update", GameContext.FrameCount.ToString()))
             {
                 // Measure FPS.
-                using (this.m_Profiler.Measure("measure_fps"))
+                using (_profiler.Measure("measure_fps"))
                 {
-                    this.GameContext.FrameCount += 1;
-                    this.m_ElapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-                    if (this.m_ElapsedTime >= 1000f)
+                    GameContext.FrameCount += 1;
+                    _elapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                    if (_elapsedTime >= 1000f)
                     {
-                        this.GameContext.FPS = this.m_TotalFrames;
-                        this.m_TotalFrames = 0;
-                        this.m_ElapsedTime = 0;
+                        GameContext.FPS = _totalFrames;
+                        _totalFrames = 0;
+                        _elapsedTime = 0;
                     }
                 }
 
                 // This can be used in case MonoGame does not initialize correctly before the first frame.
-                if (this.GameContext.FrameCount < this.SkipFrames)
+                if (GameContext.FrameCount < SkipFrames)
                 {
                     return;
                 }
 
                 // Update the game.
-                using (this.m_Profiler.Measure("main"))
+                using (_profiler.Measure("main"))
                 {
-                    this.GameContext.GameTime = gameTime;
-                    this.GameContext.Begin();
-                    foreach (var hook in this.m_EngineHooks)
+                    GameContext.GameTime = gameTime;
+                    GameContext.Begin();
+                    foreach (var hook in _engineHooks)
                     {
-                        hook.Update(this.GameContext, this.UpdateContext);
+                        hook.Update(GameContext, UpdateContext);
                     }
 
-                    this.GameContext.WorldManager.Update(this);
+                    GameContext.WorldManager.Update(this);
                 }
 
                 base.Update(gameTime);
@@ -437,32 +425,32 @@ namespace Protogame
         /// </param>
         protected override void Draw(GameTime gameTime)
         {
-            using (this.m_Profiler.Measure("render", (this.GameContext.FrameCount - 1).ToString()))
+            using (_profiler.Measure("render", (GameContext.FrameCount - 1).ToString()))
             {
                 RenderContext.IsRendering = true;
 
-                this.m_TotalFrames++;
+                _totalFrames++;
 
                 // This can be used in case MonoGame does not initialize correctly before the first frame.
-                if (this.GameContext.FrameCount < this.SkipFrames)
+                if (GameContext.FrameCount < SkipFrames)
                 {
-                    this.GraphicsDevice.Clear(Color.Black);
+                    GraphicsDevice.Clear(Color.Black);
                     return;
                 }
 
                 // Render the game.
-                using (this.m_Profiler.Measure("main"))
+                using (_profiler.Measure("main"))
                 {
-                    this.GameContext.GameTime = gameTime;
+                    GameContext.GameTime = gameTime;
                     if (typeof(TWorldManager) != typeof(RenderPipelineWorldManager))
                     {
-                        foreach (var hook in this.m_EngineHooks)
+                        foreach (var hook in _engineHooks)
                         {
-                            hook.Render(this.GameContext, this.RenderContext);
+                            hook.Render(GameContext, RenderContext);
                         }
                     }
 
-                    this.GameContext.WorldManager.Render(this);
+                    GameContext.WorldManager.Render(this);
                 }
 
                 base.Draw(gameTime);
@@ -521,7 +509,7 @@ namespace Protogame
 
             // On OpenGL platform, we need to set this to true otherwise it
             // won't use multisampling regardless of whether we configure it.
-            this.m_GraphicsDeviceManager.PreferMultiSampling = true;
+            _graphicsDeviceManager.PreferMultiSampling = true;
         }
 
         /// <summary>
@@ -553,6 +541,7 @@ namespace Protogame
         /// <summary>
         /// Runs code before MonoGame performs any initialization logic.
         /// </summary>
+        // ReSharper disable once EmptyConstructor
         static CoreGame()
         {
 #if PLATFORM_LINUX

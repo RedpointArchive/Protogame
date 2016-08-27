@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Protoinject;
 
 namespace Protogame
@@ -13,8 +12,7 @@ namespace Protogame
             _node = node;
             _console = console;
         }
-
-        [StringFormatMethod("messageFormat")]
+        
         public void Log(string messageFormat, params object[] objects)
         {
             _console.LogStructured(_node.Parent, messageFormat, objects);

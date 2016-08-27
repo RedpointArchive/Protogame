@@ -1,8 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using Microsoft.Xna.Framework;
 using Protoinject;
 
 namespace Protogame
 {
+    /// <summary>
+    /// The default implementation of <see cref="ITransformUtilities"/>.
+    /// </summary>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.ITransformUtilities</interface_ref>
     public class DefaultTransformUtilities : ITransformUtilities
     {
         public ITransform CreateFromSRTMatrix(Vector3 localScale, Quaternion localRotation, Vector3 localPosition)

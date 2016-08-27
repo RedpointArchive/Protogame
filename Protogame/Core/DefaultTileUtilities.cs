@@ -1,66 +1,39 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using Microsoft.Xna.Framework;
+
 namespace Protogame
 {
-    using Microsoft.Xna.Framework;
-
     /// <summary>
-    /// The default tile utilities.
+    /// The default implementation of <see cref="ITileUtilities"/>.
     /// </summary>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.ITileUtilities</interface_ref>
     public class DefaultTileUtilities : ITileUtilities
     {
-        /// <summary>
-        /// The m_ asset manager.
-        /// </summary>
-        private readonly IAssetManager m_AssetManager;
-
-        /// <summary>
-        /// The m_ render utilities.
-        /// </summary>
-        private readonly I2DRenderUtilities m_RenderUtilities;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultTileUtilities"/> class.
-        /// </summary>
-        /// <param name="renderUtilities">
-        /// The render utilities.
-        /// </param>
-        /// <param name="assetManagerProvider">
-        /// The asset manager provider.
-        /// </param>
+        private readonly IAssetManager _assetManager;
+        
+        private readonly I2DRenderUtilities _renderUtilities;
+        
         public DefaultTileUtilities(I2DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
         {
-            this.m_RenderUtilities = renderUtilities;
-            this.m_AssetManager = assetManagerProvider.GetAssetManager(false);
+            _renderUtilities = renderUtilities;
+            _assetManager = assetManagerProvider.GetAssetManager();
         }
-
-        /// <summary>
-        /// The initialize tile.
-        /// </summary>
-        /// <param name="entity">
-        /// The entity.
-        /// </param>
-        /// <param name="tilesetAssetName">
-        /// The tileset asset name.
-        /// </param>
+        
         public void InitializeTile(ITileEntity entity, string tilesetAssetName)
         {
-            entity.Tileset = this.m_AssetManager.Get<TilesetAsset>(tilesetAssetName);
+            entity.Tileset = _assetManager.Get<TilesetAsset>(tilesetAssetName);
             entity.Transform.LocalScale *= new Vector3(entity.Tileset.CellWidth, entity.Tileset.CellHeight, 1);
             entity.Width = entity.Tileset.CellWidth;
             entity.Height = entity.Tileset.CellHeight;
         }
-
-        /// <summary>
-        /// The render tile.
-        /// </summary>
-        /// <param name="entity">
-        /// The entity.
-        /// </param>
-        /// <param name="renderContext">
-        /// The render context.
-        /// </param>
+        
         public void RenderTile(ITileEntity entity, IRenderContext renderContext)
         {
-            this.m_RenderUtilities.RenderTexture(
+            _renderUtilities.RenderTexture(
                 renderContext, 
                 new Vector2(entity.Transform.LocalPosition.X, entity.Transform.LocalPosition.Y), 
                 entity.Tileset.Texture, 

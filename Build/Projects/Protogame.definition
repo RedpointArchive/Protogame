@@ -284,7 +284,6 @@
     <Compile Include="Console\IConsoleInput.cs" />
     <Compile Include="Console\IConsoleRender.cs" />
     <Compile Include="Console\ServerConsole.cs" />
-    <Compile Include="Core\Annotations.cs" />
     <Compile Include="Core\AssetManagerProviderInitializer.cs" />
     <Compile Include="Core\BoundingBox.cs" />
     <Compile Include="Core\CoreGame.cs" />
@@ -297,7 +296,6 @@
     <Compile Include="Core\DefaultGameContext.cs" />
     <Compile Include="Core\DefaultKeyboardStringReader.cs" />
     <Compile Include="Core\DefaultRawLaunchArguments.cs" />
-    <Compile Include="Core\DefaultRenderContextImplementationUtilities.cs" />
     <Compile Include="Core\DefaultStringSanitizer.cs" />
     <Compile Include="Core\DefaultTileUtilities.cs" />
     <Compile Include="Core\DefaultTransform.cs" />
@@ -331,7 +329,6 @@
     <Compile Include="Core\IPrerenderableEntity.cs" />
     <Compile Include="Core\IRawLaunchArguments.cs" />
     <Compile Include="Core\IRenderContext.cs" />
-    <Compile Include="Core\IRenderContextImplementationUtilities.cs" />
     <Compile Include="Core\ISolidEntity.cs" />
     <Compile Include="Core\IStringSanitizer.cs" />
     <Compile Include="Core\ITileEntity.cs" />

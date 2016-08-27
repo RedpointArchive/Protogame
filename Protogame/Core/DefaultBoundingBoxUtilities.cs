@@ -1,21 +1,18 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using System;
+
 namespace Protogame
 {
-    using System;
-
     /// <summary>
-    /// The default bounding box utilities.
+    /// The default implementation of <see cref="IBoundingBoxUtilities"/>.
     /// </summary>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IBoundingBoxUtilities</interface_ref>
     public class DefaultBoundingBoxUtilities : IBoundingBoxUtilities
     {
-        /// <summary>
-        /// The overlaps.
-        /// </summary>
-        /// <param name="boundingBoxes">
-        /// The bounding boxes.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
         public bool Overlaps(params IBoundingBox[] boundingBoxes)
         {
             if (boundingBoxes.Length <= 1)

@@ -1,12 +1,19 @@
+// ReSharper disable CheckNamespace
+
 using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
     /// <summary>
-    /// The entity.
+    /// The default implementation of a game entity that doesn't use components.  You can
+    /// inherit from this class to make implementing <see cref="IEntity"/> easier.
     /// </summary>
+    /// <module>Core API</module>
     public class Entity : IBoundingBox, IEntity
     {
+        /// <summary>
+        /// Initializes a new entity.
+        /// </summary>
         public Entity()
         {
             Transform = new DefaultTransform();
@@ -89,12 +96,6 @@ namespace Protogame
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform
-        {
-            get
-            {
-                return this.GetDetachedFinalTransformImplementation();
-            }
-        }
+        public IFinalTransform FinalTransform => this.GetDetachedFinalTransformImplementation();
     }
 }

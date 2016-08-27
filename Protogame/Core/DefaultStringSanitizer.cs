@@ -1,18 +1,18 @@
-﻿namespace Protogame
-{
-    using Microsoft.Xna.Framework.Graphics;
+﻿// ReSharper disable CheckNamespace
+#pragma warning disable 1591
 
+using Microsoft.Xna.Framework.Graphics;
+
+namespace Protogame
+{
     /// <summary>
-    /// An implementation of <see cref="IStringSanitizer"/>.
+    /// The default implementation of <see cref="IStringSanitizer"/>.
     /// </summary>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IStringSanitizer</interface_ref>
     public class DefaultStringSanitizer : IStringSanitizer
     {
-        /// <summary>
-        /// Sanitizes the specified text such that it can be rendered with the specified font.
-        /// </summary>
-        /// <param name="font">The font that will render or measure the text.</param>
-        /// <param name="text">The text to sanitize.</param>
-        /// <returns>The text containing only characters that the font can render.</returns>
         public string SanitizeCharacters(SpriteFont font, string text)
         {
             if (font.Characters.Count == 0)

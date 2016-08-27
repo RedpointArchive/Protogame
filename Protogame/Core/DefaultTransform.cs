@@ -1,8 +1,17 @@
-﻿using System;
+﻿// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using System;
 using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
+    /// <summary>
+    /// The default implementation of <see cref="ITransform"/>.
+    /// </summary>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.ITransform</interface_ref>
     public class DefaultTransform : ITransform
     {
         private bool _isSRTMatrix;

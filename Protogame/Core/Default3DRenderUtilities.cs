@@ -1,3 +1,6 @@
+// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -8,6 +11,7 @@ namespace Protogame
     /// <summary>
     /// The default implementation of <see cref="I3DRenderUtilities"/>.
     /// </summary>
+    /// <module>Graphics 3D</module>
     /// <internal>True</internal>
     /// <interface_ref>Protogame.I3DRenderUtilities</interface_ref>
     public class Default3DRenderUtilities : I3DRenderUtilities
@@ -22,46 +26,12 @@ namespace Protogame
             _renderCache = renderCache;
             _renderBatcher = renderBatcher;
         }
-
-        /// <summary>
-        /// The measure text.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="text">
-        /// The text.
-        /// </param>
-        /// <param name="font">
-        /// The font.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Vector2"/>.
-        /// </returns>
+        
         public Vector2 MeasureText(IRenderContext context, string text, FontAsset font)
         {
             return _twoDimensionalRenderUtilities.MeasureText(context, text, font);
         }
-
-        /// <summary>
-        /// The render line.
-        /// </summary>
-        /// <param name="context">
-        ///     The context.
-        /// </param>
-        /// <param name="start">
-        ///     The start.
-        /// </param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="end">
-        ///     The end.
-        /// </param>
-        /// <param name="color">
-        ///     The color.
-        /// </param>
-        /// <param name="effect"></param>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
+        
         public void RenderLine(IRenderContext context, IEffect effect, IEffectParameterSet effectParameterSet, Vector3 start, Vector3 end, Color color)
         {
             if (!context.IsCurrentRenderPass<I3DRenderPass>())
@@ -100,29 +70,6 @@ namespace Protogame
             }
         }
 
-        /// <summary>
-        /// Renders a 3D line using texture UVs.
-        /// </summary>
-        /// <param name="context">
-        ///     The rendering context.
-        /// </param>
-        /// <param name="start">
-        ///     The start of the line.
-        /// </param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="end">
-        ///     The end of the line.
-        /// </param>
-        /// <param name="texture">
-        ///     The texture to use.
-        /// </param>
-        /// <param name="startUV">
-        ///     The UV for the start of the line.
-        /// </param>
-        /// <param name="endUV">
-        ///     The UV for the end of the line.
-        /// </param>
-        /// <param name="effect"></param>
         public void RenderLine(IRenderContext context, IEffect effect, IEffectParameterSet effectParameterSet, Vector3 start, Vector3 end, TextureAsset texture, Vector2 startUV, Vector2 endUV)
         {
             if (!context.IsCurrentRenderPass<I3DRenderPass>())
@@ -166,29 +113,7 @@ namespace Protogame
                 context.GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, 0, 1);
             }
         }
-
-        /// <summary>
-        /// The render rectangle.
-        /// </summary>
-        /// <param name="context">
-        ///     The context.
-        /// </param>
-        /// <param name="start">
-        ///     The start.
-        /// </param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="end">
-        ///     The end.
-        /// </param>
-        /// <param name="color">
-        ///     The color.
-        /// </param>
-        /// <param name="filled">
-        ///     The filled.
-        /// </param>
-        /// <param name="effect"></param>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
+        
         public void RenderRectangle(IRenderContext context, IEffect effect, IEffectParameterSet effectParameterSet, Vector3 start, Vector3 end, Color color, bool filled = false)
         {
             if (!context.IsCurrentRenderPass<I3DRenderPass>())
@@ -219,41 +144,7 @@ namespace Protogame
                     3);
             }
         }
-
-        /// <summary>
-        /// The render text.
-        /// </summary>
-        /// <param name="context">
-        ///     The context.
-        /// </param>
-        /// <param name="matrix">
-        ///     The matrix.
-        /// </param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="text">
-        ///     The text.
-        /// </param>
-        /// <param name="font">
-        ///     The font.
-        /// </param>
-        /// <param name="horizontalAlignment">
-        ///     The horizontal alignment.
-        /// </param>
-        /// <param name="verticalAlignment">
-        ///     The vertical alignment.
-        /// </param>
-        /// <param name="textColor">
-        ///     The text color.
-        /// </param>
-        /// <param name="renderShadow">
-        ///     The render shadow.
-        /// </param>
-        /// <param name="shadowColor">
-        ///     The shadow color.
-        /// </param>
-        /// <param name="effect"></param>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
+        
         public void RenderText(
             IRenderContext context,
             IEffect effect, 
@@ -312,35 +203,7 @@ namespace Protogame
 
             RenderTexture(context, effect, effectParameterSet, matrix, texture, Color.White, flipHorizontally: false, flipVertically: false);
         }
-
-        /// <summary>
-        /// The render texture.
-        /// </summary>
-        /// <param name="context">
-        ///     The context.
-        /// </param>
-        /// <param name="matrix">
-        ///     The matrix.
-        /// </param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="texture">
-        ///     The texture.
-        /// </param>
-        /// <param name="color">
-        ///     The color.
-        /// </param>
-        /// <param name="flipHorizontally">
-        ///     The flip horizontally.
-        /// </param>
-        /// <param name="flipVertically">
-        ///     The flip vertically.
-        /// </param>
-        /// <param name="sourceArea">
-        ///     The source area.
-        /// </param>
-        /// <param name="effect"></param>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
+        
         public void RenderTexture(
             IRenderContext context,
             IEffect effect, 
@@ -359,33 +222,7 @@ namespace Protogame
 
             RenderTexture(context, effect, effectParameterSet, matrix, texture.Texture, color, flipHorizontally, flipVertically, sourceArea);
         }
-
-        /// <summary>
-        /// The render texture.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="matrix">
-        /// The matrix.
-        /// </param>
-        /// <param name="texture">
-        /// The texture.
-        /// </param>
-        /// <param name="color">
-        /// The color.
-        /// </param>
-        /// <param name="flipHorizontally">
-        /// The flip horizontally.
-        /// </param>
-        /// <param name="flipVertically">
-        /// The flip vertically.
-        /// </param>
-        /// <param name="sourceArea">
-        /// The source area.
-        /// </param>
-        /// <exception cref="NotSupportedException">
-        /// </exception>
+        
         private void RenderTexture(
             IRenderContext context,
             IEffect effect, 
@@ -451,21 +288,7 @@ namespace Protogame
 
             context.GraphicsDevice.BlendState = BlendState.Opaque;
         }
-
-        /// <summary>
-        /// Renders a 3D cube from 0, 0, 0 to 1, 1, 1, applying the specified transformation.
-        /// </summary>
-        /// <param name="context">
-        ///     The rendering context.
-        /// </param>
-        /// <param name="transform">
-        ///     The transformation to apply.
-        /// </param>
-        /// <param name="effectParameterSet1"></param>
-        /// <param name="color">
-        ///     The color of the cube.
-        /// </param>
-        /// <param name="effect"></param>
+        
         public void RenderCube(IRenderContext context, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Color color)
         {
             if (!context.IsCurrentRenderPass<I3DRenderPass>())
@@ -552,28 +375,7 @@ namespace Protogame
                     transform, 
                     null));
         }
-
-        /// <summary>
-        /// Renders a 3D cube from 0, 0, 0 to 1, 1, 1, applying the specified transformation, with the
-        /// given texture and using the specified UV coordinates for each face of the cube.
-        /// </summary>
-        /// <param name="context">
-        ///     The rendering context.
-        /// </param>
-        /// <param name="transform">
-        ///     The transformation to apply.
-        /// </param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="texture">
-        ///     The texture to render on the cube.
-        /// </param>
-        /// <param name="topLeftUV">
-        ///     The top-left UV coordinate.
-        /// </param>
-        /// <param name="bottomRightUV">
-        ///     The bottom-right UV coordinate.
-        /// </param>
-        /// <param name="effect"></param>
+        
         public void RenderCube(IRenderContext context, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, TextureAsset texture, Vector2 topLeftUV, Vector2 bottomRightUV)
         {
             if (!context.IsCurrentRenderPass<I3DRenderPass>())
@@ -662,21 +464,7 @@ namespace Protogame
 
             context.World = world;
         }
-
-        /// <summary>
-        /// Renders a 2D plane from 0, 0, 0 to 1, 0, 1, applying the specified transformation.
-        /// </summary>
-        /// <param name="context">
-        ///     The rendering context.
-        /// </param>
-        /// <param name="transform">
-        ///     The transformation to apply.
-        /// </param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="color">
-        ///     The color of the plane.
-        /// </param>
-        /// <param name="effect"></param>
+        
         public void RenderPlane(IRenderContext context, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Color color)
         {
             if (!context.IsCurrentRenderPass<I3DRenderPass>())

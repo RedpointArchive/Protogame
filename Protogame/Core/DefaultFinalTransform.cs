@@ -1,7 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿// ReSharper disable CheckNamespace
+#pragma warning disable 1591
+
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
+    /// <summary>
+    /// The default implementation of <see cref="IFinalTransform"/>.
+    /// </summary>
+    /// <module>Core API</module>
+    /// <internal>True</internal>
+    /// <interface_ref>Protogame.IFinalTransform</interface_ref>
     public class DefaultFinalTransform : IFinalTransform
     {
         private IHasTransform _parent;
@@ -14,16 +23,20 @@ namespace Protogame
 
         public static IFinalTransform Create(IHasTransform parent, IHasTransform child)
         {
-            var attachedTransform = new DefaultFinalTransform();
-            attachedTransform._parent = parent;
-            attachedTransform._child = child;
+            var attachedTransform = new DefaultFinalTransform
+            {
+                _parent = parent,
+                _child = child
+            };
             return attachedTransform;
         }
 
         public static IFinalTransform Create(IHasTransform detachedChild)
         {
-            var attachedTransform = new DefaultFinalTransform();
-            attachedTransform._child = detachedChild;
+            var attachedTransform = new DefaultFinalTransform
+            {
+                _child = detachedChild
+            };
             return attachedTransform;
         }
 
@@ -53,35 +66,17 @@ namespace Protogame
             }
         }
 
-        public Vector3 AbsolutePosition
-        {
-            get { return Vector3.Transform(Vector3.Zero, AbsoluteMatrix); }
-        }
+        public Vector3 AbsolutePosition => Vector3.Transform(Vector3.Zero, AbsoluteMatrix);
 
-        public Quaternion AbsoluteRotation
-        {
-            get { return AbsoluteMatrixWithoutScale.Rotation; }
-        }
+        public Quaternion AbsoluteRotation => AbsoluteMatrixWithoutScale.Rotation;
 
-        public IFinalTransform Parent
-        {
-            get { return _parent.FinalTransform; }
-        }
+        public IFinalTransform Parent => _parent.FinalTransform;
 
-        public IHasTransform ParentObject
-        {
-            get { return _parent; }
-        }
+        public IHasTransform ParentObject => _parent;
 
-        public ITransform Child
-        {
-            get { return _child.Transform; }
-        }
+        public ITransform Child => _child.Transform;
 
-        public IHasTransform ChildObject
-        {
-            get { return _child; }
-        }
+        public IHasTransform ChildObject => _child;
 
         public override string ToString()
         {
