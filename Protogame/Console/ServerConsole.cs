@@ -29,7 +29,14 @@ namespace Protogame
 
         public void LogStructured(INode node, string format, object[] args)
         {
-            Console.WriteLine(format, args);
+            if (args == null)
+            {
+                Console.WriteLine(format);
+            }
+            else
+            {
+                Console.WriteLine(format, args);
+            }
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Protogame
                 name = name.Substring(0, 17) + "...";
             }
 
-            LogInternal(new ConsoleEntry { Count = 1, Message = string.Format(format, args), Name = name });
+            LogInternal(new ConsoleEntry { Count = 1, Message = args == null ? format : string.Format(format, args), Name = name });
         }
 
         private void LogInternal(ConsoleEntry consoleEntry)

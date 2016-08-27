@@ -12,7 +12,12 @@ namespace Protogame
             _node = node;
             _console = console;
         }
-        
+
+        public void Log(string messageFormat)
+        {
+            _console.LogStructured(_node.Parent, messageFormat, null);
+        }
+
         public void Log(string messageFormat, params object[] objects)
         {
             _console.LogStructured(_node.Parent, messageFormat, objects);
