@@ -24,7 +24,7 @@ namespace Protogame.ATFLevelEditor
         /// Maps the specified property as the transform for the object in the hierarchy.
         /// </summary>
         /// <param name="object"></param>
-        /// <param name="matrixProperty"></param>
+        /// <param name="setTransform"></param>
         void MapTransform<TTarget>(TTarget @object, Action<ITransform> setTransform) where TTarget : T, IHasTransform;
 
         /// <summary>
@@ -38,7 +38,6 @@ namespace Protogame.ATFLevelEditor
         /// Maps the specified property as a custom property on the object.
         /// </summary>
         /// <typeparam name="T2">The type of the property.</typeparam>
-        /// <typeparam name="TTarget">The same object type as the one on the interface.</typeparam>
         /// <param name="object">The object that's being mapped.</param>
         /// <param name="id">The ID of the property to use in level data.  Changing this will result in the data mapped against this ID in levels to no longer be loaded.</param>
         /// <param name="name">The name of the property to display in the editor.</param>
@@ -61,12 +60,22 @@ namespace Protogame.ATFLevelEditor
         /// <summary>
         /// Specifies that this object should use a primitive shape when rendered in the level editor.
         /// </summary>
+        /// <param name="object">The object that is being rendered.</param>
         /// <param name="shape">The type of shape to render as.</param>
         void UsePrimitiveShapeForRendering(T @object, EditorPrimitiveShape shape);
 
         /// <summary>
+        /// Specifies that this object should use the specified model when rendered in the level editor.  The
+        /// model path is relative to the resource root of the level editor.
+        /// </summary>
+        /// <param name="object">The object that is being rendered.</param>
+        /// <param name="modelPathFromResourceRoot">The path relative from the resource root.</param>
+        void UseModelForRendering(T @object, string modelPathFromResourceRoot);
+
+        /// <summary>
         /// Specifies that this object should use a 2D icon when rendering in the level editor.
         /// </summary>
+        /// <param name="object">The object that is being rendered.</param>
         /// <param name="pngFilePathFromProjectRoot">The path to the PNG file, relative to the project root.</param>
         void UseIconForRendering(T @object, string pngFilePathFromProjectRoot);
 

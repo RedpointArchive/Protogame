@@ -162,6 +162,7 @@ namespace ProtogamePostBuild
                                 protogameInfo.SetAttribute("RenderMode", bakingEditorQuery.RenderMode.ToString());
                                 protogameInfo.SetAttribute("PrimitiveShape", bakingEditorQuery.PrimitiveShape.ToString());
                                 protogameInfo.SetAttribute("IconAbsolutePath", bakingEditorQuery.IconAbsolutePath ?? string.Empty);
+                                protogameInfo.SetAttribute("ModelRelativePath", bakingEditorQuery.ModelRelativePath ?? string.Empty);
                                 protogameInfo.SetAttribute("CanContainComponents", bakingEditorQuery.CanContainComponents.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("CanContainEntities", bakingEditorQuery.CanContainEntities.ToString(CultureInfo.InvariantCulture));
                                 protogameInfo.SetAttribute("HasTransform", bakingEditorQuery.HasTransform.ToString(CultureInfo.InvariantCulture));

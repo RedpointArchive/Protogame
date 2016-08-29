@@ -40,6 +40,10 @@ namespace Protogame.ATFLevelEditor
         {
         }
 
+        public void UseModelForRendering(T @object, string modelPathFromResourceRoot)
+        {
+        }
+
         public void UseIconForRendering(T @object, string pngFilePathFromProjectRoot)
         {
         }

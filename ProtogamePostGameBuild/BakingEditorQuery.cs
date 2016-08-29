@@ -25,6 +25,8 @@ namespace Protogame.ATFLevelEditor
         public EditorPrimitiveShape PrimitiveShape { get; set; }
 
         public string IconAbsolutePath { get; set; }
+
+        public string ModelRelativePath { get; set; }
     }
 
     public enum DeclaredAs
@@ -380,6 +382,12 @@ namespace Protogame.ATFLevelEditor
         {
             RenderMode = RenderMode.PrimitiveShape;
             PrimitiveShape = shape;
+        }
+
+        public void UseModelForRendering(T @object, string modelPathFromResourceRoot)
+        {
+            RenderMode = RenderMode.Model;
+            ModelRelativePath = modelPathFromResourceRoot;
         }
 
         public void UseIconForRendering(T @object, string pngFilePathFromProjectRoot)

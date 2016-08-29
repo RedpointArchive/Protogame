@@ -4,10 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-
-    /// <summary>
-    /// The raw model load strategy.
-    /// </summary>
+    
     public class RawModelLoadStrategy : ILoadStrategy
     {
         private readonly Dictionary<string, bool> _supportedAnimationFormats = new Dictionary<string, bool>
@@ -16,13 +13,7 @@
                 { "x", false },
                 { "dae", true },
             };
-
-        /// <summary>
-        /// Gets the asset extensions.
-        /// </summary>
-        /// <value>
-        /// The asset extensions.
-        /// </value>
+        
         public string[] AssetExtensions
         {
             get
@@ -30,13 +21,7 @@
                 return _supportedAnimationFormats.Keys.ToArray();
             }
         }
-
-        /// <summary>
-        /// Gets a value indicating whether scan source path.
-        /// </summary>
-        /// <value>
-        /// The scan source path.
-        /// </value>
+        
         public bool ScanSourcePath
         {
             get
@@ -44,19 +29,7 @@
                 return true;
             }
         }
-
-        /// <summary>
-        /// The attempt load.
-        /// </summary>
-        /// <param name="path">
-        /// The path.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
+        
         public IRawAsset AttemptLoad(string path, string name, ref DateTime? lastModified, bool noTranslate = false)
         {
             FileInfo file = null;
@@ -153,16 +126,7 @@
                     Path.Combine(path, (noTranslate ? name : name.Replace('.', Path.DirectorySeparatorChar)) + "." + ext);
             }
         }
-
-        /// <summary>
-        /// The read model data.
-        /// </summary>
-        /// <param name="path">
-        /// The path.
-        /// </param>
-        /// <returns>
-        /// The <see cref="byte[]"/>.
-        /// </returns>
+        
         private byte[] ReadModelData(string path)
         {
             using (var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
