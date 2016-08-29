@@ -192,7 +192,7 @@
         ///     The multiplication factor to apply to the animation speed.
         /// </param>
         /// <param name="effect"></param>
-        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Model model, TimeSpan secondFraction, float multiply)
+        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, IModel model, TimeSpan secondFraction, float multiply)
         {
             this.Render(renderContext, effect, effectParameterSet, transform, model, (float)(secondFraction.TotalSeconds % (this.DurationInTicks / this.TicksPerSecond)), multiply);
         }
@@ -217,7 +217,7 @@
         ///     The multiplication factor to apply to the animation speed.
         /// </param>
         /// <param name="effect"></param>
-        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Model model, float totalSeconds, float multiply)
+        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, IModel model, float totalSeconds, float multiply)
         {
             this.Apply(model, totalSeconds, multiply);
 
@@ -237,7 +237,7 @@
         /// <param name="multiply">
         /// The multiplication factor to apply to the animation speed.
         /// </param>
-        public void Apply(Model model, float totalSeconds, float multiply)
+        public void Apply(IModel model, float totalSeconds, float multiply)
         {
             totalSeconds = (float)(totalSeconds * this.TicksPerSecond * multiply);
 
@@ -373,7 +373,7 @@
         /// <param name="frame">
         /// The frame to draw at.
         /// </param>
-        public void Apply(Model model, double frame)
+        public void Apply(IModel model, double frame)
         {
             var calculatedSeconds = (float)(frame / this.TicksPerSecond);
 
@@ -397,7 +397,7 @@
         ///     The frame to draw at.
         /// </param>
         /// <param name="effect"></param>
-        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Model model, double frame)
+        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, IModel model, double frame)
         {
             var calculatedSeconds = (float)(frame / this.TicksPerSecond);
 

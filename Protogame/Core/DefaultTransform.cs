@@ -32,6 +32,8 @@ namespace Protogame
 
         private bool _isCachedRTLocalMatrixUpToDate;
 
+        public event EventHandler Modified;
+
         public DefaultTransform()
         {
             _isSRTMatrix = true;
@@ -52,11 +54,13 @@ namespace Protogame
                     from.LocalPosition,
                     from.LocalRotation,
                     from.LocalScale);
+                Modified?.Invoke(this, new EventArgs());
             }
             else
             {
                 SetFromCustomMatrix(
                     from.LocalMatrix);
+                Modified?.Invoke(this, new EventArgs());
             }
         }
 
@@ -84,6 +88,7 @@ namespace Protogame
                         _srtLocalPosition = value;
                         _isCachedSRTLocalMatrixUpToDate = false;
                         _isCachedRTLocalMatrixUpToDate = false;
+                        Modified?.Invoke(this, new EventArgs());
                     }
                 }
                 else
@@ -115,6 +120,7 @@ namespace Protogame
                         _srtLocalRotation = value;
                         _isCachedSRTLocalMatrixUpToDate = false;
                         _isCachedRTLocalMatrixUpToDate = false;
+                        Modified?.Invoke(this, new EventArgs());
                     }
                 }
                 else
@@ -145,6 +151,7 @@ namespace Protogame
                     {
                         _srtLocalScale = value;
                         _isCachedSRTLocalMatrixUpToDate = false;
+                        Modified?.Invoke(this, new EventArgs());
                     }
                 }
                 else
@@ -211,6 +218,7 @@ namespace Protogame
             _srtLocalScale = Vector3.One;
             _isCachedSRTLocalMatrixUpToDate = false;
             _isCachedRTLocalMatrixUpToDate = false;
+            Modified?.Invoke(this, new EventArgs());
         }
 
         public void SetFromSRTMatrix(Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
@@ -221,6 +229,7 @@ namespace Protogame
             _srtLocalScale = localScale;
             _isCachedSRTLocalMatrixUpToDate = false;
             _isCachedRTLocalMatrixUpToDate = false;
+            Modified?.Invoke(this, new EventArgs());
         }
 
         public NetworkTransform SerializeToNetwork()
@@ -265,12 +274,14 @@ namespace Protogame
         {
             _isSRTMatrix = false;
             _customLocalMatrix = Matrix.Identity;
+            Modified?.Invoke(this, new EventArgs());
         }
 
         public void SetFromCustomMatrix(Matrix localMatrix)
         {
             _isSRTMatrix = false;
             _customLocalMatrix = localMatrix;
+            Modified?.Invoke(this, new EventArgs());
         }
 
         #endregion

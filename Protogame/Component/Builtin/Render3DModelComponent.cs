@@ -69,6 +69,10 @@ namespace Protogame
 
         private IRenderRequest _renderRequest;
 
+        private IAnimation _lastAnimation;
+
+        private int _animationFrame;
+
         public Render3DModelComponent(
             INode node,
             I3DRenderUtilities renderUtilities,
@@ -93,6 +97,12 @@ namespace Protogame
         public bool Enabled { get; set; }
 
         public Material OverrideMaterial { get; set; }
+
+        public ITransform Transform { get; }
+
+        public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
+
+        public IAnimation Animation { get; set; }
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
@@ -132,7 +142,15 @@ namespace Protogame
 
                     var parameterSet = GetEffectParameterSet(material, ref changedRenderRequest, ref changedRenderRequestBy);
 
-                    if (changedRenderRequest || _renderRequest == null)
+                    var animation = GetModelAnimation(ref changedRenderRequest, ref changedRenderRequestBy);
+
+                    if (animation != null)
+                    {
+                        animation.Apply(Model, _animationFrame++);
+
+                        _renderRequest = Model.CreateRenderRequest(renderContext, effect, parameterSet, matrix);
+                    }
+                    else if (changedRenderRequest || _renderRequest == null)
                     {
                         _renderRequest = Model.CreateRenderRequest(renderContext, effect, parameterSet, matrix);
                     }
@@ -149,6 +167,19 @@ namespace Protogame
                     _lastCachedDiffuseTexture = null;
                 }
             }
+        }
+
+        private IAnimation GetModelAnimation(ref bool changedRenderRequest, ref string changedRenderRequestBy)
+        {
+            if (Animation != _lastAnimation)
+            {
+                changedRenderRequest = true;
+                changedRenderRequestBy += ":animation";
+
+                _lastAnimation = Animation;
+            }
+
+            return _lastAnimation;
         }
 
         private IEffectParameterSet GetEffectParameterSet(IMaterial material, ref bool changedRenderRequest, ref string changedRenderRequestBy)
@@ -386,9 +417,5 @@ namespace Protogame
             _cachedEffect = effect;
             return _cachedEffect;
         }
-
-        public ITransform Transform { get; }
-
-        public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
     }
 }

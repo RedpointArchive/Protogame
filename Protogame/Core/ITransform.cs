@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
@@ -10,6 +11,8 @@ namespace Protogame
         Vector3 LocalPosition { get; set; }
         Quaternion LocalRotation { get; set; }
         Vector3 LocalScale { get; set; }
+
+        event EventHandler Modified;
 
         void ResetAsCustomMatrix();
         void ResetAsSRTMatrix();

@@ -7,7 +7,12 @@ namespace Protogame
     {
         public Physical3DCubeComponent(INode node, IPhysicsEngine physicsEngine) : base(node, physicsEngine)
         {
-            UpdateRigidBodyShape(new DefaultTransform());
+            Transform = new DefaultTransform();
+            Transform.Modified += (sender, args) =>
+            {
+                UpdateRigidBodyShape(Transform);
+            };
+            UpdateRigidBodyShape(Transform);
 
             Enabled = true;
         }
@@ -16,5 +21,7 @@ namespace Protogame
         {
             return new BoxShape(localTransform.LocalScale.ToJitterVector());
         }
+
+        public ITransform Transform { get; set; }
     }
 }

@@ -58,7 +58,7 @@ namespace Protogame
             _physicsWorld.ContactSettings.MaterialCoefficientMixing =
                 ContactSettings.MaterialCoefficientMixingType.TakeMinimum;
 
-            _physicsWorld.Gravity = new JVector(0, -4f, 0);
+            _physicsWorld.Gravity = new JVector(0, -10f, 0);
 
             _rigidBodyMappings = new List<RigidBodyMapping>();
 

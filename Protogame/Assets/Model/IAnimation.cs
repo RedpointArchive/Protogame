@@ -79,7 +79,7 @@
         /// <param name="frame">
         /// The frame to draw at.
         /// </param>
-        void Apply(Model model, double frame);
+        void Apply(IModel model, double frame);
 
         /// <summary>
         /// Applies the animation at a specified time to the model.
@@ -93,7 +93,7 @@
         /// <param name="multiply">
         /// The multiplication factor to apply to the animation speed.
         /// </param>
-        void Apply(Model model, float totalSeconds, float multiply);
+        void Apply(IModel model, float totalSeconds, float multiply);
 
         /// <summary>
         /// Modifies the specified model to align to this animation at the specified frame and then renders it.
@@ -119,8 +119,8 @@
             IRenderContext renderContext, 
             IEffect effect, 
             IEffectParameterSet effectParameterSet, 
-            Matrix transform, 
-            Model model, 
+            Matrix transform,
+            IModel model, 
             TimeSpan secondFraction, 
             float multiply);
 
@@ -144,7 +144,7 @@
         ///     The multiplication factor to apply to the animation speed.
         /// </param>
         /// <param name="effect"></param>
-        void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Model model, float totalSeconds, float multiply);
+        void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, IModel model, float totalSeconds, float multiply);
 
         /// <summary>
         /// Modifies the specified model to align to this animation at the specified frame and then renders it.
@@ -163,6 +163,6 @@
         ///     The frame to draw at.
         /// </param>
         /// <param name="effect"></param>
-        void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, Model model, double frame);
+        void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, IModel model, double frame);
     }
 }
