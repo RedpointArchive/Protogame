@@ -20,6 +20,7 @@ namespace Protogame
         private readonly IHierarchy _hierarchy;
 
         private readonly IDebugRenderer _debugRenderer;
+        private readonly IConsoleHandle _consoleHandle;
 
         private readonly JitterWorld _physicsWorld;
 
@@ -43,11 +44,16 @@ namespace Protogame
 
         private IUpdateContext _updateContext;
 
-        public PhysicsShadowWorld(IEventEngine<IPhysicsEventContext> physicsEventEngine, IHierarchy hierarchy, IDebugRenderer debugRenderer)
+        public PhysicsShadowWorld(
+            IEventEngine<IPhysicsEventContext> physicsEventEngine, 
+            IHierarchy hierarchy,
+            IDebugRenderer debugRenderer,
+            IConsoleHandle consoleHandle)
         {
             _physicsEventEngine = physicsEventEngine;
             _hierarchy = hierarchy;
             _debugRenderer = debugRenderer;
+            _consoleHandle = consoleHandle;
 
             var collisionSystem = new CollisionSystemPersistentSAP
             {
@@ -76,6 +82,16 @@ namespace Protogame
             {
                 var node1 = _hierarchy.Lookup(body1.Tag);
                 var node2 = _hierarchy.Lookup(body2.Tag);
+
+                if (node1 == null)
+                {
+                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body1.Tag);
+                }
+
+                if (node2 == null)
+                {
+                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body2.Tag);
+                }
 
                 if (node1 != null && node2 != null)
                 {

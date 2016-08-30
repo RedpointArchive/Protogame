@@ -161,6 +161,7 @@ namespace Protogame
                                         null,
                                         null,
                                         true,
+                                        true,
                                         null)
                                 }
                             }

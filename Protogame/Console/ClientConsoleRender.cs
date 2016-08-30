@@ -18,7 +18,7 @@ namespace Protogame
             _assetManagerProvider = assetManagerProvider;
         }
 
-        public void Render(IGameContext gameContext, IRenderContext renderContext, StringBuilder inputBuffer, List<string> logEntries)
+        public void Render(IGameContext gameContext, IRenderContext renderContext, StringBuilder inputBuffer, List<Tuple<ConsoleLogLevel, string>> logEntries)
         {
             if (this._fontAsset == null)
             {
@@ -52,11 +52,28 @@ namespace Protogame
             var a = 0;
             for (var i = Math.Max(0, logEntries.Count - 30); i < logEntries.Count; i++)
             {
+                var color = Color.White;
+                switch (logEntries[logEntries.Count - i - 1].Item1)
+                {
+                    case ConsoleLogLevel.Debug:
+                        color = Color.White;
+                        break;
+                    case ConsoleLogLevel.Info:
+                        color = Color.Cyan;
+                        break;
+                    case ConsoleLogLevel.Warning:
+                        color = Color.Orange;
+                        break;
+                    case ConsoleLogLevel.Error:
+                        color = Color.Red;
+                        break;
+                }
                 this._renderUtilities.RenderText(
                     renderContext,
                     new Vector2(2, 300 - 32 - a * 16),
-                    logEntries[logEntries.Count - i - 1],
-                    this._fontAsset);
+                    logEntries[logEntries.Count - i - 1].Item2,
+                    this._fontAsset,
+                    textColor: color);
                 a++;
             }
         }

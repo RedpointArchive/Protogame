@@ -1,54 +1,51 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Protoinject;
 
 namespace Protogame
 {
-    public class PhysicsMetricsProfilerVisualiser : IPhysicsMetricsProfilerVisualiser
+    public class KernelMetricsProfilerVisualiser : IKernelMetricsProfilerVisualiser
     {
+        private readonly IKernel _kernel;
+        private readonly IHierarchy _hierachy;
         private readonly I2DRenderUtilities _renderUtilities;
-        private readonly IPhysicsEngine _physicsEngine;
         private readonly FontAsset _defaultFont;
 
-        public PhysicsMetricsProfilerVisualiser(
+        public KernelMetricsProfilerVisualiser(
+            IKernel kernel,
+            IHierarchy hierachy,
             IAssetManagerProvider assetManagerProvider,
-            I2DRenderUtilities renderUtilities,
-            IPhysicsEngine physicsEngine)
+            I2DRenderUtilities renderUtilities)
         {
+            _kernel = kernel;
+            _hierachy = hierachy;
             _renderUtilities = renderUtilities;
-            _physicsEngine = physicsEngine;
             _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
         }
 
         public int GetHeight(int backBufferHeight)
         {
-            return 40;
+            return 20;
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, Rectangle rectangle)
         {
-            var physicsMetrics = _physicsEngine.GetPhysicsMetrics();
-
             var metrics = new[]
             {
-                new Tuple<string, ulong>("sio", (ulong) physicsMetrics.StaticImmovableObjects),
-                new Tuple<string, ulong>("po", (ulong) physicsMetrics.PhysicsObjects),
-                null,
-                null,
-                new Tuple<string, ulong>("fr", (ulong) (physicsMetrics.SyncFromPhysicsTime*1000)),
-                new Tuple<string, ulong>("st", (ulong) (physicsMetrics.PhysicsStepTime*1000)),
-                new Tuple<string, ulong>("to", (ulong) (physicsMetrics.SyncToPhysicsTime*1000)),
+                new Tuple<string, ulong>("rn", (ulong) _hierachy.RootNodes.Count),
+                new Tuple<string, ulong>("lco", (ulong) _hierachy.LookupCacheObjectCount)
             };
-
+            
             _renderUtilities.RenderLine(
                 renderContext,
                 new Vector2(rectangle.X, rectangle.Y),
                 new Vector2(rectangle.X, rectangle.Y + rectangle.Height - 1),
-                Color.Cyan);
+                Color.Orange);
             _renderUtilities.RenderLine(
                 renderContext,
                 new Vector2(rectangle.X + 1, rectangle.Y),
                 new Vector2(rectangle.X + 1, rectangle.Y + rectangle.Height - 1),
-                Color.Cyan);
+                Color.Orange);
 
             for (var i = 0; i < metrics.Length; i++)
             {

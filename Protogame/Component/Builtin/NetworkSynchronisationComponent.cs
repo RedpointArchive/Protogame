@@ -164,14 +164,14 @@ namespace Protogame
                         {
                             // This client doesn't own the entity, and this entity is only
                             // synchronised with clients that own it.
-                            _consoleHandle.Log("Entity is owned by " + ClientOwnership + ", and target client is " + group + " who doesn't own it, so I'm not syncing it.");
+                            _consoleHandle.LogDebug("Entity is owned by " + ClientOwnership + ", and target client is " + group + " who doesn't own it, so I'm not syncing it.");
                             continue;
                         }
                     }
 
                     if (!_clientsEntityIsKnownOn.Contains(group))
                     {
-                        _consoleHandle.Log("Entity is not known to " + group + ", sending creation message.");
+                        _consoleHandle.LogDebug("Entity is not known to " + group + ", sending creation message.");
 
                         // Send an entity creation message to the client.
                         var createMessage = new EntityCreateMessage

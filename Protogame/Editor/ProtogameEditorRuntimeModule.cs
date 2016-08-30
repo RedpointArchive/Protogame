@@ -7,7 +7,7 @@ namespace Protogame
     {
         public void Load(IKernel kernel)
         {
-            kernel.Bind(typeof (IEditorQuery<>)).To(typeof (SpawningEditorQuery<>));
+            kernel.Bind(typeof (IEditorQuery<>)).To(typeof (SpawningEditorQuery<>)).DiscardNodeOnResolve();
         }
     }
 }

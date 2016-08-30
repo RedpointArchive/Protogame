@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Protoinject;
 
@@ -33,7 +34,7 @@ namespace Protogame
                 gameContext,
                 renderContext,
                 _consoleInput.InputBuffer,
-                _log.Select(x => x.Name == string.Empty ? x.Message : $"<{x.Name,-20}> ({x.Count,5}) {x.Message}").ToList());
+                _log.Select(x => new Tuple<ConsoleLogLevel, string>(x.LogLevel, x.Name == string.Empty ? x.Message : $"<{x.Name,-20}> ({x.Count,5}) {x.Message}")).ToList());
 
             if (_log.Count > 31)
             {
@@ -70,7 +71,19 @@ namespace Protogame
                 name = name.Substring(0, 17) + "...";
             }
 
-            LogInternal(new ConsoleEntry { Count = 1, Message = args == null ? format : string.Format(format, args), Name = name });
+            LogInternal(new ConsoleEntry { Count = 1, LogLevel = ConsoleLogLevel.Debug, Message = args == null ? format : string.Format(format, args), Name = name });
+        }
+
+        public void LogStructured(INode node, ConsoleLogLevel logLevel, string format, object[] args)
+        {
+            var name = string.IsNullOrWhiteSpace(node.Name) ? node.Type.Name : node.Name;
+
+            if (name.Length > 20)
+            {
+                name = name.Substring(0, 17) + "...";
+            }
+
+            LogInternal(new ConsoleEntry { Count = 1, LogLevel = logLevel, Message = args == null ? format : string.Format(format, args), Name = name });
         }
 
         private void LogInternal(ConsoleEntry consoleEntry)
@@ -101,6 +114,8 @@ namespace Protogame
             public int Count { get; set; }
 
             public string Message { get; set; }
+
+            public ConsoleLogLevel LogLevel { get; set; }
         }
     }
 }

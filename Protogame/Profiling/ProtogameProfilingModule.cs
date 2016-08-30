@@ -15,6 +15,7 @@ namespace Protogame
             kernel.Bind<INetworkTrafficProfilerVisualiser>().To<NetworkTrafficProfilerVisualiser>().InSingletonScope();
             kernel.Bind<IGraphicsMetricsProfilerVisualiser>().To<GraphicsMetricsProfilerVisualiser>().InSingletonScope();
             kernel.Bind<IPhysicsMetricsProfilerVisualiser>().To<PhysicsMetricsProfilerVisualiser>().InSingletonScope();
+            kernel.Bind<IKernelMetricsProfilerVisualiser>().To<KernelMetricsProfilerVisualiser>().InSingletonScope();
         }
     }
 }

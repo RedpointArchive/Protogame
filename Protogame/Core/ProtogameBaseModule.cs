@@ -18,14 +18,14 @@ namespace Protogame
         /// </summary>
         public virtual void Load(IKernel kernel)
         {
-            kernel.Bind<ITileUtilities>().To<DefaultTileUtilities>();
-            kernel.Bind<IBoundingBoxUtilities>().To<DefaultBoundingBoxUtilities>();
-            kernel.Bind<IStringSanitizer>().To<DefaultStringSanitizer>();
+            kernel.Bind<ITileUtilities>().To<DefaultTileUtilities>().DiscardNodeOnResolve();
+            kernel.Bind<IBoundingBoxUtilities>().To<DefaultBoundingBoxUtilities>().InSingletonScope();
+            kernel.Bind<IStringSanitizer>().To<DefaultStringSanitizer>().InSingletonScope();
             kernel.Bind<ITransformUtilities>().To<DefaultTransformUtilities>().InSingletonScope();
             kernel.Bind<IUniqueIdentifierAllocator>().To<DefaultUniqueIdentifierAllocator>().InSingletonScope();
             kernel.Bind<IRenderCache>().To<DefaultRenderCache>().InSingletonScope();
             kernel.Bind<IRenderAutoCache>().To<DefaultRenderAutoCache>().InSingletonScope();
-            kernel.Bind<IEngineHook>().To<RenderAutoCacheEngineHook>();
+            kernel.Bind<IEngineHook>().To<RenderAutoCacheEngineHook>().InParentScope();
         }
     }
 }

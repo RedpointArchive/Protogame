@@ -13,7 +13,7 @@ namespace Protogame
         {
             _radius = 1f;
             _length = 1f;
-            UpdateRigidBodyShape(null);
+            UpdateRigidBodyShape();
 
             Enabled = true;
         }
@@ -21,13 +21,13 @@ namespace Protogame
         public float Radius
         {
             get { return _radius; }
-            set { _radius = value; UpdateRigidBodyShape(null); }
+            set { _radius = value; UpdateRigidBodyShape(); }
         }
 
         public float Length
         {
             get { return _length; }
-            set { _length = value; UpdateRigidBodyShape(null); }
+            set { _length = value; UpdateRigidBodyShape(); }
         }
 
         protected override Shape GetShape(ITransform localTransform)

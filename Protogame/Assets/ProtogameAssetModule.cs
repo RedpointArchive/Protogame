@@ -20,85 +20,85 @@ namespace Protogame
                     .InSingletonScope();
             }
 
-            kernel.Bind<IAssetLoader>().To<FontAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<LanguageAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<TextureAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<LevelAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<AudioAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<TilesetAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<EffectAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<UberEffectAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<AIAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<ModelAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<TextureAtlasAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<VariableAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<ConfigurationAssetLoader>();
-            kernel.Bind<IAssetLoader>().To<UserInterfaceAssetLoader>();
-            kernel.Bind<IAssetSaver>().To<FontAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<LanguageAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<TextureAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<LevelAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<AudioAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<TilesetAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<EffectAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<UberEffectAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<ModelAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<TextureAtlasAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<VariableAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<ConfigurationAssetSaver>();
-            kernel.Bind<IAssetSaver>().To<UserInterfaceAssetSaver>();
-            kernel.Bind<IRawAssetLoader>().To<RawAssetLoader>();
-            kernel.Bind<IRawAssetSaver>().To<RawAssetSaver>();
-            kernel.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>();
-            kernel.Bind<IModelSerializer>().To<ModelSerializerGeneric>();
+            kernel.Bind<IAssetLoader>().To<FontAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<LanguageAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<TextureAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<LevelAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<AudioAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<TilesetAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<EffectAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<UberEffectAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<AIAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<ModelAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<TextureAtlasAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<VariableAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<ConfigurationAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader>().To<UserInterfaceAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<FontAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<LanguageAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<TextureAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<LevelAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<AudioAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<TilesetAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<EffectAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<UberEffectAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<ModelAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<TextureAtlasAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<VariableAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<ConfigurationAssetSaver>().InSingletonScope();
+            kernel.Bind<IAssetSaver>().To<UserInterfaceAssetSaver>().InSingletonScope();
+            kernel.Bind<IRawAssetLoader>().To<RawAssetLoader>().InSingletonScope();
+            kernel.Bind<IRawAssetSaver>().To<RawAssetSaver>().InSingletonScope();
+            kernel.Bind<ITransparentAssetCompiler>().To<DefaultTransparentAssetCompiler>().InSingletonScope();
+            kernel.Bind<IModelSerializer>().To<ModelSerializerGeneric>().InSingletonScope();
             kernel.Bind<ITextureFromHintPath>().To<TextureFromHintPath>().InSingletonScope();
-            kernel.Bind<IEffectSemantic>().To<WorldViewProjectionEffectSemantic>();
-            kernel.Bind<IEffectSemantic>().To<TextureEffectSemantic>();
-            kernel.Bind<IEffectSemantic>().To<BonesEffectSemantic>();
-            kernel.Bind<IEffectSemantic>().To<ColorDiffuseEffectSemantic>();
-            kernel.Bind<IEffectSemantic>().To<ScreenDimensionsEffectSemantic>();
-            kernel.Bind<IEffectSemantic>().To<NormalMapEffectSemantic>();
-            kernel.Bind<IEffectSemantic>().To<SpecularEffectSemantic>();
-            kernel.Bind<IEffectSemantic>().To<CameraPositionEffectSemantic>();
+            kernel.Bind<IEffectSemantic>().To<WorldViewProjectionEffectSemantic>().DiscardNodeOnResolve();
+            kernel.Bind<IEffectSemantic>().To<TextureEffectSemantic>().DiscardNodeOnResolve();
+            kernel.Bind<IEffectSemantic>().To<BonesEffectSemantic>().DiscardNodeOnResolve();
+            kernel.Bind<IEffectSemantic>().To<ColorDiffuseEffectSemantic>().DiscardNodeOnResolve();
+            kernel.Bind<IEffectSemantic>().To<ScreenDimensionsEffectSemantic>().DiscardNodeOnResolve();
+            kernel.Bind<IEffectSemantic>().To<NormalMapEffectSemantic>().DiscardNodeOnResolve();
+            kernel.Bind<IEffectSemantic>().To<SpecularEffectSemantic>().DiscardNodeOnResolve();
+            kernel.Bind<IEffectSemantic>().To<CameraPositionEffectSemantic>().DiscardNodeOnResolve();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             kernel.Bind<IAutomaticAssetReload>().To<DefaultAutomaticAssetReload>().InSingletonScope();
 #if DEBUG
             this.LoadRawAssetStrategies(kernel);
 #endif
-            kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<LocalCompiledLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<AssemblyLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<LocalCompiledLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<AssemblyLoadStrategy>().InSingletonScope();
 #elif PLATFORM_ANDROID || PLATFORM_OUYA
             kernel.Bind<IAutomaticAssetReload>().To<DisabledAutomaticAssetReload>().InSingletonScope();
-            kernel.Bind<ILoadStrategy>().To<AndroidSourceLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<AndroidCompiledLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<AndroidSourceLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<AndroidCompiledLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>().InSingletonScope();
 #elif PLATFORM_IOS || PLATFORM_TVOS
             kernel.Bind<IAutomaticAssetReload>().To<DisabledAutomaticAssetReload>().InSingletonScope();
             // TODO: We still need to implement load strategies for normal content on iOS.
-            kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>().InSingletonScope();
 #endif
 
             // MonoGame compilation requires 64-bit for content compilation.
             if (IntPtr.Size == 8)
             {
 #if PLATFORM_WINDOWS || PLATFORM_LINUX
-                kernel.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>();
-                kernel.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>();
-                kernel.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>();
-                kernel.Bind<IAssetCompiler<TextureAtlasAsset>>().To<TextureAtlasAssetCompiler>();
+                kernel.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>().InSingletonScope();
+                kernel.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>().InSingletonScope();
+                kernel.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>().InSingletonScope();
+                kernel.Bind<IAssetCompiler<TextureAtlasAsset>>().To<TextureAtlasAssetCompiler>().InSingletonScope();
 #if PLATFORM_WINDOWS
-                kernel.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>();
-                kernel.Bind<IAssetCompiler<UberEffectAsset>>().To<UberEffectAssetCompiler>();
-                kernel.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>();
+                kernel.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>().InSingletonScope();
+                kernel.Bind<IAssetCompiler<UberEffectAsset>>().To<UberEffectAssetCompiler>().InSingletonScope();
+                kernel.Bind<IAssetCompiler<FontAsset>>().To<FontAssetCompiler>().InSingletonScope();
 #elif PLATFORM_LINUX
-                kernel.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>();
-                kernel.Bind<IAssetCompiler<FontAsset>>().To<FontAssetRemoteCompiler>();
+                kernel.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetRemoteCompiler>().InSingletonScope();
+                kernel.Bind<IAssetCompiler<FontAsset>>().To<FontAssetRemoteCompiler>().InSingletonScope();
 #endif
 #endif
             }
@@ -107,15 +107,15 @@ namespace Protogame
         public void LoadRawAssetStrategies(IKernel kernel)
         {
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-            kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawATFLevelLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawOgmoEditorLevelLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawConfigurationLoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<RawUserInterfaceLoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<RawTextureLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<RawEffectLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<RawModelLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<RawAudioLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<RawATFLevelLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<RawOgmoEditorLevelLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<RawConfigurationLoadStrategy>().InSingletonScope();
+            kernel.Bind<ILoadStrategy>().To<RawUserInterfaceLoadStrategy>().InSingletonScope();
 #endif
         }
     }

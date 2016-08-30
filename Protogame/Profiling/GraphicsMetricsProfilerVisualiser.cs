@@ -60,10 +60,21 @@ namespace Protogame
                 new Tuple<string, ulong>("rrcr", RenderRequestsCreated),
             };
 
+            _renderUtilities.RenderLine(
+                renderContext,
+                new Vector2(rectangle.X, rectangle.Y),
+                new Vector2(rectangle.X, rectangle.Y + rectangle.Height - 1),
+                Color.Green);
+            _renderUtilities.RenderLine(
+                renderContext,
+                new Vector2(rectangle.X + 1, rectangle.Y),
+                new Vector2(rectangle.X + 1, rectangle.Y + rectangle.Height - 1),
+                Color.Green);
+
             for (var i = 0; i < metrics.Length; i++)
             {
                 var y = i / 4 * 20;
-                var x = i%4*((rectangle.Width - 4) / 4);
+                var x = i%4*((rectangle.Width - 10) / 4) + 5;
 
                 if (metrics[i] == null)
                 {

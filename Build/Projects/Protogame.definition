@@ -279,6 +279,7 @@
     <Compile Include="Console\ClientConsole.cs" />
     <Compile Include="Console\ClientConsoleInput.cs" />
     <Compile Include="Console\ClientConsoleRender.cs" />
+    <Compile Include="Console\ConsoleLogLevel.cs" />
     <Compile Include="Console\DefaultConsoleHandle.cs" />
     <Compile Include="Console\IConsole.cs" />
     <Compile Include="Console\IConsoleHandle.cs" />
@@ -650,6 +651,7 @@
     <Compile Include="Profiling\FileProfilerHandle.cs" />
     <Compile Include="Profiling\GraphicsMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\IGraphicsMetricsProfilerVisualiser.cs" />
+    <Compile Include="Profiling\IKernelMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\IMemoryProfiler.cs" />
     <Compile Include="Profiling\INetworkTrafficProfilerVisualiser.cs" />
     <Compile Include="Profiling\IOperationCostProfilerVisualiser.cs" />
@@ -657,6 +659,7 @@
     <Compile Include="Profiling\IProfiler.cs" />
     <Compile Include="Profiling\IProfilerRenderPass.cs" />
     <Compile Include="Profiling\IProfilerVisualiser.cs" />
+    <Compile Include="Profiling\KernelMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\MemoryProfiler.cs" />
     <Compile Include="Profiling\MemoryProfilerHandle.cs" />
     <Compile Include="Profiling\NetworkProfilerVisualiser.cs" />

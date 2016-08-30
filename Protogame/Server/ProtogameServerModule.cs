@@ -36,7 +36,7 @@ namespace Protogame
             kernel.Bind<IAudioUtilities>().To<NullAudioUtilities>().InSingletonScope();
             kernel.Bind<IKeyboardStringReader>().To<NullKeyboardStringReader>().InSingletonScope();
             kernel.Bind<IConsole>().To<ServerConsole>().InSingletonScope();
-            kernel.Bind<IConsoleHandle>().To<DefaultConsoleHandle>().InTransientScope();
+            kernel.Bind<IConsoleHandle>().To<DefaultConsoleHandle>().InParentScope();
 
             kernel.Bind<IRenderContext>().To<NullRenderContext>();
             kernel.Bind<IRenderBatcher>().To<NullRenderBatcher>();

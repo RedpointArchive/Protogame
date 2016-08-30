@@ -18,45 +18,45 @@ namespace Protogame
         {
             base.Load(kernel);
             
-            kernel.Bind<I2DRenderUtilities>().To<Default2DRenderUtilities>();
-            kernel.Bind<I3DRenderUtilities>().To<Default3DRenderUtilities>();
-            kernel.Bind<IAudioUtilities>().To<DefaultAudioUtilities>();
+            kernel.Bind<I2DRenderUtilities>().To<Default2DRenderUtilities>().InSingletonScope();
+            kernel.Bind<I3DRenderUtilities>().To<Default3DRenderUtilities>().InSingletonScope();
+            kernel.Bind<IAudioUtilities>().To<DefaultAudioUtilities>().InSingletonScope();
             kernel.Bind<IGameContext>().To<DefaultGameContext>();
             kernel.Bind<IUpdateContext>().To<DefaultUpdateContext>();
-            kernel.Bind<IKeyboardStringReader>().To<DefaultKeyboardStringReader>();
+            kernel.Bind<IKeyboardStringReader>().To<DefaultKeyboardStringReader>().InSingletonScope();
             kernel.Bind<IConsole>().To<ClientConsole>().InSingletonScope();
             kernel.Bind<IConsoleRender>().To<ClientConsoleRender>().InSingletonScope();
             kernel.Bind<IConsoleInput>().To<ClientConsoleInput>().InSingletonScope();
-            kernel.Bind<IConsoleHandle>().To<DefaultConsoleHandle>().InTransientScope();
-            kernel.Bind<ICommand>().To<ExitCommand>();
-            kernel.Bind<ICommand>().To<HelpCommand>();
-            kernel.Bind<ICommand>().To<GCCommand>();
-            kernel.Bind<ICommand>().To<NetIDCommand>();
+            kernel.Bind<IConsoleHandle>().To<DefaultConsoleHandle>().InParentScope();
+            kernel.Bind<ICommand>().To<ExitCommand>().DiscardNodeOnResolve();
+            kernel.Bind<ICommand>().To<HelpCommand>().DiscardNodeOnResolve();
+            kernel.Bind<ICommand>().To<GCCommand>().DiscardNodeOnResolve();
+            kernel.Bind<ICommand>().To<NetIDCommand>().DiscardNodeOnResolve();
 
-            kernel.Bind<IRenderContext>().To<RenderPipelineRenderContext>();
-            kernel.Bind<IRenderPipeline>().To<DefaultRenderPipeline>();
-            kernel.Bind<IGraphicsBlit>().To<DefaultGraphicsBlit>();
-            kernel.Bind<IGraphicsFactory>().ToFactory();
-            kernel.Bind<IRenderTargetBackBufferUtilities>().To<DefaultRenderTargetBackBufferUtilities>();
+            kernel.Bind<IRenderContext>().To<RenderPipelineRenderContext>().InParentScope();
+            kernel.Bind<IRenderPipeline>().To<DefaultRenderPipeline>().InParentScope();
+            kernel.Bind<IGraphicsBlit>().To<DefaultGraphicsBlit>().InParentScope();
+            kernel.Bind<IGraphicsFactory>().ToFactory().DiscardNodeOnResolve();
+            kernel.Bind<IRenderTargetBackBufferUtilities>().To<DefaultRenderTargetBackBufferUtilities>().InSingletonScope();
             kernel.Bind<IModelRenderConfiguration>().To<DefaultModelRenderConfiguration>().InSingletonScope();
 
-            kernel.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>().AllowManyPerScope();
-            kernel.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>().AllowManyPerScope();
-            kernel.Bind<ICanvasRenderPass>().To<DefaultCanvasRenderPass>().AllowManyPerScope();
-            kernel.Bind<I3DRenderPass>().To<Default3DForwardRenderPass>().AllowManyPerScope();
-            kernel.Bind<I3DForwardRenderPass>().To<Default3DForwardRenderPass>().AllowManyPerScope();
-            kernel.Bind<I3DDeferredRenderPass>().To<Default3DDeferredRenderPass>().AllowManyPerScope();
-            kernel.Bind<IDebugRenderPass>().To<DefaultDebugRenderPass>().AllowManyPerScope();
-            kernel.Bind<IConsoleRenderPass>().To<DefaultConsoleRenderPass>().AllowManyPerScope();
-            kernel.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>().AllowManyPerScope();
-            kernel.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>().AllowManyPerScope();
-            kernel.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>().AllowManyPerScope();
-            kernel.Bind<ICaptureCopyPostProcessingRenderPass>().To<DefaultCaptureCopyPostProcessingRenderPass>().AllowManyPerScope();
-            kernel.Bind<ICaptureInlinePostProcessingRenderPass>().To<DefaultCaptureInlinePostProcessingRenderPass>().AllowManyPerScope();
+            kernel.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<ICanvasRenderPass>().To<DefaultCanvasRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<I3DRenderPass>().To<Default3DForwardRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<I3DForwardRenderPass>().To<Default3DForwardRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<I3DDeferredRenderPass>().To<Default3DDeferredRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<IDebugRenderPass>().To<DefaultDebugRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<IConsoleRenderPass>().To<DefaultConsoleRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<IInvertPostProcessingRenderPass>().To<DefaultInvertPostProcessingRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<IBlurPostProcessingRenderPass>().To<DefaultBlurPostProcessingRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<ICustomPostProcessingRenderPass>().To<DefaultCustomPostProcessingRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<ICaptureCopyPostProcessingRenderPass>().To<DefaultCaptureCopyPostProcessingRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<ICaptureInlinePostProcessingRenderPass>().To<DefaultCaptureInlinePostProcessingRenderPass>().DiscardNodeOnResolve();
 
-            kernel.Bind<ILightFactory>().ToFactory();
-            kernel.Bind<IStandardDirectionalLight>().To<DefaultStandardDirectionalLight>().AllowManyPerScope();
-            kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>().AllowManyPerScope();
+            kernel.Bind<ILightFactory>().ToFactory().DiscardNodeOnResolve();
+            kernel.Bind<IStandardDirectionalLight>().To<DefaultStandardDirectionalLight>().InParentScope().AllowManyPerScope();
+            kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>().InParentScope().AllowManyPerScope();
             
             kernel.Bind<IDebugRenderer>().To<NullDebugRenderer>().InSingletonScope();
 

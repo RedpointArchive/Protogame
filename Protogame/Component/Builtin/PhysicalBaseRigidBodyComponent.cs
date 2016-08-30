@@ -5,7 +5,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public abstract class PhysicalBaseRigidBodyComponent : IUpdatableComponent, IPhysicalComponent, IServerUpdatableComponent, IEnabledComponent, ISynchronisedObject
+    public abstract class PhysicalBaseRigidBodyComponent : IUpdatableComponent, IPhysicalComponent, IServerUpdatableComponent, IEnabledComponent, ISynchronisedObject, IHasTransform
     {
         private readonly INode _node;
         private readonly IPhysicsEngine _physicsEngine;
@@ -29,6 +29,7 @@ namespace Protogame
             _addedRigidBody = false;
 
             Enabled = true;
+            Transform = new DefaultTransform();
         }
 
         public bool Enabled
@@ -98,7 +99,7 @@ namespace Protogame
 
         protected abstract Shape GetShape(ITransform localTransform);
 
-        protected void UpdateRigidBodyShape(ITransform localTransform)
+        private void UpdateRigidBodyShape(ITransform localTransform)
         {
             _shape = GetShape(localTransform);
             if (_rigidBody == null)
@@ -110,6 +111,11 @@ namespace Protogame
                 _rigidBody.Shape = _shape;
             }
             _rigidBody.Tag = this;
+        }
+
+        protected void UpdateRigidBodyShape()
+        {
+            UpdateRigidBodyShape(Transform);
         }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
@@ -170,7 +176,8 @@ namespace Protogame
                 {
                     if (!_addedRigidBody)
                     {
-                        UpdateRigidBodyShape(transformComponent.Transform);
+                        // We use the transform local to this component for scaling purposes.
+                        UpdateRigidBodyShape(Transform);
 
                         _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent, StaticAndImmovable);
                         _addedRigidBody = true;
@@ -201,5 +208,9 @@ namespace Protogame
                 }
             }, 500);
         }
+
+        public ITransform Transform { get; }
+
+        public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
     }
 }
