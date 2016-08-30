@@ -18,7 +18,7 @@ namespace Protogame
         {
             _basicSkinHelper.DrawSunken(renderContext, layout);
 
-            if (textureViewer.Texture != null && textureViewer.Texture.PlatformData != null)
+            if (textureViewer.Texture != null)
             {
                 _renderUtilities.RenderTexture(renderContext, new Vector2(layout.X, layout.Y), textureViewer.Texture);
             }

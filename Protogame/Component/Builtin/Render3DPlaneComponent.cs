@@ -9,18 +9,20 @@ namespace Protogame
 
         private readonly I3DRenderUtilities _renderUtilities;
 
-        public Render3DPlaneComponent(INode node, I3DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
+        private readonly IAssetReference<UberEffectAsset> _defaultSurfaceEffect;
+
+        public Render3DPlaneComponent(INode node, I3DRenderUtilities renderUtilities, IAssetManager assetManager)
         {
             _node = node;
             _renderUtilities = renderUtilities;
+            _defaultSurfaceEffect = assetManager.Get<UberEffectAsset>("effect.BuiltinSurface");
 
             Enabled = true;
-            Effect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Color");
         }
 
         public Color Color { get; set; }
 
-        public EffectAsset Effect { get; set; }
+        public IEffect Effect { get; set; }
 
         public bool Enabled { get; set; }
 
@@ -33,13 +35,32 @@ namespace Protogame
 
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
+                IEffect effect;
+                if (Effect != null)
+                {
+                    effect = Effect;
+                }
+                else if (_defaultSurfaceEffect.IsReady)
+                {
+                    effect = _defaultSurfaceEffect.Asset.Effects?["Color"];
+                }
+                else
+                {
+                    return;
+                }
+
+                if (effect == null)
+                {
+                    return;
+                }
+
                 var matrix = Matrix.Identity;
                 var matrixComponent = _node.Parent?.UntypedValue as IHasTransform;
                 if (matrixComponent != null)
                 {
                     matrix *= matrixComponent.FinalTransform.AbsoluteMatrix;
                 }
-                _renderUtilities.RenderPlane(renderContext, Effect.Effect, Effect.Effect.CreateParameterSet(), matrix, Color);
+                _renderUtilities.RenderPlane(renderContext, effect, effect.CreateParameterSet(), matrix, Color);
             }
         }
     }

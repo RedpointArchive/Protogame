@@ -125,7 +125,7 @@ namespace Protogame
 
             try
             {
-                asset.ReloadEffects();
+                asset.ReadyOnGameThread();
             }
             catch (NoAssetContentManagerException)
             {

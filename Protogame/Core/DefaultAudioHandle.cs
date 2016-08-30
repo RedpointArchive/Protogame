@@ -15,13 +15,25 @@ namespace Protogame
     {
         private readonly SoundEffectInstance _instance;
         
-        public DefaultAudioHandle(AudioAsset asset)
+        public DefaultAudioHandle(IAssetReference<AudioAsset> asset)
         {
-            _instance = asset.Audio.CreateInstance();
+            if (!asset.IsReady)
+            {
+                _instance = null;
+            }
+            else
+            {
+                _instance = asset.Asset.Audio.CreateInstance();
+            }
         }
         
         public void Loop()
         {
+            if (_instance == null)
+            {
+                return;
+            }
+
             _instance.IsLooped = true;
             if (_instance.State != SoundState.Playing)
             {
@@ -31,25 +43,41 @@ namespace Protogame
         
         public void Pause()
         {
-            _instance.Pause();
+            _instance?.Pause();
         }
         
         public void Play()
         {
-            _instance.Play();
+            _instance?.Play();
         }
         
         public void Stop(bool immediate)
         {
-            _instance.Stop(immediate);
+            _instance?.Stop(immediate);
         }
 
         public float Volume
         {
-            get { return _instance.Volume; }
-            set { _instance.Volume = value; }
+            get
+            {
+                if (_instance == null)
+                {
+                    return 0;
+                }
+
+                return _instance.Volume;
+            }
+            set
+            {
+                if (_instance == null)
+                {
+                    return;
+                }
+
+                _instance.Volume = value;
+            }
         }
 
-        public bool IsPlaying => _instance.State == SoundState.Playing;
+        public bool IsPlaying => _instance?.State == SoundState.Playing;
     }
 }

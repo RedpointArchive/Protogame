@@ -17,33 +17,41 @@ namespace Protogame
         
         private readonly I2DRenderUtilities _renderUtilities;
         
-        public DefaultTileUtilities(I2DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
+        public DefaultTileUtilities(I2DRenderUtilities renderUtilities, IAssetManager assetManager)
         {
             _renderUtilities = renderUtilities;
-            _assetManager = assetManagerProvider.GetAssetManager();
+            _assetManager = assetManager;
         }
         
         public void InitializeTile(ITileEntity entity, string tilesetAssetName)
         {
             entity.Tileset = _assetManager.Get<TilesetAsset>(tilesetAssetName);
-            entity.Transform.LocalScale *= new Vector3(entity.Tileset.CellWidth, entity.Tileset.CellHeight, 1);
-            entity.Width = entity.Tileset.CellWidth;
-            entity.Height = entity.Tileset.CellHeight;
+            // TODO: Figure out how to do this with delayed assets.
+            //entity.Transform.LocalScale *= new Vector3(entity.Tileset.CellWidth, entity.Tileset.CellHeight, 1);
+            //entity.Width = entity.Tileset.CellWidth;
+            //entity.Height = entity.Tileset.CellHeight;
         }
         
         public void RenderTile(ITileEntity entity, IRenderContext renderContext)
         {
+            if (!entity.Tileset.IsReady)
+            {
+                return;
+            }
+
+            var tileset = entity.Tileset.Asset;
+
             _renderUtilities.RenderTexture(
                 renderContext, 
-                new Vector2(entity.Transform.LocalPosition.X * entity.Tileset.CellWidth, entity.Transform.LocalPosition.Y * entity.Tileset.CellHeight), 
-                entity.Tileset.Texture, 
+                new Vector2(entity.Transform.LocalPosition.X * tileset.CellWidth, entity.Transform.LocalPosition.Y * tileset.CellHeight),
+                tileset.Texture, 
                 new Vector2(entity.Width, entity.Height), 
                 sourceArea:
                     new Rectangle(
-                        entity.TX * entity.Tileset.CellWidth, 
-                        entity.TY * entity.Tileset.CellHeight, 
-                        entity.Tileset.CellWidth, 
-                        entity.Tileset.CellHeight));
+                        entity.TX * tileset.CellWidth, 
+                        entity.TY * tileset.CellHeight,
+                        tileset.CellWidth,
+                        tileset.CellHeight));
         }
     }
 }

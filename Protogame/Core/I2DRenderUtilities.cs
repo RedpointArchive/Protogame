@@ -26,7 +26,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="Vector2"/>.
         /// </returns>
-        Vector2 MeasureText(IRenderContext context, string text, FontAsset font);
+        Vector2 MeasureText(IRenderContext context, string text, IAssetReference<FontAsset> font);
 
         /// <summary>
         /// Renders a 2D line.
@@ -105,13 +105,13 @@ namespace Protogame
             IRenderContext context, 
             Vector2 position, 
             string text, 
-            FontAsset font, 
+            IAssetReference<FontAsset> font, 
             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, 
             VerticalAlignment verticalAlignment = VerticalAlignment.Top, 
             Color? textColor = null, 
             bool renderShadow = true, 
             Color? shadowColor = null);
-
+        
         /// <summary>
         /// Renders a texture at the specified position.
         /// </summary>
@@ -148,7 +148,7 @@ namespace Protogame
         void RenderTexture(
             IRenderContext context, 
             Vector2 position, 
-            TextureAsset texture, 
+            IAssetReference<TextureAsset> texture, 
             Vector2? size = null, 
             Color? color = null, 
             float rotation = 0, 

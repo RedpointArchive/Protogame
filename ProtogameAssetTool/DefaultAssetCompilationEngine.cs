@@ -61,7 +61,7 @@
             var compiledAssetSaver = new CompiledAssetSaver();
 
             // Retrieve the asset manager.
-            var assetManager = this.m_Kernel.Get<LocalAssetManager>();
+            var assetManager = this.m_Kernel.Get<DefaultAssetManager>();
             assetManager.AllowSourceOnly = true;
             assetManager.SkipCompilation = true;
 
@@ -77,7 +77,6 @@
                 Console.WriteLine("Starting compilation for " + platformName);
                 var platform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), platformName);
                 var outputPath = Path.Combine(output, platformName);
-                assetManager.RescanAssets();
 
                 // Create the output directory if it doesn't exist.
                 if (!Directory.Exists(outputPath))
@@ -148,8 +147,6 @@
                         Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
                         break;
                     }
-
-                    assetManager.Dirty(asset.Name);
                 }
             }
         }

@@ -1,9 +1,9 @@
+using System;
+using System.IO;
+using Microsoft.Xna.Framework.Graphics;
+
 namespace Protogame
 {
-    using System;
-    using System.IO;
-    using Microsoft.Xna.Framework.Graphics;
-
     /// <summary>
     /// A texture asset.
     /// <para>
@@ -11,7 +11,7 @@ namespace Protogame
     /// </para>
     /// </summary>
     /// <module>Assets</module>
-    public class TextureAsset : MarshalByRefObject, IAsset
+    public class TextureAsset : MarshalByRefObject, IAsset, INativeAsset
     {
         /// <summary>
         /// The m_ asset content manager.
@@ -51,17 +51,6 @@ namespace Protogame
             this.PlatformData = data;
             this.m_AssetContentManager = assetContentManager;
             this.SourcedFromRaw = sourcedFromRaw;
-
-            if (this.PlatformData != null)
-            {
-                try
-                {
-                    this.ReloadTexture();
-                }
-                catch (NoAssetContentManagerException)
-                {
-                }
-            }
         }
 
         /// <summary>
@@ -168,8 +157,13 @@ namespace Protogame
         /// Thrown if you are attempting to reload a dynamic texture (e.g. a texture constructed
         /// with the constructor that accepts an existing <see cref="Texture2D"/>).
         /// </exception>
-        public void ReloadTexture()
+        public void ReadyOnGameThread()
         {
+            if (this.PlatformData == null)
+            {
+                return;
+            }
+
             if (this.m_AssetContentManager == null)
             {
                 throw new InvalidOperationException("Unable to reload dynamic texture.");

@@ -5,7 +5,7 @@ namespace Protogame
 {
     public class Null3DRenderUtilities : I3DRenderUtilities
     {
-        public Vector2 MeasureText(IRenderContext context, string text, FontAsset font)
+        public Vector2 MeasureText(IRenderContext context, string text, IAssetReference<FontAsset> font)
         {
             throw new NotSupportedException();
         }
@@ -29,7 +29,7 @@ namespace Protogame
         }
 
         public void RenderText(IRenderContext context, IEffect effect, IEffectParameterSet effectParameterSet, Matrix matrix,
-            string text, FontAsset font, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
+            string text, IAssetReference<FontAsset> font, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment verticalAlignment = VerticalAlignment.Top, Color? textColor = null, bool renderShadow = true,
             Color? shadowColor = null)
         {
@@ -37,7 +37,7 @@ namespace Protogame
         }
 
         public void RenderTexture(IRenderContext context, IEffect effect, IEffectParameterSet effectParameterSet, Matrix matrix,
-            TextureAsset texture, Color? color = null, bool flipHorizontally = false, bool flipVertically = false,
+            IAssetReference<TextureAsset> texture, Color? color = null, bool flipHorizontally = false, bool flipVertically = false,
             Rectangle? sourceArea = null)
         {
             throw new NotSupportedException();

@@ -9,13 +9,15 @@ namespace Protogame
 
         private readonly I3DRenderUtilities _renderUtilities;
 
-        public Render3DCubeComponent(INode node, I3DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
+        private IAssetReference<UberEffectAsset> _defaultSurfaceEffect;
+
+        public Render3DCubeComponent(INode node, I3DRenderUtilities renderUtilities, IAssetManager assetManager)
         {
             _node = node;
             _renderUtilities = renderUtilities;
+            _defaultSurfaceEffect = assetManager.Get<UberEffectAsset>("effect.BuiltinSurface");
 
             Enabled = true;
-            Effect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects?["Color"];
             Transform = new DefaultTransform();
         }
 
@@ -38,10 +40,29 @@ namespace Protogame
 
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
             {
+                IEffect effect;
+                if (Effect != null)
+                {
+                    effect = Effect;
+                }
+                else if (_defaultSurfaceEffect.IsReady)
+                {
+                    effect = _defaultSurfaceEffect.Asset.Effects?["Color"];
+                }
+                else
+                {
+                    return;
+                }
+
+                if (effect == null)
+                {
+                    return;
+                }
+
                 _renderUtilities.RenderCube(
                     renderContext,
-                    Effect,
-                    Effect.CreateParameterSet(),
+                    effect,
+                    effect.CreateParameterSet(),
                     Matrix.CreateTranslation(-0.5f, -0.5f, -0.5f) *
                     FinalTransform.AbsoluteMatrix, 
                     Color);

@@ -10,7 +10,7 @@ namespace Protogame
         private I2DRenderUtilities _renderUtilities;
         private IAssetManager _assetManager;
 
-        private FontAsset _defaultFont;
+        private IAssetReference<FontAsset> _defaultFont;
 
         public DefaultLoadingScreen(IKernel kernel)
         {
@@ -26,7 +26,7 @@ namespace Protogame
 
             if (_assetManager == null)
             {
-                _assetManager = _kernel.Get<IAssetManagerProvider>().GetAssetManager();
+                _assetManager = _kernel.Get<IAssetManager>();
             }
 
             if (_defaultFont == null)

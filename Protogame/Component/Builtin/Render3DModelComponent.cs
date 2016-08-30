@@ -20,11 +20,11 @@ namespace Protogame
 
         private IModel _lastCachedModel;
 
-        private TextureAsset _lastCachedDiffuseTexture;
+        private IAssetReference<TextureAsset> _lastCachedDiffuseTexture;
 
-        private TextureAsset _lastCachedNormalMapTexture;
+        private IAssetReference<TextureAsset> _lastCachedNormalMapTexture;
 
-        private TextureAsset _lastCachedSpecularColorMapTexture;
+        private IAssetReference<TextureAsset> _lastCachedSpecularColorMapTexture;
 
         private Color? _lastCachedSpecularColor;
 
@@ -32,7 +32,7 @@ namespace Protogame
 
         private bool _useDefaultEffects;
 
-        private UberEffectAsset _uberEffectAsset;
+        private IAssetReference<UberEffectAsset> _uberEffectAsset;
 
         private string _mode;
 
@@ -74,14 +74,16 @@ namespace Protogame
 
         private Stopwatch _animationTracker;
 
-        private ModelAsset _modelAsset;
+        private IAssetReference<ModelAsset> _modelAsset;
 
         private IModel _model;
+
+        private IMaterial _lastMaterial;
 
         public Render3DModelComponent(
             INode node,
             I3DRenderUtilities renderUtilities,
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             ITextureFromHintPath textureFromHintPath,
             IRenderBatcher renderBatcher)
         {
@@ -89,14 +91,14 @@ namespace Protogame
             _renderUtilities = renderUtilities;
             _textureFromHintPath = textureFromHintPath;
             _renderBatcher = renderBatcher;
-            _assetManager = assetManagerProvider.GetAssetManager();
+            _assetManager = assetManager;
             _animationTracker = new Stopwatch();
 
             Enabled = true;
             Transform = new DefaultTransform();
         }
 
-        public ModelAsset Model
+        public IAssetReference<ModelAsset> Model
         {
             get { return _modelAsset; }
             set
@@ -110,22 +112,19 @@ namespace Protogame
                         _model.Dispose();
                         _model = null;
                     }
-
-                    if (_modelAsset != null)
-                    {
-                        _model = _modelAsset.InstantiateModel();
-                    }
                 }
             }
         }
 
         public IModel ModelInstance => _model;
 
-        public EffectAsset Effect { get; set; }
+        public IAssetReference<EffectAsset> Effect { get; set; }
 
         public bool Enabled { get; set; }
 
-        public Material OverrideMaterial { get; set; }
+        public IMaterial OverrideMaterial { get; set; }
+
+        public Func<IMaterial, IMaterial> OverrideMaterialFactory { get; set; }
 
         public ITransform Transform { get; }
 
@@ -136,6 +135,16 @@ namespace Protogame
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
             if (!Enabled)
+            {
+                return;
+            }
+
+            if (_modelAsset != null && _model == null && _modelAsset.IsReady)
+            {
+                _model = _modelAsset.Asset.InstantiateModel();
+            }
+
+            if (_model == null)
             {
                 return;
             }
@@ -156,12 +165,17 @@ namespace Protogame
                     _uberEffectAsset = _assetManager.Get<UberEffectAsset>("effect.BuiltinSurface");
                 }
 
-                if (Model != null)
+                if (_model != null)
                 {
                     var matrix = FinalTransform.AbsoluteMatrix;
                     
                     bool changedRenderRequest = _lastWorldMatrix != matrix;
                     string changedRenderRequestBy = changedRenderRequest ? "matrix" : "";
+
+                    if (OverrideMaterial == null && OverrideMaterialFactory != null)
+                    {
+                        OverrideMaterial = OverrideMaterialFactory(_model.Material);
+                    }
 
                     var material = OverrideMaterial ?? _model.Material;
 
@@ -216,10 +230,10 @@ namespace Protogame
         {
             if (_effectUsedForParameterSetCache == _cachedEffect &&
                 changedRenderRequest == false &&
-                (!_lastDidSetDiffuseTexture || _lastSetDiffuseTexture == _lastCachedDiffuseTexture?.Texture) &&
-                (!_lastDidSetNormalMap || _lastSetNormalMap == _lastCachedNormalMapTexture?.Texture) &&
+                (/*!_lastDidSetDiffuseTexture || */_lastSetDiffuseTexture == _lastCachedDiffuseTexture?.Asset?.Texture) &&
+                (/*!_lastDidSetNormalMap || */_lastSetNormalMap == _lastCachedNormalMapTexture?.Asset?.Texture) &&
                 (!_lastDidSetSpecularPower || _lastSetSpecularPower == _lastCachedSpecularPower) &&
-                (!_lastDidSetSpecularColorMap || _lastSetSpecularColorMap == _lastCachedSpecularColorMapTexture?.Texture) &&
+                (/*!_lastDidSetSpecularColorMap || */_lastSetSpecularColorMap == _lastCachedSpecularColorMapTexture?.Asset?.Texture) &&
                 (!_lastDidSetSpecularColor || _lastSetSpecularColor == _lastCachedSpecularColor) &&
                 (!_lastDidSetDiffuseColor || _lastSetDiffuseColor == (material.ColorDiffuse ?? Color.Black)))
             {
@@ -249,22 +263,22 @@ namespace Protogame
 
             if (_cachedEffectParameterSet.HasSemantic<ITextureEffectSemantic>())
             {
-                if (_lastCachedDiffuseTexture?.Texture != null)
+                if (_lastCachedDiffuseTexture?.Asset?.Texture != null)
                 {
                     _cachedEffectParameterSet.GetSemantic<ITextureEffectSemantic>().Texture =
-                        _lastCachedDiffuseTexture.Texture;
-                    _lastSetDiffuseTexture = _lastCachedDiffuseTexture.Texture;
+                        _lastCachedDiffuseTexture.Asset.Texture;
+                    _lastSetDiffuseTexture = _lastCachedDiffuseTexture.Asset.Texture;
                     _lastDidSetDiffuseTexture = true;
                 }
             }
 
             if (_cachedEffectParameterSet.HasSemantic<INormalMapEffectSemantic>())
             {
-                if (_lastCachedNormalMapTexture?.Texture != null)
+                if (_lastCachedNormalMapTexture?.Asset?.Texture != null)
                 {
                     _cachedEffectParameterSet.GetSemantic<INormalMapEffectSemantic>().NormalMap =
-                        _lastCachedNormalMapTexture.Texture;
-                    _lastSetNormalMap = _lastCachedNormalMapTexture.Texture;
+                        _lastCachedNormalMapTexture.Asset.Texture;
+                    _lastSetNormalMap = _lastCachedNormalMapTexture.Asset.Texture;
                     _lastDidSetNormalMap = true;
                 }
             }
@@ -280,8 +294,8 @@ namespace Protogame
 
                     if (_lastCachedSpecularColorMapTexture != null)
                     {
-                        semantic.SpecularColorMap = _lastCachedSpecularColorMapTexture.Texture;
-                        _lastSetSpecularColorMap = _lastCachedSpecularColorMapTexture.Texture;
+                        semantic.SpecularColorMap = _lastCachedSpecularColorMapTexture.Asset.Texture;
+                        _lastSetSpecularColorMap = _lastCachedSpecularColorMapTexture.Asset.Texture;
                         _lastDidSetSpecularColorMap = true;
                     }
                     else if (_lastCachedSpecularColor != null)
@@ -306,10 +320,21 @@ namespace Protogame
 
         private void UpdateCachedModel(IMaterial material, ref bool changedRenderRequest, ref string changedRenderRequestBy)
         {
-            if (_lastCachedModel != _model)
+            if (_lastCachedModel != _model || _lastMaterial != material)
             {
-                changedRenderRequest = true;
-                changedRenderRequestBy += ":model";
+                if (_lastMaterial != material)
+                {
+                    changedRenderRequest = true;
+                    changedRenderRequestBy += ":material";
+                }
+
+                _lastMaterial = material;
+
+                if (_lastCachedModel != _model)
+                {
+                    changedRenderRequest = true;
+                    changedRenderRequestBy += ":model";
+                }
 
                 if (material.TextureDiffuse != null)
                 {
@@ -397,7 +422,7 @@ namespace Protogame
             IEffect effect;
             if (!_useDefaultEffects)
             {
-                effect = Effect.Effect;
+                effect = Effect.Asset.Effect;
             }
             else
             {
@@ -411,33 +436,33 @@ namespace Protogame
                             if (_lastCachedSpecularColorMapTexture != null)
                             {
                                 effect =
-                                    _uberEffectAsset.Effects["TextureNormalSpecColMap" + skinnedSuffix];
+                                    _uberEffectAsset.Asset.Effects["TextureNormalSpecColMap" + skinnedSuffix];
                             }
                             else if (_lastCachedSpecularColor != null)
                             {
                                 effect =
-                                    _uberEffectAsset.Effects["TextureNormalSpecColCon" + skinnedSuffix];
+                                    _uberEffectAsset.Asset.Effects["TextureNormalSpecColCon" + skinnedSuffix];
                             }
                             else
                             {
                                 effect =
-                                    _uberEffectAsset.Effects["TextureNormalSpecColDef" + skinnedSuffix];
+                                    _uberEffectAsset.Asset.Effects["TextureNormalSpecColDef" + skinnedSuffix];
                             }
                         }
                         else if (_lastCachedNormalMapTexture != null)
                         {
-                            effect = _uberEffectAsset.Effects["TextureNormal" + skinnedSuffix];
+                            effect = _uberEffectAsset.Asset.Effects["TextureNormal" + skinnedSuffix];
                         }
                         else
                         {
-                            effect = _uberEffectAsset.Effects["Texture" + skinnedSuffix];
+                            effect = _uberEffectAsset.Asset.Effects["Texture" + skinnedSuffix];
                         }
                         break;
                     case "color":
-                        effect = _uberEffectAsset.Effects["Color" + skinnedSuffix];
+                        effect = _uberEffectAsset.Asset.Effects["Color" + skinnedSuffix];
                         break;
                     case "diffuse":
-                        effect = _uberEffectAsset.Effects["Diffuse" + skinnedSuffix];
+                        effect = _uberEffectAsset.Asset.Effects["Diffuse" + skinnedSuffix];
                         break;
                     default:
                         throw new InvalidOperationException("Unknown default effect type.");

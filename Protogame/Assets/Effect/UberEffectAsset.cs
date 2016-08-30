@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {    
-    public class UberEffectAsset : MarshalByRefObject, IAsset
+    public class UberEffectAsset : MarshalByRefObject, IAsset, INativeAsset
     {
         private readonly IKernel _kernel;
         
@@ -31,17 +31,6 @@ namespace Protogame
             _assetContentManager = assetContentManager;
             _rawLaunchArguments = rawLaunchArguments;
             SourcedFromRaw = sourcedFromRaw;
-
-            if (PlatformData != null)
-            {
-                try
-                {
-                    ReloadEffects();
-                }
-                catch (NoAssetContentManagerException)
-                {
-                }
-            }
         }
         
         public string Code { get; set; }
@@ -70,7 +59,7 @@ namespace Protogame
         
         public bool SourcedFromRaw { get; private set; }
         
-        public void ReloadEffects()
+        public void ReadyOnGameThread()
         {
             if (_assetContentManager == null)
             {

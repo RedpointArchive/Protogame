@@ -7,16 +7,16 @@ namespace Protogame
     {
         private readonly I2DRenderUtilities _renderUtilities;
         private readonly ILayoutPosition _layoutPosition;
-        private readonly FontAsset _fontAsset;
+        private readonly IAssetReference<FontAsset> _fontAsset;
 
         public BasicLabelSkinRenderer(
             I2DRenderUtilities renderUtilities, 
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             ILayoutPosition layoutPosition)
         {
             _renderUtilities = renderUtilities;
             _layoutPosition = layoutPosition;
-            _fontAsset = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _fontAsset = assetManager.Get<FontAsset>("font.Default");
         }
 
         public void Render(IRenderContext renderContext, Rectangle layout, Label label)

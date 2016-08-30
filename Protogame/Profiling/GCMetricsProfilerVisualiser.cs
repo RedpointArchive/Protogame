@@ -9,7 +9,7 @@ namespace Protogame
     public class GCMetricsProfilerVisualiser : IGCMetricsProfilerVisualiser
     {
         private readonly I2DRenderUtilities _renderUtilities;
-        private readonly FontAsset _defaultFont;
+        private readonly IAssetReference<FontAsset> _defaultFont;
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
         private readonly PerformanceCounter _gen0PerformanceCounter;
@@ -25,11 +25,11 @@ namespace Protogame
         private long _lastGen2Count;
 
         public GCMetricsProfilerVisualiser(
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             I2DRenderUtilities renderUtilities)
         {
             _renderUtilities = renderUtilities;
-            _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _defaultFont = assetManager.Get<FontAsset>("font.Default");
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             string instanceName;

@@ -18,8 +18,8 @@ namespace Protogame
         private readonly IRenderTargetBackBufferUtilities _renderTargetBackBufferUtilities;
         private readonly IGraphicsBlit _graphicsBlit;
         private readonly IRenderBatcher _renderBatcher;
-        private readonly EffectAsset _gbufferClearEffect;
-        private readonly EffectAsset _gbufferCombineEffect;
+        private readonly IAssetReference<EffectAsset> _gbufferClearEffect;
+        private readonly IAssetReference<EffectAsset> _gbufferCombineEffect;
 
         private RenderTarget2D _normalRenderTarget;
         private RenderTarget2D _colorRenderTarget;
@@ -44,7 +44,7 @@ namespace Protogame
             IHierarchy hierarchy,
             IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities,
             IGraphicsBlit graphicsBlit,
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             IRenderBatcher renderBatcher)
         {
             _hierarchy = hierarchy;
@@ -52,9 +52,9 @@ namespace Protogame
             _graphicsBlit = graphicsBlit;
             _renderBatcher = renderBatcher;
             _gbufferClearEffect =
-                assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.GBufferClear");
+                assetManager.Get<EffectAsset>("effect.GBufferClear");
             _gbufferCombineEffect =
-                assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.GBufferCombine");
+                assetManager.Get<EffectAsset>("effect.GBufferCombine");
 
             GBufferBlendState = BlendState.Opaque;
             ClearTarget = true;
@@ -99,6 +99,11 @@ namespace Protogame
             IRenderPass previousPass,      
             RenderTarget2D postProcessingSource)
         {
+            if (!_gbufferClearEffect.IsReady || !_gbufferCombineEffect.IsReady)
+            {
+                return;
+            }
+
             _colorRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_colorRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.Depth24, null);
             _normalRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_normalRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, null);
             _depthRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_depthRenderTarget, gameContext, SurfaceFormat.Single, DepthFormat.None, null);
@@ -187,7 +192,7 @@ namespace Protogame
                 renderContext,
                 null,
                 null,
-                _gbufferClearEffect.Effect);
+                _gbufferClearEffect.Asset.Effect);
 
             _previousDepthStencilState = renderContext.GraphicsDevice.DepthStencilState;
             _previousRasterizerState = renderContext.GraphicsDevice.RasterizerState;
@@ -203,6 +208,11 @@ namespace Protogame
             IRenderContext renderContext, 
             IRenderPass nextPass)
         {
+            if (!_gbufferClearEffect.IsReady || !_gbufferCombineEffect.IsReady)
+            {
+                return;
+            }
+
             _renderBatcher.FlushRequests(gameContext, renderContext);
             
             renderContext.PopRenderTarget();
@@ -316,7 +326,7 @@ namespace Protogame
             }
             else
             {
-                var parameterSet = _gbufferCombineEffect.Effect.CreateParameterSet();
+                var parameterSet = _gbufferCombineEffect.Asset.Effect.CreateParameterSet();
                 parameterSet["Color"]?.SetValue(_colorRenderTarget);
                 parameterSet["DiffuseLight"]?.SetValue(_diffuseLightRenderTarget);
                 parameterSet["SpecularLight"]?.SetValue(_specularLightRenderTarget);
@@ -326,7 +336,7 @@ namespace Protogame
                     renderContext,
                     null,
                     null,
-                    _gbufferCombineEffect.Effect,
+                    _gbufferCombineEffect.Asset.Effect,
                     parameterSet,
                     GBufferBlendState);
             }

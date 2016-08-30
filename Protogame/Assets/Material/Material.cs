@@ -52,13 +52,13 @@ namespace Protogame
     {
         string HintPath { get; }
 
-        TextureAsset TextureAsset { get; }
+        IAssetReference<TextureAsset> TextureAsset { get; }
     }
 
     public class MaterialTexture : IMaterialTexture
     {
         public string HintPath { get; set; }
 
-        public TextureAsset TextureAsset { get; set; }
+        public IAssetReference<TextureAsset> TextureAsset { get; set; }
     }
 }

@@ -9,15 +9,15 @@ namespace Protogame
     {
         private readonly IAssetManager _assetManager;
 
-        private Dictionary<string, TextureAsset> _hintPathCache;
+        private Dictionary<string, IAssetReference<TextureAsset>> _hintPathCache;
 
-        public TextureFromHintPath(IAssetManagerProvider assetManagerProvider)
+        public TextureFromHintPath(IAssetManager assetManager)
         {
-            _assetManager = assetManagerProvider.GetAssetManager();
-            _hintPathCache = new Dictionary<string, TextureAsset>();
+            _assetManager = assetManager;
+            _hintPathCache = new Dictionary<string, IAssetReference<TextureAsset>>();
         }
 
-        public TextureAsset GetTextureFromHintPath(string hintPath)
+        public IAssetReference<TextureAsset> GetTextureFromHintPath(string hintPath)
         {
             if (_hintPathCache.ContainsKey(hintPath))
             {
@@ -40,21 +40,11 @@ namespace Protogame
                 "texture." + fullName,
             };
 
-            foreach (var name in hintPathsToAttempt)
-            {
-                var texture = _assetManager.TryGet<TextureAsset>(name);
-                if (texture != null)
-                {
-                    _hintPathCache[hintPath] = texture;
-                    return texture;
-                }
-            }
-
-            _hintPathCache[hintPath] = null;
-            return null;
+            _hintPathCache[hintPath] = _assetManager.GetPreferred<TextureAsset>(hintPathsToAttempt);
+            return _hintPathCache[hintPath];
         }
 
-        public TextureAsset GetTextureFromHintPath(IMaterialTexture materialTexture)
+        public IAssetReference<TextureAsset> GetTextureFromHintPath(IMaterialTexture materialTexture)
         {
             return GetTextureFromHintPath(materialTexture.HintPath);
         }

@@ -8,7 +8,7 @@ namespace Protogame
         private readonly IBasicSkinHelper _basicSkinHelper;
         private readonly I2DRenderUtilities _renderUtilities;
 
-        public BasicFontViewerSkinRenderer(IBasicSkinHelper basicSkinHelper, I2DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
+        public BasicFontViewerSkinRenderer(IBasicSkinHelper basicSkinHelper, I2DRenderUtilities renderUtilities, IAssetManager assetManager)
         {
             _basicSkinHelper = basicSkinHelper;
             _renderUtilities = renderUtilities;
@@ -18,7 +18,7 @@ namespace Protogame
         {
             _basicSkinHelper.DrawSunken(renderContext, layout);
 
-            if (fontViewer.Font != null && fontViewer.Font.PlatformData != null)
+            if (fontViewer.Font != null)
             {
                 _renderUtilities.RenderText(
                     renderContext,

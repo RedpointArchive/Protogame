@@ -5,10 +5,10 @@ namespace Protogame
     public class DefaultStandardDirectionalLight : IStandardDirectionalLight
     {
         private readonly IGraphicsBlit _graphicsBlit;
-        private readonly EffectAsset _directionalLightEffect;
+        private readonly IAssetReference<EffectAsset> _directionalLightEffect;
 
         public DefaultStandardDirectionalLight(
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             IGraphicsBlit graphicsBlit,
             Vector3 lightDirection,
             Color lightColor)
@@ -17,7 +17,7 @@ namespace Protogame
             LightDirection = lightDirection;
             LightColor = lightColor;
 
-            _directionalLightEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.DirectionalLight");
+            _directionalLightEffect = assetManager.Get<EffectAsset>("effect.DirectionalLight");
         }
 
         public Vector3 LightDirection { get; set; }
@@ -26,7 +26,12 @@ namespace Protogame
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, ILightContext lightContext)
         {
-            var parameterSet = _directionalLightEffect.Effect.CreateParameterSet();
+            if (!_directionalLightEffect.IsReady)
+            {
+                return;
+            }
+
+            var parameterSet = _directionalLightEffect.Asset.Effect.CreateParameterSet();
             parameterSet["Color"]?.SetValue(lightContext.DeferredColorMap);
             parameterSet["Normal"]?.SetValue(lightContext.DeferredNormalMap);
             parameterSet["Depth"]?.SetValue(lightContext.DeferredDepthMap);
@@ -38,7 +43,7 @@ namespace Protogame
                 renderContext,
                 null,
                 new[] { lightContext.DiffuseLightRenderTarget, lightContext.SpecularLightRenderTarget },
-                _directionalLightEffect.Effect,
+                _directionalLightEffect.Asset.Effect,
                 parameterSet,
                 lightContext.LightBlendState);
         }

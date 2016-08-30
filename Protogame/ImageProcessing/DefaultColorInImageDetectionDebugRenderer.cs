@@ -6,7 +6,7 @@ namespace Protogame
     public class DefaultColorInImageDetectionDebugRenderer : IColorInImageDetectionDebugRenderer
     {
         private readonly I2DRenderUtilities _renderUtilities;
-        private readonly FontAsset _defaultFont;
+        private readonly IAssetReference<FontAsset> _defaultFont;
 
         public DefaultColorInImageDetectionDebugRenderer(IAssetManager assetManager, I2DRenderUtilities renderUtilities)
         {

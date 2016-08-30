@@ -22,7 +22,7 @@ namespace Protogame
 
         public VerticalAlignment? VerticalAlignment { get; set; }
 
-        public FontAsset Font { get; set; }
+        public IAssetReference<FontAsset> Font { get; set; }
 
         public bool? RenderShadow { get; set; }
 

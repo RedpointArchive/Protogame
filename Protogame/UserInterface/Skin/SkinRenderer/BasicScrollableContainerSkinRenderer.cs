@@ -28,7 +28,7 @@ namespace Protogame
             _renderUtilities.RenderTexture(
                 renderContext,
                 new Vector2(layout.X, layout.Y),
-                new TextureAsset(childContent),
+                childContent,
                 new Vector2(layoutWidth, layoutHeight),
                 sourceArea: new Rectangle(
                     (int)(scrollableContainer.ScrollX * (System.Math.Max(childContent.Width, layoutWidth) - layoutWidth)),

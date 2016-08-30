@@ -10,11 +10,11 @@ namespace Protogame
         private readonly IAssetManager _assetManager;
 
         public LabelUserInterfaceNodeProcessor(
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             INodeColorParser nodeColorParser)
         {
             _nodeColorParser = nodeColorParser;
-            _assetManager = assetManagerProvider.GetAssetManager();
+            _assetManager = assetManager;
         }
 
         public IContainer Process(XmlNode node, Action<UserInterfaceBehaviourEvent, object> eventCallback, out Action<XmlNode, IContainer> processChild)
@@ -26,7 +26,7 @@ namespace Protogame
             var fontName = node?.Attributes?["font"]?.Value;
             if (!string.IsNullOrWhiteSpace(fontName))
             {
-                label.Font = _assetManager.TryGet<FontAsset>(fontName);
+                label.Font = _assetManager.Get<FontAsset>(fontName);
             }
 
             var textColorRaw = node?.Attributes?["color"]?.Value;

@@ -19,7 +19,7 @@ namespace Protogame
 
         public object Userdata { get; set; }
         
-        public TextureAsset Texture { get; set; }
+        public IAssetReference<TextureAsset> Texture { get; set; }
         
         public void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {

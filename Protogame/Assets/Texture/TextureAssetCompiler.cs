@@ -52,7 +52,7 @@ namespace Protogame
 
                 try
                 {
-                    asset.ReloadTexture();
+                    asset.ReadyOnGameThread();
                 }
                 catch (NoAssetContentManagerException)
                 {

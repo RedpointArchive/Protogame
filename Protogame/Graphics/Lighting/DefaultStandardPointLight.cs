@@ -4,14 +4,15 @@ namespace Protogame
 {
     public class DefaultStandardPointLight : IStandardPointLight
     {
-        private readonly EffectAsset _pointLightEffect;
+        private readonly IAssetReference<EffectAsset> _pointLightEffect;
 
-        private readonly IModel _pointLightSphereModel;
+        private readonly IAssetReference<ModelAsset> _pointLightSphereModel;
 
-        private readonly IEffectParameterSet _parameterSet;
+        private IEffectParameterSet _parameterSet;
+        private IModel _pointLightSphereModelInstance;
 
         public DefaultStandardPointLight(
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             Vector3 lightPosition,
             Color lightColor,
             float lightRadius,
@@ -22,14 +23,26 @@ namespace Protogame
             LightRadius = lightRadius;
             LightIntensity = lightIntensity;
 
-            _pointLightEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.PointLight");
-            _pointLightSphereModel = assetManagerProvider.GetAssetManager().Get<ModelAsset>("model.LightSphere").InstantiateModel();
-
-            _parameterSet = _pointLightEffect.Effect.CreateParameterSet();
+            _pointLightEffect = assetManager.Get<EffectAsset>("effect.PointLight");
+            _pointLightSphereModel = assetManager.Get<ModelAsset>("model.LightSphere");
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, ILightContext lightContext)
         {
+            if (!_pointLightEffect.IsReady || !_pointLightSphereModel.IsReady)
+            {
+                return;
+            }
+
+            if (_parameterSet == null)
+            {
+                _parameterSet = _pointLightEffect.Asset.Effect.CreateParameterSet();
+            }
+            if (_pointLightSphereModelInstance == null)
+            {
+                _pointLightSphereModelInstance = _pointLightSphereModel.Asset.InstantiateModel();
+            }
+
             var oldRasterizerState = renderContext.GraphicsDevice.RasterizerState;
             var oldWorld = renderContext.World;
 
@@ -67,7 +80,7 @@ namespace Protogame
                 renderContext.PushRenderTarget(lightContext.DiffuseLightRenderTarget, lightContext.SpecularLightRenderTarget);
             }
 
-            _pointLightSphereModel.Render(renderContext, _pointLightEffect.Effect, _parameterSet, Matrix.Identity);
+            _pointLightSphereModelInstance.Render(renderContext, _pointLightEffect.Asset.Effect, _parameterSet, Matrix.Identity);
 
             if (lightContext.DiffuseLightRenderTarget != null && lightContext.SpecularLightRenderTarget != null)
             {

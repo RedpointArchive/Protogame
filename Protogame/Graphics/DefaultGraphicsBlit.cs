@@ -21,15 +21,15 @@ namespace Protogame
 
         private readonly short[] _indicies = { 1, 3, 0, 2 };
 
-        private readonly IEffect _blitEffect;
+        private readonly IAssetReference<UberEffectAsset> _blitEffect;
 
         private VertexBuffer _vertexBuffer;
 
         private IndexBuffer _indexBuffer;
 
-        public DefaultGraphicsBlit(IAssetManagerProvider assetManagerProvider)
+        public DefaultGraphicsBlit(IAssetManager assetManager)
         {
-            _blitEffect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects["Texture"];
+            _blitEffect = assetManager.Get<UberEffectAsset>("effect.BuiltinSurface");
         }
 
         public void BlitMRT(
@@ -113,9 +113,15 @@ namespace Protogame
                 blendState = BlendState.Opaque;
             }
 
+            if (shader == null && _blitEffect.IsReady)
+            {
+                shader = _blitEffect.Asset.Effects["Texture"];
+            }
+
             if (shader == null)
             {
-                shader = _blitEffect;
+                // Can't perform blit; no shader is available.
+                return;
             }
 
             if (effectParameterSet == null)
