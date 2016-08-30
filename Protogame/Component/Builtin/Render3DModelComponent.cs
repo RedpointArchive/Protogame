@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Protoinject;
@@ -71,7 +72,7 @@ namespace Protogame
 
         private IAnimation _lastAnimation;
 
-        private int _animationFrame;
+        private Stopwatch _animationTracker;
 
         public Render3DModelComponent(
             INode node,
@@ -85,6 +86,7 @@ namespace Protogame
             _textureFromHintPath = textureFromHintPath;
             _renderBatcher = renderBatcher;
             _assetManager = assetManagerProvider.GetAssetManager();
+            _animationTracker = new Stopwatch();
 
             Enabled = true;
             Transform = new DefaultTransform();
@@ -146,7 +148,7 @@ namespace Protogame
 
                     if (animation != null)
                     {
-                        animation.Apply(Model, _animationFrame++);
+                        animation.Apply(Model, _animationTracker.ElapsedMilliseconds / 1000f, 0.5f);
 
                         _renderRequest = Model.CreateRenderRequest(renderContext, effect, parameterSet, matrix);
                     }
@@ -177,6 +179,7 @@ namespace Protogame
                 changedRenderRequestBy += ":animation";
 
                 _lastAnimation = Animation;
+                _animationTracker.Restart();
             }
 
             return _lastAnimation;
