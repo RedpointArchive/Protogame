@@ -5,7 +5,7 @@ namespace Protogame
 {
     public class ServerConsole : IConsole
     {
-        public bool Open => true;
+        public ConsoleState State => ConsoleState.OpenNoInput;
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)
         {

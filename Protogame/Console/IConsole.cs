@@ -8,7 +8,7 @@ namespace Protogame
     /// </summary>
     public interface IConsole
     {
-        bool Open { get; }
+        ConsoleState State { get; }
         
         void Render(IGameContext gameContext, IRenderContext renderContext);
         

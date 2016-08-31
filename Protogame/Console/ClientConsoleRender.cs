@@ -18,11 +18,11 @@ namespace Protogame
             _assetManagerProvider = assetManagerProvider;
         }
 
-        public void Render(IGameContext gameContext, IRenderContext renderContext, StringBuilder inputBuffer, List<Tuple<ConsoleLogLevel, string>> logEntries)
+        public void Render(IGameContext gameContext, IRenderContext renderContext, StringBuilder inputBuffer, ConsoleState state, List<Tuple<ConsoleLogLevel, string>> logEntries)
         {
-            if (this._fontAsset == null)
+            if (_fontAsset == null)
             {
-                this._fontAsset = this._assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Console");
+                _fontAsset = _assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Console");
             }
 
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
@@ -30,25 +30,42 @@ namespace Protogame
                 return;
             }
 
-            this._renderUtilities.RenderRectangle(
+            var h = 0;
+            if (state == ConsoleState.Open || state == ConsoleState.OpenNoInput)
+            {
+                h = 300;
+            }
+            else if (state == ConsoleState.FullOpen || state == ConsoleState.FullOpenNoInput)
+            {
+                h = gameContext.Window.ClientBounds.Height;
+            }
+
+            _renderUtilities.RenderRectangle(
                 renderContext,
-                new Rectangle(0, 0, gameContext.Window.ClientBounds.Width, 300),
+                new Rectangle(0, 0, gameContext.Window.ClientBounds.Width, h),
                 new Color(0, 0, 0, 210),
                 true);
-            this._renderUtilities.RenderRectangle(
+            _renderUtilities.RenderRectangle(
                 renderContext,
-                new Rectangle(0, 0, gameContext.Window.ClientBounds.Width - 1, 300),
+                new Rectangle(0, 0, gameContext.Window.ClientBounds.Width - 1, h - 1),
                 Color.White);
-            this._renderUtilities.RenderLine(
-                renderContext,
-                new Vector2(0, 300 - 16),
-                new Vector2(gameContext.Window.ClientBounds.Width, 300 - 16),
-                Color.White);
-            this._renderUtilities.RenderText(
-                renderContext,
-                new Vector2(2, 300 - 16),
-                inputBuffer.ToString(),
-                this._fontAsset);
+
+            var o = 16;
+            if (state == ConsoleState.FullOpen || state == ConsoleState.Open)
+            {
+                _renderUtilities.RenderLine(
+                    renderContext,
+                    new Vector2(0, h - 16),
+                    new Vector2(gameContext.Window.ClientBounds.Width, h - 16),
+                    Color.White);
+                _renderUtilities.RenderText(
+                    renderContext,
+                    new Vector2(2, h - 16),
+                    inputBuffer.ToString(),
+                    _fontAsset);
+                o = 32;
+            }
+
             var a = 0;
             for (var i = Math.Max(0, logEntries.Count - 30); i < logEntries.Count; i++)
             {
@@ -68,11 +85,11 @@ namespace Protogame
                         color = Color.Red;
                         break;
                 }
-                this._renderUtilities.RenderText(
+                _renderUtilities.RenderText(
                     renderContext,
-                    new Vector2(2, 300 - 32 - a * 16),
+                    new Vector2(2, h - o - a * 16),
                     logEntries[logEntries.Count - i - 1].Item2,
-                    this._fontAsset,
+                    _fontAsset,
                     textColor: color);
                 a++;
             }

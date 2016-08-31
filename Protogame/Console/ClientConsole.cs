@@ -21,11 +21,11 @@ namespace Protogame
             _consoleRender = consoleRender;
         }
 
-        public bool Open { get; private set; }
+        public ConsoleState State { get; private set; }
         
         public void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            if (!Open)
+            if (State == ConsoleState.Closed)
             {
                 return;
             }
@@ -34,22 +34,40 @@ namespace Protogame
                 gameContext,
                 renderContext,
                 _consoleInput.InputBuffer,
+                State,
                 _log.Select(x => new Tuple<ConsoleLogLevel, string>(x.LogLevel, x.Name == string.Empty ? x.Message : $"<{x.Name,-20}> ({x.Count,5}) {x.Message}")).ToList());
 
-            if (_log.Count > 31)
+            if (_log.Count > 200)
             {
-                _log.RemoveRange(0, _log.Count - 31);
+                _log.RemoveRange(0, _log.Count - 200);
             }
         }
         
         public void Toggle()
         {
-            Open = !Open;
+            switch (State)
+            {
+                case ConsoleState.Closed:
+                    State = ConsoleState.Open;
+                    break;
+                case ConsoleState.Open:
+                    State = ConsoleState.OpenNoInput;
+                    break;
+                case ConsoleState.OpenNoInput:
+                    State = ConsoleState.FullOpen;
+                    break;
+                case ConsoleState.FullOpen:
+                    State = ConsoleState.FullOpenNoInput;
+                    break;
+                case ConsoleState.FullOpenNoInput:
+                    State = ConsoleState.Closed;
+                    break;
+            }
         }
         
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            if (!Open)
+            if (State == ConsoleState.Closed)
             {
                 return;
             }

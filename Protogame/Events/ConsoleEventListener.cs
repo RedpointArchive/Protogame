@@ -12,7 +12,7 @@ namespace Protogame
         /// <summary>
         /// The in-game console.
         /// </summary>
-        private readonly IConsole m_Console;
+        private readonly IConsole _console;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleEventListener"/> class.
@@ -22,7 +22,7 @@ namespace Protogame
         /// </param>
         public ConsoleEventListener(IConsole console)
         {
-            this.m_Console = console;
+            _console = console;
         }
 
         /// <summary>
@@ -50,11 +50,11 @@ namespace Protogame
 
             // If the console is open, consume all keyboard events.
             var keyPressEvent = @event as KeyPressEvent;
-            if (this.m_Console.Open)
+            if (_console.State == ConsoleState.Open || _console.State == ConsoleState.FullOpen)
             {
                 if (keyPressEvent != null && keyPressEvent.Key == Keys.OemTilde)
                 {
-                    this.m_Console.Toggle();
+                    _console.Toggle();
                 }
 
                 return true;
@@ -71,7 +71,7 @@ namespace Protogame
             // and consume the event.
             if (keyPressEvent.Key == Keys.OemTilde)
             {
-                this.m_Console.Toggle();
+                _console.Toggle();
                 return true;
             }
 

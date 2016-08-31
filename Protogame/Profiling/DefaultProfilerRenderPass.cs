@@ -46,9 +46,12 @@ namespace Protogame
             var x = 0;
             var y = 0;
 
-            if (_console != null && _console.Open)
+            if (_console != null)
             {
-                y = 300;
+                if (_console.State == ConsoleState.Open || _console.State == ConsoleState.OpenNoInput)
+                {
+                    y = 300;
+                }
             }
             
             renderContext.SpriteBatch.Begin(SpriteSortMode.Immediate);

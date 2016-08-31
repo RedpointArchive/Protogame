@@ -280,6 +280,7 @@
     <Compile Include="Console\ClientConsoleInput.cs" />
     <Compile Include="Console\ClientConsoleRender.cs" />
     <Compile Include="Console\ConsoleLogLevel.cs" />
+    <Compile Include="Console\ConsoleState.cs" />
     <Compile Include="Console\DefaultConsoleHandle.cs" />
     <Compile Include="Console\IConsole.cs" />
     <Compile Include="Console\IConsoleHandle.cs" />
