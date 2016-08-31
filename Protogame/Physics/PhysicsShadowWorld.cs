@@ -324,6 +324,11 @@ namespace Protogame
 
         public void RegisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform, bool staticAndImmovable)
         {
+            if (_rigidBodyMappings.Any(x => x.RigidBody == rigidBody && x.HasTransform == hasTransform))
+            {
+                throw new InvalidOperationException();
+            }
+
             _rigidBodyMappings.Add(new RigidBodyMapping(rigidBody, hasTransform, staticAndImmovable));
             _physicsWorld.AddBody(rigidBody);
         }
@@ -335,6 +340,11 @@ namespace Protogame
 
         public void UnregisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform)
         {
+            if (_rigidBodyMappings.All(x => x.RigidBody != rigidBody || x.HasTransform != hasTransform))
+            {
+                throw new InvalidOperationException();
+            }
+
             _rigidBodyMappings.RemoveAll(x => x.RigidBody == rigidBody && x.HasTransform == hasTransform);
             _physicsWorld.RemoveBody(rigidBody);
         }

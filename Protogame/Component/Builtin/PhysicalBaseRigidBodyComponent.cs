@@ -1,4 +1,5 @@
-﻿using Jitter.Collision.Shapes;
+﻿using System;
+using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Protoinject;
@@ -21,6 +22,8 @@ namespace Protogame
         private bool _enabled;
 
         private bool _pureCollider;
+
+        private PhysicsTarget _target;
 
         internal PhysicalBaseRigidBodyComponent(INode node, IPhysicsEngine physicsEngine)
         {
@@ -97,6 +100,41 @@ namespace Protogame
             set { _rigidBody.Mass = value; }
         }
 
+        public PhysicsTarget Target
+        {
+            get { return _target; }
+            set
+            {
+                if (_target != value)
+                {
+                    _target = value;
+
+                    var transformComponent = _node.Parent?.UntypedValue as IHasTransform;
+                    if (transformComponent != null)
+                    {
+                        if (_addedRigidBody)
+                        {
+                            IHasTransform targetTransform;
+                            switch (_target)
+                            {
+                                case PhysicsTarget.ComponentOwner:
+                                    targetTransform = transformComponent;
+                                    break;
+                                case PhysicsTarget.Component:
+                                    targetTransform = this;
+                                    break;
+                                default:
+                                    throw new InvalidOperationException();
+                            }
+
+                            _physicsEngine.UnregisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, targetTransform);
+                            _addedRigidBody = false;
+                        }
+                    }
+                }
+            }
+        }
+
         protected abstract Shape GetShape(ITransform localTransform);
 
         private void UpdateRigidBodyShape(ITransform localTransform)
@@ -168,7 +206,20 @@ namespace Protogame
                 {
                     if (_addedRigidBody)
                     {
-                        _physicsEngine.UnregisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent);
+                        IHasTransform targetTransform;
+                        switch (_target)
+                        {
+                            case PhysicsTarget.ComponentOwner:
+                                targetTransform = transformComponent;
+                                break;
+                            case PhysicsTarget.Component:
+                                targetTransform = this;
+                                break;
+                            default:
+                                throw new InvalidOperationException();
+                        }
+
+                        _physicsEngine.UnregisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, targetTransform);
                         _addedRigidBody = false;
                     }
                 }
@@ -179,7 +230,20 @@ namespace Protogame
                         // We use the transform local to this component for scaling purposes.
                         UpdateRigidBodyShape(Transform);
 
-                        _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, transformComponent, StaticAndImmovable);
+                        IHasTransform targetTransform;
+                        switch (_target)
+                        {
+                            case PhysicsTarget.ComponentOwner:
+                                targetTransform = transformComponent;
+                                break;
+                            case PhysicsTarget.Component:
+                                targetTransform = this;
+                                break;
+                            default:
+                                throw new InvalidOperationException();
+                        }
+
+                        _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, targetTransform, StaticAndImmovable);
                         _addedRigidBody = true;
                     }
                 }

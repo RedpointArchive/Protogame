@@ -633,6 +633,7 @@
     <Compile Include="Physics\PhysicsEvent.cs" />
     <Compile Include="Physics\PhysicsMetrics.cs" />
     <Compile Include="Physics\PhysicsShadowWorld.cs" />
+    <Compile Include="Physics\PhysicsTarget.cs" />
     <Compile Include="Physics\ProtogamePhysicsIoCModule.cs" />
     <Compile Include="Physics\ProtogamePhysicsModule.cs" />
     <Compile Include="Platform\AndroidGameWindow.cs" />
