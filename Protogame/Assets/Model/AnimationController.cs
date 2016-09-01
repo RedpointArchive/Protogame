@@ -12,32 +12,32 @@
         /// <summary>
         /// The model whose animations are being controlled.
         /// </summary>
-        private readonly ModelAsset m_Model;
+        private readonly IModel _model;
 
         /// <summary>
         /// The script instance driving the animations.
         /// </summary>
-        private readonly ScriptAssetInstance m_ScriptInstance;
+        private readonly ScriptAssetInstance _scriptInstance;
 
         /// <summary>
         /// The current animation being played.
         /// </summary>
-        private string m_CurrentState;
+        private string _currentState;
 
         /// <summary>
         /// The requested animation via <see cref="Request"/>.
         /// </summary>
-        private string m_TargetState;
+        private string _targetState;
 
         /// <summary>
         /// The current frame number for the animation.
         /// </summary>
-        private double m_TickNumber;
+        private double _tickNumber;
 
         /// <summary>
         /// Whether the animation is changing on the next frame.
         /// </summary>
-        private bool m_ChangeOnNextFrame;
+        private bool _changeOnNextFrame;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnimationController"/> class.
@@ -48,10 +48,10 @@
         /// <param name="script">
         /// The script instance.
         /// </param>
-        public AnimationController(ModelAsset model, ScriptAsset script)
+        public AnimationController(IModel model, ScriptAsset script)
         {
-            this.m_Model = model;
-            this.m_ScriptInstance = script.CreateInstance();
+            _model = model;
+            _scriptInstance = script.CreateInstance();
         }
 
         /// <summary>
@@ -60,13 +60,7 @@
         /// <value>
         /// The current animation being played.
         /// </value>
-        public string CurrentAnimation
-        {
-            get
-            {
-                return this.m_CurrentState;
-            }
-        }
+        public string CurrentAnimation => _currentState;
 
         /// <summary>
         /// Gets the current frame to render.
@@ -74,13 +68,7 @@
         /// <value>
         /// The current frame to render.
         /// </value>
-        public double Frame
-        {
-            get
-            {
-                return this.m_TickNumber;
-            }
-        }
+        public double Frame => _tickNumber;
 
         /// <summary>
         /// Gets or sets a string representing a custom effect that should be applied to rendering.
@@ -102,7 +90,7 @@
         /// </param>
         public void Request(string animationName)
         {
-            this.m_TargetState = animationName;
+            _targetState = animationName;
         }
 
         /// <summary>
@@ -116,11 +104,11 @@
         /// </param>
         public void Update(GameTime gameTime, float multiply = 1)
         {
-            if (this.m_CurrentState == null)
+            if (_currentState == null)
             {
-                if (this.m_TargetState != null)
+                if (_targetState != null)
                 {
-                    this.m_CurrentState = this.m_TargetState;
+                    _currentState = _targetState;
                 }
                 else
                 {
@@ -129,40 +117,40 @@
                 }
             }
 
-            this.m_TickNumber += gameTime.ElapsedGameTime.TotalSeconds
-                                 * this.m_Model.AvailableAnimations[this.m_CurrentState].TicksPerSecond * multiply;
+            _tickNumber += gameTime.ElapsedGameTime.TotalSeconds
+                                 * _model.AvailableAnimations[_currentState].TicksPerSecond * multiply;
 
-            var results = this.m_ScriptInstance.Execute(
-                this.m_Model.AvailableAnimations[this.m_CurrentState].Name, 
+            var results = _scriptInstance.Execute(
+                _model.AvailableAnimations[_currentState].Name, 
                 new Dictionary<string, object>
                 {
-                    { "IN_CurrentAnim", this.m_CurrentState }, 
-                    { "IN_RequestedAnim", this.m_TargetState }, 
-                    { "IN_Tick", this.m_TickNumber }, 
-                    { "IN_LastTick", this.m_Model.AvailableAnimations[this.m_CurrentState].DurationInTicks - 1 },
-                    { "IN_JustChanged", this.m_ChangeOnNextFrame ? 1 : 0 }
+                    { "IN_CurrentAnim", _currentState }, 
+                    { "IN_RequestedAnim", _targetState }, 
+                    { "IN_Tick", _tickNumber }, 
+                    { "IN_LastTick", _model.AvailableAnimations[_currentState].DurationInTicks - 1 },
+                    { "IN_JustChanged", _changeOnNextFrame ? 1 : 0 }
                 });
 
-            this.m_ChangeOnNextFrame = false;
+            _changeOnNextFrame = false;
 
             if (results.ContainsKey("OUT_Anim"))
             {
-                if (this.m_CurrentState != (string)results["OUT_Anim"])
+                if (_currentState != (string)results["OUT_Anim"])
                 {
-                    this.m_ChangeOnNextFrame = true;
+                    _changeOnNextFrame = true;
                 }
 
-                this.m_CurrentState = (string)results["OUT_Anim"];
+                _currentState = (string)results["OUT_Anim"];
             }
 
             if (results.ContainsKey("OUT_Tick"))
             {
-                this.m_TickNumber = (float)results["OUT_Tick"];
+                _tickNumber = (float)results["OUT_Tick"];
             }
 
             if (results.ContainsKey("OUT_Effect"))
             {
-                this.Effect = (string)results["OUT_Effect"];
+                Effect = (string)results["OUT_Effect"];
             }
         }
     }

@@ -18,7 +18,7 @@ namespace Protogame
 
         private readonly IAssetManager _assetManager;
 
-        private ModelAsset _lastCachedModel;
+        private IModel _lastCachedModel;
 
         private TextureAsset _lastCachedDiffuseTexture;
 
@@ -74,6 +74,10 @@ namespace Protogame
 
         private Stopwatch _animationTracker;
 
+        private ModelAsset _modelAsset;
+
+        private IModel _model;
+
         public Render3DModelComponent(
             INode node,
             I3DRenderUtilities renderUtilities,
@@ -91,8 +95,31 @@ namespace Protogame
             Enabled = true;
             Transform = new DefaultTransform();
         }
-        
-        public ModelAsset Model { get; set; }
+
+        public ModelAsset Model
+        {
+            get { return _modelAsset; }
+            set
+            {
+                if (_modelAsset != value)
+                {
+                    _modelAsset = value;
+
+                    if (_model != null)
+                    {
+                        _model.Dispose();
+                        _model = null;
+                    }
+
+                    if (_modelAsset != null)
+                    {
+                        _model = _modelAsset.InstantiateModel();
+                    }
+                }
+            }
+        }
+
+        public IModel ModelInstance => _model;
 
         public EffectAsset Effect { get; set; }
 
@@ -136,7 +163,7 @@ namespace Protogame
                     bool changedRenderRequest = _lastWorldMatrix != matrix;
                     string changedRenderRequestBy = changedRenderRequest ? "matrix" : "";
 
-                    var material = OverrideMaterial ?? Model.Material;
+                    var material = OverrideMaterial ?? _model.Material;
 
                     UpdateCachedModel(material, ref changedRenderRequest, ref changedRenderRequestBy);
 
@@ -148,13 +175,13 @@ namespace Protogame
 
                     if (animation != null)
                     {
-                        animation.Apply(Model, _animationTracker.ElapsedMilliseconds / 1000f, 0.5f);
+                        animation.Apply(_model, _animationTracker.ElapsedMilliseconds / 1000f, 0.5f);
 
-                        _renderRequest = Model.CreateRenderRequest(renderContext, effect, parameterSet, matrix);
+                        _renderRequest = _model.CreateRenderRequest(renderContext, effect, parameterSet, matrix);
                     }
                     else if (changedRenderRequest || _renderRequest == null)
                     {
-                        _renderRequest = Model.CreateRenderRequest(renderContext, effect, parameterSet, matrix);
+                        _renderRequest = _model.CreateRenderRequest(renderContext, effect, parameterSet, matrix);
                     }
 
                     _lastWorldMatrix = matrix;
@@ -279,7 +306,7 @@ namespace Protogame
 
         private void UpdateCachedModel(IMaterial material, ref bool changedRenderRequest, ref string changedRenderRequestBy)
         {
-            if (_lastCachedModel != Model)
+            if (_lastCachedModel != _model)
             {
                 changedRenderRequest = true;
                 changedRenderRequestBy += ":model";
@@ -353,7 +380,7 @@ namespace Protogame
                 {
                     _mode = "color";
                 }
-                _lastCachedModel = Model;
+                _lastCachedModel = _model;
             }
         }
 

@@ -2,21 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics;
 
     /// <summary>
     /// Represents a model asset.
     /// </summary>
-    public class ModelAsset : MarshalByRefObject, IAsset, IModel
+    public class ModelAsset : MarshalByRefObject, IAsset
     {
         private readonly IModelSerializer _modelSerializer;
-
-        /// <summary>
-        /// The runtime model associated with this asset.
-        /// </summary>
-        private Model m_Model;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelAsset"/> class.
         /// <para>
@@ -47,144 +40,14 @@
         /// <param name="importOptions"></param>
         public ModelAsset(IModelSerializer modelSerializer, string name, byte[] rawData, Dictionary<string, byte[]> rawAdditionalAnimations, PlatformData data, bool sourcedFromRaw, string extension, string[] importOptions)
         {
-            this._modelSerializer = modelSerializer;
-            this.Name = name;
-            this.RawData = rawData;
-            this.RawAdditionalAnimations = rawAdditionalAnimations;
-            this.PlatformData = data;
-            this.SourcedFromRaw = sourcedFromRaw;
-            this.Extension = extension;
-            this.ImportOptions = importOptions;
-
-            if (this.PlatformData != null)
-            {
-                try
-                {
-                    this.ReloadModel();
-                }
-                catch (NoAssetContentManagerException)
-                {
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the available animations.
-        /// </summary>
-        /// <value>
-        /// The available animations.
-        /// </value>
-        public IAnimationCollection AvailableAnimations
-        {
-            get
-            {
-                return this.m_Model.AvailableAnimations;
-            }
-        }
-
-        /// <summary>
-        /// Gets the material information associated with this model, if
-        /// one exists.
-        /// </summary>
-        /// <remarks>
-        /// This value is null if there is no material attached to this model.
-        /// </remarks>
-        /// <value>
-        /// The material associated with this model.
-        /// </value>
-        public IMaterial Material
-        {
-            get
-            {
-                return this.m_Model.Material;
-            }
-        }
-
-        /// <summary>
-        /// Gets the root bone of the model's skeleton.
-        /// </summary>
-        /// <remarks>
-        /// This value is null if there is no skeleton attached to the model.
-        /// </remarks>
-        /// <value>
-        /// The root bone of the model's skeleton.
-        /// </value>
-        public IModelBone Root
-        {
-            get
-            {
-                return this.m_Model.Root;
-            }
-        }
-
-        /// <summary>
-        /// Gets the model's bones by their names.
-        /// </summary>
-        /// <remarks>
-        /// This value is null if there is no skeleton attached to the model.
-        /// </remarks>
-        /// <value>
-        /// The model bones addressed by their names.
-        /// </value>
-        public IDictionary<string, IModelBone> Bones
-        {
-            get
-            {
-                return this.m_Model.Bones;
-            }
-        }
-
-        /// <summary>
-        /// Gets the index buffer.
-        /// </summary>
-        /// <value>
-        /// The index buffer.
-        /// </value>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown if the vertex or index buffers have not been loaded with <see cref="LoadBuffers"/>.
-        /// </exception>
-        public IndexBuffer IndexBuffer
-        {
-            get
-            {
-                return this.m_Model.IndexBuffer;
-            }
-        }
-
-        /// <summary>
-        /// Gets the indices.
-        /// </summary>
-        /// <value>
-        /// The indices.
-        /// </value>
-        public int[] Indices
-        {
-            get
-            {
-                return this.m_Model.Indices;
-            }
-        }
-
-        /// <summary>
-        /// Frees any vertex buffers that are cached inside this model.
-        /// </summary>
-        public void FreeCachedVertexBuffers()
-        {
-            this.m_Model.FreeCachedVertexBuffers();
-        }
-
-        /// <summary>
-        /// Gets the vertexes.
-        /// </summary>
-        /// <value>
-        /// The vertexes.
-        /// </value>
-        public ModelVertex[] Vertexes
-        {
-            get
-            {
-                return this.m_Model.Vertexes;
-            }
+            _modelSerializer = modelSerializer;
+            Name = name;
+            RawData = rawData;
+            RawAdditionalAnimations = rawAdditionalAnimations;
+            PlatformData = data;
+            SourcedFromRaw = sourcedFromRaw;
+            Extension = extension;
+            ImportOptions = importOptions;
         }
 
         /// <summary>
@@ -193,13 +56,7 @@
         /// <value>
         /// Whether the asset only contains compiled information.
         /// </value>
-        public bool CompiledOnly
-        {
-            get
-            {
-                return this.RawData == null;
-            }
-        }
+        public bool CompiledOnly => RawData == null;
 
         /// <summary>
         /// Gets the name of the asset.
@@ -250,13 +107,7 @@
         /// <value>
         /// Whether the asset only contains source information.
         /// </value>
-        public bool SourceOnly
-        {
-            get
-            {
-                return this.PlatformData == null;
-            }
-        }
+        public bool SourceOnly => PlatformData == null;
 
         /// <summary>
         /// Gets a value indicating whether or not this asset was sourced from a raw file (such as a FBX file).
@@ -276,139 +127,18 @@
         public string[] ImportOptions { get; set; }
 
         /// <summary>
-        /// Modifies the specified model to align to this animation at the specified frame.
+        /// Instantiates a model object from the model asset.  Each model object has it's own vertex and index
+        /// buffers, so you should aim to share model objects which will always have the same state.
         /// </summary>
-        /// <param name="animationName">The animation to play.</param>
-        /// <param name="secondFraction">The time elapsed.</param>
-        /// <param name="multiply">The multiplication factor to apply to the animation speed.</param>
-        public void Apply(string animationName, TimeSpan secondFraction, float multiply = 1)
+        /// <returns>The model object.</returns>
+        public IModel InstantiateModel()
         {
-            this.m_Model.AvailableAnimations[animationName].Apply(
-                this.m_Model,
-                (float)secondFraction.TotalSeconds,
-                multiply);
-        }
-
-        /// <summary>
-        /// Modifies the specified model to align to this animation at the specified frame.
-        /// </summary>
-        /// <param name="animationName">The animation to play.</param>
-        /// <param name="frame">The frame to draw at.</param>
-        public void Apply(string animationName, double frame)
-        {
-            this.m_Model.AvailableAnimations[animationName].Apply(
-                this.m_Model,
-                frame);
-        }
-
-        /// <summary>
-        /// Modifies the specified model to align to this animation at the specified frame and then renders it.
-        /// </summary>
-        /// <param name="renderContext">The current render context.</param>
-        /// <param name="transform">The world transformation to apply.</param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="animationName">The animation to play.</param>
-        /// <param name="secondFraction">The time elapsed.</param>
-        /// <param name="multiply">The multiplication factor to apply to the animation speed.</param>
-        /// <param name="effect"></param>
-        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, string animationName, TimeSpan secondFraction, float multiply = 1)
-        {
-            this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
-
-            if (animationName != null)
+            if (PlatformData != null)
             {
-                this.m_Model.AvailableAnimations[animationName].Render(
-                    renderContext,
-                    effect, effectParameterSet,
-                    transform,
-                    this.m_Model,
-                    secondFraction,
-                    multiply);
+                return _modelSerializer.Deserialize(Name, PlatformData.Data);
             }
-            else
-            {
-                this.m_Model.Render(renderContext, effect, effectParameterSet, transform);
-            }
-        }
 
-        /// <summary>
-        /// Modifies the specified model to align to this animation at the specified frame and then renders it.
-        /// </summary>
-        /// <param name="renderContext">The current render context.</param>
-        /// <param name="transform">The world transformation to apply.</param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="animationName">The animation to play.</param>
-        /// <param name="frame">The frame to draw at.</param>
-        /// <param name="effect"></param>
-        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform, string animationName, double frame)
-        {
-            this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
-
-            if (animationName != null)
-            {
-                this.m_Model.AvailableAnimations[animationName].Render(
-                    renderContext,
-                    effect,
-                    effectParameterSet,
-                    transform,
-                    this.m_Model,
-                    frame);
-            }
-            else
-            {
-                this.m_Model.Render(renderContext, effect, effectParameterSet, transform);
-            }
-        }
-
-        /// <summary>
-        /// Renders the specified model in it's current state.
-        /// </summary>
-        /// <param name="renderContext">The current render context.</param>
-        /// <param name="effect">The effect to use for rendering.</param>
-        /// <param name="effectParameterSet">The parameters to use on the effect.</param>
-        /// <param name="transform">The world transformation to apply.</param>
-        public void Render(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform)
-        {
-            this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
-
-            this.m_Model.Render(renderContext, effect, effectParameterSet, transform);
-        }
-
-        /// <summary>
-        /// Creates a render request the specified model in it's current state.
-        /// </summary>
-        /// <param name="renderContext">The current render context.</param>
-        /// <param name="transform">The world transformation to apply.</param>
-        /// <param name="effectParameterSet"></param>
-        /// <param name="effect"></param>
-        /// <param name="parameterSet"></param>
-        public IRenderRequest CreateRenderRequest(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform)
-        {
-            this.m_Model.LoadBuffers(renderContext.GraphicsDevice);
-
-            return this.m_Model.CreateRenderRequest(renderContext, effect, effectParameterSet, transform);
-        }
-
-        /// <summary>
-        /// Loads vertex and index buffers for all of animations in this model.
-        /// </summary>
-        /// <param name="graphicsDevice">
-        /// The graphics device.
-        /// </param>
-        public void LoadBuffers(GraphicsDevice graphicsDevice)
-        {
-            this.m_Model.LoadBuffers(graphicsDevice);
-        }
-
-        /// <summary>
-        /// Reloads the model from the associated compiled data.
-        /// </summary>
-        public void ReloadModel()
-        {
-            if (this.PlatformData != null)
-            {
-                this.m_Model = _modelSerializer.Deserialize(this.Name, this.PlatformData.Data);
-            }
+            throw new InvalidOperationException("Attempted to instantiate a model, but no platform data was loaded.");
         }
 
         /// <summary>

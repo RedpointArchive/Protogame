@@ -68,21 +68,21 @@
             ModelVertex[] vertexes,
             int[] indices)
         {
-            this.Name = name;
-            this.AvailableAnimations = availableAnimations;
-            this.Root = rootBone;
-            this.Vertexes = vertexes;
-            this.Indices = indices;
-            this.Material = material;
+            Name = name;
+            AvailableAnimations = availableAnimations;
+            Root = rootBone;
+            Vertexes = vertexes;
+            Indices = indices;
+            Material = material;
 
             _cachedVertexBuffers = new Dictionary<object, VertexBuffer>();
             _modelRenderConfigurations = modelRenderConfigurations;
             _renderBatcher = renderBatcher;
 
-            if (this.Root != null)
+            if (Root != null)
             {
-                this._flattenedBones = this.Root.Flatten();
-                this.Bones = this._flattenedBones.ToDictionary(k => k.Name, v => v);
+                _flattenedBones = Root.Flatten();
+                Bones = _flattenedBones.ToDictionary(k => k.Name, v => v);
             }
         }
 
@@ -147,12 +147,12 @@
         {
             get
             {
-                if (this._indexBuffer == null)
+                if (_indexBuffer == null)
                 {
                     throw new InvalidOperationException("Call LoadBuffers before accessing the index buffer");
                 }
 
-                return this._indexBuffer;
+                return _indexBuffer;
             }
         }
 
@@ -210,14 +210,14 @@
         /// </param>
         public void LoadBuffers(GraphicsDevice graphicsDevice)
         {
-            if (this._indexBuffer == null)
+            if (_indexBuffer == null)
             {
-                this._indexBuffer = new IndexBuffer(
+                _indexBuffer = new IndexBuffer(
                     graphicsDevice, 
                     IndexElementSize.ThirtyTwoBits, 
-                    this.Indices.Length, 
+                    Indices.Length, 
                     BufferUsage.WriteOnly);
-                this._indexBuffer.SetData(this.Indices);
+                _indexBuffer.SetData(Indices);
             }
         }
 
@@ -234,7 +234,7 @@
         /// </param>
         public IRenderRequest CreateRenderRequest(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, Matrix transform)
         {
-            if (this.Vertexes.Length == 0 && this.Indices.Length == 0)
+            if (Vertexes.Length == 0 && Indices.Length == 0)
             {
                 throw new InvalidOperationException(
                     "This model does not have any vertexes or indices.  It's most " +
@@ -242,7 +242,7 @@
                     "in which case there isn't anything to render.");
             }
 
-            this.LoadBuffers(renderContext.GraphicsDevice);
+            LoadBuffers(renderContext.GraphicsDevice);
 
             VertexBuffer vertexBuffer;
             if (_cachedVertexBuffers.ContainsKey(effect))
@@ -289,7 +289,7 @@
             {
                 var bonesEffectSemantic = effectParameterSet.GetSemantic<IBonesEffectSemantic>();
 
-                foreach (var bone in this._flattenedBones)
+                foreach (var bone in _flattenedBones)
                 {
                     if (bone.ID == -1)
                     {
@@ -332,6 +332,15 @@
                         new[] { mappedVerticies });
                     ib.SetData(mappedIndicies);
                 });
+        }
+
+        public void Dispose()
+        {
+            if (_indexBuffer != null)
+            {
+                _indexBuffer.Dispose();
+                _indexBuffer = null;
+            }
         }
     }
 }

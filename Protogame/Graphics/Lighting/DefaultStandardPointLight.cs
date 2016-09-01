@@ -6,7 +6,7 @@ namespace Protogame
     {
         private readonly EffectAsset _pointLightEffect;
 
-        private readonly ModelAsset _pointLightSphereModel;
+        private readonly IModel _pointLightSphereModel;
 
         private readonly IEffectParameterSet _parameterSet;
 
@@ -23,7 +23,7 @@ namespace Protogame
             LightIntensity = lightIntensity;
 
             _pointLightEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.PointLight");
-            _pointLightSphereModel = assetManagerProvider.GetAssetManager().Get<ModelAsset>("model.LightSphere");
+            _pointLightSphereModel = assetManagerProvider.GetAssetManager().Get<ModelAsset>("model.LightSphere").InstantiateModel();
 
             _parameterSet = _pointLightEffect.Effect.CreateParameterSet();
         }

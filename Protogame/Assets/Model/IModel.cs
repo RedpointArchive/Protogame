@@ -8,7 +8,7 @@
     /// <summary>
     /// An interface representing a runtime model.
     /// </summary>
-    public interface IModel
+    public interface IModel : IDisposable
     {
         /// <summary>
         /// The name of the model, which usually aligns to the model asset that

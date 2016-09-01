@@ -117,6 +117,16 @@ namespace Protogame
                 var node1 = _hierarchy.Lookup(body1.Tag);
                 var node2 = _hierarchy.Lookup(body2.Tag);
 
+                if (node1 == null)
+                {
+                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body1.Tag);
+                }
+
+                if (node2 == null)
+                {
+                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body2.Tag);
+                }
+
                 if (node1 != null && node2 != null)
                 {
                     // TODO: This is pretty silly.  It should just be the nodes, not their parents.

@@ -40,14 +40,6 @@ namespace Protogame
             var data = _modelSerializer.Serialize(model);
 
             asset.PlatformData = new PlatformData { Data = data, Platform = platform };
-
-            try
-            {
-                asset.ReloadModel();
-            }
-            catch (NoAssetContentManagerException)
-            {
-            }
         }
     }
 }
