@@ -12,21 +12,23 @@
         /// <summary>
         /// The replay stack of actions.
         /// </summary>
-        private readonly List<Action> m_Replays;
+        private readonly List<Action> _replays;
 
         /// <summary>
         /// The current counter of actions pushed into the input prediction class.
         /// </summary>
-        private int m_CurrentCounter;
+        private int _currentCounter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputPrediction"/> class.
         /// </summary>
         public InputPrediction()
         {
-            this.m_Replays = new List<Action>();
-            this.m_CurrentCounter = 0;
+            _replays = new List<Action>();
+            _currentCounter = 0;
         }
+
+        public int ReplayCount => _replays.Count;
 
         /// <summary>
         /// Mark the specified input as acknowledged, removing all actions in the prediction queue
@@ -37,15 +39,15 @@
         /// </param>
         public void Acknowledge(int count)
         {
-            var remaining = this.m_CurrentCounter - count;
+            var remaining = _currentCounter - count;
             if (remaining < 0)
             {
-                this.m_CurrentCounter = count;
-                this.m_Replays.Clear();
+                _currentCounter = count;
+                _replays.Clear();
                 return;
             }
 
-            var amountToRemove = this.m_Replays.Count - remaining;
+            var amountToRemove = _replays.Count - remaining;
             if (amountToRemove < 0)
             {
                 throw new InvalidOperationException(
@@ -54,7 +56,7 @@
                     + " than the current count when receiving it.");
             }
 
-            this.m_Replays.RemoveRange(0, amountToRemove);
+            _replays.RemoveRange(0, amountToRemove);
         }
 
         /// <summary>
@@ -69,8 +71,8 @@
         /// </returns>
         public int Predict(Action action)
         {
-            this.m_Replays.Add(action);
-            return this.m_CurrentCounter++;
+            _replays.Add(action);
+            return ++_currentCounter;
         }
 
         /// <summary>
@@ -78,7 +80,7 @@
         /// </summary>
         public void Replay()
         {
-            foreach (var action in this.m_Replays)
+            foreach (var action in _replays)
             {
                 action();
             }

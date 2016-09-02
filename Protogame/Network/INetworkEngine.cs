@@ -31,6 +31,8 @@ namespace Protogame
 
         void Send<T>(MxDispatcher dispatcher, MxClientGroup target, T message, bool reliable = false);
 
+        void Send(MxDispatcher dispatcher, MxClientGroup target, object message, bool reliable = false);
+
         IEnumerable<INetworkFrame> GetRecentFrames();
 
         void LogSynchronisationEvent(string log);

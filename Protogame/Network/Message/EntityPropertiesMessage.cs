@@ -1,4 +1,6 @@
-﻿using ProtoBuf;
+﻿// ReSharper disable CheckNamespace
+
+using ProtoBuf;
 
 namespace Protogame
 {
@@ -35,6 +37,8 @@ namespace Protogame
         [ProtoMember(13)] public bool IsClientMessage;
 
         [ProtoMember(14)] public int MessageOrder;
+
+        [ProtoMember(15)] public int PredictionAcknowledgementID;
 
         public const int PropertyTypeNone = 0;
 

@@ -18,6 +18,20 @@ namespace Protogame
         void Synchronise<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory);
 
         /// <summary>
+        /// Synchronises a predicted network property to clients and servers.  In the case of servers, this means that the
+        /// value of this property will ALWAYS be sent if an incoming prediction message is acknowledged, so that clients can
+        /// accurately replay events.
+        /// </summary>
+        /// <typeparam name="T">The type of the property.</typeparam>
+        /// <param name="name">The name of the network property.</param>
+        /// <param name="frameInterval">The interval of frames at which this property will be synchronised.  Smaller values lead to higher network traffic.</param>
+        /// <param name="currentValue">The current value of the property.</param>
+        /// <param name="setValue">The action which sets the property based on the value.</param>
+        /// <param name="timeMachineHistory">The number of frames of history to store in a time machine, or null if no time machine should be used.</param>
+        void SynchronisePredicted<T>(string name, int frameInterval, T currentValue, Action<T> setValue,
+            int? timeMachineHistory);
+
+        /// <summary>
         /// Synchronises a network property ONLY to the client which owns the entity.  This can be used to synchronise
         /// private data that only the owning client should know about, as well as send an affirmation that the client
         /// owns the entity using a call such as:
