@@ -9,10 +9,17 @@ Protogame is one of the few engines for MonoGame that has built-in support for t
 
 ![Minute of Mayhem Screenshot](https://cloud.githubusercontent.com/assets/504826/18222411/7caee5b0-71da-11e6-9c77-08fe27a12360.png)
 
-Documentation
-----------------
+Getting Started & Documentation
+---------------------------------------
 
-Documentation for Protogame is available on [Read the Docs](https://protogame.readthedocs.org/en/latest/).
+To get started with Protogame, check out the tutorials and walkthroughs:
+
+* [Creating your first game](https://protogame.readthedocs.io/en/latest/walkthrough/your_first_game.html)
+* [Rendering textures](https://protogame.readthedocs.io/en/latest/walkthrough/rendering_textures.html)
+* [Add a player](https://protogame.readthedocs.io/en/latest/walkthrough/add_a_player.html)
+* [Handling input](https://protogame.readthedocs.io/en/latest/walkthrough/handling_input.html)
+
+Extensive documentation for Protogame is available on [Read the Docs](https://protogame.readthedocs.org/en/latest/).
 
 Supported Platforms
 --------------------
