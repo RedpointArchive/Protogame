@@ -31,11 +31,6 @@ namespace Protogame
         private bool _serverOnly;
         private bool _enabled;
 
-        private List<IEntityPredictMessage> _predictionMessagesToSend;
-        private InputPrediction _inputPrediction;
-        private int _serverLastInputAcknowledged;
-        private int _serverLastInputAcknowledgedSent = -100;
-
         public NetworkSynchronisationComponent(
             IConsoleHandle consoleHandle,
             INetworkEngine networkEngine,
@@ -53,9 +48,6 @@ namespace Protogame
             _synchronisedData = new Dictionary<string, SynchronisedData>();
             _synchronisedDataToTransmit = new List<SynchronisedData>();
 
-            _inputPrediction = new InputPrediction();
-            _predictionMessagesToSend = new List<IEntityPredictMessage>();
-            
             _enabled = true;
         }
         
@@ -94,24 +86,6 @@ namespace Protogame
         /// </summary>
         public int? NetworkID => _uniqueIdentifierForEntity;
 
-        public void EnqueuePredictedOperation<T>(Action<T> clientOperation, T serverMessage) where T : IEntityPredictMessage
-        {
-            if (_uniqueIdentifierForEntity == null)
-            {
-                _consoleHandle.LogError("Attempted to enqueue predicted operation when entity has no unique identifier.");
-                return;
-            }
-
-            if (ClientAuthoritiveMode == ClientAuthoritiveMode.ReplayInputs)
-            {
-                var id = _inputPrediction.Predict(() => clientOperation(serverMessage));
-                serverMessage.EntityID = _uniqueIdentifierForEntity.Value;
-                serverMessage.PredictionID = id;
-
-                _predictionMessagesToSend.Add(serverMessage);
-            }
-        }
-
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
             if (!_enabled || _serverOnly)
@@ -148,55 +122,12 @@ namespace Protogame
                         PrepareAndTransmitSynchronisation(entity, _localTick, true, ClientAuthoritiveMode);
                         break;
                     case ClientAuthoritiveMode.ReplayInputs:
-                        TransmitPredictionMessages(entity, _predictionMessagesToSend);
-                        ReplayFromAckedMessage(entity);
-                        break;
+                        throw new NotSupportedException("Replaying inputs provided by clients is not yet supported.");
                     default:
                         throw new InvalidOperationException("Unknown client authoritivity mode: " + ClientAuthoritiveMode);
                 }
+
             }
-        }
-
-        private void ReplayFromAckedMessage(ComponentizedEntity entity)
-        {
-            // Reset the values.
-            foreach (var syncData in _synchronisedData)
-            {
-                if (syncData.Value.LastValueFromServer != null)
-                {
-                    syncData.Value.SetValueDelegate(syncData.Value.LastValueFromServer);
-                }
-            }
-
-            // Replay from the last acked message.
-            _inputPrediction.Replay();
-        }
-
-        private void TransmitPredictionMessages(ComponentizedEntity entity, List<IEntityPredictMessage> predictionMessagesToSend)
-        {
-            if (predictionMessagesToSend.Count == 0)
-            {
-                return;
-            }
-
-            _consoleHandle.LogInfo("Sending prediction messages...");
-
-            foreach (var dispatcher in _networkEngine.CurrentDispatchers)
-            {
-                foreach (var group in dispatcher.ValidClientGroups)
-                {
-                    foreach (var message in predictionMessagesToSend)
-                    {
-                        _networkEngine.Send(
-                            dispatcher,
-                            group,
-                            (object)message,
-                            true);
-                    }
-                }
-            }
-
-            predictionMessagesToSend.Clear();
         }
 
         public void Update(ComponentizedEntity entity, IServerContext serverContext, IUpdateContext updateContext)
@@ -302,15 +233,6 @@ namespace Protogame
             }
 
             AssignMessageToSyncData(propertyMessage, _synchronisedData, server.Group);
-
-            // If we are in input replay mode, we must replay the inputs.
-            if (ClientAuthoritiveMode == ClientAuthoritiveMode.ReplayInputs)
-            {
-                _inputPrediction.Acknowledge(propertyMessage.PredictionAcknowledgementID);
-
-                ReplayFromAckedMessage(entity);
-            }
-
             return true;
         }
 
@@ -369,35 +291,9 @@ namespace Protogame
                         return true;
                     }
                 case ClientAuthoritiveMode.ReplayInputs:
-                    {
-                        // Check to see if the message is coming from a client that has authority.
-                        if (ClientOwnership != null && ClientOwnership != client.Group)
-                        {
-                            // We don't trust this message.
-                            return false;
-                        }
-
-                        // Read the entity predict message and prepare an acknowledgement for sending.
-                        var predictMessage = _networkMessageSerialization.Deserialize(payload) as IEntityPredictMessage;
-
-                        if (predictMessage == null || predictMessage.EntityID != _uniqueIdentifierForEntity.Value)
-                        {
-                            return false;
-                        }
-
-                        if (predictMessage.PredictionID <= _serverLastInputAcknowledged)
-                        {
-                            // Ignore this message, it's too old.  Consume it so that other parts of the engine
-                            // don't use it when it matches other criteria.
-                            return true;
-                        }
-
-                        // Update the last input acknowledged, and allow the message to propagate through the rest of
-                        // the engine (where it will be picked up by the input controller on the server that will actually
-                        // handle the predicted event).
-                        _serverLastInputAcknowledged = predictMessage.PredictionID;
-                        return false;
-                    }
+                    // We don't implement this yet, but we don't want to allow client packets to cause
+                    // a server error, so silently consume it.
+                    return false;
             }
 
             return false;
@@ -432,13 +328,6 @@ namespace Protogame
             NonOwningClients
         };
 
-        private enum SynchroniseType
-        {
-            Standard,
-
-            Predicted
-        }
-
         public void Synchronise<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
         {
             if (!_enabled)
@@ -446,17 +335,7 @@ namespace Protogame
                 return;
             }
 
-            InternalSynchronise(SynchroniseTargets.AllClients, name, frameInterval, currentValue, setValue, timeMachineHistory, SynchroniseType.Standard);
-        }
-
-        public void SynchronisePredicted<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
-        {
-            if (!_enabled)
-            {
-                return;
-            }
-
-            InternalSynchronise(SynchroniseTargets.AllClients, name, frameInterval, currentValue, setValue, timeMachineHistory, SynchroniseType.Predicted);
+            InternalSynchronise(SynchroniseTargets.AllClients, name, frameInterval, currentValue, setValue, timeMachineHistory);
         }
 
         public void SynchroniseToOwner<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
@@ -466,7 +345,7 @@ namespace Protogame
                 return;
             }
 
-            InternalSynchronise(SynchroniseTargets.OwningClient, name, frameInterval, currentValue, setValue, timeMachineHistory, SynchroniseType.Standard);
+            InternalSynchronise(SynchroniseTargets.OwningClient, name, frameInterval, currentValue, setValue, timeMachineHistory);
         }
 
         public void SynchroniseToNonOwner<T>(string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
@@ -476,10 +355,10 @@ namespace Protogame
                 return;
             }
 
-            InternalSynchronise(SynchroniseTargets.NonOwningClients, name, frameInterval, currentValue, setValue, timeMachineHistory, SynchroniseType.Standard);
+            InternalSynchronise(SynchroniseTargets.NonOwningClients, name, frameInterval, currentValue, setValue, timeMachineHistory);
         }
 
-        private void InternalSynchronise<T>(SynchroniseTargets targets, string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory, SynchroniseType synchroniseType)
+        private void InternalSynchronise<T>(SynchroniseTargets targets, string name, int frameInterval, T currentValue, Action<T> setValue, int? timeMachineHistory)
         {
             // TODO: Make this value more unique, and synchronised across the network (so we can have multiple components of the same type).
             var context = "unknown";
@@ -523,7 +402,6 @@ namespace Protogame
             _synchronisedData[contextFullName].LastValue = _synchronisedData[contextFullName].CurrentValue;
             _synchronisedData[contextFullName].CurrentValue = convertedValue;
             _synchronisedData[contextFullName].SynchronisationTargets = targets;
-            _synchronisedData[contextFullName].SynchronisationType = synchroniseType;
 
             // TODO: This causes a memory allocation.
             _synchronisedData[contextFullName].SetValueDelegate = x =>
@@ -605,8 +483,6 @@ namespace Protogame
             public SynchroniseTargets SynchronisationTargets;
 
             public int LastMessageOrder = -1;
-
-            public SynchroniseType SynchronisationType;
         }
 
         #region Synchronisation Preperation
@@ -734,20 +610,6 @@ namespace Protogame
                                         }
                                     }
                                 }
-                                
-                                if (!_isRunningOnClient && ClientAuthoritiveMode == ClientAuthoritiveMode.ReplayInputs)
-                                {
-                                    if (_serverLastInputAcknowledgedSent != _serverLastInputAcknowledged)
-                                    {
-                                        if (data.SynchronisationType == SynchroniseType.Predicted)
-                                        {
-                                            // This data will be rewound by the client when we increment our
-                                            // acknowledged prediction, so we MUST include it now so that it can
-                                            // be replayed properly.
-                                            needsSync = true;
-                                        }
-                                    }
-                                }
 
                                 if (needsSync)
                                 {
@@ -765,11 +627,6 @@ namespace Protogame
                                 message.PropertyTypes = new int[_synchronisedDataToTransmit.Count];
                                 message.IsClientMessage = isFromClient;
                                 message.MessageOrder = _messageOrder++;
-                                if (!_isRunningOnClient && ClientAuthoritiveMode == ClientAuthoritiveMode.ReplayInputs)
-                                {
-                                    message.PredictionAcknowledgementID = _serverLastInputAcknowledged;
-                                    _serverLastInputAcknowledgedSent = _serverLastInputAcknowledged;
-                                }
 
                                 bool reliable;
                                 AssignSyncDataToMessage(_synchronisedDataToTransmit, message, currentTick, group, out reliable);

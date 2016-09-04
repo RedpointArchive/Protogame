@@ -234,29 +234,6 @@ namespace Protogame
             _currentNetworkFrame.MessagesSentByMessageType[type]++;
         }
 
-        public void Send(MxDispatcher dispatcher, MxClientGroup target, object message, bool reliable = false)
-        {
-            if (target.RealtimeClients.Count == 0)
-            {
-                throw new InvalidOperationException(
-                    "Attempted to send message to group " + target +
-                    ", but it has no clients.");
-            }
-
-            var serialized = _networkMessageSerialization.Serialize(message);
-            dispatcher.Send(target, serialized, reliable);
-
-            var type = message.GetType();
-            if (!_currentNetworkFrame.BytesSentByMessageType.ContainsKey(type))
-            {
-                _currentNetworkFrame.BytesSentByMessageType[type] = 0;
-                _currentNetworkFrame.MessagesSentByMessageType[type] = 0;
-            }
-
-            _currentNetworkFrame.BytesSentByMessageType[type] += serialized.Length;
-            _currentNetworkFrame.MessagesSentByMessageType[type]++;
-        }
-
         public IEnumerable<INetworkFrame> GetRecentFrames()
         {
             return _recentNetworkFrames.AsReadOnly();

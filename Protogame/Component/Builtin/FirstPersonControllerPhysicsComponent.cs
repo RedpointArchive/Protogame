@@ -8,18 +8,15 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class FirstPersonControllerPhysicsComponent : IUpdatableComponent, IRenderableComponent, IEnabledComponent, IFirstPersonControllerComponent
+    public class FirstPersonControllerPhysicsComponent : IUpdatableComponent, IRenderableComponent, IEnabledComponent
     {
         private readonly IPhysicsEngine _physicsEngine;
         private readonly IDebugRenderer _debugRenderer;
         private readonly IPhysicalComponent _physicalComponent;
 
-        private bool _didSetVelocityLastFrame = false;
-
         private JitterWorld _jitterWorld;
         private PhysicsControllerConstraint _physicsControllerConstraint;
         private RigidBody _rigidBody;
-        private Vector3 _targetVelocity;
 
         public FirstPersonControllerPhysicsComponent(
             IPhysicsEngine physicsEngine,
@@ -30,7 +27,7 @@ namespace Protogame
             _debugRenderer = debugRenderer;
             _physicalComponent = physicalComponent;
 
-            _targetVelocity = Vector3.Zero;
+            TargetVelocity = Vector3.Zero;
             TryJump = false;
             JumpVelocity = 0.5f;
             Stiffness = 0.02f;
@@ -43,7 +40,7 @@ namespace Protogame
         /// <summary>
         /// The target velocity that this controller should attempt to achieve.
         /// </summary>
-        public Vector3 TargetVelocity => _targetVelocity;
+        public Vector3 TargetVelocity { get; set; }
 
         /// <summary>
         /// Whether the controller should attempt to jump.
@@ -53,7 +50,10 @@ namespace Protogame
         /// <summary>
         /// The rigid body that the controller is currently walking on, or null.
         /// </summary>
-        public RigidBody BodyWalkingOn => _physicsControllerConstraint?.BodyWalkingOn;
+        public RigidBody BodyWalkingOn
+        {
+            get { return _physicsControllerConstraint?.BodyWalkingOn; }
+        }
 
         /// <summary>
         /// The jump velocity to apply when jumping.
@@ -67,25 +67,12 @@ namespace Protogame
         public float Stiffness { get; set; }
 
         /// <summary>
-        /// The movement speed.
-        /// </summary>
-        public float MovementSpeed { get; set; }
-
-        public void MoveInDirection(Vector3 direction)
-        {
-            if (direction.Length() > 0)
-            {
-                Vector3.Normalize(direction);
-            }
-
-            _targetVelocity = direction*MovementSpeed;
-            _didSetVelocityLastFrame = true;
-        }
-
-        /// <summary>
         /// Whether the controller is currently touching the floor.
         /// </summary>
-        public bool OnFloor => _physicsControllerConstraint?.OnFloor ?? false;
+        public bool OnFloor
+        {
+            get { return _physicsControllerConstraint?.OnFloor ?? false; }
+        }
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
@@ -93,13 +80,6 @@ namespace Protogame
             {
                 return;
             }
-
-            if (!_didSetVelocityLastFrame)
-            {
-                _targetVelocity = Vector3.Zero;
-            }
-
-            _didSetVelocityLastFrame = false;
 
             if (_jitterWorld != _physicsEngine.GetInternalPhysicsWorld())
             {

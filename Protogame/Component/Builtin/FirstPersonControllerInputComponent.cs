@@ -7,20 +7,23 @@ namespace Protogame
     public class FirstPersonControllerInputComponent : IEventfulComponent, IUpdatableComponent, IEnabledComponent
     {
         private readonly FirstPersonCameraComponent _firstPersonCameraComponent;
-        private readonly IFirstPersonControllerComponent _firstPersonControllerComponent;
+        private readonly FirstPersonControllerPhysicsComponent _firstPersonControllerPhysicsComponent;
+
+        private bool _didSetVelocityLastFrame = false;
 
         private float _cumulativeMoveX = 0;
         private float _cumulativeMoveZ = 0;
 
         public FirstPersonControllerInputComponent(
             [FromParent, RequireExisting] FirstPersonCameraComponent firstPersonCameraComponent,
-            [FromParent, RequireExisting] IFirstPersonControllerComponent firstPersonControllerComponent)
+            [FromParent, RequireExisting] FirstPersonControllerPhysicsComponent firstPersonControllerPhysicsComponent)
         {
             _firstPersonCameraComponent = firstPersonCameraComponent;
-            _firstPersonControllerComponent = firstPersonControllerComponent;
+            _firstPersonControllerPhysicsComponent = firstPersonControllerPhysicsComponent;
 
             ThumbstickLookSensitivity = 1/100f;
-            ThumbstickMoveSensitivity = 1f;
+            ThumbstickMoveSensitivity = 5f;
+            MovementSpeed = 1f;
             MouseLock = true;
 
             Enabled = true;
@@ -29,6 +32,8 @@ namespace Protogame
         public float ThumbstickLookSensitivity { get; set; }
 
         public float ThumbstickMoveSensitivity { get; set; }
+
+        public float MovementSpeed { get; set; }
 
         public bool MouseLock { get; set; }
 
@@ -41,6 +46,12 @@ namespace Protogame
                 return;
             }
 
+            if (!_didSetVelocityLastFrame)
+            {
+                _firstPersonControllerPhysicsComponent.TargetVelocity = Vector3.Zero;
+            }
+
+            _didSetVelocityLastFrame = false;
             _cumulativeMoveX = 0;
             _cumulativeMoveZ = 0;
         }
@@ -69,14 +80,15 @@ namespace Protogame
 
                 var lookAt = _firstPersonCameraComponent.Transform.LocalMatrix;
                 var relativeMovementVector = new Vector3(
-                    gamepadEvent.GamePadState.ThumbSticks.Left.X*ThumbstickMoveSensitivity,
+                    gamepadEvent.GamePadState.ThumbSticks.Left.X*ThumbstickMoveSensitivity* MovementSpeed,
                     0f,
-                    -gamepadEvent.GamePadState.ThumbSticks.Left.Y*ThumbstickMoveSensitivity);
+                    -gamepadEvent.GamePadState.ThumbSticks.Left.Y*ThumbstickMoveSensitivity * MovementSpeed);
                 
                 var absoluteMovementVector =
                     _firstPersonCameraComponent.ComputeWorldSpaceVectorFromLocalSpace(relativeMovementVector);
 
-                _firstPersonControllerComponent.MoveInDirection(absoluteMovementVector);
+                _firstPersonControllerPhysicsComponent.TargetVelocity = absoluteMovementVector;
+                _didSetVelocityLastFrame = true;
 
                 return true;
             }
@@ -100,6 +112,8 @@ namespace Protogame
             if (keyHeldEvent != null)
             {
                 var didConsume = false;
+                var moveX = 0;
+                var moveZ = 0;
 
                 if (keyHeldEvent.Key == Keys.A)
                 {
@@ -123,13 +137,14 @@ namespace Protogame
                 }
 
                 var relativeMovementVector = new Vector3(
-                    _cumulativeMoveX * ThumbstickMoveSensitivity,
+                    _cumulativeMoveX * ThumbstickMoveSensitivity * MovementSpeed,
                     0f,
-                    -_cumulativeMoveZ * ThumbstickMoveSensitivity);
+                    -_cumulativeMoveZ * ThumbstickMoveSensitivity * MovementSpeed);
                 var absoluteMovementVector =
                     _firstPersonCameraComponent.ComputeWorldSpaceVectorFromLocalSpace(relativeMovementVector);
 
-                _firstPersonControllerComponent.MoveInDirection(absoluteMovementVector);
+                _firstPersonControllerPhysicsComponent.TargetVelocity = absoluteMovementVector;
+                _didSetVelocityLastFrame = true;
 
                 return didConsume;
             }
