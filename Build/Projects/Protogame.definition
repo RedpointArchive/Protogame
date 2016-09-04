@@ -211,10 +211,8 @@
     <Compile Include="Component\Builtin\AbsoluteMatrixComponent.cs" />
     <Compile Include="Component\Builtin\FirstPersonCameraComponent.cs" />
     <Compile Include="Component\Builtin\FirstPersonControllerInputComponent.cs" />
-    <Compile Include="Component\Builtin\FirstPersonControllerNetworkablePhysicsComponent.cs" />
     <Compile Include="Component\Builtin\FirstPersonControllerPhysicsComponent.cs" />
     <Compile Include="Component\Builtin\FlyAroundInputComponent.cs" />
-    <Compile Include="Component\Builtin\IFirstPersonControllerComponent.cs" />
     <Compile Include="Component\Builtin\NetworkSynchronisationComponent.cs" />
     <Compile Include="Component\Builtin\NetworkSynchronisationComponentGenerated.cs">
       <AutoGen>True</AutoGen>
@@ -597,11 +595,8 @@
     <Compile Include="Network\LowLevel\MxUtility.cs" />
     <Compile Include="Network\LowLevel\NetworkMessageAttribute.cs" />
     <Compile Include="Network\LowLevel\NetworkTagAttribute.cs" />
-    <Compile Include="Network\Message\EntityAcknowledgeMessage.cs" />
     <Compile Include="Network\Message\EntityCreateMessage.cs" />
-    <Compile Include="Network\Message\EntityPredictMessage.cs" />
     <Compile Include="Network\Message\EntityPropertiesMessage.cs" />
-    <Compile Include="Network\Message\InputPredictMessage.cs" />
     <Compile Include="Network\NetworkClientConnectedEvent.cs" />
     <Compile Include="Network\NetworkClientDisconnectedEvent.cs" />
     <Compile Include="Network\NetworkEngineHook.cs" />

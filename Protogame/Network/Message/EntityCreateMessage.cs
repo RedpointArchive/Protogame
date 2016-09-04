@@ -1,6 +1,4 @@
-﻿// ReSharper disable CheckNamespace
-
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace Protogame
 {

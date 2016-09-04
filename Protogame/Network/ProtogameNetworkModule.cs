@@ -18,8 +18,6 @@ namespace Protogame
 
             kernel.Bind<INetworkMessage>().To<EntityCreateMessage>().InSingletonScope();
             kernel.Bind<INetworkMessage>().To<EntityPropertiesMessage>().InSingletonScope();
-            kernel.Bind<INetworkMessage>().To<EntityAcknowledgeMessage>().InSingletonScope();
-            kernel.Bind<INetworkMessage>().To<InputPredictMessage>().InSingletonScope();
         }
     }
 }
