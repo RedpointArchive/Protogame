@@ -651,7 +651,9 @@
     <Compile Include="Profiling\DefaultProfilerRenderPass.cs" />
     <Compile Include="Profiling\FileProfiler.cs" />
     <Compile Include="Profiling\FileProfilerHandle.cs" />
+    <Compile Include="Profiling\GCMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\GraphicsMetricsProfilerVisualiser.cs" />
+    <Compile Include="Profiling\IGCMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\IGraphicsMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\IKernelMetricsProfilerVisualiser.cs" />
     <Compile Include="Profiling\IMemoryProfiler.cs" />
