@@ -16,5 +16,10 @@
         /// The Canvas objects.
         /// </value>
         IEnumerable<KeyValuePair<Canvas, Rectangle>> Canvases { get; }
+
+        /// <summary>
+        /// Gets whether or not the canvases on the object are enabled.
+        /// </summary>
+        bool CanvasesEnabled { get; }
     }
 }

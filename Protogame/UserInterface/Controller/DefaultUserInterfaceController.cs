@@ -25,6 +25,7 @@ namespace Protogame
         private CanvasEntity _canvasEntity;
         private Dictionary<string, XmlNode> _availableFragments;
         private HashSet<IContainer> _firedCreatedEventsForContainers;
+        private bool _enabled;
 
         public DefaultUserInterfaceController(IKernel kernel, IHierarchy hierarchy, INode node, UserInterfaceAsset userInterfaceAsset)
         {
@@ -36,6 +37,7 @@ namespace Protogame
             _containerBehaviours = new Dictionary<object, string[]>();
             _availableFragments = new Dictionary<string, XmlNode>();
             _firedCreatedEventsForContainers = new HashSet<IContainer>();
+            _enabled = true;
         }
         
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
@@ -120,6 +122,7 @@ namespace Protogame
                         {
                             _canvasEntity = _kernel.Get<CanvasEntity>(_hierarchy.Lookup(gameContext.World));
                             _canvasEntity.Canvas = (Canvas) root;
+                            _canvasEntity.CanvasesEnabled = Enabled;
                         }
                     }
                     else
@@ -202,6 +205,20 @@ namespace Protogame
             }
 
             _registeredBehaviours[name][@event] = (o, t, g, u) => { callback((TContainerType) o, t, g, u); };
+        }
+
+        public bool Enabled
+        {
+            get { return _enabled; }
+            set
+            {
+                _enabled = value;
+
+                if (_loadedUserInterface)
+                {
+                    _canvasEntity.CanvasesEnabled = value;
+                }
+            }
         }
 
         public void Dispose()

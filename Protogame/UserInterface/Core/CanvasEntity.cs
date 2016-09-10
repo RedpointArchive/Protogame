@@ -15,6 +15,7 @@ namespace Protogame
         {
             _skinLayout = skinLayout;
             _skinDelegator = skinDelegator;
+            CanvasesEnabled = true;
             Windows = new List<Window>();
         }
         
@@ -24,6 +25,11 @@ namespace Protogame
         
         public override void Render(IGameContext gameContext, IRenderContext renderContext)
         {
+            if (!CanvasesEnabled)
+            {
+                return;
+            }
+
             if (renderContext.IsCurrentRenderPass<ICanvasRenderPass>())
             {
                 var bounds = gameContext.Window.ClientBounds;
@@ -45,6 +51,11 @@ namespace Protogame
         
         public override void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
+            if (!CanvasesEnabled)
+            {
+                return;
+            }
+
             Width = gameContext.Window.ClientBounds.Width;
             Height = gameContext.Window.ClientBounds.Height;
 
@@ -82,5 +93,7 @@ namespace Protogame
                 return new[] { new KeyValuePair<Canvas, Rectangle>(Canvas, _lastRenderBounds) };
             }
         }
+
+        public bool CanvasesEnabled { get; set; }
     }
 }

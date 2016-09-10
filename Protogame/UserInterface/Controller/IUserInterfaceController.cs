@@ -9,5 +9,7 @@ namespace Protogame
         IContainer LoadUserFragment(string name);
 
         void RegisterBehaviour<TContainerType>(string name, UserInterfaceBehaviourEvent @event, UserInterfaceBehaviourHandler<TContainerType> callback);
+
+        bool Enabled { get; set; }
     }
 }

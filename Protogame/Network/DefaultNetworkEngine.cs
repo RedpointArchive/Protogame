@@ -20,6 +20,7 @@ namespace Protogame
         private readonly Dictionary<IServerWorld, bool> _serverDispatcherChanged;
 
         private readonly MxDispatcher[] _currentDispatchers;
+        private static readonly MxDispatcher[] _emptyDispatchers = new MxDispatcher[0];
 
         private readonly Dictionary<int, WeakReference> _objectReferences;
         private int _clientRenderDelayTicks;
@@ -159,7 +160,20 @@ namespace Protogame
             _currentNetworkFrame.MessagesReceivedByMessageType[type]++;
         }
 
-        public MxDispatcher[] CurrentDispatchers => _currentDispatchers;
+        public MxDispatcher[] CurrentDispatchers
+        {
+            get
+            {
+                if (_currentDispatchers[0] == null)
+                {
+                    return _emptyDispatchers;
+                }
+                else
+                {
+                    return _currentDispatchers;
+                }
+            }
+        }
 
         public IEnumerable<KeyValuePair<int, object>> ListObjectsByNetworkId()
         {

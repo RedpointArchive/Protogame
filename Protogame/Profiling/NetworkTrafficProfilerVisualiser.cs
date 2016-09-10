@@ -85,7 +85,7 @@ namespace Protogame
 
             public int Height
             {
-                get { return 100; }
+                get { return 56; }
             }
 
             public NetworkSampler(I2DRenderUtilities renderUtilities, FontAsset defaultFont, string type)
@@ -119,7 +119,7 @@ namespace Protogame
                 var maxCounts = _countsOverTime.DefaultIfEmpty(0).Max();
                 
                 RenderHeader(renderContext, rectangle, Type, 0, _bytesOverTime.DefaultIfEmpty(0).Last(), maxBytes, "b");
-                RenderHeader(renderContext, rectangle, string.Empty, 20, _countsOverTime.DefaultIfEmpty(0).Last(), maxCounts, "#");
+                RenderHeader(renderContext, rectangle, string.Empty, 16, _countsOverTime.DefaultIfEmpty(0).Last(), maxCounts, "#");
 
                 if (maxBytes > 0)
                 {
@@ -128,10 +128,10 @@ namespace Protogame
                     {
                         _renderUtilities.RenderLine(
                             renderContext,
-                            new Vector2(rectangle.X + rectangle.Width - a - 1, rectangle.Y + 100),
+                            new Vector2(rectangle.X + rectangle.Width - a - 1, rectangle.Y + 56),
                             new Vector2(rectangle.X + rectangle.Width - a - 1,
-                                rectangle.Y + 100 - (int)((_bytesOverTime[i] / (float)maxBytes) * 60)),
-                            Color.Cyan);
+                                rectangle.Y + 56 - (int)((_bytesOverTime[i] / (float)maxBytes) * 20)),
+                            _bytesOverTime[i] > 512 ? Color.Red : Color.Cyan);
                         a++;
                     }
                 }

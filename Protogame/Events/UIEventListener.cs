@@ -40,7 +40,7 @@ namespace Protogame
         public bool Handle(IGameContext context, IEventEngine<IGameContext> eventEngine, Event @event)
         {
             var worldHasCanvases = context.World as IHasCanvases;
-            if (worldHasCanvases != null)
+            if (worldHasCanvases != null && worldHasCanvases.CanvasesEnabled)
             {
                 foreach (var kv in worldHasCanvases.Canvases)
                 {
@@ -51,7 +51,7 @@ namespace Protogame
                 }
             }
 
-            foreach (var kv in context.World.GetEntitiesForWorld(context.Hierarchy).OfType<IHasCanvases>().SelectMany(x => x.Canvases))
+            foreach (var kv in context.World.GetEntitiesForWorld(context.Hierarchy).OfType<IHasCanvases>().Where(x => x.CanvasesEnabled).SelectMany(x => x.Canvases))
             {
                 if (kv.Key.HandleEvent(_skinLayout, kv.Value, context, @event))
                 {
