@@ -196,6 +196,14 @@
     <Compile Include="Assets\Variable\VariableAsset.cs" />
     <Compile Include="Assets\Variable\VariableAssetLoader.cs" />
     <Compile Include="Assets\Variable\VariableAssetSaver.cs" />
+    <Compile Include="Batching\BatchedControlEntity.cs" />
+    <Compile Include="Batching\BatchingOptions.cs" />
+    <Compile Include="Batching\DefaultStaticBatching.cs" />
+    <Compile Include="Batching\IBatchedControlFactory.cs" />
+    <Compile Include="Batching\IBatchingOptions.cs" />
+    <Compile Include="Batching\IStaticBatching.cs" />
+    <Compile Include="Batching\PhysicalBatchedStaticCompoundComponent.cs" />
+    <Compile Include="Batching\ProtogameBatchingModule.cs" />
     <Compile Include="Caching\ProtogameCachingIoCModule.cs" />
     <Compile Include="Camera\FirstPersonCamera.cs" />
     <Compile Include="Camera\IFirstPersonCamera.cs" />

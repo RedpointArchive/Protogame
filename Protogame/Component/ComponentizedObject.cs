@@ -74,7 +74,7 @@ namespace Protogame
 
             if (_usesHierarchy)
             {
-                _node.ChildrenChanged += (sender, args) => { UpdateCache(); };
+                _node.ChildrenChanged += (sender, args) => { UpdateCache(); OnComponentsChanged(); };
                 _node.DescendantsChanged += (sender, args) => { UpdateEnabledInterfacesCache(); };
             }
 

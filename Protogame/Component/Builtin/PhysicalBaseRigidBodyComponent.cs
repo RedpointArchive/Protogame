@@ -24,6 +24,8 @@ namespace Protogame
         private bool _pureCollider;
 
         private PhysicsTarget _target;
+        private BatchedControlEntity _batchedControlEntity;
+        private bool _static;
 
         internal PhysicalBaseRigidBodyComponent(INode node, IPhysicsEngine physicsEngine)
         {
@@ -90,8 +92,15 @@ namespace Protogame
 
         public bool Static
         {
-            get { return _rigidBody.IsStatic; }
-            set { _rigidBody.IsStatic = value; }
+            get { return _static; }
+            set
+            {
+                _static = value;
+                if (_rigidBody != null)
+                {
+                    _rigidBody.IsStatic = value;
+                }
+            }
         }
 
         public float Mass
@@ -143,6 +152,7 @@ namespace Protogame
             if (_rigidBody == null)
             {
                 _rigidBody = new RigidBody(_shape);
+                _rigidBody.IsStatic = _static;
             }
             else
             {
@@ -193,7 +203,7 @@ namespace Protogame
 
         private void Update()
         {
-            if (_didUpdateSync)
+            if (_didUpdateSync || _batchedControlEntity != null)
             {
                 return;
             }
@@ -243,6 +253,11 @@ namespace Protogame
                                 throw new InvalidOperationException();
                         }
 
+                        if (StaticAndImmovable && !Static)
+                        {
+                            throw new InvalidOperationException("Physics component is marked StaticAndImmovable, but Static is not true.");
+                        }
+
                         _physicsEngine.RegisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, targetTransform, StaticAndImmovable);
                         _addedRigidBody = true;
                     }
@@ -276,5 +291,32 @@ namespace Protogame
         public ITransform Transform { get; }
 
         public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
+
+        public void SetBatchedEntity(BatchedControlEntity entity)
+        {
+            if (!StaticAndImmovable)
+            {
+                throw new InvalidOperationException(
+                    "Attempted to set associated batched control entity for physics component that is not static and immovable!");
+            }
+
+            _batchedControlEntity = entity;
+            
+            IHasTransform targetTransform;
+            switch (_target)
+            {
+                case PhysicsTarget.ComponentOwner:
+                    targetTransform = _node.Parent?.UntypedValue as IHasTransform;
+                    break;
+                case PhysicsTarget.Component:
+                    targetTransform = this;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            _physicsEngine.UnregisterRigidBodyForHasMatrixInCurrentWorld(_rigidBody, targetTransform);
+            _addedRigidBody = false;
+        }
     }
 }

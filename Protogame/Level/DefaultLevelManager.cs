@@ -54,7 +54,7 @@ namespace Protogame
                         // Remove it from the hierarchy if it's already there.
                         _kernel.Hierarchy.RemoveNode(existingNode);
                     }
-                    _kernel.Hierarchy.AddChildNode(node, _kernel.Hierarchy.CreateNodeForObject(entity));
+                    _kernel.Hierarchy.AddChildNode(node, existingNode);
                 }
             }
         }
@@ -105,7 +105,7 @@ namespace Protogame
                         // Remove it from the hierarchy if it's already there.
                         _kernel.Hierarchy.RemoveNode(existingNode);
                     }
-                    _kernel.Hierarchy.AddChildNode(worldNode, _kernel.Hierarchy.CreateNodeForObject(entity));
+                    _kernel.Hierarchy.AddChildNode(worldNode, existingNode);
                 }
             }
         }

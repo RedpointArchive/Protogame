@@ -67,7 +67,9 @@ namespace Protogame
         
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
-            if (State == ConsoleState.Closed)
+            if (State == ConsoleState.Closed ||
+                State == ConsoleState.OpenNoInput ||
+                State == ConsoleState.FullOpenNoInput)
             {
                 return;
             }
