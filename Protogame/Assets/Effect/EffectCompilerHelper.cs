@@ -1,11 +1,15 @@
 ﻿using System;
+
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
+#endif
 
 namespace Protogame
 {
     public static class EffectCompilerHelper
     {
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
         public static CompiledEffectContent Compile(EffectContent output, string tempOutputPath, TargetPlatform platform, bool isDebug, string defines)
         {
             var processor = new EffectProcessor();
@@ -18,6 +22,7 @@ namespace Protogame
                                 (isDebug ? "CONFIGURATION_DEBUG" : "CONFIGURATION_RELEASE");
             return processor.Process(output, context);
         }
+#endif
 
         private static string GetPlatformDefineForEffect(TargetPlatform platform)
         {

@@ -372,7 +372,7 @@ namespace Protogame
             // can, and dispatch them to the correct MxClient.
             while (true)
             {
-                var receive = (IPEndPoint)null;
+                var receive = new IPEndPoint(IPAddress.Loopback, IPEndPoint.MinPort);
                 var packet = ReceiveNonBlocking(_udpClient, ref receive);
                 if (packet == null)
                 {

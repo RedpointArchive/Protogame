@@ -1,26 +1,25 @@
-using System.Diagnostics;
-using Assimp.Configs;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-
 #if PLATFORM_LINUX || PLATFORM_MACOS || PLATFORM_WINDOWS
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+#if PLATFORM_LINUX
+using System.Reflection;
+#endif
+using Assimp;
+using Assimp.Configs;
+#if PLATFORM_LINUX
+using Assimp.Unmanaged;
+#endif
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
+using Quaternion = Microsoft.Xna.Framework.Quaternion;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 
 namespace Protogame
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-#if PLATFORM_LINUX
-    using System.Reflection;
-#endif
-    using Assimp;
-#if PLATFORM_LINUX
-    using Assimp.Unmanaged;
-#endif
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics.PackedVector;
-    using Quaternion = Microsoft.Xna.Framework.Quaternion;
-
     /// <summary>
     /// Reads a model file using AssImp and converts it to an <see cref="IModel"/>, which can be used
     /// at runtime for rendering, or serialized for storage as an asset.

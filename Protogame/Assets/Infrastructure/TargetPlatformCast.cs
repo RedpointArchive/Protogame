@@ -1,4 +1,4 @@
-﻿#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX
+﻿#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 
 using System;
 using MonoGamePlatform = Microsoft.Xna.Framework.Content.Pipeline.TargetPlatform;

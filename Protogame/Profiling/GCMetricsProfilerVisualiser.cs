@@ -1,5 +1,7 @@
 ﻿using System;
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 using System.Diagnostics;
+#endif
 using Microsoft.Xna.Framework;
 
 namespace Protogame
@@ -9,9 +11,11 @@ namespace Protogame
         private readonly I2DRenderUtilities _renderUtilities;
         private readonly FontAsset _defaultFont;
 
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
         private readonly PerformanceCounter _gen0PerformanceCounter;
         private readonly PerformanceCounter _gen1PerformanceCounter;
         private readonly PerformanceCounter _gen2PerformanceCounter;
+#endif
 
         private const string CategoryName = "Process";
         private const string ProcessIdCounter = "ID Process";
@@ -27,6 +31,7 @@ namespace Protogame
             _renderUtilities = renderUtilities;
             _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
 
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             string instanceName;
             if (TryGetInstanceName(Process.GetCurrentProcess(), out instanceName))
             {
@@ -37,8 +42,10 @@ namespace Protogame
                 _gen2PerformanceCounter = new PerformanceCounter(".NET CLR Memory", "# Gen 2 Collections",
                     instanceName, true);
             }
+#endif
         }
 
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
         public static bool TryGetInstanceName(Process process, out string instanceName)
         {
             PerformanceCounterCategory processCategory = new PerformanceCounterCategory(CategoryName);
@@ -61,6 +68,7 @@ namespace Protogame
             instanceName = null;
             return false;
         }
+#endif
 
         public int GetHeight(int backBufferHeight)
         {
@@ -69,6 +77,7 @@ namespace Protogame
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, Rectangle rectangle)
         {
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             long gen0Value, gen1Value, gen2Value;
             if (_gen0PerformanceCounter == null)
             {
@@ -107,6 +116,7 @@ namespace Protogame
                 new Tuple<string, ulong>("gen1", (ulong) gen1Value),
                 new Tuple<string, ulong>("gen2", (ulong) gen2Value)
             };
+#endif
 
             _renderUtilities.RenderLine(
                 renderContext,
@@ -119,6 +129,7 @@ namespace Protogame
                 new Vector2(rectangle.X + 1, rectangle.Y + rectangle.Height - 1),
                 Color.Red);
 
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             for (var i = 0; i < metrics.Length; i++)
             {
                 var y = i / 4 * 20;
@@ -135,6 +146,13 @@ namespace Protogame
                     metrics[i].Item1 + ": " + metrics[i].Item2,
                     _defaultFont);
             }
+#else
+            _renderUtilities.RenderText(
+                renderContext,
+                new Vector2(rectangle.X + 5, rectangle.Y),
+                "GC stats not available",
+                _defaultFont);
+#endif
         }
     }
 }
