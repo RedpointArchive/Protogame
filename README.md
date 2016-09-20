@@ -34,6 +34,28 @@ Experimental support is also available for:
 
   * Android (via Xamarin)
   * Ouya (via Xamarin)
+  * iOS (via Xamarin)
+
+Build Status
+-------------
+
+Projects are built and tested against all supported and experimental platforms.
+
+|     | Status |
+| --- | ----- |
+| **Core Project** |  |
+| Protogame | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Protogame/master) |
+| **Supporting Projects** |  |
+| MonoGame | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/MonoGame/develop) |
+| Protoinject | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Protoinject/master) |
+| Prototest | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Prototest/master) |
+| Jitter (Physics) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Jitter/master) |
+| AStarPathFinder | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/AStarPathFinder/master) |
+| Cloo (OpenCL) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Cloo/master) |
+| Newtonsoft.Json | - |
+| protobuf-net | - |
+| NDesk.Options | - |
+| HiveMP | From NuGet |
 
 Features
 ----------
