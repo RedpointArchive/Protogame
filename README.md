@@ -5,7 +5,7 @@ _A powerful cross-platform game engine for C#_
 
 Protogame is a cross-platform game engine for C#, built on top of MonoGame.  It is highly modular and flexible, built on the ideal that you should only have to pull in dependencies for what you want to use.  Many parts of Protogame can be used either together or seperately, and you can use many of the APIs without adopting the core architecture.
 
-Protogame is one of the few engines for MonoGame that has built-in support for the development of 3D multiplayer games.
+Protogame is one of the only engines for MonoGame that has built-in support for the development of 3D multiplayer games.
 
 ![Minute of Mayhem Screenshot](https://cloud.githubusercontent.com/assets/504826/18222411/7caee5b0-71da-11e6-9c77-08fe27a12360.png)
 
@@ -44,18 +44,18 @@ Projects are built and tested against all supported and experimental platforms.
 |     | Status |
 | --- | ----- |
 | **Core Project** |  |
-| Protogame | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Protogame/master) |
+| [Protogame](https://protogame.org) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Protogame/master) |
 | **Supporting Projects** |  |
-| MonoGame | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/MonoGame/develop) |
-| Protoinject | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Protoinject/master) |
-| Prototest | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Prototest/master) |
-| Jitter (Physics) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Jitter/master) |
-| AStarPathFinder | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/AStarPathFinder/master) |
-| Cloo (OpenCL) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Cloo/master) |
-| Newtonsoft.Json | - |
-| protobuf-net | - |
-| NDesk.Options | - |
-| HiveMP | From NuGet |
+| [MonoGame](https://github.com/RedpointGames/MonoGame) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/MonoGame/develop) |
+| [Protoinject](https://github.com/RedpointGames/Protoinject) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Protoinject/master) |
+| [Prototest](https://github.com/RedpointGames/Prototest) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Prototest/master) |
+| [Jitter](https://github.com/RedpointGames/Jitter) (Physics) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Jitter/master) |
+| [AStarPathFinder](https://github.com/RedpointGames/AStarPathFinder) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/AStarPathFinder/master) |
+| [Cloo](https://github.com/RedpointGames/Cloo) (OpenCL) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Cloo/master) |
+| [Newtonsoft.Json](https://github.com/RedpointGames/Newtonsoft.Json) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Newtonsoft.Json/master) |
+| [protobuf-net](https://github.com/RedpointGames/protobuf-net) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/protobuf-net/master) |
+| [NDesk.Options](https://github.com/RedpointGames/NDesk.Options) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/NDesk.Options/master) |
+| [HiveMP](https://hivemp.com) | From NuGet |
 
 Features
 ----------
