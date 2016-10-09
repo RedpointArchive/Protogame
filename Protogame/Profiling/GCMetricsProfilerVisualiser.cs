@@ -48,25 +48,35 @@ namespace Protogame
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
         public static bool TryGetInstanceName(Process process, out string instanceName)
         {
-            PerformanceCounterCategory processCategory = new PerformanceCounterCategory(CategoryName);
-            string[] instanceNames = processCategory.GetInstanceNames();
-            foreach (string name in instanceNames)
+            try
             {
-                if (name.StartsWith(process.ProcessName))
+                PerformanceCounterCategory processCategory = new PerformanceCounterCategory(CategoryName);
+                string[] instanceNames = processCategory.GetInstanceNames();
+                foreach (string name in instanceNames)
                 {
-                    using (PerformanceCounter processIdCounter = new PerformanceCounter(CategoryName, ProcessIdCounter, name, true))
+                    if (name.StartsWith(process.ProcessName))
                     {
-                        if (process.Id == (int)processIdCounter.RawValue)
+                        using (
+                            PerformanceCounter processIdCounter = new PerformanceCounter(CategoryName, ProcessIdCounter,
+                                name, true))
                         {
-                            instanceName = name;
-                            return true;
+                            if (process.Id == (int) processIdCounter.RawValue)
+                            {
+                                instanceName = name;
+                                return true;
+                            }
                         }
                     }
                 }
-            }
 
-            instanceName = null;
-            return false;
+                instanceName = null;
+                return false;
+            }
+            catch
+            {
+                instanceName = null;
+                return false;
+            }
         }
 #endif
 
