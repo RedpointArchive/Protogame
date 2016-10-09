@@ -22,6 +22,7 @@ namespace Protogame
             HeadOffset = new Vector3(0, 0, 0);
             Enabled = true;
             DebugEnabled = false;
+            FieldOfView = (MathHelper.PiOver2/90)*75;
 
             Enabled = true;
         }
@@ -56,6 +57,11 @@ namespace Protogame
         /// </summary>
         public bool DebugEnabled { get; set; }
 
+        /// <summary>
+        /// The field of view for the camera in radians.  Defaults to 75 degrees.
+        /// </summary>
+        public float FieldOfView { get; set; }
+
         public void Prerender(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {
             var enabled = Enabled && renderContext.IsCurrentRenderPass<I3DRenderPass>();
@@ -83,7 +89,8 @@ namespace Protogame
                         renderContext,
                         sourceAbsolute,
                         lookAtAbsolute,
-                        upAbsolute);
+                        upAbsolute,
+                        FieldOfView);
                 }
                 else if (debugEnabled)
                 {
