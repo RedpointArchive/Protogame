@@ -1,6 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Module>
   <Name>Protogame</Name>
+  <Authors>Redpoint Games</Authors>
+  <SemanticVersion>6.0.0</SemanticVersion>
+  <Description>Protogame is a powerful cross-platform game engine for C#, built on top of MonoGame.</Description>
+  <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
+  <ProjectUrl>https://protogame.org/</ProjectUrl>
+  <GitRepositoryUrl>https://github.com/RedpointGames/Protogame</GitRepositoryUrl>
   <DefaultAction>resync</DefaultAction>
   <DisableSynchronisation>false</DisableSynchronisation>
   <GenerateNuGetRepositories>true</GenerateNuGetRepositories>
@@ -11,9 +17,9 @@
     <Package Uri="https://protobuild.org/hach-que/protobuf-net" Folder="protobuf-net" GitRef="master" />
     <Package Uri="https://protobuild.org/RedpointGames/MonoGame" Folder="MonoGame" GitRef="develop" />
     <Package Uri="https://protobuild.org/hach-que/NDesk.Options" Folder="NDesk.Options" GitRef="master" />
-    <Package Uri="https://protobuild.org/hach-que/Prototest" Folder="Prototest" GitRef="master" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="Prototest" Version="master" />
     <Package Uri="https://protobuild.org/hach-que/AStarPathFinder" Folder="AStarPathFinder" GitRef="master" />
-    <Package Uri="https://protobuild.org/hach-que/Protoinject" Folder="Protoinject" GitRef="master" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="Protoinject" Version="master" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.TemporarySession" Folder="HiveMP.TemporarySession" GitRef="1.5.2" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.NATPunchthrough" Folder="HiveMP.NATPunchthrough" GitRef="1.5.0" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Lobby" Folder="HiveMP.Lobby" GitRef="0.3.0" />
