@@ -56,6 +56,10 @@ using UIKit;
 [Register("AppDelegate")]
 public class Program : UIApplicationDelegate
 {
+    private static IKernel _kernel;
+    private static Game _game;
+    private static ICoreServer _server;
+
     public static void Main(string[] args)
     {
         UIApplication.Main(args, null, "AppDelegate");
