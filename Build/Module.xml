@@ -18,7 +18,7 @@
     <Package Uri="https://protobuild.org/RedpointGames/MonoGame" Folder="MonoGame" GitRef="develop" />
     <Package Uri="https://protobuild.org/hach-que/NDesk.Options" Folder="NDesk.Options" GitRef="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Prototest" Version="master" />
-    <Package Uri="https://protobuild.org/hach-que/AStarPathFinder" Folder="AStarPathFinder" GitRef="master" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="AStarPathFinder" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Protoinject" Version="master" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.TemporarySession" Folder="HiveMP.TemporarySession" GitRef="1.5.2" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.NATPunchthrough" Folder="HiveMP.NATPunchthrough" GitRef="1.5.0" />
