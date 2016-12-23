@@ -14,22 +14,22 @@ generate
 build
 execute Protogame.Tests
 
-pack . $TARGET_PLATFORM.tar.lzma $TARGET_PLATFORM
-if host Windows
-  if file-exists C:\Users\build\Documents\protobuild_api_key.txt
-    push C:\Users\build\Documents\protobuild_api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM master --ignore-on-existing
+set package-format nuget/zip
 
-    # Now update the documentation as well
-    native-execute powershell -Command .\Build\UpdateDocs.ps1
+pack . Protogame.$TARGET_PLATFORM.nupkg $TARGET_PLATFORM
+
+if host Windows
+  if file-exists C:\Users\build\Documents\nuget_api_key.txt
+    push C:\Users\build\Documents\nuget_api_key.txt Protogame.$TARGET_PLATFORM.nupkg https://www.nuget.org/api/v2/package --ignore-on-existing
   endif
 endif
 if host MacOS
-  if file-exists /Users/june/protobuild_api_key.txt
-    push /Users/june/protobuild_api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM master --ignore-on-existing
+  if file-exists /Users/june/nuget_api_key.txt
+    push /Users/june/nuget_api_key.txt Protogame.$TARGET_PLATFORM.nupkg https://www.nuget.org/api/v2/package --ignore-on-existing
   endif
 endif
 if host Linux
-  if file-exists /srv/api_key.txt
-    push /srv/api_key.txt $TARGET_PLATFORM.tar.lzma http://protobuild.org/hach-que/Protogame $GIT_COMMIT $TARGET_PLATFORM master --ignore-on-existing
+  if file-exists /srv/nuget_api_key.txt
+    push /srv/nuget_api_key.txt Protogame.$TARGET_PLATFORM.nupkg https://www.nuget.org/api/v2/package --ignore-on-existing
   endif
 endif
