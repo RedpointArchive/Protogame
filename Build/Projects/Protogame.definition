@@ -21,7 +21,6 @@
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="NDesk.Options" />
     <Reference Include="Jitter" />
-    <Reference Include="Cloo" />
     <Reference Include="HiveMP.TemporarySession" />
     <Reference Include="HiveMP.NATPunchthrough" />
     <Reference Include="HiveMP.Lobby" />

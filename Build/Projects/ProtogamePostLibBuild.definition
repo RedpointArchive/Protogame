@@ -18,7 +18,6 @@
       <Project Name="Newtonsoft.Json" />
       <Project Name="NDesk.Options" />
       <Project Name="Jitter" />
-      <Project Name="Cloo" />
     </PostBuildHookExcludes>
   </Properties>
   <References>
