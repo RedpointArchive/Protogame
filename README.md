@@ -51,8 +51,7 @@ Projects are built and tested against all supported and experimental platforms.
 | [Prototest](https://github.com/RedpointGames/Prototest) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Prototest/master) |
 | [Jitter](https://github.com/RedpointGames/Jitter) (Physics) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Jitter/master) |
 | [AStarPathFinder](https://github.com/RedpointGames/AStarPathFinder) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/AStarPathFinder/master) |
-| [Cloo](https://github.com/RedpointGames/Cloo) (OpenCL) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Cloo/master) |
-| [Newtonsoft.Json](https://github.com/RedpointGames/Newtonsoft.Json) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/Newtonsoft.Json/master) |
+| [Newtonsoft.Json](https://github.com/RedpointGames/Newtonsoft.Json) | From NuGet |
 | [protobuf-net](https://github.com/RedpointGames/protobuf-net) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/protobuf-net/master) |
 | [NDesk.Options](https://github.com/RedpointGames/NDesk.Options) | ![](https://jenkins.redpointgames.com.au/buildStatus/icon?job=RedpointGames/NDesk.Options/master) |
 | [HiveMP](https://hivemp.com) | From NuGet |

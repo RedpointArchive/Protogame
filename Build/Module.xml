@@ -12,7 +12,6 @@
   <GenerateNuGetRepositories>true</GenerateNuGetRepositories>
   <Packages>
     <Package Uri="https://protobuild.org/hach-que/Jitter" Folder="Jitter" GitRef="master" />
-    <Package Uri="https://protobuild.org/hach-que/Cloo" Folder="Cloo" GitRef="master" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="8.0.3" />
     <Package Uri="https://protobuild.org/hach-que/protobuf-net" Folder="protobuf-net" GitRef="master" />
     <Package Uri="https://protobuild.org/RedpointGames/MonoGame" Folder="MonoGame" GitRef="develop" />

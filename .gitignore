@@ -19,7 +19,6 @@ StyleCop.Cache
 
 # Ignore ThirdParty
 /Jitter
-/Cloo
 /Newtonsoft.Json
 /protobuf-net
 /Binaries
