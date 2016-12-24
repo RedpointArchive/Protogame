@@ -22,6 +22,8 @@ public static class Program
 	{
 		NSApplication.Init();
 
+		Debug.WriteLine("Startup: Finished NSApplication.Init in static Main");
+
 		using (var p = new NSAutoreleasePool())
 		{
 			NSApplication.SharedApplication.Delegate = new AppDelegate();
@@ -53,6 +55,12 @@ public class AppDelegate : NSApplicationDelegate
 #endif
 	{
 		var args = new string[0];
+
+		Debug.WriteLine("Startup: Reached AppDelegate.DidFinishLaunching / AppDelegate.FinishedLaunching");
+
+		ErrorProtection.RunEarly(() => ProtectedStartup(args));
+		ErrorProtection.RunMain(_kernel.TryGet<IErrorReport>(), ProtectedRun);
+	}
 #elif PLATFORM_IOS
 using Foundation;
 using UIKit;
@@ -72,6 +80,10 @@ public class Program : UIApplicationDelegate
     public override void FinishedLaunching(UIApplication app)
     {
         var args = new string[0];
+
+		ErrorProtection.RunEarly(() => ProtectedStartup(args));
+		ErrorProtection.RunMain(_kernel.TryGet<IErrorReport>(), ProtectedRun);
+    }
 #else
 public static class Program
 {
@@ -84,10 +96,12 @@ public static class Program
         ErrorProtection.RunEarly(() => ProtectedStartup(args));
         ErrorProtection.RunMain(_kernel.TryGet<IErrorReport>(), ProtectedRun);
     }
+#endif
 
     private static void ProtectedStartup(string[] args)
     {
-#endif
+		Debug.WriteLine("Protected Startup: Execution of protected startup has begun");
+
         var kernel = new StandardKernel();
         kernel.Bind<IRawLaunchArguments>().ToMethod(x => new DefaultRawLaunchArguments(args)).InSingletonScope();
         
@@ -103,6 +117,8 @@ public static class Program
 			}
 		};
 
+		Debug.WriteLine("Protected Startup: Scanning for implementations of IGameConfiguration");
+
         // Search the application domain for implementations of
         // the IGameConfiguration.
         var gameConfigurations =
@@ -112,7 +128,12 @@ public static class Program
                   !type.IsInterface && !type.IsAbstract
             select Activator.CreateInstance(type) as IGameConfiguration).ToList();
 
+		Debug.WriteLine("Protected Startup: Found " + gameConfigurations.Count + " implementations of IGameConfiguration");
+
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+
+		Debug.WriteLine("Protected Startup: Scanning for implementations of IServerConfiguration");
+
         // Search the application domain for implementations of
         // the IServerConfiguration.
         var serverConfigurations =
@@ -121,6 +142,8 @@ public static class Program
              where typeof(IServerConfiguration).IsAssignableFrom(type) &&
                !type.IsInterface && !type.IsAbstract
              select Activator.CreateInstance(type) as IServerConfiguration).ToList();
+
+		Debug.WriteLine("Protected Startup: Found " + serverConfigurations.Count + " implementations of IServerConfiguration");
 
         if (gameConfigurations.Count == 0 && serverConfigurations.Count == 0)
         {
@@ -142,13 +165,17 @@ public static class Program
         ICoreServer server = null;
 #endif
 
+		Debug.WriteLine("Protected Startup: Starting iteration through game configuration implementations");
+
         foreach (var gameConfiguration in gameConfigurations)
         {
+			Debug.WriteLine("Protected Startup: Configuring kernel with " + gameConfiguration.GetType().FullName);
             gameConfiguration.ConfigureKernel(kernel);
 
             // It is expected that the AssetManagerProvider architecture will
             // be refactored in future to just provide IAssetManager directly,
-            // and this method call will be dropped.
+			// and this method call will be dropped.
+			Debug.WriteLine("Protected Startup: Initializing asset manager provider with " + gameConfiguration.GetType().FullName);
             gameConfiguration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, args));
 
             // We only construct one game.  In the event there are
@@ -156,21 +183,29 @@ public static class Program
             // providing additional game tools, it's expected that libraries
             // will return null for ConstructGame).
             if (game == null)
-            {
+			{
+				Debug.WriteLine("Protected Startup: Attempted to construct game with " + gameConfiguration.GetType().FullName);
                 game = gameConfiguration.ConstructGame(kernel);
+				Debug.WriteLineIf(game != null, "Protected Startup: Constructed game with " + gameConfiguration.GetType().FullName);
             }
         }
 
+		Debug.WriteLine("Protected Startup: Finished iteration through game configuration implementations");
+
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+
+		Debug.WriteLine("Protected Startup: Starting iteration through server configuration implementations");
 
         foreach (var serverConfiguration in serverConfigurations)
         {
-            serverConfiguration.ConfigureKernel(kernel);
+			Debug.WriteLine("Protected Startup: Configuring kernel with " + serverConfiguration.GetType().FullName);
+			serverConfiguration.ConfigureKernel(kernel);
 
             // It is expected that the AssetManagerProvider architecture will
             // be refactored in future to just provide IAssetManager directly,
             // and this method call will be dropped.
-            serverConfiguration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, args));
+			Debug.WriteLine("Protected Startup: Initializing asset manager provider with " + serverConfiguration.GetType().FullName);
+			serverConfiguration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, args));
 
             // We only construct one server.  In the event there are
             // multiple server configurations (such as a third-party library
@@ -178,9 +213,13 @@ public static class Program
             // will return null for ConstructServer).
             if (server == null)
             {
-                server = serverConfiguration.ConstructServer(kernel);
+				Debug.WriteLine("Protected Startup: Attempted to construct server with " + serverConfiguration.GetType().FullName);
+				server = serverConfiguration.ConstructServer(kernel);
+				Debug.WriteLineIf(server != null, "Protected Startup: Constructed server with " + serverConfiguration.GetType().FullName);
             }
         }
+
+		Debug.WriteLine("Protected Startup: Finished iteration through server configuration implementations");
 
         _kernel = kernel;
         _game = game;
@@ -189,7 +228,9 @@ public static class Program
 
     private static void ProtectedRun()
     { 
-        if (_game == null && _server == null)
+		Debug.WriteLine("Protected Run: Execution of protected run has begun");
+
+		if (_game == null && _server == null)
         {
             throw new InvalidOperationException(
                 "No implementation of IGameConfiguration provided " +
@@ -225,21 +266,24 @@ public static class Program
         if (_game != null)
         {
 #endif
+			Debug.WriteLine("Protected Run: Starting game");
 
 #if PLATFORM_MACOS || PLATFORM_IOS
-		_game.Run();
+			_game.Run();
 #else
-        using (var runningGame = _game)
-        {
-            runningGame.Run();
-        }
+        	using (var runningGame = _game)
+        	{
+            	runningGame.Run();
+        	}
 #endif
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
         }
         else if (_server != null)
         {
-            _server.Run();
+			Debug.WriteLine("Protected Run: Starting server");
+
+			_server.Run();
         }
 #endif
     }
