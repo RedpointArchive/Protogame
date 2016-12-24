@@ -503,13 +503,25 @@ namespace Protogame
 		{
             deviceInformation.PresentationParameters.RenderTargetUsage =
                 RenderTargetUsage.PreserveContents;
-
+            
+#if PLATFORM_WINDOWS
             // This will select the highest available multisampling.
             deviceInformation.PresentationParameters.MultiSampleCount = 32;
-
-            // On OpenGL platform, we need to set this to true otherwise it
-            // won't use multisampling regardless of whether we configure it.
             _graphicsDeviceManager.PreferMultiSampling = true;
+#else
+            // On non-Windows platforms, MonoGame's support for multisampling is
+            // just totally broken.  Even if we ask for it here, the maximum
+            // allowable multisampling for the platform won't be detected, which
+            // causes render target corruption later on if we try and create
+            // render targets with the presentation parameter's multisample
+            // count.  This is because on Windows, the property of MultiSampleCount
+            // is adjusted down from 32 to whatever multisampling value is actually
+            // available, but this does not occur for OpenGL platforms, and so
+            // the render targets on OpenGL platforms aren't initialised to a valid
+            // state for the GPU to use.
+            deviceInformation.PresentationParameters.MultiSampleCount = 0;
+            _graphicsDeviceManager.PreferMultiSampling = false;
+#endif
         }
 
         /// <summary>
