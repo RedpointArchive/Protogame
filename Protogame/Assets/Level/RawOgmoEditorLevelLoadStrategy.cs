@@ -65,7 +65,7 @@
                                     Loader = typeof(LevelAssetLoader).FullName,
                                     PlatformData = (PlatformData)null,
                                     LevelData = reader.ReadToEnd(),
-                                    LevelDataFormat = LevelDataFormat.ATF,
+                                    LevelDataFormat = LevelDataFormat.OgmoEditor,
                                     SourcePath = (string)null,
                                     SourcedFromRaw = true
                                 });
