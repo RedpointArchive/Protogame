@@ -37,6 +37,10 @@ public static class Program
 
 public class AppDelegate : NSApplicationDelegate
 {
+    private static IKernel _kernel;
+    private static Game _game;
+    private static ICoreServer _server;
+
 	public override bool ApplicationShouldTerminateAfterLastWindowClosed(NSApplication sender)
 	{
 		return true;
