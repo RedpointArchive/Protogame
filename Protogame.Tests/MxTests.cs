@@ -3,6 +3,7 @@
 namespace Protogame.Tests
 {
     using System.Net;
+    using System.Net.Sockets;
     using System.Text;
     using System.Threading;
 
@@ -23,12 +24,18 @@ namespace Protogame.Tests
         /// </summary>
         public void TestConnectionWithUpdate()
         {
-            var dispatcher1 = new MxDispatcher(9001);
-            var dispatcher2 = new MxDispatcher(9003);
+            var udpClient1 = new UdpClient(0);
+            var udpClient2 = new UdpClient(0);
+
+            var dispatcher1 = new MxDispatcher(udpClient1);
+            var dispatcher2 = new MxDispatcher(udpClient2);
+
+            var port1 = ((IPEndPoint)udpClient1.Client.LocalEndPoint).Port;
+            var port2 = ((IPEndPoint)udpClient2.Client.LocalEndPoint).Port;
 
             try
             {
-                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9001));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, port1));
 
                 this.SimulateNetworkCycles(8, dispatcher1, dispatcher2);
             }
@@ -44,12 +51,18 @@ namespace Protogame.Tests
         /// </summary>
         public void TestConnectionWithoutUpdate()
         {
-            var dispatcher1 = new MxDispatcher(9005);
-            var dispatcher2 = new MxDispatcher(9007);
+            var udpClient1 = new UdpClient(0);
+            var udpClient2 = new UdpClient(0);
+
+            var dispatcher1 = new MxDispatcher(udpClient1);
+            var dispatcher2 = new MxDispatcher(udpClient2);
+
+            var port1 = ((IPEndPoint)udpClient1.Client.LocalEndPoint).Port;
+            var port2 = ((IPEndPoint)udpClient2.Client.LocalEndPoint).Port;
 
             try
             {
-                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9005));
+                dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, port1));
             }
             finally
             {
@@ -63,8 +76,11 @@ namespace Protogame.Tests
         /// </summary>
         public void TestConstruction()
         {
-            var dispatcher1 = new MxDispatcher(9009);
-            var dispatcher2 = new MxDispatcher(9011);
+            var udpClient1 = new UdpClient(0);
+            var udpClient2 = new UdpClient(0);
+
+            var dispatcher1 = new MxDispatcher(udpClient1);
+            var dispatcher2 = new MxDispatcher(udpClient2);
 
             dispatcher1.Close();
             dispatcher2.Close();
@@ -92,8 +108,14 @@ Proin id neque varius, porta eros eget, pellentesque massa. Suspendisse viverra
 ligula at lorem dignissim fringilla. Proin viverra nunc neque, nec dignissim 
 velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
 
-            var dispatcher1 = new MxDispatcher(9013);
-            var dispatcher2 = new MxDispatcher(9015);
+            var udpClient1 = new UdpClient(0);
+            var udpClient2 = new UdpClient(0);
+
+            var dispatcher1 = new MxDispatcher(udpClient1);
+            var dispatcher2 = new MxDispatcher(udpClient2);
+
+            var port1 = ((IPEndPoint)udpClient1.Client.LocalEndPoint).Port;
+            var port2 = ((IPEndPoint)udpClient2.Client.LocalEndPoint).Port;
 
             try
             {
@@ -102,7 +124,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.";
                 dispatcher1.MessageReceived +=
                     (sender, args) => { receivedText = Encoding.ASCII.GetString(args.Payload); };
 
-                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9013));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, port1));
                 var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
@@ -154,8 +176,14 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                 text += Content;
             }
 
-            var dispatcher1 = new MxDispatcher(9017);
-            var dispatcher2 = new MxDispatcher(9019);
+            var udpClient1 = new UdpClient(0);
+            var udpClient2 = new UdpClient(0);
+
+            var dispatcher1 = new MxDispatcher(udpClient1);
+            var dispatcher2 = new MxDispatcher(udpClient2);
+
+            var port1 = ((IPEndPoint)udpClient1.Client.LocalEndPoint).Port;
+            var port2 = ((IPEndPoint)udpClient2.Client.LocalEndPoint).Port;
 
             try
             {
@@ -167,7 +195,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                         receivedText = Encoding.ASCII.GetString(args.Payload);
                     };
 
-                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9017));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, port1));
                 var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
@@ -200,8 +228,14 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         {
             const string Text = @"hello";
 
-            var dispatcher1 = new MxDispatcher(9021);
-            var dispatcher2 = new MxDispatcher(9023);
+            var udpClient1 = new UdpClient(0);
+            var udpClient2 = new UdpClient(0);
+
+            var dispatcher1 = new MxDispatcher(udpClient1);
+            var dispatcher2 = new MxDispatcher(udpClient2);
+
+            var port1 = ((IPEndPoint)udpClient1.Client.LocalEndPoint).Port;
+            var port2 = ((IPEndPoint)udpClient2.Client.LocalEndPoint).Port;
 
             try
             {
@@ -210,7 +244,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                 dispatcher1.MessageReceived +=
                     (sender, args) => { receivedText = Encoding.ASCII.GetString(args.Payload); };
 
-                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9021));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, port1));
                 var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
@@ -237,8 +271,14 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         {
             const string Text = @"hello";
 
-            var dispatcher1 = new MxDispatcher(9033);
-            var dispatcher2 = new MxDispatcher(9035);
+            var udpClient1 = new UdpClient(0);
+            var udpClient2 = new UdpClient(0);
+
+            var dispatcher1 = new MxDispatcher(udpClient1);
+            var dispatcher2 = new MxDispatcher(udpClient2);
+
+            var port1 = ((IPEndPoint)udpClient1.Client.LocalEndPoint).Port;
+            var port2 = ((IPEndPoint)udpClient2.Client.LocalEndPoint).Port;
 
             try
             {
@@ -256,7 +296,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                     acknowledged = true; 
                 };
 
-                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9033));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, port1));
                 var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
@@ -284,8 +324,14 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
         {
             const string Text = @"hello";
 
-            var dispatcher1 = new MxDispatcher(9027);
-            var dispatcher2 = new MxDispatcher(9029);
+            var udpClient1 = new UdpClient(0);
+            var udpClient2 = new UdpClient(0);
+
+            var dispatcher1 = new MxDispatcher(udpClient1);
+            var dispatcher2 = new MxDispatcher(udpClient2);
+
+            var port1 = ((IPEndPoint)udpClient1.Client.LocalEndPoint).Port;
+            var port2 = ((IPEndPoint)udpClient2.Client.LocalEndPoint).Port;
 
             try
             {
@@ -307,7 +353,7 @@ velit viverra vitae. Vestibulum fringilla eget nunc id cursus cras amet.
                     }
                 };
 
-                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, 9027));
+                var client = dispatcher2.Connect(new IPEndPoint(IPAddress.Loopback, port1));
                 var clientGroup = dispatcher2.PlaceInGroup(client, "Group2");
 
                 this.SimulateNetworkCycles(4, dispatcher1, dispatcher2);
