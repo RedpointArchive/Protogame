@@ -35,7 +35,7 @@ namespace Protogame
         {
             _renderUtilities.RenderTexture(
                 renderContext, 
-                new Vector2(entity.Transform.LocalPosition.X, entity.Transform.LocalPosition.Y), 
+                new Vector2(entity.Transform.LocalPosition.X * entity.Tileset.CellWidth, entity.Transform.LocalPosition.Y * entity.Tileset.CellHeight), 
                 entity.Tileset.Texture, 
                 new Vector2(entity.Width, entity.Height), 
                 sourceArea:
