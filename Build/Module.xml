@@ -11,14 +11,14 @@
   <DisableSynchronisation>false</DisableSynchronisation>
   <GenerateNuGetRepositories>true</GenerateNuGetRepositories>
   <Packages>
-    <Package Uri="https://protobuild.org/hach-que/Jitter" Folder="Jitter" GitRef="master" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="8.0.3" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="Jitter.Redpoint" Folder="Jitter" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="protobuf-net.Redpoint" Folder="protobuf-net" Version="master" />
     <Package Uri="https://protobuild.org/RedpointGames/MonoGame" Folder="MonoGame" GitRef="develop" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="NDesk.Options.Redpoint" Folder="NDesk.Options" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Prototest" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="AStarPathFinder" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Protoinject" Version="master" />
+    <Package Uri="https-nuget://www.nuget.org/api/v2/|Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="8.0.3" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.TemporarySession" Folder="HiveMP.TemporarySession" GitRef="1.5.2" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.NATPunchthrough" Folder="HiveMP.NATPunchthrough" GitRef="1.5.0" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Lobby" Folder="HiveMP.Lobby" GitRef="0.3.0" />
