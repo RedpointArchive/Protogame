@@ -2,7 +2,7 @@
 <Module>
   <Name>Protogame</Name>
   <Authors>Redpoint Games</Authors>
-  <SemanticVersion>6.0.1</SemanticVersion>
+  <SemanticVersion>6.0.2</SemanticVersion>
   <Description>Protogame is a powerful cross-platform game engine for C#, built on top of MonoGame.</Description>
   <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
   <ProjectUrl>https://protogame.org/</ProjectUrl>
