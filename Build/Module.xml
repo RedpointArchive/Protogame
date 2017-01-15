@@ -13,7 +13,7 @@
   <Packages>
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Jitter.Redpoint" Folder="Jitter" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="protobuf-net.Redpoint" Folder="protobuf-net" Version="master" />
-    <Package Uri="https://protobuild.org/RedpointGames/MonoGame" Folder="MonoGame" GitRef="develop" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="MonoGame.Framework.Redpoint" Folder="MonoGame" Version="develop" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="NDesk.Options.Redpoint" Folder="NDesk.Options" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Prototest" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="AStarPathFinder" Version="master" />

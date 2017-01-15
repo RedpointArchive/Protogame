@@ -32,8 +32,6 @@ namespace Protogame
                     return "PLATFORM_WINDOWS";
                 case TargetPlatform.Xbox360:
                     return "PLATFORM_XBOX360";
-                case TargetPlatform.WindowsPhone:
-                    return "PLATFORM_WINDOWSPHONE";
                 case TargetPlatform.iOS:
                     return "PLATFORM_IOS";
                 case TargetPlatform.Android:
