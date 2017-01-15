@@ -13,9 +13,9 @@
   <Packages>
     <Package Uri="https://protobuild.org/hach-que/Jitter" Folder="Jitter" GitRef="master" />
     <Package Uri="https-nuget://www.nuget.org/api/v2/|Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="8.0.3" />
-    <Package Uri="https://protobuild.org/hach-que/protobuf-net" Folder="protobuf-net" GitRef="master" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="protobuf-net.Redpoint" Folder="protobuf-net" Version="master" />
     <Package Uri="https://protobuild.org/RedpointGames/MonoGame" Folder="MonoGame" GitRef="develop" />
-    <Package Uri="https://protobuild.org/hach-que/NDesk.Options" Folder="NDesk.Options" GitRef="master" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="NDesk.Options.Redpoint" Folder="NDesk.Options" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Prototest" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="AStarPathFinder" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Protoinject" Version="master" />
