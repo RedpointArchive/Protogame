@@ -20,7 +20,9 @@
         Xbox360, 
 
         /// <summary>
-        /// Windows Phone 7.
+        /// Windows Phone 7.  This platform is no longer recognised by MonoGame; Protogame
+        /// still includes this declaration for backwards compatible as this enumeration
+        /// is serialized as part of assets.
         /// </summary>
         WindowsPhone, 
 

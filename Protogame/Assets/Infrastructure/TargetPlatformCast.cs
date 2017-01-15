@@ -29,8 +29,6 @@ namespace Protogame
                     return TargetPlatform.Windows;
                 case MonoGamePlatform.Xbox360:
                     return TargetPlatform.Xbox360;
-                case MonoGamePlatform.WindowsPhone:
-                    return TargetPlatform.WindowsPhone;
                 case MonoGamePlatform.iOS:
                     return TargetPlatform.iOS;
                 case MonoGamePlatform.Android:
@@ -72,7 +70,7 @@ namespace Protogame
                 case TargetPlatform.Xbox360:
                     return MonoGamePlatform.Xbox360;
                 case TargetPlatform.WindowsPhone:
-                    return MonoGamePlatform.WindowsPhone;
+                    throw new NotSupportedException();
                 case TargetPlatform.iOS:
                     return MonoGamePlatform.iOS;
                 case TargetPlatform.Android:

@@ -40,14 +40,14 @@ namespace Protogame
 
             var metrics = new[]
             {
-                new Tuple<string, ulong>("cc", graphicsMetrics.ClearCount),
-                new Tuple<string, ulong>("psc", graphicsMetrics.PixelShaderCount),
-                new Tuple<string, ulong>("dc", graphicsMetrics.DrawCount),
-                new Tuple<string, ulong>("pc", graphicsMetrics.PrimitiveCount),
-                new Tuple<string, ulong>("sc", graphicsMetrics.SpriteCount),
-                new Tuple<string, ulong>("tgc", graphicsMetrics.TargetCount),
-                new Tuple<string, ulong>("txc", graphicsMetrics.TextureCount),
-                new Tuple<string, ulong>("vsc", graphicsMetrics.VertexShaderCount),
+                new Tuple<string, ulong>("cc", (ulong)graphicsMetrics.ClearCount),
+                new Tuple<string, ulong>("psc", (ulong)graphicsMetrics.PixelShaderCount),
+                new Tuple<string, ulong>("dc", (ulong)graphicsMetrics.DrawCount),
+                new Tuple<string, ulong>("pc", (ulong)graphicsMetrics.PrimitiveCount),
+                new Tuple<string, ulong>("sc", (ulong)graphicsMetrics.SpriteCount),
+                new Tuple<string, ulong>("tgc", (ulong)graphicsMetrics.TargetCount),
+                new Tuple<string, ulong>("txc", (ulong)graphicsMetrics.TextureCount),
+                new Tuple<string, ulong>("vsc", (ulong)graphicsMetrics.VertexShaderCount),
                 new Tuple<string, ulong>("vbc", (ulong)_renderCache.VertexBuffersCached),
                 new Tuple<string, ulong>("ibc", (ulong)_renderCache.IndexBuffersCached),
                 new Tuple<string, ulong>("vbac", (ulong)_renderAutoCache.VertexBuffersCached),
