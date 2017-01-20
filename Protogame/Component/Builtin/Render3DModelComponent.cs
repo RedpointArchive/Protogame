@@ -311,7 +311,7 @@ namespace Protogame
                 changedRenderRequest = true;
                 changedRenderRequestBy += ":model";
 
-                if (material.TextureDiffuse != null && material.TextureNormal != null)
+                if (material.TextureDiffuse != null)
                 {
                     if (material.TextureDiffuse.TextureAsset != null)
                     {

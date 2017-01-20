@@ -14,6 +14,7 @@ namespace Protogame
                 RegisterComponent(standardDirectionalLightComponent);
 
                 editorQuery.MapTransform(this, Transform.Assign);
+                editorQuery.MapCustom(this, "direction", "direction", x => standardDirectionalLightComponent.LightDirection = x, Vector3.One);
                 editorQuery.MapCustom(this, "diffuse", "diffuse", x => standardDirectionalLightComponent.LightColor = x, Color.White);
             }
         }
