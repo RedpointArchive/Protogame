@@ -121,10 +121,10 @@ namespace Protogame.ATFLevelEditor
             {
                 var c = int.Parse(propertyRawValue);
 
-                var r = 0xFF000000 & c;
-                var g = 0x00FF0000 & c;
-                var b = 0x0000FF00 & c;
-                var a = 0x000000FF & c;
+                var r = c & 0xFF;
+                var g = (c >> 8) & 0xFF;
+                var b = (c >> 16) & 0xFF;
+                var a = (c >> 24) & 0xFF;
 
                 propertyValue = new Color(r, g, b, a);
             }
