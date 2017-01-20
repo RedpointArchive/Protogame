@@ -27,7 +27,7 @@ namespace Protogame
         private BatchedControlEntity _batchedControlEntity;
         private bool _static;
 
-        internal PhysicalBaseRigidBodyComponent(INode node, IPhysicsEngine physicsEngine)
+        protected PhysicalBaseRigidBodyComponent(INode node, IPhysicsEngine physicsEngine)
         {
             _node = node;
             _physicsEngine = physicsEngine;
