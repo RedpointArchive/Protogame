@@ -20,11 +20,13 @@ namespace Protogame
         private Func<RigidBody, RigidBody, float> _pendingCalculateStaticFrictionCallback;
         private Func<RigidBody, RigidBody, float> _pendingCalculateDynamicFrictionCallback;
         private Func<RigidBody, RigidBody, float> _pendingCalculateRestitutionCallback;
+        private bool? _pendingSpeculativeContacts;
 
         public DefaultPhysicsWorldControl(IPhysicsEngine physicsEngine)
         {
             _physicsEngine = physicsEngine;
 
+            _pendingSpeculativeContacts = null;
             _pendingGravity = null;
             _pendingCoefficientMixingType = null;
             _pendingConsiderAngularVelocityCallback = null;
@@ -42,6 +44,12 @@ namespace Protogame
                 {
                     physicsWorld.Gravity = _pendingGravity.Value.ToJitterVector();
                     _pendingGravity = null;
+                }
+
+                if (_pendingSpeculativeContacts != null)
+                {
+                    physicsWorld.CollisionSystem.EnableSpeculativeContacts = _pendingSpeculativeContacts.Value;
+                    _pendingSpeculativeContacts = null;
                 }
 
                 if (_pendingCoefficientMixingType != null)
@@ -223,6 +231,31 @@ namespace Protogame
                 }
 
                 physicsWorld.ContactSettings.CalculateRestitutionCallback = value;
+            }
+        }
+        
+        public bool EnableSpeculativeContacts
+        {
+            get
+            {
+                var physicsWorld = _physicsEngine.GetInternalPhysicsWorld();
+                if (physicsWorld == null)
+                {
+                    return _pendingSpeculativeContacts ?? true;
+                }
+
+                return physicsWorld.CollisionSystem.EnableSpeculativeContacts;
+            }
+            set
+            {
+                var physicsWorld = _physicsEngine.GetInternalPhysicsWorld();
+                if (physicsWorld == null)
+                {
+                    _pendingSpeculativeContacts = value;
+                    return;
+                }
+
+                physicsWorld.CollisionSystem.EnableSpeculativeContacts = value;
             }
         }
     }

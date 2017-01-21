@@ -60,5 +60,13 @@ namespace Protogame
         /// set to <see cref="ContactSettings.MaterialCoefficientMixingType.UseCallback"/>.
         /// </summary>
         Func<RigidBody, RigidBody, float> CalculateRestitutionCallback { get; set; }
+
+        /// <summary>
+        /// Speculative contacts increases collision accuracy and reduces the number of situations
+        /// where rigid bodies get stuck inside each other.  However, it can also impact material
+        /// coefficient calculations by preventing objects from ever being considered to have
+        /// collided.  Speculative contacts is turned on by default in Protogame.
+        /// </summary>
+        bool EnableSpeculativeContacts { get; set; }
     }
 }
