@@ -188,6 +188,7 @@ namespace Protogame
                     gameContext,
                     new GamePadThumbstickActiveEvent
                     {
+                        GamePadIndex = index,
                         GamePadState = gamepadState
                     });
             }
