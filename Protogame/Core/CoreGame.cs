@@ -298,6 +298,9 @@ namespace Protogame
             }
 #endif
 
+            // Allow the user to configure the game window now.
+            PrepareGameWindow(Window);
+
             // Create the game context.
             GameContext = _kernel.Get<IGameContext>(
                 _node,
@@ -488,6 +491,18 @@ namespace Protogame
         /// </summary>
         /// <param name="graphicsDeviceManager">The graphics device manager to prepare.</param>
         protected virtual void PrepareGraphicsDeviceManager(GraphicsDeviceManager graphicsDeviceManager)
+        {
+        }
+
+        /// <summary>
+        /// Prepares the game window.
+        /// <para>
+        /// If you want to change the initial position of the game window on startup, this is the place
+        /// to do it.  Override this method, and then set the window properties.
+        /// </para>
+        /// </summary>
+        /// <param name="window">The game window to prepare.</param>
+        protected virtual void PrepareGameWindow(IGameWindow window)
         {
         }
 

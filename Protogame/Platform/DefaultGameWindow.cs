@@ -83,6 +83,15 @@ namespace Protogame
                 }
             }
         }
+
+        /// <summary>
+        /// The underlying MonoGame window object.  The type and presence of this property
+        /// varies per-platform, so it's access should always be within a platform specific block.
+        /// </summary>
+        public GameWindow PlatformWindow
+        {
+            get { return _gameWindow; }
+        }
     }
 }
 

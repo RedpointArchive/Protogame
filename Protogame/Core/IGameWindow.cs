@@ -32,5 +32,15 @@ namespace Protogame
         /// Whether or not the user is allowed to resize the window.
         /// </value>
         bool AllowUserResizing { get; set; }
+
+        /// <summary>
+        /// The underlying MonoGame window object.  The type and presence of this property
+        /// varies per-platform, so it's access should always be within a platform specific block.
+        /// </summary>
+#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
+        GameWindow PlatformWindow { get; }
+#elif PLATFORM_ANDROID || PLATFORM_OUYA
+        Microsoft.Xna.Framework.AndroidGameWindow PlatformWindow { get; }
+#endif
     }
 }
