@@ -117,5 +117,14 @@ namespace Protogame
         ///     The next render pass, or null if this is the last pass in the pipeline.
         /// </param>
         void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass);
+
+        /// <summary>
+        /// An optional name that can be set against a render pass.  If you have multiple render passes in
+        /// your game of the same type, you can set a name against each of the render passes and distinguish where
+        /// in the render pipeline you are currently rendering by checking the name.  This is useful, for example,
+        /// if you want to render a 2D sprite below a 3D world, and then layer 2D text on top (using two 2D batched
+        /// render passes).
+        /// </summary>
+        string Name { get; set; }
     }
 }

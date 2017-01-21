@@ -54,6 +54,8 @@ namespace Protogame
         {
         }
 
+        public string Name { get; set; }
+
         public void SetValue(string name, bool value)
         {
             _effect.NativeEffect.Parameters[name].SetValue(value);

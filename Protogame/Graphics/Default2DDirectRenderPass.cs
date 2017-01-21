@@ -50,6 +50,8 @@ namespace Protogame
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
         }
+
+        public string Name { get; set; }
     }
 }
 

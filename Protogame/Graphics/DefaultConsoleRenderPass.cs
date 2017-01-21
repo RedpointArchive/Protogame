@@ -32,5 +32,7 @@ namespace Protogame
             _console.Render(gameContext, renderContext);
             renderContext.SpriteBatch.End();
         }
+
+        public string Name { get; set; }
     }
 }

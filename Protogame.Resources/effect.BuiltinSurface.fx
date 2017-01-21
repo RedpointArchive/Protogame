@@ -418,13 +418,10 @@ DeferredPixelShaderOutput DeferredPixelShader(DeferredVertexShaderOutput input)
 
 	// Output the RGB color.
 #if defined(HAS_SAMPLED_COLOR)
-	output.Color.rgb = input.Color.rgb;
+	output.Color = input.Color;
 #elif defined(HAS_VERTEX_PRIMARY_UV_COORDS)
-	output.Color.rgb = PROTOGAME_SAMPLE_TEXTURE(Texture, input.TexCoord).rgb;
+	output.Color = PROTOGAME_SAMPLE_TEXTURE(Texture, input.TexCoord);
 #endif
-
-	// Alpha channel is unused.
-	output.Color.a = 0.0f;
 
 #if defined(HAS_NORMAL_MAP)
 	// Transform normal.

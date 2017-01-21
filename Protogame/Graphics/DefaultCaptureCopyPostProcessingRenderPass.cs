@@ -47,6 +47,8 @@ namespace Protogame
         {
         }
 
+        public string Name { get; set; }
+
         public RenderTarget2D CapturedRenderTarget {
             get { return _renderTarget; }
         }

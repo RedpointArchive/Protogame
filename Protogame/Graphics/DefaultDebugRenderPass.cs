@@ -130,5 +130,7 @@ namespace Protogame
             renderContext.GraphicsDevice.RasterizerState = _oldRasterizerState;
             renderContext.GraphicsDevice.DepthStencilState = _oldDepthState;
         }
+
+        public string Name { get; set; }
     }
 }

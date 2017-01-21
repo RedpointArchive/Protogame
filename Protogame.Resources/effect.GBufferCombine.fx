@@ -75,7 +75,7 @@ PixelShaderOutput DefaultPixelShader(VertexShaderOutput input)
 	PixelShaderOutput output;
 
 	// Sample diffuse color.
-	float3 diffuseColor = PROTOGAME_SAMPLE_TEXTURE(Color, input.TexCoord).rgb;
+	float4 diffuseColor = PROTOGAME_SAMPLE_TEXTURE(Color, input.TexCoord);
 
 	// Sample diffuse light color.
 	float3 diffuseLight = PROTOGAME_SAMPLE_TEXTURE(DiffuseLight, input.TexCoord).rgb;
@@ -84,7 +84,7 @@ PixelShaderOutput DefaultPixelShader(VertexShaderOutput input)
 	float3 specularLight = PROTOGAME_SAMPLE_TEXTURE(SpecularLight, input.TexCoord).rgb;
 
 	// Set the calculated light.
-	output.Color = float4((diffuseColor * diffuseLight + specularLight), 1);
+    output.Color = float4((diffuseColor.rgb * diffuseLight + specularLight), diffuseColor.a);
 
 	return output;
 }

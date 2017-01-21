@@ -42,7 +42,9 @@ namespace Protogame
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
         }
-        
+
+        public string Name { get; set; }
+
         public Action<RenderTarget2D> RenderPipelineStateAvailable { get; set; }
     }
 }

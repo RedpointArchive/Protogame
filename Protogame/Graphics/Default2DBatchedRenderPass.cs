@@ -34,6 +34,8 @@ namespace Protogame
         {
             renderContext.SpriteBatch.End();
         }
+
+        public string Name { get; set; }
     }
 }
 
