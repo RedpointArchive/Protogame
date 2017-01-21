@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Jitter.Dynamics;
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
@@ -13,12 +15,14 @@ namespace Protogame
         private readonly IPhysicsEngine _physicsEngine;
 
         private Vector3? _pendingGravity;
+        private Func<RigidBody, RigidBody, bool> _pendingConsiderAngularVelocityCallback;
 
         public DefaultPhysicsWorldControl(IPhysicsEngine physicsEngine)
         {
             _physicsEngine = physicsEngine;
 
             _pendingGravity = null;
+            _pendingConsiderAngularVelocityCallback = null;
         }
 
         public Vector3 Gravity
@@ -28,7 +32,7 @@ namespace Protogame
                 var physicsWorld = _physicsEngine.GetInternalPhysicsWorld();
                 if (physicsWorld == null)
                 {
-                    return Vector3.Zero;
+                    return _pendingGravity ?? Vector3.Zero;
                 }
 
                 return physicsWorld.Gravity.ToXNAVector();
@@ -56,6 +60,31 @@ namespace Protogame
                     physicsWorld.Gravity = _pendingGravity.Value.ToJitterVector();
                     _pendingGravity = null;
                 }
+            }
+        }
+
+        public Func<RigidBody, RigidBody, bool> ConsiderAngularVelocityCallback
+        {
+            get
+            {
+                var physicsWorld = _physicsEngine.GetInternalPhysicsWorld();
+                if (physicsWorld == null)
+                {
+                    return _pendingConsiderAngularVelocityCallback;
+                }
+
+                return physicsWorld.ContactSettings.ConsiderAngularVelocityCallback;
+            }
+            set
+            {
+                var physicsWorld = _physicsEngine.GetInternalPhysicsWorld();
+                if (physicsWorld == null)
+                {
+                    _pendingConsiderAngularVelocityCallback = value;
+                    return;
+                }
+
+                physicsWorld.ContactSettings.ConsiderAngularVelocityCallback = value;
             }
         }
     }

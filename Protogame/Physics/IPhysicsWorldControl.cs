@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Jitter.Dynamics;
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
@@ -20,5 +22,15 @@ namespace Protogame
         /// are propagated to the physics world when it becomes available.
         /// </summary>
         void SyncPendingChanges();
+
+        /// <summary>
+        /// Optionally set a callback which determines whether or not angular velocity should
+        /// be considered between two bodies that are colliding.
+        /// <para>
+        /// For most scenarios, you want to leave this unset, which means angular velocity will
+        /// always be considered during collisions.
+        /// </para>
+        /// </summary>
+        Func<RigidBody, RigidBody, bool> ConsiderAngularVelocityCallback { get; set; }
     }
 }
