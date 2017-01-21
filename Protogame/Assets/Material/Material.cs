@@ -22,6 +22,30 @@ namespace Protogame
         public IMaterialTexture TextureLightMap { get; set; }
         public IMaterialTexture TextureReflection { get; set; }
         public float? PowerSpecular { get; set; }
+
+        public Material() { }
+
+        public Material(IMaterial materialToCloneFrom)
+        {
+            Name = materialToCloneFrom.Name;
+            ColorDiffuse = materialToCloneFrom.ColorDiffuse;
+            ColorAmbient = materialToCloneFrom.ColorAmbient;
+            ColorSpecular = materialToCloneFrom.ColorSpecular;
+            ColorEmissive = materialToCloneFrom.ColorEmissive;
+            ColorTransparent = materialToCloneFrom.ColorTransparent;
+            ColorReflective = materialToCloneFrom.ColorReflective;
+            TextureDiffuse = materialToCloneFrom.TextureDiffuse;
+            TextureSpecular = materialToCloneFrom.TextureSpecular;
+            TextureAmbient = materialToCloneFrom.TextureAmbient;
+            TextureEmissive = materialToCloneFrom.TextureEmissive;
+            TextureHeight = materialToCloneFrom.TextureHeight;
+            TextureNormal = materialToCloneFrom.TextureNormal;
+            TextureOpacity = materialToCloneFrom.TextureOpacity;
+            TextureDisplacement = materialToCloneFrom.TextureDisplacement;
+            TextureLightMap = materialToCloneFrom.TextureLightMap;
+            TextureReflection = materialToCloneFrom.TextureReflection;
+            PowerSpecular = materialToCloneFrom.PowerSpecular;
+        }
     }
 
     public interface IMaterialTexture
