@@ -21,6 +21,13 @@ namespace Protogame
         /// with the rendering of 3D objects.
         /// </summary>
         bool ClearDepthBuffer { get; set; }
+        
+        /// <summary>
+        /// Clear the target before this render pass starts rendering.  If your scene doesn't fully cover
+        /// the scene this should be turned on (unless you want what was previously rendered to remain on
+        /// screen).  This is on by default.
+        /// </summary>
+        bool ClearTarget { get; set; }
 
         /// <summary>
         /// The blend state to use when rendering the final G-buffer onto the backbuffer (or current

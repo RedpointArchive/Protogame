@@ -57,6 +57,7 @@ namespace Protogame
                 assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.GBufferCombine");
 
             GBufferBlendState = BlendState.Opaque;
+            ClearTarget = true;
         }
         
         public bool IsPostProcessingPass => false;
@@ -76,6 +77,13 @@ namespace Protogame
         /// with the rendering of 3D objects.
         /// </summary>
         public bool ClearDepthBuffer { get; set; }
+
+        /// <summary>
+        /// Clear the target before this render pass starts rendering.  If your scene doesn't fully cover
+        /// the scene this should be turned on (unless you want what was previously rendered to remain on
+        /// screen).  This is on by default.
+        /// </summary>
+        public bool ClearTarget { get; set; }
 
         /// <summary>
         /// The blend state to use when rendering the final G-buffer onto the backbuffer (or current
@@ -160,11 +168,15 @@ namespace Protogame
                 _depthRenderTarget,
                 _specularRenderTarget);
 
-            if (ClearDepthBuffer)
+            if (ClearDepthBuffer || ClearTarget)
             {
-                // Clear the depth buffer before we start.
+                var target = ClearDepthBuffer ? ClearOptions.DepthBuffer : ClearOptions.Target;
+                if (ClearDepthBuffer && ClearTarget)
+                {
+                    target = ClearOptions.DepthBuffer | ClearOptions.Target;
+                }
                 renderContext.GraphicsDevice.Clear(
-                    ClearOptions.DepthBuffer,
+                    target,
                     Microsoft.Xna.Framework.Color.Transparent,
                     renderContext.GraphicsDevice.Viewport.MaxDepth,
                     0);
