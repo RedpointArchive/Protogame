@@ -18,6 +18,7 @@ namespace Protogame
             kernel.Bind<IPhysicsEngine>().To<DefaultPhysicsEngine>().InSingletonScope();
             kernel.Bind<IEngineHook>().To<PhysicsEngineHook>();
             kernel.Bind<IPhysicsFactory>().ToFactory();
+            kernel.Bind<IPhysicsWorldControl>().To<DefaultPhysicsWorldControl>().InSingletonScope();
 
             kernel.Bind<IEventEngine<IPhysicsEventContext>>().To<DefaultEventEngine<IPhysicsEventContext>>().InSingletonScope();
             kernel.Bind<IEventBinder<IPhysicsEventContext>>().To<GeneralPhysicsEventBinder>().InSingletonScope();

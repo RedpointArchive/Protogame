@@ -629,10 +629,12 @@
     <Compile Include="Physics\ConversionExtensions.cs" />
     <Compile Include="Physics\DefaultPhysicsEngine.cs" />
     <Compile Include="Physics\DefaultPhysicsEventContext.cs" />
+    <Compile Include="Physics\DefaultPhysicsWorldControl.cs" />
     <Compile Include="Physics\GeneralPhysicsEventBinder.cs" />
     <Compile Include="Physics\IPhysicsEngine.cs" />
     <Compile Include="Physics\IPhysicsEventContext.cs" />
     <Compile Include="Physics\IPhysicsFactory.cs" />
+    <Compile Include="Physics\IPhysicsWorldControl.cs" />
     <Compile Include="Physics\PhysicsCharacterController.cs" />
     <Compile Include="Physics\PhysicsCollisionBeginEvent.cs" />
     <Compile Include="Physics\PhysicsCollisionEndEvent.cs" />

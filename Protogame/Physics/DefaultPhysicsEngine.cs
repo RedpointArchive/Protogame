@@ -75,12 +75,12 @@ namespace Protogame
 
         public JitterWorld GetInternalPhysicsWorld()
         {
-            return _shadowWorld.GetJitterWorld();
+            return _shadowWorld?.GetJitterWorld();
         }
 
         public PhysicsMetrics GetPhysicsMetrics()
         {
-            return _shadowWorld.GetPhysicsMetrics();
+            return _shadowWorld?.GetPhysicsMetrics() ?? new PhysicsMetrics();
         }
     }
 }
