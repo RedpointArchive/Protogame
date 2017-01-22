@@ -23,7 +23,7 @@ namespace Protogame
         public void Loop()
         {
             _instance.IsLooped = true;
-            if (_instance.State == SoundState.Playing)
+            if (_instance.State != SoundState.Playing)
             {
                 _instance.Play();
             }
@@ -39,9 +39,17 @@ namespace Protogame
             _instance.Play();
         }
         
-        public void Stop()
+        public void Stop(bool immediate)
         {
-            _instance.Stop();
+            _instance.Stop(immediate);
         }
+
+        public float Volume
+        {
+            get { return _instance.Volume; }
+            set { _instance.Volume = value; }
+        }
+
+        public bool IsPlaying => _instance.State == SoundState.Playing;
     }
 }
