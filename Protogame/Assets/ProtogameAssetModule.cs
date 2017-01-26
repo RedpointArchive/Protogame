@@ -70,7 +70,6 @@ namespace Protogame
             kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<LocalCompiledLoadStrategy>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>().InSingletonScope();
-            kernel.Bind<ILoadStrategy>().To<AssemblyLoadStrategy>().InSingletonScope();
 #elif PLATFORM_ANDROID || PLATFORM_OUYA
             kernel.Bind<IAutomaticAssetReload>().To<DisabledAutomaticAssetReload>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<AndroidSourceLoadStrategy>().InSingletonScope();

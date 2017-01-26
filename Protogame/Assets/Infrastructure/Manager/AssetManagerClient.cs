@@ -43,36 +43,40 @@ namespace Protogame
                 args = new string[0];
             }
 
-            var name = new FileInfo(Assembly.GetCallingAssembly().Location).Name;
             var startAssetManager = false;
             var listen = false;
-            var options = new OptionSet
-            {
-                { "asset-manager", "Start the asset manager with the game.", v => startAssetManager = true }, 
-                {
-                    "asset-manager-listen", "Start the game and wait for the asset manager to connect.", v =>
-                    {
-                        startAssetManager = true;
-                        listen = true;
-                    }
-                }
-            };
-            foreach (var e in extraOptions)
-            {
-                options.Add(e.Prototype, e.Description, e.Action);
-            }
 
-            try
+            if (args.Length > 0)
             {
-                options.Parse(args);
-            }
-            catch (OptionException ex)
-            {
-                Console.Write(name + ": ");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Try `" + name + " --help` for more information.");
-                Environment.Exit(1);
-                return;
+                var name = new FileInfo(Assembly.GetCallingAssembly().Location).Name;
+                var options = new OptionSet
+                {
+                    {"asset-manager", "Start the asset manager with the game.", v => startAssetManager = true},
+                    {
+                        "asset-manager-listen", "Start the game and wait for the asset manager to connect.", v =>
+                        {
+                            startAssetManager = true;
+                            listen = true;
+                        }
+                    }
+                };
+                foreach (var e in extraOptions)
+                {
+                    options.Add(e.Prototype, e.Description, e.Action);
+                }
+
+                try
+                {
+                    options.Parse(args);
+                }
+                catch (OptionException ex)
+                {
+                    Console.Write(name + ": ");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Try `" + name + " --help` for more information.");
+                    Environment.Exit(1);
+                    return;
+                }
             }
 
             Process assetManagerProcess = null;

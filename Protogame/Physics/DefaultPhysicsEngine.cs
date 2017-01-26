@@ -22,6 +22,11 @@ namespace Protogame
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
+            if (gameContext.World == null)
+            {
+                return;
+            }
+
             if (gameContext.World != _currentWorld || _shadowWorld == null)
             {
                 if (_shadowWorld != null)
@@ -41,6 +46,11 @@ namespace Protogame
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
         {
+            if (serverContext.World == null)
+            {
+                return;
+            }
+
             if (serverContext.World != _currentServerWorld || _shadowWorld == null)
             {
                 if (_shadowWorld != null)
@@ -60,17 +70,17 @@ namespace Protogame
 
         public void RegisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform, bool staticAndImmovable)
         {
-            _shadowWorld.RegisterRigidBodyForHasMatrix(rigidBody, hasTransform, staticAndImmovable);
+            _shadowWorld?.RegisterRigidBodyForHasMatrix(rigidBody, hasTransform, staticAndImmovable);
         }
 
         public void UnregisterRigidBodyForHasMatrixInCurrentWorld(RigidBody rigidBody, IHasTransform hasTransform)
         {
-            _shadowWorld.UnregisterRigidBodyForHasMatrix(rigidBody, hasTransform);
+            _shadowWorld?.UnregisterRigidBodyForHasMatrix(rigidBody, hasTransform);
         }
 
         public void DebugRender(IGameContext gameContext, IRenderContext renderContext)
         {
-            _shadowWorld.Render(gameContext, renderContext);
+            _shadowWorld?.Render(gameContext, renderContext);
         }
 
         public JitterWorld GetInternalPhysicsWorld()

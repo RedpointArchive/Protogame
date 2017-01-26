@@ -39,6 +39,11 @@ namespace Protogame
         /// </returns>
         public bool Handle(IGameContext context, IEventEngine<IGameContext> eventEngine, Event @event)
         {
+            if (context.World == null)
+            {
+                return false;
+            }
+
             var worldHasCanvases = context.World as IHasCanvases;
             if (worldHasCanvases != null && worldHasCanvases.CanvasesEnabled)
             {
