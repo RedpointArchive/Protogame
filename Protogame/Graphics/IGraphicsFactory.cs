@@ -47,6 +47,24 @@ namespace Protogame
 
         /// <summary>
         /// Creates a render pass in which graphics rendering is configured for an
+        /// orthographic view.  When this render pass is active, the X and
+        /// Y positions of entities map directly to the X and Y positions 
+        /// of the game window, with (0, 0) being located in the top-left.
+        /// <para>
+        /// During this render pass, all texture render calls are batched
+        /// together with a <see cref="SpriteBatch" />, and flushed at the
+        /// end of the render pass.
+        /// </para>
+        /// <para>
+        /// This is a seperate render pass to <see cref="I2DBatchedRenderPass"/>
+        /// to allow optimal rendering of basic loading screens.
+        /// </para>
+        /// </summary>
+        /// <returns>A 2D render pass where rendering is batched together.</returns>
+        I2DBatchedLoadingScreenRenderPass Create2DBatchedLoadingScreenRenderPass();
+
+        /// <summary>
+        /// Creates a render pass in which graphics rendering is configured for an
         /// orthographic view, and canvas entities will automatically render
         /// their canvases.  When this render pass is active, the X and
         /// Y positions of entities map directly to the X and Y positions 

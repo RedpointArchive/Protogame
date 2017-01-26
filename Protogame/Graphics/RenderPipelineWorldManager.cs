@@ -33,12 +33,15 @@ namespace Protogame
         {
             game.UpdateContext.Update(game.GameContext);
 
-            foreach (var entity in game.GameContext.World.GetEntitiesForWorld(game.GameContext.Hierarchy).ToList())
+            if (game.GameContext.World != null)
             {
-                entity.Update(game.GameContext, game.UpdateContext);
-            }
+                foreach (var entity in game.GameContext.World.GetEntitiesForWorld(game.GameContext.Hierarchy).ToList())
+                {
+                    entity.Update(game.GameContext, game.UpdateContext);
+                }
 
-            game.GameContext.World.Update(game.GameContext, game.UpdateContext);
+                game.GameContext.World.Update(game.GameContext, game.UpdateContext);
+            }
         }
     }
 }

@@ -42,6 +42,7 @@ namespace Protogame
 
             kernel.Bind<I2DDirectRenderPass>().To<Default2DDirectRenderPass>().DiscardNodeOnResolve();
             kernel.Bind<I2DBatchedRenderPass>().To<Default2DBatchedRenderPass>().DiscardNodeOnResolve();
+            kernel.Bind<I2DBatchedLoadingScreenRenderPass>().To<Default2DBatchedLoadingScreenRenderPass>().DiscardNodeOnResolve();
             kernel.Bind<ICanvasRenderPass>().To<DefaultCanvasRenderPass>().DiscardNodeOnResolve();
             kernel.Bind<I3DRenderPass>().To<Default3DForwardRenderPass>().DiscardNodeOnResolve();
             kernel.Bind<I3DForwardRenderPass>().To<Default3DForwardRenderPass>().DiscardNodeOnResolve();
@@ -61,6 +62,12 @@ namespace Protogame
             kernel.Bind<IDebugRenderer>().To<NullDebugRenderer>().InSingletonScope();
 
             kernel.Bind<IRenderBatcher>().To<DefaultRenderBatcher>().InSingletonScope();
+
+            kernel.Bind<ILoadingScreen>().To<DefaultLoadingScreen>().InSingletonScope();
+
+            kernel.Bind<ICoroutineScheduler>().To<DefaultCoroutineScheduler>().InSingletonScope();
+            kernel.Bind<IEngineHook>().To<CoroutineEngineHook>();
+            kernel.Bind<ICoroutine>().To<DefaultCoroutine>();
         }
     }
 }

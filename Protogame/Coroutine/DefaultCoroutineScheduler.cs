@@ -42,7 +42,7 @@ namespace Protogame
         {
             Update();
         }
-
+        
         private void Update()
         {
             var toProcess = _continuations.ToArray();

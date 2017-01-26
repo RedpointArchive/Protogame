@@ -1,11 +1,36 @@
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Protogame;
 using Protoinject;
+
+public static class FastTrace
+{
+    public static bool EmitStartupTrace = false;
+
+    [Conditional("DEBUG")]
+    public static void WriteLine(string message)
+    {
+        if (EmitStartupTrace)
+        {
+            Debug.WriteLine(message);
+        }
+    }
+
+    [Conditional("DEBUG")]
+    public static void WriteLineIf(bool condition, string message)
+    {
+        if (EmitStartupTrace)
+        {
+            Debug.WriteLineIf(condition, message);
+        }
+    }
+}
 
 #if PLATFORM_MACOS
 #if PLATFORM_MACOS_LEGACY
@@ -20,9 +45,14 @@ public static class Program
 {
 	public static void Main(string[] args)
 	{
+        if (args.Contains("--debug-startup"))
+        {
+            FastTrace.EmitStartupTrace = true;
+        }
+
 		NSApplication.Init();
 
-		Debug.WriteLine("Startup: Finished NSApplication.Init in static Main");
+		FastTrace.WriteLine("Startup: Finished NSApplication.Init in static Main");
 
 		using (var p = new NSAutoreleasePool())
 		{
@@ -56,7 +86,7 @@ public class AppDelegate : NSApplicationDelegate
 	{
 		var args = new string[0];
 
-		Debug.WriteLine("Startup: Reached AppDelegate.DidFinishLaunching / AppDelegate.FinishedLaunching");
+		FastTrace.WriteLine("Startup: Reached AppDelegate.DidFinishLaunching / AppDelegate.FinishedLaunching");
 
 		ErrorProtection.RunEarly(() => ProtectedStartup(args));
 		ErrorProtection.RunMain(_kernel.TryGet<IErrorReport>(), ProtectedRun);
@@ -74,6 +104,11 @@ public class Program : UIApplicationDelegate
 
     public static void Main(string[] args)
     {
+        if (args.Contains("--debug-startup"))
+        {
+            FastTrace.EmitStartupTrace = true;
+        }
+
         UIApplication.Main(args, null, "AppDelegate");
     }
 
@@ -93,6 +128,11 @@ public static class Program
 
     public static void Main(string[] args)
     {
+        if (args.Contains("--debug-startup"))
+        {
+            FastTrace.EmitStartupTrace = true;
+        }
+
         ErrorProtection.RunEarly(() => ProtectedStartup(args));
         ErrorProtection.RunMain(_kernel.TryGet<IErrorReport>(), ProtectedRun);
     }
@@ -100,7 +140,7 @@ public static class Program
 
     private static void ProtectedStartup(string[] args)
     {
-		Debug.WriteLine("Protected Startup: Execution of protected startup has begun");
+        FastTrace.WriteLine("Protected Startup: Execution of protected startup has begun");
 
         var kernel = new StandardKernel();
         kernel.Bind<IRawLaunchArguments>().ToMethod(x => new DefaultRawLaunchArguments(args)).InSingletonScope();
@@ -117,33 +157,54 @@ public static class Program
 			}
 		};
 
-		Debug.WriteLine("Protected Startup: Scanning for implementations of IGameConfiguration");
+        FastTrace.WriteLine("Protected Startup: Scanning for implementations of IGameConfiguration");
+
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var typeSource = new List<Type>();
+        foreach (var assembly in assemblies)
+        {
+            typeSource.AddRange(assembly.GetCustomAttributes<ConfigurationAttribute>().Select(x => x.GameConfigurationOrServerClass));
+        }
+
+        if (typeSource.Count == 0)
+        {
+            // Scan all types to find implementors of IGameConfiguration
+            typeSource.AddRange(from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                from type in TryGetTypes(assembly)
+                select type);
+        }
 
         // Search the application domain for implementations of
         // the IGameConfiguration.
-        var gameConfigurations =
-            (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-				from type in TryGetTypes(assembly)
-            where typeof (IGameConfiguration).IsAssignableFrom(type) &&
-                  !type.IsInterface && !type.IsAbstract
-            select Activator.CreateInstance(type) as IGameConfiguration).ToList();
+        var gameConfigurations = new List<IGameConfiguration>();
+        foreach (var type in typeSource)
+        {
+            if (typeof(IGameConfiguration).IsAssignableFrom(type) &&
+                !type.IsInterface && !type.IsAbstract)
+            {
+                gameConfigurations.Add(Activator.CreateInstance(type) as IGameConfiguration);
+            }
+        }
 
-		Debug.WriteLine("Protected Startup: Found " + gameConfigurations.Count + " implementations of IGameConfiguration");
+        FastTrace.WriteLine("Protected Startup: Found " + gameConfigurations.Count + " implementations of IGameConfiguration");
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 
-		Debug.WriteLine("Protected Startup: Scanning for implementations of IServerConfiguration");
+        FastTrace.WriteLine("Protected Startup: Scanning for implementations of IServerConfiguration");
 
         // Search the application domain for implementations of
         // the IServerConfiguration.
-        var serverConfigurations =
-            (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-             from type in TryGetTypes(assembly)
-             where typeof(IServerConfiguration).IsAssignableFrom(type) &&
-               !type.IsInterface && !type.IsAbstract
-             select Activator.CreateInstance(type) as IServerConfiguration).ToList();
+        var serverConfigurations = new List<IServerConfiguration>();
+        foreach (var type in typeSource)
+        {
+            if (typeof(IServerConfiguration).IsAssignableFrom(type) &&
+                !type.IsInterface && !type.IsAbstract)
+            {
+                serverConfigurations.Add(Activator.CreateInstance(type) as IServerConfiguration);
+            }
+        }
 
-		Debug.WriteLine("Protected Startup: Found " + serverConfigurations.Count + " implementations of IServerConfiguration");
+        FastTrace.WriteLine("Protected Startup: Found " + serverConfigurations.Count + " implementations of IServerConfiguration");
 
         if (gameConfigurations.Count == 0 && serverConfigurations.Count == 0)
         {
@@ -165,17 +226,17 @@ public static class Program
         ICoreServer server = null;
 #endif
 
-		Debug.WriteLine("Protected Startup: Starting iteration through game configuration implementations");
+        FastTrace.WriteLine("Protected Startup: Starting iteration through game configuration implementations");
 
         foreach (var gameConfiguration in gameConfigurations)
         {
-			Debug.WriteLine("Protected Startup: Configuring kernel with " + gameConfiguration.GetType().FullName);
+            FastTrace.WriteLine("Protected Startup: Configuring kernel with " + gameConfiguration.GetType().FullName);
             gameConfiguration.ConfigureKernel(kernel);
 
             // It is expected that the AssetManagerProvider architecture will
             // be refactored in future to just provide IAssetManager directly,
-			// and this method call will be dropped.
-			Debug.WriteLine("Protected Startup: Initializing asset manager provider with " + gameConfiguration.GetType().FullName);
+            // and this method call will be dropped.
+            FastTrace.WriteLine("Protected Startup: Initializing asset manager provider with " + gameConfiguration.GetType().FullName);
             gameConfiguration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, args));
 
             // We only construct one game.  In the event there are
@@ -184,27 +245,27 @@ public static class Program
             // will return null for ConstructGame).
             if (game == null)
 			{
-				Debug.WriteLine("Protected Startup: Attempted to construct game with " + gameConfiguration.GetType().FullName);
+                FastTrace.WriteLine("Protected Startup: Attempted to construct game with " + gameConfiguration.GetType().FullName);
                 game = gameConfiguration.ConstructGame(kernel);
-				Debug.WriteLineIf(game != null, "Protected Startup: Constructed game with " + gameConfiguration.GetType().FullName);
+                FastTrace.WriteLineIf(game != null, "Protected Startup: Constructed game with " + gameConfiguration.GetType().FullName);
             }
         }
 
-		Debug.WriteLine("Protected Startup: Finished iteration through game configuration implementations");
+        FastTrace.WriteLine("Protected Startup: Finished iteration through game configuration implementations");
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 
-		Debug.WriteLine("Protected Startup: Starting iteration through server configuration implementations");
+        FastTrace.WriteLine("Protected Startup: Starting iteration through server configuration implementations");
 
         foreach (var serverConfiguration in serverConfigurations)
         {
-			Debug.WriteLine("Protected Startup: Configuring kernel with " + serverConfiguration.GetType().FullName);
+            FastTrace.WriteLine("Protected Startup: Configuring kernel with " + serverConfiguration.GetType().FullName);
 			serverConfiguration.ConfigureKernel(kernel);
 
             // It is expected that the AssetManagerProvider architecture will
             // be refactored in future to just provide IAssetManager directly,
             // and this method call will be dropped.
-			Debug.WriteLine("Protected Startup: Initializing asset manager provider with " + serverConfiguration.GetType().FullName);
+            FastTrace.WriteLine("Protected Startup: Initializing asset manager provider with " + serverConfiguration.GetType().FullName);
 			serverConfiguration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, args));
 
             // We only construct one server.  In the event there are
@@ -213,13 +274,13 @@ public static class Program
             // will return null for ConstructServer).
             if (server == null)
             {
-				Debug.WriteLine("Protected Startup: Attempted to construct server with " + serverConfiguration.GetType().FullName);
+                FastTrace.WriteLine("Protected Startup: Attempted to construct server with " + serverConfiguration.GetType().FullName);
 				server = serverConfiguration.ConstructServer(kernel);
 				Debug.WriteLineIf(server != null, "Protected Startup: Constructed server with " + serverConfiguration.GetType().FullName);
             }
         }
 
-		Debug.WriteLine("Protected Startup: Finished iteration through server configuration implementations");
+        FastTrace.WriteLine("Protected Startup: Finished iteration through server configuration implementations");
 
         _kernel = kernel;
         _game = game;
@@ -227,8 +288,8 @@ public static class Program
     }
 
     private static void ProtectedRun()
-    { 
-		Debug.WriteLine("Protected Run: Execution of protected run has begun");
+    {
+        FastTrace.WriteLine("Protected Run: Execution of protected run has begun");
 
 		if (_game == null && _server == null)
         {
@@ -266,7 +327,7 @@ public static class Program
         if (_game != null)
         {
 #endif
-			Debug.WriteLine("Protected Run: Starting game");
+            FastTrace.WriteLine("Protected Run: Starting game");
 
 #if PLATFORM_MACOS || PLATFORM_IOS
 			_game.Run();
@@ -281,7 +342,7 @@ public static class Program
         }
         else if (_server != null)
         {
-			Debug.WriteLine("Protected Run: Starting server");
+            FastTrace.WriteLine("Protected Run: Starting server");
 
 			_server.Run();
         }

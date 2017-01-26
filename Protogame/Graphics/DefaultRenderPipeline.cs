@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
+using Protoinject;
 
 namespace Protogame
 {
@@ -29,6 +31,8 @@ namespace Protogame
 
         private readonly IProfiler _profiler;
 
+        private readonly ILoadingScreen _loadingScreen;
+        
         private readonly IEngineHook[] _engineHooks;
 
         private RenderTarget2D _primary;
@@ -39,15 +43,19 @@ namespace Protogame
 
         private bool _isFirstRenderPass;
 
+        private Task<ILoadingScreen> _loadingScreenTask;
+
         public DefaultRenderPipeline(
             IGraphicsBlit graphicsBlit,
             IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities,
             IProfiler profiler,
+            ILoadingScreen loadingScreen,
             [FromGame] IEngineHook[] engineHooks)
         {
             _graphicsBlit = graphicsBlit;
             _renderTargetBackBufferUtilities = renderTargetBackBufferUtilities;
             _profiler = profiler;
+            _loadingScreen = loadingScreen;
             _engineHooks = engineHooks;
             _standardRenderPasses = new List<IRenderPass>();
             _postProcessingRenderPasses = new List<IRenderPass>();
@@ -85,7 +93,16 @@ namespace Protogame
                 IRenderPass previousPass = null;
                 IRenderPass nextPass = null;
 
-                var entities = gameContext.World.GetEntitiesForWorld(gameContext.Hierarchy).ToArray();
+                IEntity[] entities = null;
+                ILoadingScreen loadingScreen = null;
+                if (gameContext.World == null)
+                {
+                    loadingScreen = _loadingScreen;
+                }
+                else
+                {
+                    entities = gameContext.World.GetEntitiesForWorld(gameContext.Hierarchy).ToArray();
+                }
 
 #if !DISABLE_PIPELINE_TARGETS
                 renderContext.PushRenderTarget(_primary);
@@ -101,7 +118,7 @@ namespace Protogame
                         SetupRenderPassViewport(renderContext, pass);
                         pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
                         previousPass = pass;
-                        RenderPass(gameContext, renderContext, pass, entities);
+                        RenderPass(gameContext, renderContext, pass, entities, loadingScreen);
                         if (i < standardRenderPasses.Length - 1)
                         {
                             nextPass = standardRenderPasses[i + 1];
@@ -142,7 +159,7 @@ namespace Protogame
                             SetupRenderPassViewport(renderContext, pass);
                             pass.BeginRenderPass(gameContext, renderContext, previousPass, null);
                             previousPass = pass;
-                            RenderPass(gameContext, renderContext, pass, entities);
+                            RenderPass(gameContext, renderContext, pass, entities, loadingScreen);
                             if (i < transientStandardRenderPasses.Length - 1)
                             {
                                 nextPass = transientStandardRenderPasses[i + 1];
@@ -363,14 +380,19 @@ namespace Protogame
             return renderPass;
         }
 
-        private void RenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass renderPass, IEntity[] entities)
+        private void RenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass renderPass, IEntity[] entities, ILoadingScreen loadingScreen)
         {
-            if (!renderPass.SkipWorldRenderBelow)
+            if (!renderPass.SkipWorldRenderBelow && gameContext.World != null)
             {
                 gameContext.World.RenderBelow(gameContext, renderContext);
             }
 
-            if (!renderPass.SkipEntityRender)
+            if (gameContext.World == null && loadingScreen != null)
+            {
+                loadingScreen.Render(gameContext, renderContext);
+            }
+
+            if (!renderPass.SkipEntityRender && entities != null)
             {
                 foreach (var entity in entities.OfType<IPrerenderableEntity>())
                 {
@@ -383,7 +405,7 @@ namespace Protogame
                 }
             }
 
-            if (!renderPass.SkipWorldRenderAbove)
+            if (!renderPass.SkipWorldRenderAbove && gameContext.World != null)
             {
                 gameContext.World.RenderAbove(gameContext, renderContext);
             }

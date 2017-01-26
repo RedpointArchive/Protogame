@@ -296,6 +296,7 @@
     <Compile Include="Console\ServerConsole.cs" />
     <Compile Include="Core\AssetManagerProviderInitializer.cs" />
     <Compile Include="Core\BoundingBox.cs" />
+    <Compile Include="Core\ConfigurationAttribute.cs" />
     <Compile Include="Core\CoreGame.cs" />
     <Compile Include="Core\Default2DRenderUtilities.cs" />
     <Compile Include="Core\Default3DRenderUtilities.cs" />
@@ -305,6 +306,7 @@
     <Compile Include="Core\DefaultFinalTransform.cs" />
     <Compile Include="Core\DefaultGameContext.cs" />
     <Compile Include="Core\DefaultKeyboardStringReader.cs" />
+    <Compile Include="Core\DefaultLoadingScreen.cs" />
     <Compile Include="Core\DefaultRawLaunchArguments.cs" />
     <Compile Include="Core\DefaultStringSanitizer.cs" />
     <Compile Include="Core\DefaultTileUtilities.cs" />
@@ -336,6 +338,7 @@
     <Compile Include="Core\IHasTransform.cs" />
     <Compile Include="Core\IHasVelocity.cs" />
     <Compile Include="Core\IKeyboardStringReader.cs" />
+    <Compile Include="Core\ILoadingScreen.cs" />
     <Compile Include="Core\IPrerenderableEntity.cs" />
     <Compile Include="Core\IRawLaunchArguments.cs" />
     <Compile Include="Core\IRenderContext.cs" />
@@ -431,6 +434,7 @@
     <Compile Include="Graphics\Batching\DefaultRenderRequest.cs" />
     <Compile Include="Graphics\Batching\IRenderBatcher.cs" />
     <Compile Include="Graphics\Batching\IRenderRequest.cs" />
+    <Compile Include="Graphics\Default2DBatchedLoadingScreenRenderPass.cs" />
     <Compile Include="Graphics\Default2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\Default2DDirectRenderPass.cs" />
     <Compile Include="Graphics\Default3DDeferredRenderPass.cs" />
@@ -475,6 +479,7 @@
     <Compile Include="Graphics\Effect\SpecularEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\TextureEffectSemantic.cs" />
     <Compile Include="Graphics\Effect\WorldViewProjectionEffectSemantic.cs" />
+    <Compile Include="Graphics\I2DBatchedLoadingScreenRenderPass.cs" />
     <Compile Include="Graphics\I2DBatchedRenderPass.cs" />
     <Compile Include="Graphics\I2DDirectRenderPass.cs" />
     <Compile Include="Graphics\I3DBatchedRenderPass.cs" />

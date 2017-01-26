@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Protoinject;
@@ -122,6 +123,31 @@ namespace Protogame
         private readonly INode _node;
 
         /// <summary>
+        /// The asynchronous LoadContent task.
+        /// </summary>
+        private Task _loadContentTask;
+
+        /// <summary>
+        /// The coroutine scheduling service.
+        /// </summary>
+        private ICoroutine _coroutine;
+
+        /// <summary>
+        /// The coroutine scheduling execution service.
+        /// </summary>
+        private ICoroutineScheduler _coroutineScheduler;
+
+        /// <summary>
+        /// The loading screen used during early game startup.
+        /// </summary>
+        private ILoadingScreen _loadingScreen;
+
+        /// <summary>
+        /// Whether we've done an initial early render.
+        /// </summary>
+        private bool _hasDoneEarlyRender;
+
+        /// <summary>
         /// Gets the current game context.  You should not generally access this property; outside
         /// an explicit Update or Render loop, the state of the game context is not guaranteed.  Inside
         /// the context of an Update or Render loop, the game context is already provided.
@@ -209,6 +235,10 @@ namespace Protogame
             var assetContentManager = new AssetContentManager(Services);
             Content = assetContentManager;
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+
+            _coroutine = _kernel.Get<ICoroutine>();
+            _coroutineScheduler = _kernel.Get<ICoroutineScheduler>();
+            _loadingScreen = _kernel.Get<ILoadingScreen>();
         }
 
         /// <summary>
@@ -237,18 +267,14 @@ namespace Protogame
         /// </summary>
         protected override void LoadContent()
         {
-            // The interception library can't properly intercept class types, which
-            // means we can't simply do _kernel.Get<TInitialWorld>() because
-            // none of the calls will be intercepted.  Instead, we need to bind the
-            // IWorld and IWorldManager to their initial types and then unbind them
-            // after they've been constructed.
-            _kernel.Bind<IWorld>().To<TInitialWorld>();
-            _kernel.Bind<IWorldManager>().To<TWorldManager>();
-            var world = _kernel.Get<IWorld>(_node);
-            var worldManager = _kernel.Get<IWorldManager>(_node);
-            _kernel.Unbind<IWorld>();
-            _kernel.Unbind<IWorldManager>();
+            _loadContentTask = _coroutine.Run(async () =>
+            {
+                await LoadContentAsync();
+            });
+        }
 
+        protected virtual async Task LoadContentAsync()
+        {
             // Construct a platform-independent game window.
             Window = ConstructGameWindow();
 
@@ -301,14 +327,23 @@ namespace Protogame
             // Allow the user to configure the game window now.
             PrepareGameWindow(Window);
 
+            // Construct the world manager.
+            var worldManager = await _kernel.GetAsync<TWorldManager>(_node, null, null, new IInjectionAttribute[0], new IConstructorArgument[0], null);
+
             // Create the game context.
-            GameContext = _kernel.Get<IGameContext>(
+            GameContext = await _kernel.GetAsync<IGameContext>(
                 _node,
-                new NamedConstructorArgument("game", this), 
-                new NamedConstructorArgument("graphics", _graphicsDeviceManager), 
-                new NamedConstructorArgument("world", world), 
-                new NamedConstructorArgument("worldManager", worldManager), 
-                new NamedConstructorArgument("window", ConstructGameWindow()));
+                null,
+                null,
+                new IInjectionAttribute[0],
+                new IConstructorArgument[]
+                {
+                    new NamedConstructorArgument("game", this),
+                    new NamedConstructorArgument("graphics", _graphicsDeviceManager),
+                    new NamedConstructorArgument("world", null),
+                    new NamedConstructorArgument("worldManager", worldManager),
+                    new NamedConstructorArgument("window", ConstructGameWindow())
+                }, null);
 
             // If we are using the new rendering pipeline, we need to ensure that
             // the rendering context and the render pipeline world manager share
@@ -321,10 +356,13 @@ namespace Protogame
             }
 
             // Create the update and render contexts.
-            UpdateContext = _kernel.Get<IUpdateContext>(_node);
-            RenderContext = _kernel.Get<IRenderContext>(
-                _node,
-                new NamedConstructorArgument("renderPipeline", renderPipeline));
+            UpdateContext = await _kernel.GetAsync<IUpdateContext>(_node, null, null, new IInjectionAttribute[0], new IConstructorArgument[0], null);
+            RenderContext = await _kernel.GetAsync<IRenderContext>(
+                _node, null, null, new IInjectionAttribute[0], new IConstructorArgument[]
+                {
+                    new NamedConstructorArgument("renderPipeline", renderPipeline)
+                },
+                null);
 
             // Configure the render pipeline if possible.
             if (renderPipeline != null)
@@ -335,8 +373,11 @@ namespace Protogame
             // Retrieve all engine hooks.  These can be set up by additional modules
             // to change runtime behaviour.
             _engineHooks =
-                _kernel.GetAll<IEngineHook>(_node, null, null,
-                    new IInjectionAttribute[] {new FromGameAttribute()}).ToArray();
+                (await _kernel.GetAllAsync<IEngineHook>(_node, null, null,
+                    new IInjectionAttribute[] {new FromGameAttribute()}, new IConstructorArgument[0], null)).ToArray();
+
+            // Request the game context to load the world.
+            GameContext.SwitchWorld<TInitialWorld>();
 
             // Register with analytics services.
             _analyticsEngine.LogGameplayEvent("Game:Start");
@@ -382,6 +423,17 @@ namespace Protogame
         /// </param>
         protected override void Update(GameTime gameTime)
         {
+            if (GameContext == null)
+            {
+                // LoadContent hasn't finished running yet.  At this point, we don't even have
+                // the engine hooks loaded, so manually update the coroutine scheduler.
+                if (_hasDoneEarlyRender)
+                {
+                    _coroutineScheduler.Update((IGameContext) null, null);
+                }
+                return;
+            }
+
             using (_profiler.Measure("update", GameContext.FrameCount.ToString()))
             {
                 // Measure FPS.
@@ -428,6 +480,14 @@ namespace Protogame
         /// </param>
         protected override void Draw(GameTime gameTime)
         {
+            if (GameContext == null)
+            {
+                // LoadContent hasn't finished running yet.  Use the early game loading screen.
+                _loadingScreen.RenderEarly(this);
+                _hasDoneEarlyRender = true;
+                return;
+            }
+
             using (_profiler.Measure("render", (GameContext.FrameCount - 1).ToString()))
             {
                 RenderContext.IsRendering = true;

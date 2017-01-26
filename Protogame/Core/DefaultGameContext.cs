@@ -1,4 +1,8 @@
 // ReSharper disable CheckNamespace
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 #pragma warning disable 1591
 
 namespace Protogame
@@ -17,8 +21,10 @@ namespace Protogame
     {
         private readonly IKernel _kernel;
         private readonly IAnalyticsEngine _analyticsEngine;
+        private readonly ICoroutine _coroutine;
 
         private IWorld _nextWorld;
+        private Task _nextWorldTask;
         
         public DefaultGameContext(
             IKernel kernel,
@@ -31,6 +37,8 @@ namespace Protogame
         {
             _kernel = kernel;
             _analyticsEngine = analyticsEngine;
+            _coroutine = kernel.Get<ICoroutine>();
+
             Game = game;
             Graphics = graphics;
             World = world;
@@ -66,6 +74,19 @@ namespace Protogame
         {
             if (_nextWorld != null)
             {
+                if (_nextWorldTask != null && _nextWorldTask.IsCompleted)
+                {
+                    if (_nextWorldTask.IsFaulted)
+                    {
+                        throw new AggregateException(_nextWorldTask.Exception);
+                    }
+
+                    if (_nextWorldTask.IsCanceled)
+                    {
+                        throw new OperationCanceledException("The operation to switch the world was cancelled.");
+                    }
+                }
+
                 World?.Dispose();
                 World = _nextWorld;
 
@@ -74,12 +95,14 @@ namespace Protogame
                 _nextWorld = null;
             }
         }
-        
+
+        [Obsolete("Use SwitchWorld to asynchronously load worlds.")]
         public IWorld CreateWorld<T>() where T : IWorld
         {
             return _kernel.Get<T>();
         }
-        
+
+        [Obsolete("Use SwitchWorld to asynchronously load worlds.")]
         public IWorld CreateWorld<TFactory>(Func<TFactory, IWorld> creator)
         {
             return creator(_kernel.Get<TFactory>());
@@ -107,9 +130,18 @@ namespace Protogame
         
         public void SwitchWorld<T>() where T : IWorld
         {
-            _nextWorld = CreateWorld<T>();
+            if (_nextWorldTask != null)
+            {
+                throw new InvalidOperationException("The game is currently switching to a new world.  You can not call SwitchWorld until it has finished.");
+            }
+
+            _nextWorldTask = _coroutine.Run(async () =>
+            {
+                _nextWorld = await _kernel.GetAsync<T>((INode)null, (string)null, (string)null, new IInjectionAttribute[0], new IConstructorArgument[0], (Dictionary<Type, List<IMapping>>)null);
+            });
         }
-        
+
+        [Obsolete("Use the other factory-based SwitchWorld where the creator returns Task<IWorld> to asynchronously load worlds.")]
         public void SwitchWorld<TFactory>(Func<TFactory, IWorld> creator)
         {
             _nextWorld = CreateWorld(creator);
@@ -119,7 +151,26 @@ namespace Protogame
                 throw new InvalidOperationException("The world factory returned a null value.");
             }
         }
-        
+
+        public void SwitchWorld<TFactory>(Func<TFactory, Task<IWorld>> creator)
+        {
+            if (_nextWorldTask != null)
+            {
+                throw new InvalidOperationException("The game is currently switching to a new world.  You can not call SwitchWorld until it has finished.");
+            }
+
+            _nextWorldTask = _coroutine.Run(async () =>
+            {
+                var factory = await _kernel.GetAsync<TFactory>((INode)null, (string)null, (string)null, new IInjectionAttribute[0], new IConstructorArgument[0], (Dictionary<Type, List<IMapping>>)null);
+                _nextWorld = await creator(factory);
+
+                if (_nextWorld == null)
+                {
+                    throw new InvalidOperationException("The world factory returned a null value.");
+                }
+            });
+        }
+
         public void SwitchWorld<T>(T world) where T : IWorld
         {
             if (world == null)

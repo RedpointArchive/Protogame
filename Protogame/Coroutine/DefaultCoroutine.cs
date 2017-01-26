@@ -13,6 +13,18 @@ namespace Protogame
             _coroutineScheduler = coroutineScheduler;
         }
 
+        private async Task WrapCoroutine(Func<Task> coroutine)
+        {
+            await Task.Yield();
+            await coroutine();
+        }
+
+        private async Task<T> WrapCoroutine<T>(Func<Task<T>> coroutine)
+        {
+            await Task.Yield();
+            return await coroutine();
+        }
+
         public Task Run(Func<Task> coroutine)
         {
             var oldContext = SynchronizationContext.Current;
@@ -20,7 +32,7 @@ namespace Protogame
             {
                 var syncContext = (SynchronizationContext) _coroutineScheduler;
                 SynchronizationContext.SetSynchronizationContext(syncContext);
-                var task = coroutine();
+                var task = WrapCoroutine(coroutine);
                 syncContext.Post(async _=> { await task; }, null);
                 return task;
             }
@@ -37,7 +49,7 @@ namespace Protogame
             {
                 var syncContext = (SynchronizationContext)_coroutineScheduler;
                 SynchronizationContext.SetSynchronizationContext(syncContext);
-                var task = coroutine();
+                var task = WrapCoroutine(coroutine);
                 syncContext.Post(async _ => { await task; }, null);
                 return task;
             }

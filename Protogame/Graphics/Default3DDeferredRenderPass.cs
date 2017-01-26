@@ -236,9 +236,12 @@ namespace Protogame
 
             var lights = new List<ILight>();
 
-            foreach (var l in _hierarchy.Lookup(gameContext.World).Children.Select(x => x.UntypedValue).OfType<IHasLights>())
-            {
-                lights.AddRange(l.GetLights());
+            if (gameContext.World != null)
+            { 
+                foreach (var l in _hierarchy.Lookup(gameContext.World).Children.Select(x => x.UntypedValue).OfType<IHasLights>())
+                {
+                    lights.AddRange(l.GetLights());
+                }
             }
 
             renderContext.GraphicsDevice.BlendState = _lightBlendState;

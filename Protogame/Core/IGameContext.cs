@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Protoinject;
 
 namespace Protogame
@@ -126,6 +127,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IWorld"/>.
         /// </returns>
+        [Obsolete("Use SwitchWorld to asynchronously load worlds.")]
         IWorld CreateWorld<T>() where T : IWorld;
 
         /// <summary>
@@ -138,6 +140,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IWorld"/>.
         /// </returns>
+        [Obsolete("Use SwitchWorld to asynchronously load worlds.")]
         IWorld CreateWorld<TFactory>(Func<TFactory, IWorld> creator);
 
         /// <summary>
@@ -153,7 +156,7 @@ namespace Protogame
         void ResizeWindow(int width, int height);
 
         /// <summary>
-        /// Switches the current active world to a new instance of the world, as
+        /// Asynchronously switches the current active world to a new instance of the world, as
         /// specified by the given type.
         /// </summary>
         /// <typeparam name="T">
@@ -171,7 +174,20 @@ namespace Protogame
         /// <typeparam name="TFactory">
         /// The type of world to create and switch to.
         /// </typeparam>
+        [Obsolete("Use the other factory-based SwitchWorld where the creator returns Task<IWorld> to asynchronously load worlds.")]
         void SwitchWorld<TFactory>(Func<TFactory, IWorld> creator);
+
+        /// <summary>
+        /// Asynchronously switches the current active world to a new instance of the world, using
+        /// the specified factory method to create the instance of the world.
+        /// </summary>
+        /// <param name="creator">
+        /// The factory method used to create the world.
+        /// </param>
+        /// <typeparam name="TFactory">
+        /// The type of world to create and switch to.
+        /// </typeparam>
+        void SwitchWorld<TFactory>(Func<TFactory, Task<IWorld>> creator);
 
         /// <summary>
         /// Switches the current active world to the specified world instance.
