@@ -9,6 +9,16 @@ using Microsoft.Xna.Framework;
 using Protogame;
 using Protoinject;
 
+#if PLATFORM_MACOS
+#if PLATFORM_MACOS_LEGACY
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+#else
+using AppKit;
+using Foundation;
+#endif
+#endif
+
 public static class FastTrace
 {
     public static bool EmitStartupTrace = false;
@@ -33,13 +43,6 @@ public static class FastTrace
 }
 
 #if PLATFORM_MACOS
-#if PLATFORM_MACOS_LEGACY
-using MonoMac.AppKit;
-using MonoMac.Foundation;
-#else
-using AppKit;
-using Foundation;
-#endif
 
 public static class Program
 {
