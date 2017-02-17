@@ -70,7 +70,6 @@ namespace Protogame
 
             _lastFramePosition = new Dictionary<int, Vector3>();
             _lastFrameRotation = new Dictionary<int, Quaternion>();
-            _transformCache = new Dictionary<int, WeakReference<IHasTransform>>();
 
             _physicsWorld.Events.BodiesBeginCollide += EventsOnBodiesBeginCollide;
             _physicsWorld.Events.BodiesEndCollide += EventsOnBodiesEndCollide;
@@ -78,19 +77,19 @@ namespace Protogame
 
         private void EventsOnBodiesBeginCollide(RigidBody body1, RigidBody body2)
         {
-            if (body1.Tag != null && body2.Tag != null)
+            if (body1.WeakTagOrNull != null && body2.WeakTagOrNull != null)
             {
-                var node1 = _hierarchy.Lookup(body1.Tag);
-                var node2 = _hierarchy.Lookup(body2.Tag);
+                var node1 = _hierarchy.Lookup(body1.WeakTagOrNull);
+                var node2 = _hierarchy.Lookup(body2.WeakTagOrNull);
 
                 if (node1 == null)
                 {
-                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body1.Tag);
+                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body1.WeakTagOrNull);
                 }
 
                 if (node2 == null)
                 {
-                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body2.Tag);
+                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body2.WeakTagOrNull);
                 }
 
                 if (node1 != null && node2 != null)
@@ -112,19 +111,19 @@ namespace Protogame
 
         private void EventsOnBodiesEndCollide(RigidBody body1, RigidBody body2)
         {
-            if (body1.Tag != null && body2.Tag != null)
+            if (body1.WeakTagOrNull != null && body2.WeakTagOrNull != null)
             {
-                var node1 = _hierarchy.Lookup(body1.Tag);
-                var node2 = _hierarchy.Lookup(body2.Tag);
+                var node1 = _hierarchy.Lookup(body1.WeakTagOrNull);
+                var node2 = _hierarchy.Lookup(body2.WeakTagOrNull);
 
                 if (node1 == null)
                 {
-                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body1.Tag);
+                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body1.WeakTagOrNull);
                 }
 
                 if (node2 == null)
                 {
-                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body2.Tag);
+                    _consoleHandle.LogWarning("Unable to find hierarchy node for physics rigid body: " + body2.WeakTagOrNull);
                 }
 
                 if (node1 != null && node2 != null)
@@ -149,14 +148,14 @@ namespace Protogame
             public RigidBodyMapping(RigidBody rigidBody, IHasTransform hasTransform, bool staticAndImmovable)
             {
                 RigidBody = rigidBody;
-                HasTransform = hasTransform;
+                HasTransform = new WeakReference<IHasTransform>(hasTransform);
                 StaticAndImmovable = staticAndImmovable;
                 PerformedInitialSync = false;
             }
 
             public RigidBody RigidBody { get; set; }
 
-            public IHasTransform HasTransform { get; set; }
+            public WeakReference<IHasTransform> HasTransform { get; set; }
 
             public bool StaticAndImmovable { get; set; }
 
@@ -191,6 +190,8 @@ namespace Protogame
             _physicsMetrics.StaticImmovableObjects = 0;
             _physicsMetrics.PhysicsObjects = 0;
 
+            var gcRigidBodyMappings = new List<RigidBodyMapping>();
+
             foreach (var kv in _rigidBodyMappings)
             {
                 if (kv.StaticAndImmovable)
@@ -208,11 +209,16 @@ namespace Protogame
                 }
 
                 var rigidBody = kv.RigidBody;
-                var hasTransform = kv.HasTransform;
+                IHasTransform hasTransform;
 
-                // Put the lookup in the transform cache.
-                _transformCache[rigidBody.GetHashCode()] = new WeakReference<IHasTransform>(hasTransform);
-
+                if (!kv.HasTransform.TryGetTarget(out hasTransform))
+                {
+                    // The transform has been garbage collected.  We need to mark the rigid body mapping
+                    // as pending deletion and skip it for now.
+                    gcRigidBodyMappings.Add(kv);
+                    continue;
+                }
+                
                 // Sync game world to physics system.
                 var rot = hasTransform.FinalTransform.AbsoluteRotation;
                 var pos = hasTransform.FinalTransform.AbsolutePosition;
@@ -255,6 +261,16 @@ namespace Protogame
                 }
             }
 
+            if (gcRigidBodyMappings.Count > 0)
+            {
+                foreach (var kv in gcRigidBodyMappings)
+                {
+                    // Remove the rigid body whose transform has been garbage collected.
+                    _physicsWorld.RemoveBody(kv.RigidBody);
+                    _rigidBodyMappings.Remove(kv);
+                }
+            }
+
             _lastFramePosition.Clear();
             _lastFrameRotation.Clear();
 
@@ -276,7 +292,14 @@ namespace Protogame
                 }
 
                 var rigidBody = kv.RigidBody;
-                var hasMatrix = kv.HasTransform;
+                IHasTransform hasTransform;
+
+                if (!kv.HasTransform.TryGetTarget(out hasTransform))
+                {
+                    // The transform has been garbage collected.  Next step we'll detect it's been garbage
+                    // collected and deal with it then.
+                    continue;
+                }
 
                 // Calculate the changes that the physics system made in world space.
                 var oldWorldRot = Quaternion.Normalize(originalRotation[rigidBody.GetHashCode()]);
@@ -288,12 +311,12 @@ namespace Protogame
                 var localPos = newWorldPos - oldWorldPos;
                 
                 // Update the local components of the transform.
-                hasMatrix.Transform.LocalPosition += localPos;
-                hasMatrix.Transform.LocalRotation *= Quaternion.Inverse(oldWorldRot)*newWorldRot;
+                hasTransform.Transform.LocalPosition += localPos;
+                hasTransform.Transform.LocalRotation *= Quaternion.Inverse(oldWorldRot)*newWorldRot;
 
                 // Save the current rotation / position for the next frame.
-                _lastFramePosition[rigidBody.GetHashCode()] = hasMatrix.Transform.LocalPosition;
-                _lastFrameRotation[rigidBody.GetHashCode()] = hasMatrix.Transform.LocalRotation;
+                _lastFramePosition[rigidBody.GetHashCode()] = hasTransform.Transform.LocalPosition;
+                _lastFrameRotation[rigidBody.GetHashCode()] = hasTransform.Transform.LocalRotation;
 
                 if (kv.StaticAndImmovable && !kv.PerformedInitialSync)
                 {
@@ -334,7 +357,15 @@ namespace Protogame
 
         public void RegisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform, bool staticAndImmovable)
         {
-            if (_rigidBodyMappings.Any(x => x.RigidBody == rigidBody && x.HasTransform == hasTransform))
+            if (_rigidBodyMappings.Any(x =>
+            {
+                IHasTransform hasTransform2;
+                if (x.HasTransform.TryGetTarget(out hasTransform2))
+                {
+                    return x.RigidBody == rigidBody && hasTransform2 == hasTransform;
+                }
+                return false;
+            }))
             {
                 throw new InvalidOperationException();
             }
@@ -350,12 +381,32 @@ namespace Protogame
 
         public void UnregisterRigidBodyForHasMatrix(RigidBody rigidBody, IHasTransform hasTransform)
         {
-            if (_rigidBodyMappings.All(x => x.RigidBody != rigidBody || x.HasTransform != hasTransform))
+            Func<RigidBodyMapping, bool> predicate1 = x =>
+            {
+                IHasTransform hasTransform2;
+                if (x.HasTransform.TryGetTarget(out hasTransform2))
+                {
+                    return x.RigidBody != rigidBody || hasTransform2 != hasTransform;
+                }
+                return true;
+            };
+
+            if (_rigidBodyMappings.All(predicate1))
             {
                 throw new InvalidOperationException();
             }
 
-            _rigidBodyMappings.RemoveAll(x => x.RigidBody == rigidBody && x.HasTransform == hasTransform);
+            Predicate<RigidBodyMapping> predicate2 = x =>
+            {
+                IHasTransform hasTransform2;
+                if (x.HasTransform.TryGetTarget(out hasTransform2))
+                {
+                    return x.RigidBody == rigidBody && hasTransform2 == hasTransform;
+                }
+                return false;
+            };
+
+            _rigidBodyMappings.RemoveAll(predicate2);
             _physicsWorld.RemoveBody(rigidBody);
         }
 

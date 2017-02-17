@@ -158,7 +158,7 @@ namespace Protogame
             {
                 _rigidBody.Shape = _shape;
             }
-            _rigidBody.Tag = this;
+            _rigidBody.WeakTag = new WeakReference<object>(this);
         }
 
         protected void UpdateRigidBodyShape()
