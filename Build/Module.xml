@@ -18,10 +18,10 @@
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Prototest" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="AStarPathFinder" Version="master" />
     <Package Repository="https://api.nuget.org/v3/index.json" Package="Protoinject" Version="master" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|Newtonsoft.Json" Folder="Newtonsoft.Json" GitRef="8.0.3" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.TemporarySession" Folder="HiveMP.TemporarySession" GitRef="1.5.2" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.NATPunchthrough" Folder="HiveMP.NATPunchthrough" GitRef="1.5.0" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Lobby" Folder="HiveMP.Lobby" GitRef="0.3.0" />
-    <Package Uri="https-nuget://www.nuget.org/api/v2/|HiveMP.Attribute" Folder="HiveMP.Attribute" GitRef="0.2.0" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="Newtonsoft.Json" Version="8.0.3" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="HiveMP.TemporarySession" Version="1.5.2" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="HiveMP.NATPunchthrough" Version="1.5.0" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="HiveMP.Lobby" Version="0.3.0" />
+    <Package Repository="https://api.nuget.org/v3/index.json" Package="HiveMP.Attribute" Version="0.2.0" />
   </Packages>
 </Module>
