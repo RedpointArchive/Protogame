@@ -40,7 +40,7 @@ namespace Protogame
                     new
                     {
                         Loader = typeof(TilesetAssetLoader).FullName,
-                        TextureName = tilesetAsset.Texture != null ? tilesetAsset.Texture.Name : null,
+                        TextureName = tilesetAsset?.Texture?.Asset?.Name,
                         tilesetAsset.CellWidth,
                         tilesetAsset.CellHeight
                     });

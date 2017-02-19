@@ -11,25 +11,26 @@ namespace Protogame
     /// <interface_ref>Protogame.ICustomPostProcessingRenderPass</interface_ref>
     public class DefaultCustomPostProcessingRenderPass : ICustomPostProcessingRenderPass
     {
-        private readonly IEffect _effect;
+        private readonly IAssetReference<EffectAsset> _effect;
+        private readonly IEffect _effectDirect;
 
         private readonly IGraphicsBlit _graphicsBlit;
 
-        public DefaultCustomPostProcessingRenderPass(IGraphicsBlit graphicsBlit, IAssetManagerProvider assetManagerProvider, string effectAssetName)
+        public DefaultCustomPostProcessingRenderPass(IGraphicsBlit graphicsBlit, IAssetManager assetManager, string effectAssetName)
         {
-            _effect = assetManagerProvider.GetAssetManager().Get<EffectAsset>(effectAssetName).Effect;
+            _effect = assetManager.Get<EffectAsset>(effectAssetName);
             _graphicsBlit = graphicsBlit;
         }
 
-        public DefaultCustomPostProcessingRenderPass(IGraphicsBlit graphicsBlit, EffectAsset effectAsset)
+        public DefaultCustomPostProcessingRenderPass(IGraphicsBlit graphicsBlit, IAssetReference<EffectAsset> effectAsset)
         {
-            _effect = effectAsset.Effect;
+            _effect = effectAsset;
             _graphicsBlit = graphicsBlit;
         }
 
         public DefaultCustomPostProcessingRenderPass(IGraphicsBlit graphicsBlit, IEffect effect)
         {
-            _effect = effect;
+            _effectDirect = effect;
             _graphicsBlit = graphicsBlit;
         }
 
@@ -47,7 +48,11 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
-            _graphicsBlit.Blit(renderContext, postProcessingSource, null, _effect);
+            var effect = GetEffect();
+            if (effect != null)
+            {
+                _graphicsBlit.Blit(renderContext, postProcessingSource, null, effect);
+            }
         }
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
@@ -56,74 +61,89 @@ namespace Protogame
 
         public string Name { get; set; }
 
+        private IEffect GetEffect()
+        {
+            if (_effectDirect != null)
+            {
+                return _effectDirect;
+            }
+
+            if (_effect.IsReady)
+            {
+                return _effect.Asset.Effect;
+            }
+
+            return null;
+        }
+
         public void SetValue(string name, bool value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, int value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Matrix value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Matrix[] value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Quaternion value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, float value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, float[] value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Texture value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector2 value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector2[] value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector3 value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector3[] value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector4 value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
 
         public void SetValue(string name, Vector4[] value)
         {
-            _effect.NativeEffect.Parameters[name].SetValue(value);
+            GetEffect()?.NativeEffect.Parameters[name].SetValue(value);
         }
     }
 }

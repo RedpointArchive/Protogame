@@ -9,7 +9,7 @@ namespace Protogame
     {
         private readonly I2DRenderUtilities _renderUtilities;
         private readonly IMemoryProfiler _memoryProfiler;
-        private readonly FontAsset _defaultFont;
+        private readonly IAssetReference<FontAsset> _defaultFont;
 
         private Dictionary<string, List<double>> _historyOverTimePeriod;
         private Dictionary<string, double> _maximumOverTimePeriod;
@@ -17,11 +17,11 @@ namespace Protogame
         private Dictionary<string, int> _lastFrameToHaveData;
 
         public OperationCostProfilerVisualiser(
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             I2DRenderUtilities renderUtilities,
             IMemoryProfiler memoryProfiler)
         {
-            _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _defaultFont = assetManager.Get<FontAsset>("font.Default");
             _renderUtilities = renderUtilities;
             _memoryProfiler = memoryProfiler;
             _averageOverTimePeriod = new Dictionary<string, double>();

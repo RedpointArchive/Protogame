@@ -10,13 +10,13 @@ namespace Protogame
     /// <interface_ref>Protogame.IInvertPostProcessingRenderPass</interface_ref>
     public class DefaultInvertPostProcessingRenderPass : IInvertPostProcessingRenderPass
     {
-        private readonly IEffect _invertEffect;
+        private readonly IAssetReference<EffectAsset> _invertEffect;
 
         private readonly IGraphicsBlit _graphicsBlit;
 
-        public DefaultInvertPostProcessingRenderPass(IAssetManagerProvider assetManagerProvider, IGraphicsBlit graphicsBlit)
+        public DefaultInvertPostProcessingRenderPass(IAssetManager assetManager, IGraphicsBlit graphicsBlit)
         {
-            _invertEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Invert").Effect;
+            _invertEffect = assetManager.Get<EffectAsset>("effect.Invert");
             _graphicsBlit = graphicsBlit;
         }
 
@@ -29,7 +29,12 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
-            _graphicsBlit.Blit(renderContext, postProcessingSource, null, _invertEffect);
+            if (!_invertEffect.IsReady)
+            {
+                return;
+            }
+
+            _graphicsBlit.Blit(renderContext, postProcessingSource, null, _invertEffect.Asset.Effect);
         }
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)

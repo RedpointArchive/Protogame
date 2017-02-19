@@ -6,12 +6,12 @@ namespace Protogame
     public class BasicLinkSkinRenderer : ISkinRenderer<Link>
     {
         private readonly I2DRenderUtilities _renderUtilities;
-        private readonly FontAsset _fontAsset;
+        private readonly IAssetReference<FontAsset> _fontAsset;
 
-        public BasicLinkSkinRenderer(I2DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
+        public BasicLinkSkinRenderer(I2DRenderUtilities renderUtilities, IAssetManager assetManager)
         {
             _renderUtilities = renderUtilities;
-            _fontAsset = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _fontAsset = assetManager.Get<FontAsset>("font.Default");
         }
 
         public void Render(IRenderContext renderContext, Rectangle layout, Link link)

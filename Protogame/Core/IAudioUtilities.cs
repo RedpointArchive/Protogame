@@ -17,7 +17,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IAudioHandle"/> instance handle.
         /// </returns>
-        IAudioHandle GetHandle(AudioAsset asset);
+        IAudioHandle GetHandle(IAssetReference<AudioAsset> asset);
 
         /// <summary>
         /// Obtains an audio handle instance for an audio asset and starts playing
@@ -30,7 +30,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IAudioHandle"/> instance handle.
         /// </returns>
-        IAudioHandle Loop(AudioAsset asset);
+        IAudioHandle Loop(IAssetReference<AudioAsset> asset);
 
         /// <summary>
         /// Obtains an audio handle instance for an audio asset and plays it once.
@@ -43,6 +43,6 @@ namespace Protogame
         /// <returns>
         /// The <see cref="IAudioHandle"/> instance handle.
         /// </returns>
-        IAudioHandle Play(AudioAsset asset);
+        IAudioHandle Play(IAssetReference<AudioAsset> asset);
     }
 }

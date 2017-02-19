@@ -7,7 +7,7 @@ namespace Protogame
 {
     public class NetworkTrafficProfilerVisualiser : INetworkTrafficProfilerVisualiser
     {
-        private readonly FontAsset _defaultFont;
+        private readonly IAssetReference<FontAsset> _defaultFont;
         private readonly INetworkEngine _networkEngine;
         private readonly I2DRenderUtilities _renderUtilities;
 
@@ -15,11 +15,11 @@ namespace Protogame
         private NetworkSampler _receivedSampler;
 
         public NetworkTrafficProfilerVisualiser(
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             INetworkEngine networkEngine,
             I2DRenderUtilities renderUtilities)
         {
-            _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _defaultFont = assetManager.Get<FontAsset>("font.Default");
             _networkEngine = networkEngine;
             _renderUtilities = renderUtilities;
 
@@ -76,7 +76,7 @@ namespace Protogame
         private class NetworkSampler
         {
             private readonly I2DRenderUtilities _renderUtilities;
-            private readonly FontAsset _defaultFont;
+            private readonly IAssetReference<FontAsset> _defaultFont;
 
             private readonly List<int> _bytesOverTime;
             private readonly List<int> _countsOverTime;
@@ -88,7 +88,7 @@ namespace Protogame
                 get { return 56; }
             }
 
-            public NetworkSampler(I2DRenderUtilities renderUtilities, FontAsset defaultFont, string type)
+            public NetworkSampler(I2DRenderUtilities renderUtilities, IAssetReference<FontAsset> defaultFont, string type)
             {
                 _renderUtilities = renderUtilities;
                 _defaultFont = defaultFont;

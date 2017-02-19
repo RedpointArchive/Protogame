@@ -23,7 +23,7 @@ namespace Protogame
             _stringSanitizer = stringSanitizer;
         }
         
-        public Vector2 MeasureText(IRenderContext context, string text, FontAsset font)
+        public Vector2 MeasureText(IRenderContext context, string text, IAssetReference<FontAsset> font)
         {
             if (context == null)
             {
@@ -40,7 +40,12 @@ namespace Protogame
                 throw new ArgumentNullException(nameof(font));
             }
 
-            return font.Font.MeasureString(_stringSanitizer.SanitizeCharacters(font.Font, text));
+            if (!font.IsReady)
+            {
+                return new Vector2(0, 0);
+            }
+
+            return font.Asset.Font.MeasureString(_stringSanitizer.SanitizeCharacters(font.Asset.Font, text));
         }
         
         public void RenderLine(IRenderContext context, Vector2 start, Vector2 end, Color color, float width = 1f)
@@ -104,7 +109,7 @@ namespace Protogame
             IRenderContext context, 
             Vector2 position, 
             string text, 
-            FontAsset font, 
+            IAssetReference<FontAsset> font, 
             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, 
             VerticalAlignment verticalAlignment = VerticalAlignment.Top, 
             Color? textColor = null, 
@@ -126,6 +131,11 @@ namespace Protogame
                 throw new ArgumentNullException(nameof(font));
             }
 
+            if (!font.IsReady)
+            {
+                return;
+            }
+
             if (textColor == null)
             {
                 textColor = Color.White;
@@ -136,16 +146,16 @@ namespace Protogame
                 shadowColor = Color.Black;
             }
 
-            if (font.Font == null)
+            if (font.Asset.Font == null)
             {
-                throw new AssetNotCompiledException(font.Name);
+                throw new AssetNotCompiledException(font.Asset.Name);
             }
 
             // Sanitize the text.
-            text = _stringSanitizer.SanitizeCharacters(font.Font, text);
+            text = _stringSanitizer.SanitizeCharacters(font.Asset.Font, text);
 
             // Determine position to draw.
-            var size = font.Font.MeasureString(text);
+            var size = font.Asset.Font.MeasureString(text);
             float xx = 0, yy = 0;
             switch (horizontalAlignment)
             {
@@ -180,17 +190,17 @@ namespace Protogame
             // Draw shadow if required.
             if (renderShadow)
             {
-                context.SpriteBatch.DrawString(font.Font, text, new Vector2(xx + 1, yy + 1), shadowColor.Value);
+                context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx + 1, yy + 1), shadowColor.Value);
             }
 
             // Render the main text.
-            context.SpriteBatch.DrawString(font.Font, text, new Vector2(xx, yy), textColor.Value);
+            context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx, yy), textColor.Value);
         }
         
         public void RenderTexture(
             IRenderContext context, 
             Vector2 position, 
-            TextureAsset texture, 
+            IAssetReference<TextureAsset> texture, 
             Vector2? size = null, 
             Color? color = null, 
             float rotation = 0,
@@ -199,10 +209,15 @@ namespace Protogame
             bool flipVertically = false, 
             Rectangle? sourceArea = null)
         {
+            if (!texture.IsReady)
+            {
+                return;
+            }
+
             RenderTexture(
                 context,
                 position,
-                texture.Texture,
+                texture.Asset.Texture,
                 size,
                 color,
                 rotation,

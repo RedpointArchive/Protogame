@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Protogame.ATFLevelEditor;
 
@@ -10,15 +11,14 @@ namespace Protogame
 
         public LocatorEntity(
             IEditorQuery<LocatorEntity> editorQuery,
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             Render3DModelComponent modelComponent)
         {
             if (editorQuery.Mode != EditorQueryMode.BakingSchema)
             {
                 _modelComponent = modelComponent;
                 RegisterComponent(_modelComponent);
-
-                var assetManager = assetManagerProvider.GetAssetManager();
+                
                 editorQuery.MapTransform(this, Transform.Assign);
 
                 var modelUri = editorQuery.GetRawResourceUris().FirstOrDefault();
@@ -35,20 +35,15 @@ namespace Protogame
                         pathComponents.RemoveAt(0);
                     }
 
+                    var paths = new List<string>();
                     while (pathComponents.Count > 0)
                     {
                         var attemptAsset = string.Join(".", pathComponents);
-                        var resultAsset = assetManager.TryGet<ModelAsset>(attemptAsset);
-                        if (resultAsset == null)
-                        {
-                            pathComponents.RemoveAt(0);
-                        }
-                        else
-                        {
-                            _modelComponent.Model = resultAsset;
-                            break;
-                        }
+                        paths.Add(attemptAsset);
+                        pathComponents.RemoveAt(0);
                     }
+
+                    _modelComponent.Model = assetManager.GetPreferred<ModelAsset>(paths.ToArray());
                 }
             }
         }

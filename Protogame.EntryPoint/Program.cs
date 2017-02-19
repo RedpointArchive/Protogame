@@ -235,13 +235,7 @@ public static class Program
         {
             FastTrace.WriteLine("Protected Startup: Configuring kernel with " + gameConfiguration.GetType().FullName);
             gameConfiguration.ConfigureKernel(kernel);
-
-            // It is expected that the AssetManagerProvider architecture will
-            // be refactored in future to just provide IAssetManager directly,
-            // and this method call will be dropped.
-            FastTrace.WriteLine("Protected Startup: Initializing asset manager provider with " + gameConfiguration.GetType().FullName);
-            gameConfiguration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, args));
-
+            
             // We only construct one game.  In the event there are
             // multiple game configurations (such as a third-party library
             // providing additional game tools, it's expected that libraries
@@ -264,13 +258,7 @@ public static class Program
         {
             FastTrace.WriteLine("Protected Startup: Configuring kernel with " + serverConfiguration.GetType().FullName);
 			serverConfiguration.ConfigureKernel(kernel);
-
-            // It is expected that the AssetManagerProvider architecture will
-            // be refactored in future to just provide IAssetManager directly,
-            // and this method call will be dropped.
-            FastTrace.WriteLine("Protected Startup: Initializing asset manager provider with " + serverConfiguration.GetType().FullName);
-			serverConfiguration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, args));
-
+            
             // We only construct one server.  In the event there are
             // multiple server configurations (such as a third-party library
             // providing additional game tools, it's expected that libraries

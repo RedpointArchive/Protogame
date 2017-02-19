@@ -14,11 +14,11 @@ namespace Protogame
 
         private DepthStencilState _debugDepthState;
 
-        private IEffect _basicEffect;
+        private IAssetReference<UberEffectAsset> _basicEffect;
 
-        public DefaultDebugRenderPass(IAssetManagerProvider assetManagerProvider)
+        public DefaultDebugRenderPass(IAssetManager assetManager)
         {
-            _basicEffect = assetManagerProvider.GetAssetManager().Get<UberEffectAsset>("effect.BuiltinSurface").Effects["Color"];
+            _basicEffect = assetManager.Get<UberEffectAsset>("effect.BuiltinSurface");
             Lines = new List<VertexPositionNormalColor>();
             Triangles = new List<VertexPositionNormalColor>();
             EnabledLayers = new List<IDebugLayer>();
@@ -39,6 +39,11 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
+            if (!_basicEffect.IsReady)
+            {
+                return;
+            }
+
             if (EnabledLayers.Count == 0)
             {
                 return;
@@ -80,6 +85,11 @@ namespace Protogame
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
+            if (!_basicEffect.IsReady)
+            {
+                return;
+            }
+
             if (EnabledLayers.Count == 0)
             {
                 return;
@@ -88,11 +98,11 @@ namespace Protogame
             var world = renderContext.World;
             renderContext.World = Matrix.Identity;
 
-            _basicEffect.NativeEffect.Parameters["World"].SetValue(renderContext.World);
-            _basicEffect.NativeEffect.Parameters["View"].SetValue(renderContext.View);
-            _basicEffect.NativeEffect.Parameters["Projection"].SetValue(renderContext.Projection);
+            _basicEffect.Asset.Effects["Color"].NativeEffect.Parameters["World"].SetValue(renderContext.World);
+            _basicEffect.Asset.Effects["Color"].NativeEffect.Parameters["View"].SetValue(renderContext.View);
+            _basicEffect.Asset.Effects["Color"].NativeEffect.Parameters["Projection"].SetValue(renderContext.Projection);
 
-            foreach (var pass in _basicEffect.NativeEffect.CurrentTechnique.Passes)
+            foreach (var pass in _basicEffect.Asset.Effects["Color"].NativeEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 

@@ -20,6 +20,7 @@ namespace Protogame
                     .InSingletonScope();
             }
 
+            kernel.Bind<IAssetManager>().To<DefaultAssetManager>().InSingletonScope();
             kernel.Bind<IAssetLoader>().To<FontAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader>().To<LanguageAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader>().To<TextureAssetLoader>().InSingletonScope();
@@ -30,7 +31,6 @@ namespace Protogame
             kernel.Bind<IAssetLoader>().To<UberEffectAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader>().To<AIAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader>().To<ModelAssetLoader>().InSingletonScope();
-            kernel.Bind<IAssetLoader>().To<TextureAtlasAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader>().To<VariableAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader>().To<ConfigurationAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader>().To<UserInterfaceAssetLoader>().InSingletonScope();
@@ -43,7 +43,6 @@ namespace Protogame
             kernel.Bind<IAssetSaver>().To<EffectAssetSaver>().InSingletonScope();
             kernel.Bind<IAssetSaver>().To<UberEffectAssetSaver>().InSingletonScope();
             kernel.Bind<IAssetSaver>().To<ModelAssetSaver>().InSingletonScope();
-            kernel.Bind<IAssetSaver>().To<TextureAtlasAssetSaver>().InSingletonScope();
             kernel.Bind<IAssetSaver>().To<VariableAssetSaver>().InSingletonScope();
             kernel.Bind<IAssetSaver>().To<ConfigurationAssetSaver>().InSingletonScope();
             kernel.Bind<IAssetSaver>().To<UserInterfaceAssetSaver>().InSingletonScope();
@@ -62,7 +61,6 @@ namespace Protogame
             kernel.Bind<IEffectSemantic>().To<CameraPositionEffectSemantic>().DiscardNodeOnResolve();
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-            kernel.Bind<IAutomaticAssetReload>().To<DefaultAutomaticAssetReload>().InSingletonScope();
 #if DEBUG
             this.LoadRawAssetStrategies(kernel);
 #endif
@@ -71,13 +69,11 @@ namespace Protogame
             kernel.Bind<ILoadStrategy>().To<LocalCompiledLoadStrategy>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>().InSingletonScope();
 #elif PLATFORM_ANDROID || PLATFORM_OUYA
-            kernel.Bind<IAutomaticAssetReload>().To<DisabledAutomaticAssetReload>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<AndroidSourceLoadStrategy>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<AndroidCompiledLoadStrategy>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>().InSingletonScope();
 #elif PLATFORM_IOS || PLATFORM_TVOS
-            kernel.Bind<IAutomaticAssetReload>().To<DisabledAutomaticAssetReload>().InSingletonScope();
             // TODO: We still need to implement load strategies for normal content on iOS.
             kernel.Bind<ILoadStrategy>().To<EmbeddedCompiledLoadStrategy>().InSingletonScope();
             kernel.Bind<ILoadStrategy>().To<EmbeddedSourceLoadStrategy>().InSingletonScope();
@@ -90,7 +86,6 @@ namespace Protogame
                 kernel.Bind<IAssetCompiler<TextureAsset>>().To<TextureAssetCompiler>().InSingletonScope();
                 kernel.Bind<IAssetCompiler<ModelAsset>>().To<ModelAssetCompiler>().InSingletonScope();
                 kernel.Bind<IAssetCompiler<AudioAsset>>().To<AudioAssetCompiler>().InSingletonScope();
-                kernel.Bind<IAssetCompiler<TextureAtlasAsset>>().To<TextureAtlasAssetCompiler>().InSingletonScope();
 #if PLATFORM_WINDOWS
                 kernel.Bind<IAssetCompiler<EffectAsset>>().To<EffectAssetCompiler>().InSingletonScope();
                 kernel.Bind<IAssetCompiler<UberEffectAsset>>().To<UberEffectAssetCompiler>().InSingletonScope();

@@ -10,13 +10,13 @@ namespace Protogame
     /// <interface_ref>Protogame.IBlurPostProcessingRenderPass</interface_ref>
     public class DefaultBlurPostProcessingRenderPass : IBlurPostProcessingRenderPass
     {
-        private readonly IEffect _blurEffect;
+        private readonly IAssetReference<EffectAsset> _blurEffect;
 
         private readonly IGraphicsBlit _graphicsBlit;
 
-        public DefaultBlurPostProcessingRenderPass(IAssetManagerProvider assetManagerProvider, IGraphicsBlit graphicsBlit)
+        public DefaultBlurPostProcessingRenderPass(IAssetManager assetManager, IGraphicsBlit graphicsBlit)
         {
-            _blurEffect = assetManagerProvider.GetAssetManager().Get<EffectAsset>("effect.Blur").Effect;
+            _blurEffect = assetManager.Get<EffectAsset>("effect.Blur");
             _graphicsBlit = graphicsBlit;
         }
         
@@ -36,15 +36,20 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
+            if (!_blurEffect.IsReady)
+            {
+                return;
+            }
+
             // TODO Make iterations work.
 
-            _blurEffect.NativeEffect.Parameters["PixelWidth"].SetValue(1f/postProcessingSource.Width);
-            _blurEffect.NativeEffect.Parameters["PixelHeight"].SetValue(1f/postProcessingSource.Height);
+            _blurEffect.Asset.Effect.NativeEffect.Parameters["PixelWidth"].SetValue(1f/postProcessingSource.Width);
+            _blurEffect.Asset.Effect.NativeEffect.Parameters["PixelHeight"].SetValue(1f/postProcessingSource.Height);
             //_blurEffect.CurrentTechnique.Passes[0].Apply();
 
             // Parameters will get applied when blitting occurs.
 
-            _graphicsBlit.Blit(renderContext, postProcessingSource, null, _blurEffect);
+            _graphicsBlit.Blit(renderContext, postProcessingSource, null, _blurEffect.Asset.Effect);
         }
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)

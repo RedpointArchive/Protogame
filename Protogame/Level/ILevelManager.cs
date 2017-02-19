@@ -55,8 +55,5 @@ namespace Protogame
         /// <param name="levelAsset">The level to load.</param>
         /// <param name="filter">An optional filter which can be used to exclude parts of the level during load.</param>
         Task LoadAsync(object context, LevelAsset levelAsset, Func<IPlan, object, bool> filter);
-
-        [Obsolete("Use one of the other Load methods instead.")]
-        void Load(IWorld world, string name);
     }
 }

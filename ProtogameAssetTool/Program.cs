@@ -98,7 +98,7 @@
             var compiledAssetSaver = new CompiledAssetSaver();
 
             // Retrieve the asset manager.
-            var assetManager = kernel.Get<LocalAssetManager>();
+            var assetManager = kernel.Get<DefaultAssetManager>();
             assetManager.AllowSourceOnly = true;
             assetManager.SkipCompilation = true;
 
@@ -124,7 +124,6 @@
                 Console.WriteLine("Starting compilation for " + platformName);
                 var platform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), platformName);
                 var outputPath = Environment.CurrentDirectory;
-                assetManager.RescanAssets();
 
                 // Create the output directory if it doesn't exist.
                 if (!Directory.Exists(outputPath))
@@ -184,8 +183,6 @@
                         Console.WriteLine("ERROR: " + ex.GetType().FullName + ": " + ex.Message);
                         break;
                     }
-
-                    assetManager.Dirty(asset.Name);
                 }
             }
         }
@@ -194,7 +191,7 @@
         {
             // Create kernel.
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameAssetIoCModule>();
+            kernel.Load<ProtogameAssetModule>();
             kernel.Load<ProtogameScriptIoCModule>();
             var services = new GameServiceContainer();
             var assetContentManager = new AssetContentManager(services);
@@ -204,7 +201,7 @@
             // Only allow source and raw load strategies.
             kernel.Unbind<ILoadStrategy>();
             kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
-            var assetModule = new ProtogameAssetIoCModule();
+            var assetModule = new ProtogameAssetModule();
             assetModule.LoadRawAssetStrategies(kernel);
 
             // The assembly load strategy is required for references.

@@ -6,7 +6,7 @@ namespace Protogame
 {
     public class Null2DRenderUtilities : I2DRenderUtilities
     {
-        public Vector2 MeasureText(IRenderContext context, string text, FontAsset font)
+        public Vector2 MeasureText(IRenderContext context, string text, IAssetReference<FontAsset> font)
         {
             throw new NotSupportedException();
         }
@@ -21,7 +21,7 @@ namespace Protogame
             throw new NotSupportedException();
         }
 
-        public void RenderText(IRenderContext context, Vector2 position, string text, FontAsset font,
+        public void RenderText(IRenderContext context, Vector2 position, string text, IAssetReference<FontAsset> font,
             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment verticalAlignment = VerticalAlignment.Top, Color? textColor = null, bool renderShadow = true,
             Color? shadowColor = null)
@@ -29,7 +29,7 @@ namespace Protogame
             throw new NotSupportedException();
         }
 
-        public void RenderTexture(IRenderContext context, Vector2 position, TextureAsset texture, Vector2? size = null,
+        public void RenderTexture(IRenderContext context, Vector2 position, IAssetReference<TextureAsset> texture, Vector2? size = null,
             Color? color = null, float rotation = 0, Vector2? rotationAnchor = null, bool flipHorizontally = false, bool flipVertically = false,
             Rectangle? sourceArea = null)
         {

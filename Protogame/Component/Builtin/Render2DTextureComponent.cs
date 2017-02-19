@@ -6,7 +6,7 @@ namespace Protogame
     {
         private readonly I2DRenderUtilities _renderUtilities;
 
-        public TextureAsset Texture { get; set; }
+        public IAssetReference<TextureAsset> Texture { get; set; }
 
         public Render2DTextureComponent(I2DRenderUtilities renderUtilities)
         {

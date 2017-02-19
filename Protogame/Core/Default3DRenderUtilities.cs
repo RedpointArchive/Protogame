@@ -27,7 +27,7 @@ namespace Protogame
             _renderBatcher = renderBatcher;
         }
         
-        public Vector2 MeasureText(IRenderContext context, string text, FontAsset font)
+        public Vector2 MeasureText(IRenderContext context, string text, IAssetReference<FontAsset> font)
         {
             return _twoDimensionalRenderUtilities.MeasureText(context, text, font);
         }
@@ -150,8 +150,8 @@ namespace Protogame
             IEffect effect, 
             IEffectParameterSet effectParameterSet,
             Matrix matrix, 
-            string text, 
-            FontAsset font, 
+            string text,
+            IAssetReference<FontAsset> font, 
             HorizontalAlignment horizontalAlignment, 
             VerticalAlignment verticalAlignment,
             Color? textColor, 
@@ -209,7 +209,7 @@ namespace Protogame
             IEffect effect, 
             IEffectParameterSet effectParameterSet, 
             Matrix matrix, 
-            TextureAsset texture,
+            IAssetReference<TextureAsset> texture,
             Color? color, 
             bool flipHorizontally, 
             bool flipVertically, 
@@ -220,7 +220,12 @@ namespace Protogame
                 throw new InvalidOperationException("Can't use 3D rendering utilities in 2D context.");
             }
 
-            RenderTexture(context, effect, effectParameterSet, matrix, texture.Texture, color, flipHorizontally, flipVertically, sourceArea);
+            if (!texture.IsReady)
+            {
+                return;
+            }
+
+            RenderTexture(context, effect, effectParameterSet, matrix, texture.Asset.Texture, color, flipHorizontally, flipVertically, sourceArea);
         }
         
         private void RenderTexture(

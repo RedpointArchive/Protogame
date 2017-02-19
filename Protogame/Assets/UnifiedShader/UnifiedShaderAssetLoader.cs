@@ -13,27 +13,12 @@ namespace Protogame
             _assetContentManager = assetContentManager;
         }
 
-        public bool CanHandle(IRawAsset data)
+        public bool CanLoad(IRawAsset data)
         {
             return data.GetProperty<string>("Loader") == typeof(UnifiedShaderAssetLoader).FullName;
         }
 
-        public bool CanNew()
-        {
-            return true;
-        }
-
-        public IAsset GetDefault(IAssetManager assetManager, string name)
-        {
-            return null;
-        }
-
-        public IAsset GetNew(IAssetManager assetManager, string name)
-        {
-            return new UnifiedShaderAsset(_kernel, _assetContentManager, name, string.Empty, null, false);
-        }
-
-        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
+        public IAsset Load(string name, IRawAsset data)
         {
             if (data is CompiledAsset)
             {

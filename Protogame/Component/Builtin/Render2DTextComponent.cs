@@ -6,7 +6,7 @@ namespace Protogame
     {
         private readonly I2DRenderUtilities _renderUtilities;
 
-        public FontAsset Font { get; set; }
+        public IAssetReference<FontAsset> Font { get; set; }
 
         public string Text { get; set; }
 

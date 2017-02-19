@@ -9,18 +9,18 @@ namespace Protogame
         private readonly IKernel _kernel;
         private readonly IHierarchy _hierachy;
         private readonly I2DRenderUtilities _renderUtilities;
-        private readonly FontAsset _defaultFont;
+        private readonly IAssetReference<FontAsset> _defaultFont;
 
         public KernelMetricsProfilerVisualiser(
             IKernel kernel,
             IHierarchy hierachy,
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             I2DRenderUtilities renderUtilities)
         {
             _kernel = kernel;
             _hierachy = hierachy;
             _renderUtilities = renderUtilities;
-            _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _defaultFont = assetManager.Get<FontAsset>("font.Default");
         }
 
         public int GetHeight(int backBufferHeight)

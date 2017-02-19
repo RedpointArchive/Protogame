@@ -15,7 +15,7 @@ namespace Protogame
         /// <summary>
         /// The m_ texture.
         /// </summary>
-        private TextureAsset m_Texture;
+        private IAssetReference<TextureAsset> m_Texture;
 
         /// <summary>
         /// The m_ texture name.
@@ -107,13 +107,13 @@ namespace Protogame
         /// <value>
         /// The texture.
         /// </value>
-        public TextureAsset Texture
+        public IAssetReference<TextureAsset> Texture
         {
             get
             {
                 if (this.m_Texture == null)
                 {
-                    this.m_Texture = this.m_AssetManager.TryGet<TextureAsset>(this.m_TextureName);
+                    this.m_Texture = this.m_AssetManager.Get<TextureAsset>(this.m_TextureName);
                 }
 
                 return this.m_Texture;

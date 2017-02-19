@@ -7,16 +7,16 @@ namespace Protogame
     {
         private readonly I2DRenderUtilities _renderUtilities;
         private readonly IPhysicsEngine _physicsEngine;
-        private readonly FontAsset _defaultFont;
+        private readonly IAssetReference<FontAsset> _defaultFont;
 
         public PhysicsMetricsProfilerVisualiser(
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             I2DRenderUtilities renderUtilities,
             IPhysicsEngine physicsEngine)
         {
             _renderUtilities = renderUtilities;
             _physicsEngine = physicsEngine;
-            _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _defaultFont = assetManager.Get<FontAsset>("font.Default");
         }
 
         public int GetHeight(int backBufferHeight)

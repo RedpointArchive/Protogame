@@ -23,7 +23,7 @@ namespace Protogame
         /// <returns>
         /// The <see cref="Vector2"/>.
         /// </returns>
-        Vector2 MeasureText(IRenderContext context, string text, FontAsset font);
+        Vector2 MeasureText(IRenderContext context, string text, IAssetReference<FontAsset> font);
 
         /// <summary>
         /// Renders a 3D line.
@@ -128,8 +128,8 @@ namespace Protogame
             IEffect effect, 
             IEffectParameterSet effectParameterSet,
             Matrix matrix, 
-            string text, 
-            FontAsset font, 
+            string text,
+            IAssetReference<FontAsset> font, 
             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, 
             VerticalAlignment verticalAlignment = VerticalAlignment.Top, 
             Color? textColor = null, 
@@ -166,8 +166,8 @@ namespace Protogame
             IRenderContext context,
             IEffect effect,
             IEffectParameterSet effectParameterSet,
-            Matrix matrix, 
-            TextureAsset texture, 
+            Matrix matrix,
+            IAssetReference<TextureAsset> texture, 
             Color? color = null, 
             bool flipHorizontally = false, 
             bool flipVertically = false, 

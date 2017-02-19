@@ -11,28 +11,13 @@
         {
             this.m_Kernel = kernel;
         }
-        
-        public bool CanHandle(IRawAsset data)
+
+        public bool CanLoad(IRawAsset data)
         {
             return typeof(AIAsset).IsAssignableFrom(data.GetProperty<Type>("Type"));
         }
-        
-        public bool CanNew()
-        {
-            return false;
-        }
-        
-        public IAsset GetDefault(IAssetManager assetManager, string name)
-        {
-            throw new NotSupportedException();
-        }
-        
-        public IAsset GetNew(IAssetManager assetManager, string name)
-        {
-            throw new NotSupportedException();
-        }
 
-        public IAsset Handle(IAssetManager assetManager, string name, IRawAsset data)
+        public IAsset Load(string name, IRawAsset data)
         {
             var value = (AIAsset)this.m_Kernel.Get(data.GetProperty<Type>("Type"));
             value.Name = name;

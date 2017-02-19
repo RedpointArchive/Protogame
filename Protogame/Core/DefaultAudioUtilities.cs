@@ -11,19 +11,19 @@ namespace Protogame
     /// <interface_ref>Protogame.IAudioUtilities</interface_ref>
     public class DefaultAudioUtilities : IAudioUtilities
     {
-        public IAudioHandle GetHandle(AudioAsset asset)
+        public IAudioHandle GetHandle(IAssetReference<AudioAsset> asset)
         {
             return new DefaultAudioHandle(asset);
         }
         
-        public IAudioHandle Loop(AudioAsset asset)
+        public IAudioHandle Loop(IAssetReference<AudioAsset> asset)
         {
             var handle = GetHandle(asset);
             handle.Loop();
             return handle;
         }
         
-        public IAudioHandle Play(AudioAsset asset)
+        public IAudioHandle Play(IAssetReference<AudioAsset> asset)
         {
             var handle = GetHandle(asset);
             handle.Play();

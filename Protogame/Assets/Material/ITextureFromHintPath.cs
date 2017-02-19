@@ -2,7 +2,7 @@
 {
     public interface ITextureFromHintPath
     {
-        TextureAsset GetTextureFromHintPath(string hintPath);
-        TextureAsset GetTextureFromHintPath(IMaterialTexture materialTexture);
+        IAssetReference<TextureAsset> GetTextureFromHintPath(string hintPath);
+        IAssetReference<TextureAsset> GetTextureFromHintPath(IMaterialTexture materialTexture);
     }
 }

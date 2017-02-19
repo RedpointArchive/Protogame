@@ -13,7 +13,7 @@ namespace Protogame
         
         public bool Focused { get; set; }
         
-        public FontAsset Font { get; set; }
+        public IAssetReference<FontAsset> Font { get; set; }
         
         public int Order { get; set; }
         

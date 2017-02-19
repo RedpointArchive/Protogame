@@ -70,44 +70,5 @@ namespace Protogame
             Load(context, levelAsset, filter);
             return new Task(() => { });
         }
-
-        [Obsolete("Use one of the other Load methods instead.")]
-        public void Load(IWorld world, string name)
-        {
-            // This legacy method only accepts a name, so lazy load the asset manager
-            // to support this old behaviour.
-            var assetManager = _kernel.Get<IAssetManagerProvider>(_currentNode).GetAssetManager();
-            var levelAsset = assetManager.Get<LevelAsset>(name);
-
-            if (levelAsset.LevelDataFormat != LevelDataFormat.OgmoEditor)
-            {
-                throw new NotSupportedException(
-                    "This method is only for legacy usage, and only " +
-                    "supports the Ogmo Editor level format.");
-            }
-
-            var levelReader = _kernel.Get<ILevelReader>(_currentNode, LevelDataFormat.OgmoEditor.ToString());
-            var levelBytes = Encoding.ASCII.GetBytes(levelAsset.LevelData);
-
-            var worldNode = _kernel.Hierarchy.Lookup(world);
-            // TODO: This doesn't work right yet because the collision system still relies on
-            // checking the bounding boxes of entities, rather than entities having bounding box
-            // components or something of that nature.
-            //var levelGroup = _kernel.Get<EntityGroup>(worldNode, null, "LevelEntities", new IInjectionAttribute[0]);
-            //var levelNode = _kernel.Hierarchy.Lookup(levelGroup);
-            using (var stream = new MemoryStream(levelBytes))
-            {
-                foreach (var entity in levelReader.Read(stream, _currentNode))
-                {
-                    var existingNode = _kernel.Hierarchy.Lookup(entity);
-                    if (existingNode != null)
-                    {
-                        // Remove it from the hierarchy if it's already there.
-                        _kernel.Hierarchy.RemoveNode(existingNode);
-                    }
-                    _kernel.Hierarchy.AddChildNode(worldNode, existingNode);
-                }
-            }
-        }
     }
 }

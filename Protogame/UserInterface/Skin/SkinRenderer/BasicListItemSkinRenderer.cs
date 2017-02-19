@@ -7,13 +7,13 @@ namespace Protogame
     {
         private readonly IBasicSkinHelper _basicSkinHelper;
         private readonly I2DRenderUtilities _renderUtilities;
-        private readonly FontAsset _fontAsset;
+        private readonly IAssetReference<FontAsset> _fontAsset;
 
-        public BasicListItemSkinRenderer(IBasicSkinHelper basicSkinHelper, I2DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
+        public BasicListItemSkinRenderer(IBasicSkinHelper basicSkinHelper, I2DRenderUtilities renderUtilities, IAssetManager assetManager)
         {
             _basicSkinHelper = basicSkinHelper;
             _renderUtilities = renderUtilities;
-            _fontAsset = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _fontAsset = assetManager.Get<FontAsset>("font.Default");
         }
 
         public void Render(IRenderContext renderContext, Rectangle layout, ListItem listItem)

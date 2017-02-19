@@ -9,14 +9,14 @@ namespace Protogame
         private readonly IRenderCache _renderCache;
         private readonly IRenderAutoCache _renderAutoCache;
         private readonly IRenderBatcher _renderBatcher;
-        private readonly FontAsset _defaultFont;
+        private readonly IAssetReference<FontAsset> _defaultFont;
 
         public static ulong ParameterSetsCreated = 0;
 
         public static ulong RenderRequestsCreated = 0;
 
         public GraphicsMetricsProfilerVisualiser(
-            IAssetManagerProvider assetManagerProvider,
+            IAssetManager assetManager,
             I2DRenderUtilities renderUtilities,
             IRenderCache renderCache,
             IRenderAutoCache renderAutoCache,
@@ -26,7 +26,7 @@ namespace Protogame
             _renderCache = renderCache;
             _renderAutoCache = renderAutoCache;
             _renderBatcher = renderBatcher;
-            _defaultFont = assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Default");
+            _defaultFont = assetManager.Get<FontAsset>("font.Default");
         }
 
         public int GetHeight(int backBufferHeight)

@@ -27,6 +27,6 @@ namespace Protogame
         /// <value>
         /// The tileset.
         /// </value>
-        TilesetAsset Tileset { get; set; }
+        IAssetReference<TilesetAsset> Tileset { get; set; }
     }
 }

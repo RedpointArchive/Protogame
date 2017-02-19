@@ -8,21 +8,21 @@ namespace Protogame
     public class ClientConsoleRender : IConsoleRender
     {
         private readonly I2DRenderUtilities _renderUtilities;
-        private readonly IAssetManagerProvider _assetManagerProvider;
+        private readonly IAssetManager _assetManager;
 
-        private FontAsset _fontAsset;
+        private IAssetReference<FontAsset> _fontAsset;
 
-        public ClientConsoleRender(I2DRenderUtilities renderUtilities, IAssetManagerProvider assetManagerProvider)
+        public ClientConsoleRender(I2DRenderUtilities renderUtilities, IAssetManager assetManager)
         {
             _renderUtilities = renderUtilities;
-            _assetManagerProvider = assetManagerProvider;
+            _assetManager = assetManager;
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext, StringBuilder inputBuffer, ConsoleState state, List<Tuple<ConsoleLogLevel, string>> logEntries)
         {
             if (_fontAsset == null)
             {
-                _fontAsset = _assetManagerProvider.GetAssetManager().Get<FontAsset>("font.Console");
+                _fontAsset = _assetManager.Get<FontAsset>("font.Console");
             }
 
             if (renderContext.IsCurrentRenderPass<I3DRenderPass>())
