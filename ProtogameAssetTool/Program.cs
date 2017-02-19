@@ -66,6 +66,31 @@
             }
         }
 
+        private static void SetupKernel(IKernel kernel)
+        {
+            kernel.Load<ProtogameAssetModule>();
+            kernel.Load<ProtogameScriptIoCModule>();
+            var services = new GameServiceContainer();
+            var assetContentManager = new AssetContentManager(services);
+            kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+            kernel.Bind<IRenderBatcher>().To<NullRenderBatcher>();
+            kernel.Bind<ICoroutineScheduler>().To<DefaultCoroutineScheduler>().InSingletonScope();
+            kernel.Bind<ICoroutine>().To<DefaultCoroutine>();
+            kernel.Bind<IConsole>().To<ServerConsole>().InSingletonScope();
+            kernel.Bind<IConsoleHandle>().To<DefaultConsoleHandle>().InParentScope();
+
+            // Only allow source and raw load strategies.
+            kernel.Unbind<ILoadStrategy>();
+            kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
+            var assetModule = new ProtogameAssetModule();
+            assetModule.LoadRawAssetStrategies(kernel);
+
+            // Set up remaining bindings.
+            kernel.Bind<IAssetCleanup>().To<DefaultAssetCleanup>();
+            kernel.Bind<IAssetOutOfDateCalculator>().To<DefaultAssetOutOfDateCalculator>();
+            kernel.Bind<IAssetCompilationEngine>().To<DefaultAssetCompilationEngine>();
+        }
+
         /// <summary>
         /// Compiles the built-in embedded resources.
         /// </summary>
@@ -73,24 +98,8 @@
         {
             // Create kernel.
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameAssetIoCModule>();
-            kernel.Load<ProtogameScriptIoCModule>();
-            var services = new GameServiceContainer();
-            var assetContentManager = new AssetContentManager(services);
-            kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
-            kernel.Bind<IRenderBatcher>().To<NullRenderBatcher>();
-
-            // Only allow source and raw load strategies.
-            kernel.Unbind<ILoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
-            var assetModule = new ProtogameAssetIoCModule();
-            assetModule.LoadRawAssetStrategies(kernel);
-
-            // Set up remaining bindings.
-            kernel.Bind<IAssetCleanup>().To<DefaultAssetCleanup>();
-            kernel.Bind<IAssetOutOfDateCalculator>().To<DefaultAssetOutOfDateCalculator>();
-            kernel.Bind<IAssetCompilationEngine>().To<DefaultAssetCompilationEngine>();
-
+            SetupKernel(kernel);
+            
             // Rebind for builtin compilation.
             kernel.Rebind<IRawAssetLoader>().To<BuiltinRawAssetLoader>();
 
@@ -191,18 +200,7 @@
         {
             // Create kernel.
             var kernel = new StandardKernel();
-            kernel.Load<ProtogameAssetModule>();
-            kernel.Load<ProtogameScriptIoCModule>();
-            var services = new GameServiceContainer();
-            var assetContentManager = new AssetContentManager(services);
-            kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
-            kernel.Bind<IRenderBatcher>().To<NullRenderBatcher>();
-
-            // Only allow source and raw load strategies.
-            kernel.Unbind<ILoadStrategy>();
-            kernel.Bind<ILoadStrategy>().To<LocalSourceLoadStrategy>();
-            var assetModule = new ProtogameAssetModule();
-            assetModule.LoadRawAssetStrategies(kernel);
+            SetupKernel(kernel);
 
             // The assembly load strategy is required for references.
             // Assets loaded with the assembly load strategy won't have
@@ -256,11 +254,6 @@
                     Console.WriteLine("Can't load " + file.Name);
                 }
             }
-
-            // Set up remaining bindings.
-            kernel.Bind<IAssetCleanup>().To<DefaultAssetCleanup>();
-            kernel.Bind<IAssetOutOfDateCalculator>().To<DefaultAssetOutOfDateCalculator>();
-            kernel.Bind<IAssetCompilationEngine>().To<DefaultAssetCompilationEngine>();
 
             // Get the asset compilation engine.
             var compilationEngine = kernel.Get<IAssetCompilationEngine>();

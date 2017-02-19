@@ -11,6 +11,8 @@ namespace Protogame
     /// <module>Graphics</module>
     public interface ICustomPostProcessingRenderPass : IRenderPass
     {
+        IAssetReference<EffectAsset> Effect { get; }
+
         /// <summary>
         /// Sets the custom shader parameter to the specified boolean.
         /// </summary>

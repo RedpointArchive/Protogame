@@ -17,7 +17,7 @@ namespace Protogame.Tests
             private readonly I2DRenderUtilities _renderUtilities;
             private readonly IAssert _assert;
 
-            private readonly TextureAsset _texture;
+            private readonly IAssetReference<TextureAsset> _texture;
 
             private readonly IInvertPostProcessingRenderPass _invertPostProcess;
 
@@ -49,17 +49,24 @@ namespace Protogame.Tests
 
             private bool _didExit;
 
-            public RenderPipelineWorld(IAssetManagerProvider assetManagerProvider, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory, IAssert assert)
+            private bool _isValidRun;
+
+            public RenderPipelineWorld(IAssetManager assetManager, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory, IAssert assert)
             {
                 _renderUtilities = renderUtilities;
                 _assert = assert;
-                _texture = assetManagerProvider.GetAssetManager().Get<TextureAsset>("texture.Player");
+                _texture = assetManager.Get<TextureAsset>("texture.Player");
                 _invertPostProcess = graphicsFactory.CreateInvertPostProcessingRenderPass();
                 _blurPostProcess = graphicsFactory.CreateBlurPostProcessingRenderPass();
                 _customPostProcess = graphicsFactory.CreateCustomPostProcessingRenderPass("effect.MakeRed");
                 _captureInlinePostProcess = graphicsFactory.CreateCaptureInlinePostProcessingRenderPass();
                 _captureInlinePostProcess.RenderPipelineStateAvailable = d =>
                 {
+                    if (!_isValidRun)
+                    {
+                        return;
+                    }
+
 #if MANUAL_TEST
 #elif RECORDING
                     using (var writer = new StreamWriter("output" + _frame + ".png"))
@@ -105,6 +112,13 @@ namespace Protogame.Tests
 
             public void RenderBelow(IGameContext gameContext, IRenderContext renderContext)
             {
+                _isValidRun = _texture.IsReady;
+
+                if (!_texture.IsReady || !_customPostProcess.Effect.IsReady)
+                {
+                    return;
+                }
+
                 renderContext.GraphicsDevice.Clear(Color.Green);
 
 #if !MANUAL_TEST
@@ -141,6 +155,11 @@ namespace Protogame.Tests
 
             public void Update(IGameContext gameContext, IUpdateContext updateContext)
             {
+                if (!_isValidRun)
+                {
+                    return;
+                }
+
 #if !MANUAL_TEST
                 if (_didExit)
                 {
@@ -197,9 +216,8 @@ namespace Protogame.Tests
         {
             var kernel = new StandardKernel();
             kernel.Load<ProtogameCoreModule>();
-            kernel.Load<ProtogameAssetIoCModule>();
+            kernel.Load<ProtogameAssetModule>();
             kernel.Bind<IAssert>().ToMethod(x => _assert);
-            AssetManagerClient.AcceptArgumentsAndSetup<GameAssetManagerProvider>(kernel, new string[0]);
 
             using (var game = new RenderPipelineGame(kernel))
             {
