@@ -94,7 +94,7 @@ namespace Protogame
                         request.Effect.NativeEffect.Parameters["Projection"]?.SetValue(renderContext.Projection);
 
 #if PLATFORM_WINDOWS
-                        var allowInstancedCalls = false;
+                        var allowInstancedCalls = true;
 #else
                         var allowInstancedCalls = false;
 #endif
@@ -129,8 +129,6 @@ namespace Protogame
                                 renderContext.GraphicsDevice.DrawInstancedPrimitives(
                                     request.PrimitiveType,
                                     0,
-                                    0,
-                                    request.MeshVertexBuffer.VertexCount,
                                     0,
                                     pc,
                                     matrices.Count);
