@@ -247,7 +247,10 @@ struct VertexShaderInputBatched
 	float4 BoneWeights : PROTOGAME_BLENDWEIGHT(0);
 	uint4 BoneIndices : PROTOGAME_BLENDINDICES(0);
 #endif
-	float4x4 InstanceWorld : PROTOGAME_TEXCOORD(1);
+	float4 InstanceWorld1 : PROTOGAME_TEXCOORD(1);
+    float4 InstanceWorld2 : PROTOGAME_TEXCOORD(2);
+    float4 InstanceWorld3 : PROTOGAME_TEXCOORD(3);
+    float4 InstanceWorld4 : PROTOGAME_TEXCOORD(4);
 };
 
 
@@ -289,8 +292,8 @@ ForwardVertexShaderOutput ForwardVertexShader(VertexShaderInput input)
 ForwardVertexShaderOutput ForwardVertexShaderBatched(VertexShaderInputBatched input)
 {
 	ForwardVertexShaderOutput output;
-
-	COMPUTE_VERTEX(input.InstanceWorld);
+    
+	COMPUTE_VERTEX(float4x4(input.InstanceWorld1, input.InstanceWorld2, input.InstanceWorld3, input.InstanceWorld4));
 
 	return output;
 }
@@ -404,7 +407,9 @@ DeferredVertexShaderOutput DeferredVertexShaderBatched(VertexShaderInputBatched 
 {
 	DeferredVertexShaderOutput output;
 
-	COMPUTE_VERTEX(input.InstanceWorld);
+	// input.InstanceWorld
+    // float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+	COMPUTE_VERTEX(float4x4(input.InstanceWorld1, input.InstanceWorld2, input.InstanceWorld3, input.InstanceWorld4));
 
 	output.Depth.x = output.Position.z;
 	output.Depth.y = output.Position.w;
