@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Reflection;
 using Microsoft.Xna.Framework;
 using Protoinject;
 using Prototest.Library.Version1;
+using Prototest.Library.Version13;
 
 namespace Protogame.Tests
 {
@@ -77,17 +80,46 @@ namespace Protogame.Tests
                     var baseStream =
                         typeof (RenderPipelineWorld).Assembly.GetManifestResourceStream(
                             "Protogame.Tests.Expected.RenderPipeline.output" + _frame + ".png");
-                    var baseBytes = new byte[baseStream.Length];
-                    baseStream.Read(baseBytes, 0, baseBytes.Length);
+                    _assert.NotNull(baseStream);
                     var memoryStream = new MemoryStream();
                     d.SaveAsPng(memoryStream, Width, Height);
-                    var memoryBytes = new byte[memoryStream.Position];
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    memoryStream.Read(memoryBytes, 0, memoryBytes.Length);
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    var expected = new Bitmap(baseStream);
+                    var actual = new Bitmap(memoryStream);
+
+                    _assert.Equal(expected.Height, actual.Height);
+                    _assert.Equal(expected.Width, actual.Width);
+                    var totalPixelValues = 0L;
+                    var incorrectPixelValues = 0L;
+                    for (var x = 0; x < expected.Width; x++)
+                    {
+                        for (var y = 0; y < expected.Height; y++)
+                        {
+                            var expectedPixel = expected.GetPixel(x, y);
+                            var actualPixel = actual.GetPixel(x, y);
+
+                            totalPixelValues += 255 * 4;
+
+                            if (expectedPixel != actualPixel)
+                            {
+                                var diffA = System.Math.Abs((int) actualPixel.A - (int) expectedPixel.A);
+                                var diffR = System.Math.Abs((int) actualPixel.R - (int) expectedPixel.R);
+                                var diffG = System.Math.Abs((int) actualPixel.G - (int) expectedPixel.G);
+                                var diffB = System.Math.Abs((int) actualPixel.B - (int) expectedPixel.B);
+
+                                incorrectPixelValues += (diffA + diffR + diffG + diffB);
+                            }
+                        }
+                    }
+
+                    var percentage = (100 - ((incorrectPixelValues / (double)totalPixelValues) * 100f));
+                    if (percentage <= 99.9f)
+                    {
+                        _assert.True(false, "The actual rendered image did not match the expected image close enough (99.9%).");
+                    }
+
                     memoryStream.Dispose();
                     baseStream.Dispose();
-
-                    _assert.Equal(baseBytes, memoryBytes);
 #endif
 
 #if MANUAL_TEST
@@ -119,7 +151,7 @@ namespace Protogame.Tests
                     return;
                 }
 
-                renderContext.GraphicsDevice.Clear(Color.Green);
+                renderContext.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Green);
 
 #if !MANUAL_TEST
                 if (_frame >= _combinations.Count)
@@ -205,15 +237,19 @@ namespace Protogame.Tests
             }
         }
 
-        public RenderPipelineTests(IAssert assert, ICategorize categorize)
+        public RenderPipelineTests(IAssert assert, IThreadControl threadControl)
         {
             _assert = assert;
 
-            categorize.Method("IsFunctional", () => PerformRenderPipelineTest());
+            threadControl.RequireTestsToRunOnMainThread();
         }
         
         public void PerformRenderPipelineTest()
         {
+            // We must change directory to the location of the assembly, because
+            // Linux doesn't load SDL DLLs properly.
+            Environment.CurrentDirectory = new FileInfo(Assembly.GetEntryAssembly().Location).DirectoryName;
+
             var kernel = new StandardKernel();
             kernel.Load<ProtogameCoreModule>();
             kernel.Load<ProtogameAssetModule>();
