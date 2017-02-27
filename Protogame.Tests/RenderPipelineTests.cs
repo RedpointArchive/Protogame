@@ -7,18 +7,21 @@ using Microsoft.Xna.Framework;
 using Protoinject;
 using Prototest.Library.Version1;
 using Prototest.Library.Version13;
+using ICategorize = Prototest.Library.Version13.ICategorize;
 
 namespace Protogame.Tests
 {
     public class RenderPipelineTests
     {
         private readonly IAssert _assert;
+        private readonly ITestAttachment _testAttachment;
         private readonly ICategorize _categorize;
 
         public class RenderPipelineWorld : IWorld
         {
             private readonly I2DRenderUtilities _renderUtilities;
             private readonly IAssert _assert;
+            private readonly ITestAttachment _testAttachment;
 
             private readonly IAssetReference<TextureAsset> _texture;
 
@@ -30,16 +33,40 @@ namespace Protogame.Tests
 
             private readonly ICaptureInlinePostProcessingRenderPass _captureInlinePostProcess;
 
-            private List<Tuple<bool, bool, bool>> _combinations = new List<Tuple<bool, bool, bool>>
+            private class Combination
             {
-                new Tuple<bool, bool, bool>(false, false, false),
-                new Tuple<bool, bool, bool>(false, false, true),
-                new Tuple<bool, bool, bool>(false, true, false),
-                new Tuple<bool, bool, bool>(false, true, true),
-                new Tuple<bool, bool, bool>(true, false, false),
-                new Tuple<bool, bool, bool>(true, false, true),
-                new Tuple<bool, bool, bool>(true, true, false),
-                new Tuple<bool, bool, bool>(true, true, true),
+                public Combination(string id, string name, bool invert, bool blur, bool makeRed)
+                {
+                    Id = id;
+                    Name = name;
+                    Invert = invert;
+                    Blur = blur;
+                    MakeRed = makeRed;
+                }
+
+                public bool Invert { get; set; }
+
+                public bool Blur { get; set; }
+
+                public bool MakeRed { get; set; }
+
+                public string Id { get; set; }
+
+                public string Name { get; set; }
+
+                public string FailureMessage { get; set; }
+            }
+
+            private List<Combination> _combinations = new List<Combination>
+            {
+                new Combination("noeffect", "No Effects", false, false, false),
+                new Combination("makered", "Make Red", false, false, true),
+                new Combination("blur", "Blur", false, true, false),
+                new Combination("makeredblur", "Blur + Make Red", false, true, true),
+                new Combination("invert", "Invert", true, false, false),
+                new Combination("invertmakered", "Invert + Make Red", true, false, true),
+                new Combination("invertblur", "Invert + Blur", true, true, false),
+                new Combination("invertblurmakered", "Invert + Blur + Make Red", true, true, true),
             };
 
             private const int Width = 800;
@@ -54,10 +81,11 @@ namespace Protogame.Tests
 
             private bool _isValidRun;
 
-            public RenderPipelineWorld(IAssetManager assetManager, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory, IAssert assert)
+            public RenderPipelineWorld(IAssetManager assetManager, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory, IAssert assert, ITestAttachment testAttachment)
             {
                 _renderUtilities = renderUtilities;
                 _assert = assert;
+                _testAttachment = testAttachment;
                 _texture = assetManager.Get<TextureAsset>("texture.Player");
                 _invertPostProcess = graphicsFactory.CreateInvertPostProcessingRenderPass();
                 _blurPostProcess = graphicsFactory.CreateBlurPostProcessingRenderPass();
@@ -113,13 +141,21 @@ namespace Protogame.Tests
                     }
 
                     var percentage = (100 - ((incorrectPixelValues / (double)totalPixelValues) * 100f));
+                    
+                    var combination = _combinations[_frame % _combinations.Count];
+                    _testAttachment.Attach("name-" + combination.Id, combination.Name);
+                    _testAttachment.Attach("expected-" + combination.Id, baseStream);
+                    _testAttachment.Attach("actual-" + combination.Id, memoryStream);
+                    _testAttachment.Attach("threshold-" + combination.Id, 99.9);
+                    _testAttachment.Attach("measured-" + combination.Id, percentage);
+
                     if (percentage <= 99.9f)
                     {
-                        _assert.True(false, "The actual rendered image did not match the expected image close enough (99.9%).");
+                        combination.FailureMessage = "The actual rendered image did not match the expected image close enough (99.9%).";
                     }
 
-                    memoryStream.Dispose();
-                    baseStream.Dispose();
+                    //memoryStream.Dispose();
+                    //baseStream.Dispose();
 #endif
 
 #if MANUAL_TEST
@@ -166,17 +202,17 @@ namespace Protogame.Tests
 
                     var combination = _combinations[_frame % _combinations.Count];
 
-                    if (combination.Item1)
+                    if (combination.Invert)
                     {
                         renderContext.AppendTransientRenderPass(_invertPostProcess);
                     }
 
-                    if (combination.Item2)
+                    if (combination.Blur)
                     {
                         renderContext.AppendTransientRenderPass(_blurPostProcess);
                     }
 
-                    if (combination.Item3)
+                    if (combination.MakeRed)
                     {
                         renderContext.AppendTransientRenderPass(_customPostProcess);
                     }
@@ -202,6 +238,21 @@ namespace Protogame.Tests
                 {
                     gameContext.Game.Exit();
                     _didExit = true;
+
+                    var failureMessages = string.Empty;
+                    foreach (var c in _combinations)
+                    {
+                        if (c.FailureMessage != null)
+                        {
+                            failureMessages += c.Name + ": " + c.FailureMessage + "\r\n";
+                        }
+                    }
+                    failureMessages = failureMessages.Trim();
+
+                    if (!string.IsNullOrWhiteSpace(failureMessages))
+                    {
+                        _assert.True(false, failureMessages);
+                    }
                 }
 #endif
             }
@@ -237,9 +288,10 @@ namespace Protogame.Tests
             }
         }
 
-        public RenderPipelineTests(IAssert assert, IThreadControl threadControl)
+        public RenderPipelineTests(IAssert assert, IThreadControl threadControl, ITestAttachment testAttachment)
         {
             _assert = assert;
+            _testAttachment = testAttachment;
 
             threadControl.RequireTestsToRunOnMainThread();
         }
@@ -254,6 +306,7 @@ namespace Protogame.Tests
             kernel.Load<ProtogameCoreModule>();
             kernel.Load<ProtogameAssetModule>();
             kernel.Bind<IAssert>().ToMethod(x => _assert);
+            kernel.Bind<ITestAttachment>().ToMethod(x => _testAttachment);
 
             using (var game = new RenderPipelineGame(kernel))
             {

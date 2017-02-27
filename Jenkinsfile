@@ -3,8 +3,12 @@ stage("Windows") {
   node('windows') {
     checkout poll: false, changelog: false, scm: scm
     bat ("Protobuild.exe --upgrade-all")
-    bat ('Protobuild.exe --automated-build')
-    stash includes: '*.nupkg', name: 'windows-packages'
+    try {
+      bat ('Protobuild.exe --automated-build')
+      stash includes: '*.nupkg', name: 'windows-packages'
+    } finally {
+      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - Windows'])
+    }
   }
 }
 
@@ -14,8 +18,12 @@ stage("Mac") {
     sh ("mono Protobuild.exe --upgrade-all MacOS")
     sh ("mono Protobuild.exe --upgrade-all Android")
     sh ("mono Protobuild.exe --upgrade-all iOS")
-    sh ("mono Protobuild.exe --automated-build")
-    stash includes: '*.nupkg', name: 'mac-packages'
+    try {
+      sh ("mono Protobuild.exe --automated-build")
+      stash includes: '*.nupkg', name: 'mac-packages'
+    } finally {
+      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - macOS'])
+    }
   }
 }
 
@@ -23,8 +31,12 @@ stage("Linux") {
   node('linux') {
     checkout poll: true, changelog: true, scm: scm
     sh ("mono Protobuild.exe --upgrade-all")
-    sh ("mono Protobuild.exe --automated-build")
-    stash includes: '*.nupkg', name: 'linux-packages'
+    try {
+      sh ("mono Protobuild.exe --automated-build")
+      stash includes: '*.nupkg', name: 'linux-packages'
+    } finally {
+      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - Linux'])
+    }
   }
 }
 

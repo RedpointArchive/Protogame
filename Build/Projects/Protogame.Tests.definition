@@ -18,6 +18,7 @@
     <Compile Include="CircumcentreSolverTest.cs" />
     <Compile Include="ComponentTests.cs" />
     <Compile Include="EventEngineTests.cs" />
+    <Compile Include="GraphicalHtmlSummaryConsumer.cs" />
     <Compile Include="MxTests.cs" />
     <Compile Include="NetworkSerializationTests.cs" />
     <Compile Include="PlatformingModuleTests.cs" />
