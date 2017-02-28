@@ -7,7 +7,7 @@ stage("Windows") {
       bat ('Protobuild.exe --automated-build')
       stash includes: '*.nupkg', name: 'windows-packages'
     } finally {
-      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - Windows'])
+      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'Protogame.Tests/bin/Windows/AnyCPU/Debug/VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - Windows'])
     }
   }
 }
@@ -22,7 +22,7 @@ stage("Mac") {
       sh ("mono Protobuild.exe --automated-build")
       stash includes: '*.nupkg', name: 'mac-packages'
     } finally {
-      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - macOS'])
+      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'Protogame.Tests/bin/MacOS/AnyCPU/Debug/VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - macOS'])
     }
   }
 }
@@ -35,7 +35,7 @@ stage("Linux") {
       sh ("mono Protobuild.exe --automated-build")
       stash includes: '*.nupkg', name: 'linux-packages'
     } finally {
-      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - Linux'])
+      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'Protogame.Tests/bin/Linux/AnyCPU/Debug/VisualHTML', reportFiles: 'index.html', reportName: 'Visual Test Report - Linux'])
     }
   }
 }
