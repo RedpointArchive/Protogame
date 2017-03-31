@@ -1,0 +1,1 @@
+private readonly TextureAsset _playerTexture;
