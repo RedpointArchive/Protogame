@@ -1,7 +1,7 @@
-namespace Protogame
-{
-    using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 
+namespace Protogame
+{    
     /// <summary>
     /// A service that provides advanced, but general purpose collision detection methods.
     /// </summary>
