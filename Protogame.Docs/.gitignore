@@ -1,0 +1,7 @@
+# ignore these files
+_build
+/Protobuild.Docs.kdev4
+/.kdev4
+/Protogame.Docs.kdev4
+*.gen.rst
+*.pyc

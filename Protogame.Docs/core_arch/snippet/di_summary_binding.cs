@@ -1,0 +1,1 @@
+Bind<ISomeInterface>().To<DefaultSomeImplementation>();
