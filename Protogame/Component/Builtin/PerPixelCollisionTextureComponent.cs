@@ -10,14 +10,12 @@ namespace Protogame
         private readonly IPerPixelCollisionEngine _collisionEngine;
 
         private bool _registeredTexture;
-        private bool _didUpdateSync;
-        private bool _enabled;
-        private IAssetReference<TextureAsset> _textureAssetReference;
         private Texture2D _cachedTextureAssetRef;
 
         private int _cachedPixelWidth;
         private int _cachedPixelHeight;
         private Color[] _cachedPixelData = new Color[0];
+        private bool _enabled;
 
         public PerPixelCollisionTextureComponent(INode node, IPerPixelCollisionEngine collisionEngine)
         {
@@ -35,7 +33,15 @@ namespace Protogame
                 if (_enabled != value)
                 {
                     _enabled = value;
-                    _didUpdateSync = false;
+
+                    if (!_enabled)
+                    {
+                        if (_registeredTexture)
+                        {
+                            _collisionEngine.UnregisterComponentInCurrentWorld(this);
+                            _registeredTexture = false;
+                        }
+                    }
                 }
             }
         }
@@ -46,18 +52,13 @@ namespace Protogame
 
         public void Update(ComponentizedEntity entity, IGameContext gameContext, IUpdateContext updateContext)
         {
-            if (_didUpdateSync)
+            if (Texture != null)
             {
-                return;
-            }
-
-            if (_textureAssetReference != null)
-            {
-                if (_textureAssetReference.IsReady)
+                if (Texture.IsReady)
                 {
-                    if (_textureAssetReference.Asset.Texture != _cachedTextureAssetRef)
+                    if (Texture.Asset.Texture != _cachedTextureAssetRef)
                     {
-                        _cachedTextureAssetRef = _textureAssetReference.Asset.Texture;
+                        _cachedTextureAssetRef = Texture.Asset.Texture;
                         _cachedPixelWidth = _cachedTextureAssetRef.Width;
                         _cachedPixelHeight = _cachedTextureAssetRef.Height;
                         _cachedPixelData = new Color[_cachedPixelWidth * _cachedPixelHeight];
@@ -71,11 +72,6 @@ namespace Protogame
 
         private void Update()
         {
-            if (_didUpdateSync)
-            {
-                return;
-            }
-
             // Update the parent node's matrix based on the rigid body's state.
             var transformComponent = _node.Parent?.UntypedValue as IHasTransform;
             if (transformComponent != null)
@@ -97,8 +93,6 @@ namespace Protogame
                     }
                 }
             }
-
-            _didUpdateSync = true;
         }
 
         public int GetPixelWidth()

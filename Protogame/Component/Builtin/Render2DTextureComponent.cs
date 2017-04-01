@@ -35,7 +35,7 @@ namespace Protogame
                 return;
             }
 
-            if (!renderContext.IsCurrentRenderPass<I3DRenderPass>() && Texture != null)
+            if (renderContext.IsCurrentRenderPass<I2DBatchedRenderPass>() && Texture != null)
             {
                 Vector2? size = null;
                 if (Texture.IsReady)

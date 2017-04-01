@@ -13,6 +13,9 @@ namespace Protogame
         private readonly IDebugRenderer _debugRenderer;
         private HashSet<WeakReference<IPerPixelCollisionComponent>> _components;
 
+        private bool _waitForChanges;
+        private List<Action> _pendingChanges;
+
         public PerPixelCollisionShadowWorld(
             IHierarchy hierarchy,
             IEventEngine<IPerPixelCollisionEventContext> perPixelCollisionEventEngine,
@@ -22,6 +25,9 @@ namespace Protogame
             _perPixelCollisionEventEngine = perPixelCollisionEventEngine;
             _debugRenderer = debugRenderer;
             _components = new HashSet<WeakReference<IPerPixelCollisionComponent>>();
+
+            _waitForChanges = false;
+            _pendingChanges = new List<Action>();
         }
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
@@ -31,6 +37,8 @@ namespace Protogame
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
             var toRemove = new List<WeakReference<IPerPixelCollisionComponent>>();
+
+            _waitForChanges = true;
 
             foreach (var aWR in _components)
             {
@@ -97,6 +105,17 @@ namespace Protogame
             {
                 _components.Remove(tr);
             }
+
+            if (_pendingChanges.Count > 0)
+            {
+                foreach (var v in _pendingChanges)
+                {
+                    v();
+                }
+                _pendingChanges.Clear();
+            }
+
+            _waitForChanges = false;
         }
 
         private Rectangle CalculateBoundingBox(IHasTransform parent, IPerPixelCollisionComponent collisionComponent)
@@ -104,7 +123,7 @@ namespace Protogame
             var transform =
                 Matrix.CreateTranslation(-new Vector3(collisionComponent.RotationAnchor ?? Vector2.Zero, 0)) *
                 Matrix.CreateFromQuaternion(parent.FinalTransform.AbsoluteRotation) *
-                Matrix.CreateTranslation(new Vector3(collisionComponent.RotationAnchor ?? Vector2.Zero, 0)) *
+                //Matrix.CreateTranslation(new Vector3(collisionComponent.RotationAnchor ?? Vector2.Zero, 0)) *
                 Matrix.CreateTranslation(parent.FinalTransform.AbsolutePosition);
 
             var width = collisionComponent.GetPixelWidth();
@@ -123,8 +142,8 @@ namespace Protogame
             return new Rectangle(
                 (int)Math.Floor(minX),
                 (int)Math.Floor(minY),
-                (int)Math.Ceiling(maxX),
-                (int)Math.Ceiling(maxY));
+                (int)Math.Ceiling(maxX) - (int)Math.Floor(minX),
+                (int)Math.Ceiling(maxY) - (int)Math.Floor(minY));
         }
 
         private bool IntersectPixels(
@@ -136,12 +155,12 @@ namespace Protogame
             var transformA =
                 Matrix.CreateTranslation(-new Vector3(a.RotationAnchor ?? Vector2.Zero, 0)) *
                 Matrix.CreateFromQuaternion(aParent.FinalTransform.AbsoluteRotation) *
-                Matrix.CreateTranslation(new Vector3(a.RotationAnchor ?? Vector2.Zero, 0)) *
+                //Matrix.CreateTranslation(new Vector3(a.RotationAnchor ?? Vector2.Zero, 0)) *
                 Matrix.CreateTranslation(aParent.FinalTransform.AbsolutePosition);
             var transformB =
                 Matrix.CreateTranslation(-new Vector3(b.RotationAnchor ?? Vector2.Zero, 0)) *
                 Matrix.CreateFromQuaternion(bParent.FinalTransform.AbsoluteRotation) *
-                Matrix.CreateTranslation(new Vector3(b.RotationAnchor ?? Vector2.Zero, 0)) *
+                //Matrix.CreateTranslation(new Vector3(b.RotationAnchor ?? Vector2.Zero, 0)) *
                 Matrix.CreateTranslation(bParent.FinalTransform.AbsolutePosition);
 
             var widthA = a.GetPixelWidth();
@@ -195,33 +214,74 @@ namespace Protogame
 
         public void UnregisterComponentInCurrentWorld(IPerPixelCollisionComponent collisionComponent)
         {
-            var toRemove = new List<WeakReference<IPerPixelCollisionComponent>>();
-
-            foreach (var wr in _components)
+            if (_waitForChanges)
             {
-                IPerPixelCollisionComponent ppc;
-                if (wr.TryGetTarget(out ppc))
+                _pendingChanges.Add(() =>
                 {
-                    if (ReferenceEquals(ppc, collisionComponent))
+                    var toRemove = new List<WeakReference<IPerPixelCollisionComponent>>();
+
+                    foreach (var wr in _components)
+                    {
+                        IPerPixelCollisionComponent ppc;
+                        if (wr.TryGetTarget(out ppc))
+                        {
+                            if (ReferenceEquals(ppc, collisionComponent))
+                            {
+                                toRemove.Add(wr);
+                            }
+                        }
+                        else
+                        {
+                            toRemove.Add(wr);
+                        }
+                    }
+
+                    foreach (var tr in toRemove)
+                    {
+                        _components.Remove(tr);
+                    }
+                });
+            }
+            else
+            {
+                var toRemove = new List<WeakReference<IPerPixelCollisionComponent>>();
+
+                foreach (var wr in _components)
+                {
+                    IPerPixelCollisionComponent ppc;
+                    if (wr.TryGetTarget(out ppc))
+                    {
+                        if (ReferenceEquals(ppc, collisionComponent))
+                        {
+                            toRemove.Add(wr);
+                        }
+                    }
+                    else
                     {
                         toRemove.Add(wr);
                     }
                 }
-                else
-                {
-                    toRemove.Add(wr);
-                }
-            }
 
-            foreach (var tr in toRemove)
-            {
-                _components.Remove(tr);
+                foreach (var tr in toRemove)
+                {
+                    _components.Remove(tr);
+                }
             }
         }
 
         public void RegisterComponentInCurrentWorld(IPerPixelCollisionComponent collisionComponent)
         {
-            _components.Add(new WeakReference<IPerPixelCollisionComponent>(collisionComponent));
+            if (_waitForChanges)
+            {
+                _pendingChanges.Add(() =>
+                {
+                    _components.Add(new WeakReference<IPerPixelCollisionComponent>(collisionComponent));
+                });
+            }
+            else
+            {
+                _components.Add(new WeakReference<IPerPixelCollisionComponent>(collisionComponent));
+            }
         }
 
         public void DebugRender(IGameContext gameContext, IRenderContext renderContext)
