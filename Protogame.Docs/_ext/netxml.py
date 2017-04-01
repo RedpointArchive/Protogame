@@ -293,7 +293,7 @@ class DotNetDomain(Domain):
   }
   
 def normalize_name_to_filename(basename):
-  return basename.lower().replace(" ", "_").replace("`", "_")
+  return basename.lower().replace(" ", "_").replace("`", "_").replace("<", "_").replace(">", "_")
   
 def get_indented_rest(elem, name, indent = ""):
   if name == None:
@@ -608,9 +608,10 @@ def load_xml(app):
   global dotnet_docs
   import subprocess, os
   app.info("current working directory " + os.getcwd())
-  app.info("running pre-build...")
-  p = subprocess.Popen(['bash', 'build.sh'], cwd='../Protogame.Docs/_ext')
-  p.wait()
+  if not os.path.isfile('../Protogame.Docs/Protogame.combined.xml'):
+    app.info("running pre-build...")
+    p = subprocess.Popen(['bash', 'build.sh'], cwd='../Protogame.Docs/_ext')
+    p.wait()
   app.info("loading .net xml documentation")
   with open('../Protogame.Docs/Protogame.combined.xml', 'r') as content_file:
     content = content_file.read()
