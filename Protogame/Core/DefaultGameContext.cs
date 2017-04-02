@@ -130,7 +130,7 @@ namespace Protogame
         
         public void SwitchWorld<T>() where T : IWorld
         {
-            if (_nextWorldTask != null)
+            if (_nextWorldTask != null && _nextWorldTask.Status != TaskStatus.RanToCompletion)
             {
                 throw new InvalidOperationException("The game is currently switching to a new world.  You can not call SwitchWorld until it has finished.");
             }
@@ -154,7 +154,7 @@ namespace Protogame
 
         public void SwitchWorld<TFactory>(Func<TFactory, Task<IWorld>> creator)
         {
-            if (_nextWorldTask != null)
+            if (_nextWorldTask != null && _nextWorldTask.Status != TaskStatus.RanToCompletion)
             {
                 throw new InvalidOperationException("The game is currently switching to a new world.  You can not call SwitchWorld until it has finished.");
             }

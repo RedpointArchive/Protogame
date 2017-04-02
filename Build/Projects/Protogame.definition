@@ -195,7 +195,17 @@
     <Compile Include="Camera\IFirstPersonCamera.cs" />
     <Compile Include="Camera\ProtogameCameraModule.cs" />
     <Compile Include="Collision\DefaultCollision.cs" />
+    <Compile Include="Collision\DefaultPerPixelCollisionEngine.cs" />
+    <Compile Include="Collision\DefaultPerPixelCollisionEventContext.cs" />
+    <Compile Include="Collision\GeneralPerPixelCollisionEventBinder.cs" />
     <Compile Include="Collision\ICollision.cs" />
+    <Compile Include="Collision\IPerPixelCollisionEngine.cs" />
+    <Compile Include="Collision\IPerPixelCollisionEventContext.cs" />
+    <Compile Include="Collision\IPerPixelCollisionFactory.cs" />
+    <Compile Include="Collision\PerPixelCollisionDebugLayer.cs" />
+    <Compile Include="Collision\PerPixelCollisionEngineHook.cs" />
+    <Compile Include="Collision\PerPixelCollisionEvent.cs" />
+    <Compile Include="Collision\PerPixelCollisionShadowWorld.cs" />
     <Compile Include="Collision\ProtogameCollisionIoCModule.cs" />
     <Compile Include="Collision\ProtogameCollisionModule.cs" />
     <Compile Include="Commands\ExitCommand.cs" />
@@ -213,6 +223,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>NetworkSynchronisationComponentGenerated.tt</DependentUpon>
     </Compile>
+    <Compile Include="Component\Builtin\PerPixelCollisionTextureComponent.cs" />
     <Compile Include="Component\Builtin\Physical3DCapsuleComponent.cs" />
     <Compile Include="Component\Builtin\Physical3DCubeComponent.cs" />
     <Compile Include="Component\Builtin\PhysicalBaseRigidBodyComponent.cs" />
@@ -249,6 +260,8 @@
     <Compile Include="Component\IHierarchialComponent.cs" />
     <Compile Include="Component\ILightableComponent.cs" />
     <Compile Include="Component\INetworkedComponent.cs" />
+    <Compile Include="Component\IPerPixelCollidableComponent.cs" />
+    <Compile Include="Component\IPerPixelCollisionComponent.cs" />
     <Compile Include="Component\IPhysicalComponent.cs" />
     <Compile Include="Component\IPrerenderableComponent.cs" />
     <Compile Include="Component\IQueryableComponent.cs" />

@@ -29,7 +29,18 @@ namespace Protogame
     /// </summary>
     /// <module>Component</module>
     [InjectFieldsForBaseObjectInProtectedConstructor]
-    public class ComponentizedEntity : ComponentizedObject, IEventListener<IGameContext>, IEventListener<INetworkEventContext>, IEventListener<IPhysicsEventContext>, IHasLights, IEntity, IServerEntity, INetworkIdentifiable, ISynchronisedObject, IPrerenderableEntity
+    public class ComponentizedEntity : 
+        ComponentizedObject, 
+        IEventListener<IGameContext>, 
+        IEventListener<INetworkEventContext>, 
+        IEventListener<IPhysicsEventContext>,
+        IEventListener<IPerPixelCollisionEventContext>,
+        IHasLights, 
+        IEntity, 
+        IServerEntity, 
+        INetworkIdentifiable, 
+        ISynchronisedObject, 
+        IPrerenderableEntity
     {
         /// <summary>
         /// The dependency injection node, which is automatically set by the kernel
@@ -108,6 +119,13 @@ namespace Protogame
         /// </summary>
         private ICollidableComponent[] _collidableComponents = new ICollidableComponent[0];
 
+        /// <summary>
+        /// This interface gets get called very frequently, so we optimize their invocation by
+        /// iterating over them and calling them directly rather than using the <c>RegisterCallable</c>
+        /// infrastructure.
+        /// </summary>
+        private IPerPixelCollidableComponent[] _perPixelCollidableComponents = new IPerPixelCollidableComponent[0];
+
         private bool _hasRenderableComponentDescendants;
 
         private bool _hasPrerenderableComponentDescendants;
@@ -119,6 +137,8 @@ namespace Protogame
         private bool _hasLightableComponentDescendants;
 
         private bool _hasCollidableComponentDescendants;
+
+        private bool _hasPerPixelCollidableComponentDescendants;
 
         /// <summary>
         /// Initializes a new <see cref="ComponentizedEntity"/>.
@@ -149,6 +169,7 @@ namespace Protogame
             _renderableComponents = Components.OfType<IRenderableComponent>().ToArray();
             _prerenderableComponents = Components.OfType<IPrerenderableComponent>().ToArray();
             _collidableComponents = Components.OfType<ICollidableComponent>().ToArray();
+            _perPixelCollidableComponents = Components.OfType<IPerPixelCollidableComponent>().ToArray();
         }
         
         /// <summary>
@@ -416,6 +437,55 @@ namespace Protogame
         }
 
         /// <summary>
+        /// Handles per-pixel collision events from the per-pixel collision engine.
+        /// </summary>
+        /// <param name="context">The current game context.</param>
+        /// <param name="eventEngine">The event engine from which the event was fired.</param>
+        /// <param name="event">The per-pixel collision event that is to be handled.</param>
+        /// <returns>Whether or not the event was consumed.</returns>
+        public virtual bool Handle(IPerPixelCollisionEventContext context, IEventEngine<IPerPixelCollisionEventContext> eventEngine, Event @event)
+        {
+            if (_hasPerPixelCollidableComponentDescendants)
+            {
+                var perPixelCollisionEvent = @event as PerPixelCollisionEvent;
+                if (perPixelCollisionEvent != null)
+                {
+                    PerPixelCollision(
+                        perPixelCollisionEvent.GameContext,
+                        perPixelCollisionEvent.ServerContext,
+                        perPixelCollisionEvent.UpdateContext,
+                        perPixelCollisionEvent.Object1,
+                        perPixelCollisionEvent.Object2);
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// This method is called by the per-pixel collision system when a collision involving one of this component's
+        /// parents and another object with a per-pixel collision component starts occurring.
+        /// </summary>
+        /// <param name="gameContext">The current game context, or null if running on a server.</param>
+        /// <param name="serverContext">The current server context, or null if running on a client.</param>
+        /// <param name="updateContext">The current update context.</param>
+        /// <param name="obj1">The owner of the first per-pixel collision component.  This is NOT necessarily one of the component's parents.</param>
+        /// <param name="obj2">The owner of the second per-pixel collision component.  This is NOT necessarily one of the component's parents.</param>
+        public virtual void PerPixelCollision(IGameContext gameContext, IServerContext serverContext,
+            IUpdateContext updateContext, object obj1, object obj2)
+        {
+            for (var i = 0; i < _perPixelCollidableComponents.Length; i++)
+            {
+                _perPixelCollidableComponents[i].PerPixelCollision(
+                    gameContext,
+                    serverContext,
+                    updateContext,
+                    obj1,
+                    obj2);
+            }
+        }
+
+        /// <summary>
         /// Handles network events from an event engine.  This implementation propagates events through the
         /// component hierarchy to components that implement <see cref="INetworkedComponent"/>.
         /// </summary>
@@ -581,6 +651,7 @@ namespace Protogame
         private bool _isReceiveNetworkIdFromServerOverridden;
         private bool _isReceivePredictedNetworkIdFromClientOverridden;
         private bool _isGetLightsOverridden;
+        private bool _isPerPixelCollisionOverridden;
 
         protected override void AddAdditionalEnabledInterfaces(HashSet<Type> enabledInterfaces)
         {
@@ -614,6 +685,14 @@ namespace Protogame
                 _isReceiveNetworkIdFromServerOverridden = GetType().GetMethod("ReceiveNetworkIDFromServer").DeclaringType != typeof(ComponentizedEntity);
                 _isReceivePredictedNetworkIdFromClientOverridden = GetType().GetMethod("ReceivePredictedNetworkIDFromClient").DeclaringType != typeof(ComponentizedEntity);
                 _isGetLightsOverridden = GetType().GetMethod("GetLights").DeclaringType != typeof(ComponentizedEntity);
+                _isPerPixelCollisionOverridden = GetType().GetMethod("PerPixelCollision", new[]
+                {
+                    typeof(IGameContext),
+                    typeof(IServerContext),
+                    typeof(IUpdateContext),
+                    typeof(object),
+                    typeof(object),
+                }).DeclaringType != typeof(ComponentizedEntity);
 
                 _isOverriddenCacheSet = true;
             }
@@ -658,12 +737,18 @@ namespace Protogame
                 enabledInterfaces.Add(typeof(ILightableComponent));
             }
 
+            if (_isPerPixelCollisionOverridden && !enabledInterfaces.Contains(typeof(IPerPixelCollidableComponent)))
+            {
+                enabledInterfaces.Add(typeof(IPerPixelCollidableComponent));
+            }
+
             _hasRenderableComponentDescendants = enabledInterfaces.Contains(typeof(IRenderableComponent));
             _hasPrerenderableComponentDescendants = enabledInterfaces.Contains(typeof(IPrerenderableComponent));
             _hasUpdatableComponentDescendants = enabledInterfaces.Contains(typeof(IUpdatableComponent));
             _hasServerUpdatableComponentDescendants = enabledInterfaces.Contains(typeof(IServerUpdatableComponent));
             _hasLightableComponentDescendants = enabledInterfaces.Contains(typeof(ILightableComponent));
             _hasCollidableComponentDescendants = enabledInterfaces.Contains(typeof(ICollidableComponent));
+            _hasPerPixelCollidableComponentDescendants = enabledInterfaces.Contains(typeof(IPerPixelCollidableComponent));
         }
 
         #endregion
