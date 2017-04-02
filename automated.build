@@ -12,7 +12,12 @@ endif
 
 generate
 build
-execute Protogame.Tests
+if host Windows
+  execute Protogame.Tests
+endif
+if host Linux
+  execute Protogame.Tests
+endif
 
 set package-format nuget/zip
 
