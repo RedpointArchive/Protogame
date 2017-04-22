@@ -18,7 +18,7 @@ namespace Protogame
         {
             Transform = new DefaultTransform();
         }
-
+        
         /// <summary>
         /// Gets or sets the depth.
         /// </summary>

@@ -9,9 +9,6 @@ namespace Protogame
     /// <module>Level</module>
     public class ProtogameLevelModule : IProtoinjectModule
     {
-        /// <summary>
-        /// The load.
-        /// </summary>
         public void Load(IKernel kernel)
         {
             kernel.Bind<ITileset>().To<DefaultTileset>();

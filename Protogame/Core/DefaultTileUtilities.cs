@@ -26,10 +26,6 @@ namespace Protogame
         public void InitializeTile(ITileEntity entity, string tilesetAssetName)
         {
             entity.Tileset = _assetManager.Get<TilesetAsset>(tilesetAssetName);
-            // TODO: Figure out how to do this with delayed assets.
-            //entity.Transform.LocalScale *= new Vector3(entity.Tileset.CellWidth, entity.Tileset.CellHeight, 1);
-            //entity.Width = entity.Tileset.CellWidth;
-            //entity.Height = entity.Tileset.CellHeight;
         }
         
         public void RenderTile(ITileEntity entity, IRenderContext renderContext)
@@ -40,6 +36,14 @@ namespace Protogame
             }
 
             var tileset = entity.Tileset.Asset;
+
+            if (!entity.AppliedTilesetSettings)
+            {
+                entity.Transform.LocalScale *= new Vector3(tileset.CellWidth, tileset.CellHeight, 1);
+                entity.Width = tileset.CellWidth;
+                entity.Height = tileset.CellHeight;
+                entity.AppliedTilesetSettings = true;
+            }
 
             _renderUtilities.RenderTexture(
                 renderContext, 

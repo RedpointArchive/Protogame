@@ -16,6 +16,7 @@ namespace Protogame
         public void Load(IKernel kernel)
         {
             kernel.Bind<IFirstPersonCamera>().To<FirstPersonCamera>().InSingletonScope();
+            kernel.Bind<IPanningCamera>().To<PanningCamera>().InSingletonScope();
         }
     }
 }
