@@ -2,6 +2,7 @@
 stage("Windows") {
   node('windows') {
     checkout poll: false, changelog: false, scm: scm
+    bat ("git clean -xdff")
     bat ("Protobuild.exe --upgrade-all")
     try {
       bat ('Protobuild.exe --automated-build')
@@ -15,6 +16,7 @@ stage("Windows") {
 stage("Mac") {
   node('mac') {
     checkout poll: false, changelog: false, scm: scm
+    sh ("git clean -xdff")
     sh ("mono Protobuild.exe --upgrade-all MacOS")
     sh ("mono Protobuild.exe --upgrade-all Android")
     sh ("mono Protobuild.exe --upgrade-all iOS")
@@ -30,6 +32,7 @@ stage("Mac") {
 stage("Linux") {
   node('linux') {
     checkout poll: true, changelog: true, scm: scm
+    sh ("git clean -xdff")
     sh ("mono Protobuild.exe --upgrade-all")
     try {
       sh ("mono Protobuild.exe --automated-build")
