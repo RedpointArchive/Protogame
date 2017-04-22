@@ -1,18 +1,9 @@
-namespace Protogame
-{
-    using Protoinject;
+using System;
 
-    /// <summary>
-    /// The protogame platforming io c module.
-    /// </summary>
-    public class ProtogamePlatformingIoCModule : IProtoinjectModule
+namespace Protogame
+{ 
+    [Obsolete("Load ProtogamePlatformingModule instead.")]
+    public class ProtogamePlatformingIoCModule : ProtogamePlatformingModule
     {
-        /// <summary>
-        /// The load.
-        /// </summary>
-        public void Load(IKernel kernel)
-        {
-            kernel.Bind<IPlatforming>().To<DefaultPlatforming>();
-        }
     }
 }

@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿#pragma warning disable CS1591
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -19,6 +22,8 @@ namespace Protogame
 
         public Viewport? Viewport { get; set; }
 
+        public Matrix? TransformMatrix { get; private set; }
+
         public SpriteSortMode TextureSortMode
         {
             get;
@@ -27,12 +32,20 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
-            renderContext.SpriteBatch.Begin(TextureSortMode);
+            renderContext.SpriteBatch.Begin(TextureSortMode, transformMatrix: TransformMatrix);
         }
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
             renderContext.SpriteBatch.End();
+        }
+
+        public void RestartWithTransformMatrix(IRenderContext renderContext, Matrix matrix)
+        {
+            TransformMatrix = matrix;
+
+            renderContext.SpriteBatch.End();
+            renderContext.SpriteBatch.Begin(TextureSortMode, transformMatrix: TransformMatrix);
         }
 
         public string Name { get; set; }

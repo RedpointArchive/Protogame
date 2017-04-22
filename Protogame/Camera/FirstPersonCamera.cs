@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿#pragma warning disable CS1591
+
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {

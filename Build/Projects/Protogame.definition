@@ -193,6 +193,8 @@
     <Compile Include="Caching\ProtogameCachingIoCModule.cs" />
     <Compile Include="Camera\FirstPersonCamera.cs" />
     <Compile Include="Camera\IFirstPersonCamera.cs" />
+    <Compile Include="Camera\IPanningCamera.cs" />
+    <Compile Include="Camera\PanningCamera.cs" />
     <Compile Include="Camera\ProtogameCameraModule.cs" />
     <Compile Include="Collision\DefaultCollision.cs" />
     <Compile Include="Collision\DefaultPerPixelCollisionEngine.cs" />
@@ -652,6 +654,7 @@
     <Compile Include="Platforming\DefaultPlatforming.cs" />
     <Compile Include="Platforming\IPlatforming.cs" />
     <Compile Include="Platforming\ProtogamePlatformingIoCModule.cs" />
+    <Compile Include="Platforming\ProtogamePlatformingModule.cs" />
     <Compile Include="Pooling\DefaultPoolManager.cs" />
     <Compile Include="Pooling\IPool.cs" />
     <Compile Include="Pooling\IPoolManager.cs" />

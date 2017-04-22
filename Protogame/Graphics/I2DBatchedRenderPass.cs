@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -26,6 +27,17 @@ namespace Protogame
         /// </summary>
         /// <value>The sorting mode to use when rendering textures.</value>
         SpriteSortMode TextureSortMode { get; set; }
+
+        /// <summary>
+        /// Restarts the current sprite batch rendering using the new matrix.
+        /// This effectively calls End followed by an immediate Begin on the
+        /// sprite batch.  This matrix value is stored by the render pass and
+        /// applied every time in the future, until you call <see cref="RestartWithTransformMatrix"/>
+        /// again.
+        /// </summary>
+        /// <param name="renderContext">The current render context.</param>
+        /// <param name="matrix">The transformation matrix to use for the sprite batch.</param>
+        void RestartWithTransformMatrix(IRenderContext renderContext, Matrix matrix);
     }
 }
 
