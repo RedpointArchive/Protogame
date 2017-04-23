@@ -40,6 +40,15 @@ namespace Protogame
 
         public void Update(IAsset asset, AssetReferenceState assetState)
         {
+            if (asset == null)
+            {
+                if (assetState == AssetReferenceState.Ready ||
+                    assetState == AssetReferenceState.PartiallyReady)
+                {
+                    throw new ArgumentNullException("asset", "Asset can not be null when moving reference into Ready or PartiallyReady state.");
+                }
+            }
+
             _asset = (T) asset;
             State = assetState;
         }
@@ -52,6 +61,15 @@ namespace Protogame
 
         public void Update(AssetReferenceState assetState)
         {
+            if (_asset == null)
+            {
+                if (assetState == AssetReferenceState.Ready ||
+                    assetState == AssetReferenceState.PartiallyReady)
+                {
+                    throw new ArgumentNullException("asset", "Asset can not be null when moving reference into Ready or PartiallyReady state.");
+                }
+            }
+
             State = assetState;
         }
     }
