@@ -68,11 +68,6 @@ public class GameActivity : AndroidGameActivity
         {
             configuration.ConfigureKernel(kernel);
 
-            // It is expected that the AssetManagerProvider architecture will
-            // be refactored in future to just provide IAssetManager directly,
-            // and this method call will be dropped.
-            configuration.InitializeAssetManagerProvider(new AssetManagerProviderInitializer(kernel, new string[0]));
-
             // We only construct one game.  In the event there are
             // multiple game configurations (such as a third-party library
             // providing additional game tools, it's expected that libraries
@@ -89,7 +84,7 @@ public class GameActivity : AndroidGameActivity
                 "No implementation of IGameConfiguration provided " +
                 "returned a game instance from ConstructGame.");
         }
-        
+
         SetContentView(((ICoreGame)game).AndroidGameView);
         game.Run();
     }

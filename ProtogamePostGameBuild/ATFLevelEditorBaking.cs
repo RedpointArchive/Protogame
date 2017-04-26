@@ -64,9 +64,20 @@ namespace ProtogamePostBuild
             schema.SetAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
             xsd.AppendChild(schema);
 
+            Type[] types;
             try
             {
-                foreach (var type in asm.GetTypes())
+                types = asm.GetTypes().Where(x => x != null).ToArray();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                // Some types couldn't be loaded.  Only process the types that were successfully loaded.
+                types = ex.Types.Where(x => x != null).ToArray();
+            }
+
+            try
+            { 
+                foreach (var type in types)
                 {
                     try
                     {

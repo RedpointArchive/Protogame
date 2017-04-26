@@ -15,9 +15,12 @@ namespace ProtogamePostBuild
 
         public void Load(string path)
         {
-            var assembly = AssemblyDefinition.ReadAssembly(path);
-            _loadedAssemblies[assembly.Name] = assembly;
-            AddSearchDirectory(new FileInfo(path).DirectoryName);
+            if (File.Exists(path))
+            {
+                var assembly = AssemblyDefinition.ReadAssembly(path);
+                _loadedAssemblies[assembly.Name] = assembly;
+                AddSearchDirectory(new FileInfo(path).DirectoryName);
+            }
         }
 
         public override AssemblyDefinition Resolve(AssemblyNameReference name)
