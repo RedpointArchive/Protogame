@@ -2,6 +2,7 @@
 #pragma warning disable 1591
 
 using Microsoft.Xna.Framework.Audio;
+using System;
 
 namespace Protogame
 {
@@ -13,22 +14,63 @@ namespace Protogame
     /// <interface_ref>Protogame.IAudioHandle</interface_ref>
     public class DefaultAudioHandle : IAudioHandle
     {
-        private readonly SoundEffectInstance _instance;
-        
+        private SoundEffectInstance _instance;
+        private WeakReference<AudioAsset> _lastResolvedAsset;
+        private readonly IAssetReference<AudioAsset> _asset;
+
         public DefaultAudioHandle(IAssetReference<AudioAsset> asset)
         {
-            if (!asset.IsReady)
+            _asset = asset;
+            _lastResolvedAsset = new WeakReference<AudioAsset>(null);
+        }
+
+        private void UpdateInstance()
+        {
+            var shouldReload = false;
+            AudioAsset lastRef = null;
+            if (_lastResolvedAsset != null)
             {
-                _instance = null;
+                if (!_lastResolvedAsset.TryGetTarget(out lastRef))
+                {
+                    // The reference expired, which means the old asset was disposed
+                    // and we need to reload.
+                    shouldReload = true;
+                }
+                else
+                {
+                    if (_asset.IsReady)
+                    {
+                        if (lastRef != _asset.Asset)
+                        {
+                            // The asset is pointing at a different resolved instance now,
+                            // so reload the instance.
+                            shouldReload = true;
+                        }
+                    }
+                }
             }
-            else
+            if (_instance == null && _asset.IsReady)
             {
-                _instance = asset.Asset.Audio.CreateInstance();
+                // Not a real reload, just a load.
+                shouldReload = true;
+            }
+
+            if (shouldReload)
+            {
+                if (_instance != null)
+                {
+                    _instance.Dispose();
+                }
+
+                _instance = _asset.Asset.Audio.CreateInstance();
+                _lastResolvedAsset.SetTarget(_asset.Asset);
             }
         }
-        
+
         public void Loop()
         {
+            UpdateInstance();
+
             if (_instance == null)
             {
                 return;
@@ -40,19 +82,27 @@ namespace Protogame
                 _instance.Play();
             }
         }
-        
+
         public void Pause()
         {
+            UpdateInstance();
+
             _instance?.Pause();
         }
-        
+
         public void Play()
         {
+            UpdateInstance();
+
             _instance?.Play();
         }
-        
+
         public void Stop(bool immediate)
         {
+            _instance?.Stop(immediate);
+
+            UpdateInstance();
+
             _instance?.Stop(immediate);
         }
 
@@ -60,6 +110,8 @@ namespace Protogame
         {
             get
             {
+                UpdateInstance();
+
                 if (_instance == null)
                 {
                     return 0;
@@ -69,6 +121,8 @@ namespace Protogame
             }
             set
             {
+                UpdateInstance();
+
                 if (_instance == null)
                 {
                     return;
@@ -78,6 +132,14 @@ namespace Protogame
             }
         }
 
-        public bool IsPlaying => _instance?.State == SoundState.Playing;
+        public bool IsPlaying
+        {
+            get
+            {
+                UpdateInstance();
+
+                return _instance?.State == SoundState.Playing;
+            }
+        }
     }
 }
