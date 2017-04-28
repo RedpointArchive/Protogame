@@ -1,44 +1,19 @@
-namespace Protogame
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using Microsoft.Xna.Framework.Content;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.Xna.Framework.Content;
 
-    /// <summary>
-    /// The asset content manager.
-    /// </summary>
+namespace Protogame
+{    
     public class AssetContentManager : ContentManager, IAssetContentManager
     {
-        /// <summary>
-        /// The m_ memory streams.
-        /// </summary>
-        private readonly Dictionary<string, Stream> m_MemoryStreams = new Dictionary<string, Stream>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AssetContentManager"/> class.
-        /// </summary>
-        /// <param name="serviceProvider">
-        /// The service provider.
-        /// </param>
+        private readonly Dictionary<string, Stream> _memoryStreams = new Dictionary<string, Stream>();
+        
         public AssetContentManager(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
         }
-
-        /// <summary>
-        /// The load.
-        /// </summary>
-        /// <param name="assetName">
-        /// The asset name.
-        /// </param>
-        /// <typeparam name="T">
-        /// </typeparam>
-        /// <returns>
-        /// The <see cref="T"/>.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// </exception>
+        
         public override T Load<T>(string assetName)
         {
             if (string.IsNullOrEmpty(assetName))
@@ -64,13 +39,7 @@ namespace Protogame
             this.LoadedAssets[assetName] = result;
             return result;
         }
-
-        /// <summary>
-        /// The purge.
-        /// </summary>
-        /// <param name="assetName">
-        /// The asset name.
-        /// </param>
+        
         public void Purge(string assetName)
         {
             if (!this.LoadedAssets.ContainsKey(assetName))
@@ -86,55 +55,31 @@ namespace Protogame
 
             this.LoadedAssets.Remove(assetName);
         }
-
-        /// <summary>
-        /// The set stream.
-        /// </summary>
-        /// <param name="assetName">
-        /// The asset name.
-        /// </param>
-        /// <param name="stream">
-        /// The stream.
-        /// </param>
+        
         public void SetStream(string assetName, Stream stream)
         {
-            this.m_MemoryStreams[assetName] = stream;
+            this._memoryStreams[assetName] = stream;
         }
-
-        /// <summary>
-        /// The unset stream.
-        /// </summary>
-        /// <param name="assetName">
-        /// The asset name.
-        /// </param>
+        
         public void UnsetStream(string assetName)
         {
-            #if !PLATFORM_ANDROID
-            this.m_MemoryStreams[assetName] = null;
-            #endif
+#if !PLATFORM_ANDROID
+            this._memoryStreams[assetName] = null;
+#endif
         }
-
-        /// <summary>
-        /// The open stream.
-        /// </summary>
-        /// <param name="assetName">
-        /// The asset name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Stream"/>.
-        /// </returns>
+        
         protected override Stream OpenStream(string assetName)
         {
-            #if PLATFORM_ANDROID
+#if PLATFORM_ANDROID
             // We have to make a copy on Android so we can reload assets.
             var copy = new MemoryStream();
             this.m_MemoryStreams[assetName].Seek(0, SeekOrigin.Begin);
             this.m_MemoryStreams[assetName].CopyTo(copy);
             copy.Seek(0, SeekOrigin.Begin);
             return copy;
-            #else
-            return this.m_MemoryStreams[assetName];
-            #endif
+#else
+            return this._memoryStreams[assetName];
+#endif
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Protogame
+﻿#if FALSE
+
+namespace Protogame
 {
     public class UserInterfaceAssetLoader : IAssetLoader
     {
@@ -17,3 +19,5 @@
         }
     }
 }
+
+#endif

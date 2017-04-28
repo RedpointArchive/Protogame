@@ -1,4 +1,6 @@
-﻿namespace Protogame
+﻿#if FALSE
+
+namespace Protogame
 {
     using System;
     using System.IO;
@@ -71,3 +73,5 @@
         }
     }
 }
+
+#endif

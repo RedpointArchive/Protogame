@@ -1,3 +1,5 @@
+#if FALSE
+
 namespace Protogame
 {
     public class VariableAssetLoader : IAssetLoader
@@ -13,3 +15,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

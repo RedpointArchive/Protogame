@@ -2,61 +2,44 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using MonoGame.Framework.Content.Pipeline.Builder;
 
 namespace Protogame
 {
-    /// <summary>
-    /// The texture asset compiler.
-    /// </summary>
-    public class TextureAssetCompiler : MonoGameContentCompiler, IAssetCompiler<TextureAsset>
+    public class TextureAssetCompiler : MonoGameContentCompiler, IAssetCompiler
     {
-        /// <summary>
-        /// The compile.
-        /// </summary>
-        /// <param name="asset">
-        /// The asset.
-        /// </param>
-        /// <param name="platform">
-        /// The platform.
-        /// </param>
-        public void Compile(TextureAsset asset, TargetPlatform platform)
-        {
-            if (asset.RawData == null)
-            {
-                return;
-            }
+        public string[] Extensions => new[] { "png" };
 
+        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, ISerializedAsset output)
+        {
             var tempPath = System.IO.Path.GetTempFileName();
             try
             {
                 using (var stream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
-                    stream.Write(asset.RawData, 0, asset.RawData.Length);
+                    using (var sourceStream = await assetFile.GetContentStream().ConfigureAwait(false))
+                    {
+                        await sourceStream.CopyToAsync(stream).ConfigureAwait(false);
+                    }
                 }
 
                 var importer = new TextureImporter();
-                var output = importer.Import(tempPath, new DummyContentImporterContext());
+                var monogameOutput = importer.Import(tempPath, new DummyContentImporterContext());
 
                 var manager = new PipelineManager(
-                    Environment.CurrentDirectory, 
-                    Environment.CurrentDirectory, 
+                    Environment.CurrentDirectory,
+                    Environment.CurrentDirectory,
                     Environment.CurrentDirectory);
                 var dictionary = new OpaqueDataDictionary();
                 var processor = manager.CreateProcessor("TextureProcessor", dictionary);
                 var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
-                var content = processor.Process(output, context);
+                var content = processor.Process(monogameOutput, context);
 
-                asset.PlatformData = new PlatformData { Platform = platform, Data = this.CompileAndGetBytes(content) };
-
-                try
-                {
-                    asset.ReadyOnGameThread();
-                }
-                catch (NoAssetContentManagerException)
-                {
-                }
+                output.SetLoader<IAssetLoader<TextureAsset>>();
+                output.SetPlatform(platform);
+                output.SetByteArray("Data", CompileAndGetBytes(content));
             }
             finally
             {

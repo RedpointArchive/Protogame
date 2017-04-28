@@ -1,46 +1,55 @@
-﻿#if PLATFORM_WINDOWS
-
+﻿using Microsoft.Xna.Framework.Content.Pipeline;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System;
 using System.IO;
 using System.Reflection;
-using Microsoft.Xna.Framework.Content.Pipeline;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using System.Threading.Tasks;
 
 namespace Protogame
 {
-    /// <summary>
-    /// The effect asset compiler.
-    /// </summary>
-    public class EffectAssetCompiler : IAssetCompiler<EffectAsset>
+    public class EffectAssetCompiler : BaseEffectAssetLoader, IAssetCompiler
     {
-        public void Compile(EffectAsset asset, TargetPlatform platform)
+        public string[] Extensions => new[] { "fx" };
+
+        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, ISerializedAsset output)
         {
-            if (string.IsNullOrEmpty(asset.Code))
+            var content = await assetFile.GetContentStream().ConfigureAwait(false);
+            var code = string.Empty;
+            using (var reader = new StreamReader(content))
             {
+                code = await reader.ReadToEndAsync();
+            }
+
+            if (code.Contains("// uber"))
+            {
+                // Do nothing with this file.
                 return;
             }
 
-            var output = new EffectContent();
-            output.EffectCode = this.GetEffectPrefixCode() + asset.Code;
+            var dirName = Path.GetDirectoryName(assetFile.Name.Replace(".", "/"));
+            code = await ResolveIncludes(assetDependencies, dirName.Replace(Path.DirectorySeparatorChar, '.'), code).ConfigureAwait(false);
+
+            var effectContent = new EffectContent();
+            effectContent.EffectCode = this.GetEffectPrefixCode() + code;
 
             var tempPath = Path.GetTempFileName();
             using (var writer = new StreamWriter(tempPath))
             {
-                writer.Write(output.EffectCode);
+                writer.Write(effectContent.EffectCode);
             }
 
-            output.Identity = new ContentIdentity(tempPath);
+            effectContent.Identity = new ContentIdentity(tempPath);
 
             var tempOutputPath = Path.GetTempFileName();
 
             var debugContent = EffectCompilerHelper.Compile(
-                output,
+                effectContent,
                 tempOutputPath,
                 platform,
                 true,
                 string.Empty);
             var releaseContent = EffectCompilerHelper.Compile(
-                output,
+                effectContent,
                 tempOutputPath,
                 platform,
                 false,
@@ -69,20 +78,14 @@ namespace Protogame
                     stream.Seek(0, SeekOrigin.Begin);
                     stream.Read(b, 0, b.Length);
 
-                    asset.PlatformData = new PlatformData { Platform = platform, Data = b };
+                    output.SetLoader<IAssetLoader<EffectAsset>>();
+                    output.SetPlatform(platform);
+                    output.SetByteArray("Data", b);
                 }
             }
 
             File.Delete(tempPath);
             File.Delete(tempOutputPath);
-
-            try
-            {
-                asset.ReloadEffect();
-            }
-            catch (NoAssetContentManagerException)
-            {
-            }
         }
 
         /// <summary>
@@ -106,5 +109,3 @@ namespace Protogame
         }
     }
 }
-
-#endif

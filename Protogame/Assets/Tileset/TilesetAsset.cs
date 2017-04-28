@@ -5,7 +5,7 @@ namespace Protogame
     /// <summary>
     /// The tileset asset.
     /// </summary>
-    public class TilesetAsset : MarshalByRefObject, IAsset
+    public class TilesetAsset : IAsset
     {
         /// <summary>
         /// The m_ asset manager.
@@ -140,24 +140,5 @@ namespace Protogame
             }
         }
 
-        /// <summary>
-        /// The resolve.
-        /// </summary>
-        /// <typeparam name="T">
-        /// </typeparam>
-        /// <returns>
-        /// The <see cref="T"/>.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
-        public T Resolve<T>() where T : class, IAsset
-        {
-            if (typeof(T).IsAssignableFrom(typeof(TilesetAsset)))
-            {
-                return this as T;
-            }
-
-            throw new InvalidOperationException("Asset already resolved to TilesetAsset.");
-        }
     }
 }

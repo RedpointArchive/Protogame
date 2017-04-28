@@ -16,14 +16,17 @@
     <Reference Include="NDesk.Options" />
   </References>
   <Files>
-    <Compile Include="BuiltinRawAssetLoader.cs" />
-    <Compile Include="DefaultAssetCleanup.cs" />
-    <Compile Include="DefaultAssetCompilationEngine.cs" />
-    <Compile Include="DefaultAssetOutOfDateCalculator.cs" />
-    <Compile Include="IAssetCleanup.cs" />
-    <Compile Include="IAssetCompilationEngine.cs" />
-    <Compile Include="IAssetOutOfDateCalculator.cs" />
+    <Compile Include="CompileOperation.cs" />
+    <Compile Include="IOperation.cs" />
+    <Compile Include="Legacy\BuiltinRawAssetLoader.cs" />
+    <Compile Include="Legacy\DefaultAssetCleanup.cs" />
+    <Compile Include="Legacy\DefaultAssetCompilationEngine.cs" />
+    <Compile Include="Legacy\DefaultAssetOutOfDateCalculator.cs" />
+    <Compile Include="Legacy\IAssetCleanup.cs" />
+    <Compile Include="Legacy\IAssetCompilationEngine.cs" />
+    <Compile Include="Legacy\IAssetOutOfDateCalculator.cs" />
     <Compile Include="NullRenderBatcher.cs" />
+    <Compile Include="OperationArguments.cs" />
     <Compile Include="Program.cs" />
   </Files>
 </Project>

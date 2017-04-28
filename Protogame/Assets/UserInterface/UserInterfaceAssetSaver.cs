@@ -1,4 +1,6 @@
-﻿namespace Protogame
+﻿#if FALSE
+
+namespace Protogame
 {
     public class UserInterfaceAssetSaver : IAssetSaver
     {
@@ -23,3 +25,5 @@
         }
     }
 }
+
+#endif

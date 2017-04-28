@@ -7,57 +7,30 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {    
-    public class UberEffectAsset : MarshalByRefObject, IAsset, INativeAsset
+    public class UberEffectAsset : IAsset, INativeAsset
     {
         private readonly IKernel _kernel;
-        
         private readonly IAssetContentManager _assetContentManager;
-
         private readonly IRawLaunchArguments _rawLaunchArguments;
+        private readonly byte[] _effect;
 
         public UberEffectAsset(
             IKernel kernel,
             IAssetContentManager assetContentManager, 
             IRawLaunchArguments rawLaunchArguments,
-            string name, 
-            string code, 
-            PlatformData platformData, 
-            bool sourcedFromRaw)
+            string name,
+            byte[] effect)
         {
-            Name = name;
-            Code = code;
-            PlatformData = platformData;
             _kernel = kernel;
             _assetContentManager = assetContentManager;
             _rawLaunchArguments = rawLaunchArguments;
-            SourcedFromRaw = sourcedFromRaw;
-        }
-        
-        public string Code { get; set; }
-        
-        public bool CompiledOnly
-        {
-            get
-            {
-                return Code == null;
-            }
+            Name = name;
+            _effect = effect;
         }
         
         public Dictionary<string, IEffect> Effects { get; private set; }
         
         public string Name { get; private set; }
-        
-        public PlatformData PlatformData { get; set; }
-        
-        public bool SourceOnly
-        {
-            get
-            {
-                return PlatformData == null;
-            }
-        }
-        
-        public bool SourcedFromRaw { get; private set; }
         
         public void ReadyOnGameThread()
         {
@@ -66,7 +39,7 @@ namespace Protogame
                 throw new NoAssetContentManagerException();
             }
 
-            if (_assetContentManager != null && PlatformData != null)
+            if (_assetContentManager != null && _effect != null)
             {
                 // FIXME: We shouldn't be casting IAssetContentManager like this!
                 var assetContentManager = _assetContentManager as AssetContentManager;
@@ -86,7 +59,7 @@ namespace Protogame
                     // concatenated together.  We have to parse the binary platform data, and load
                     // each effect into our Effects dictionary.
                     Effects = new Dictionary<string, IEffect>();
-                    using (var memory = new MemoryStream(PlatformData.Data))
+                    using (var memory = new MemoryStream(_effect))
                     {
                         using (var reader = new BinaryReader(memory))
                         {
@@ -141,16 +114,6 @@ namespace Protogame
                     }
                 }
             }
-        }
-        
-        public T Resolve<T>() where T : class, IAsset
-        {
-            if (typeof(T).IsAssignableFrom(typeof(UberEffectAsset)))
-            {
-                return this as T;
-            }
-
-            throw new InvalidOperationException("Asset already resolved to UberEffectAsset.");
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Protogame
+﻿#if FALSE
+
+namespace Protogame
 {
     using System;
 
@@ -100,3 +102,5 @@
         }
     }
 }
+
+#endif

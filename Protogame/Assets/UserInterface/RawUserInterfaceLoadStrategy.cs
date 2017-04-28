@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FALSE
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -50,3 +52,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

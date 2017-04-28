@@ -14,16 +14,7 @@
         /// does not include the header fragments.
         /// </summary>
         private readonly Fragment[] m_CurrentReceiveFragments;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MxReliabilityReceiveState"/> class.
-        /// </summary>
-        /// <param name="messageID">
-        /// The message id.
-        /// </param>
-        /// <param name="totalPackets">
-        /// The total packets.
-        /// </param>
+        
         public MxReliabilityReceiveState(int messageID, int totalPackets)
         {
             this.m_CurrentReceiveFragments = new Fragment[totalPackets];
@@ -49,28 +40,13 @@
         /// <summary>
         /// The total number of fragments that this message contains.
         /// </summary>
-        /// <value>
-        /// The total fragments.
-        /// </value>
         public int TotalFragments { get; private set; }
-
-        /// <summary>
-        /// The is complete.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
+        
         public bool IsComplete()
         {
             return this.m_CurrentReceiveFragments.All(x => x.Status == FragmentStatus.Received);
         }
-
-        /// <summary>
-        /// The reconstruct.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="byte[]"/>.
-        /// </returns>
+        
         public byte[] Reconstruct()
         {
             var bytes = new byte[this.m_CurrentReceiveFragments.Sum(x => x.Data.Length)];
@@ -85,18 +61,7 @@
             }
             return bytes;
         }
-
-        /// <summary>
-        /// The set fragment.
-        /// </summary>
-        /// <param name="currentIndex">
-        /// The current index.
-        /// </param>
-        /// <param name="fragment">
-        /// The fragment.
-        /// </param>
-        /// <exception cref="InvalidOperationException">
-        /// </exception>
+        
         public void SetFragment(int currentIndex, Fragment fragment)
         {
             if (currentIndex >= this.TotalFragments)

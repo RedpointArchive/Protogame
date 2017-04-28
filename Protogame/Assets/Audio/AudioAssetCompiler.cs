@@ -1,25 +1,14 @@
+﻿using System.Threading.Tasks;
+
 namespace Protogame
 {
-    /// <summary>
-    /// The audio asset compiler.
-    /// </summary>
-    public class AudioAssetCompiler : IAssetCompiler<AudioAsset>
+    public class AudioAssetCompiler : IAssetCompiler
     {
-        /// <summary>
-        /// The compile.
-        /// </summary>
-        /// <param name="asset">
-        /// The asset.
-        /// </param>
-        /// <param name="platform">
-        /// The platform.
-        /// </param>
-        public void Compile(AudioAsset asset, TargetPlatform platform)
+        public string[] Extensions => new[] { "wav" };
+
+        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, ISerializedAsset output)
         {
-            if (asset.RawData == null)
-            {
-                return;
-            }
+            var content = await assetFile.GetContentStream().ConfigureAwait(false);
 
             // Currently we just copy the raw data.  According to the XNA documentation:
             /*
@@ -30,15 +19,10 @@ namespace Protogame
              * Must be 8 or 16 bit
              * Sample rate must be between 8,000 Hz and 48,000 Hz
              */
-            asset.PlatformData = new PlatformData { Platform = platform, Data = asset.RawData };
-
-            try
-            {
-                asset.ReloadAudio();
-            }
-            catch (NoAssetContentManagerException)
-            {
-            }
+            output.SetLoader<IAssetLoader<AudioAsset>>();
+            var bytes = new byte[content.Length];
+            await content.ReadAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
+            output.SetByteArray("Data", bytes);
         }
     }
 }

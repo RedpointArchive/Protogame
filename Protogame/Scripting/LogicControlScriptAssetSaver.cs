@@ -1,3 +1,5 @@
+#if FALSE
+
 namespace Protogame
 {
     /// <summary>
@@ -37,3 +39,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

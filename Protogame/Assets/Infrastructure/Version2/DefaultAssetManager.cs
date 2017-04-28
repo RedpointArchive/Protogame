@@ -12,12 +12,8 @@ namespace Protogame
     public class DefaultAssetManager : IAssetManager
     {
         private readonly IKernel _kernel;
-        private readonly IAssetLoader[] _assetLoaders;
-        private readonly IAssetSaver[] _assetSavers;
+        private readonly ICompiledAssetFs _compiledAssetFs;
         private readonly IProfiler _profiler;
-        private readonly IRawAssetLoader _rawAssetLoader;
-        private readonly IRawAssetSaver _rawAssetSaver;
-        private readonly ITransparentAssetCompiler _transparentAssetCompiler;
         private readonly IConsoleHandle _consoleHandle;
 
         private readonly Dictionary<string, ISingleAssetReference<IAsset>> _assets;
@@ -27,22 +23,13 @@ namespace Protogame
 
         public DefaultAssetManager(
             IKernel kernel,
-            IAssetLoader[] assetLoaders,
-            IAssetSaver[] assetSavers,
+            ICompiledAssetFs compiledAssetFs,
             IProfiler[] profilers,
-            IRawAssetLoader rawAssetLoader,
-            IRawAssetSaver rawAssetSaver,
-            ITransparentAssetCompiler transparentAssetCompiler,
             ICoroutine coroutine,
             IConsoleHandle consoleHandle)
         {
             _kernel = kernel;
-            _assetLoaders = assetLoaders;
-            _assetSavers = assetSavers;
             _profiler = profilers.Length > 0 ? profilers[0] : null;
-            _rawAssetLoader = rawAssetLoader;
-            _rawAssetSaver = rawAssetSaver;
-            _transparentAssetCompiler = transparentAssetCompiler;
             _consoleHandle = consoleHandle;
 
             _assets = new Dictionary<string, ISingleAssetReference<IAsset>>();
@@ -124,7 +111,13 @@ namespace Protogame
                 {
                     try
                     {
-                        assetReference.Update(GetUnresolved(assetReference.Name), AssetReferenceState.PartiallyReady);
+                        var assetTask = Task.Run(async () => await GetUnresolved(assetReference.Name));
+                        while (!assetTask.IsCompleted)
+                        {
+                            Thread.Sleep(0);
+                        }
+
+                        assetReference.Update(assetTask.Result, AssetReferenceState.PartiallyReady);
                         _assetsToFinalize.Enqueue(assetReference);
                     }
                     catch (Exception e)
@@ -141,70 +134,26 @@ namespace Protogame
 
         public bool AllowSourceOnly { get; set; }
 
-        public IAsset GetUnresolved(string name)
+        public async Task<IAsset> GetUnresolved(string name)
         {
-            var candidatesWithTimes = _rawAssetLoader.LoadRawAssetCandidatesWithModificationDates(name);
-            var loaders = _assetLoaders.ToArray();
-            var failedDueToCompilation = false;
-            var hasMoreThanZeroCandidates = false;
-
-            var candidates = candidatesWithTimes.OrderByDescending(x => x.Value).Select(x => x.Key).ToList();
-
-            foreach (var candidate in candidates)
-            {
-                hasMoreThanZeroCandidates = true;
-
-                foreach (var loader in loaders)
-                {
-                    var canLoad = false;
-                    try
-                    {
-                        canLoad = loader.CanLoad(candidate);
-                    }
-                    catch (Exception)
-                    {
-                    }
-
-                    if (canLoad)
-                    {
-                        var result = loader.Load(name, candidate);
-                        
-                        if (!this.SkipCompilation)
-                        {
-                            _transparentAssetCompiler.Handle(result);
-
-                            if (result.SourceOnly && (!this.AllowSourceOnly || name == "font.Default"))
-                            {
-                                // We can't have source only assets past this point.  The compilation
-                                // failed, but we definitely do have a source representation, so let's
-                                // keep that around if we need to throw an exception.
-                                failedDueToCompilation = true;
-                                Console.WriteLine(
-                                    "WARNING: Unable to compile " + name
-                                    + " at runtime (a compiled version may be used).");
-                                break;
-                            }
-                        }
-                        
-                        return result;
-                    }
-                }
-            }
-
-            if (failedDueToCompilation)
-            {
-                throw new AssetNotCompiledException(name);
-            }
-
-            if (!hasMoreThanZeroCandidates)
+            var compiledAsset = await _compiledAssetFs.Get(name);
+            if (compiledAsset == null)
             {
                 throw new AssetNotFoundException(name);
             }
-
-            // NOTE: We don't use asset defaults with the local asset manager, if it
-            // doesn't exist, the load fails.
-            throw new InvalidOperationException(
-                "Unable to load asset '" + name + "'.  " + "No loader for this asset could be found.");
+            SerializedAsset serializedAsset;
+            using (var stream = await compiledAsset.GetContentStream().ConfigureAwait(false))
+            {
+                serializedAsset = await SerializedAsset.FromStream(stream).ConfigureAwait(false);
+            }
+            var loaderType = serializedAsset.GetLoader();
+            var loaderInstance = (IAssetLoader)_kernel.TryGet(loaderType);
+            if (loaderInstance == null)
+            {
+                throw new InvalidOperationException(
+                    "Unable to load asset '" + name + "'.  " + "No loader for this asset could be found.");
+            }
+            return await loaderInstance.Load(name, serializedAsset, this).ConfigureAwait(false);
         }
 
         public IAssetReference<T> GetPreferred<T>(string[] namePreferenceList) where T : class, IAsset

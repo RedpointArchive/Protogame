@@ -1,21 +1,10 @@
-﻿namespace ProtogameAssetTool
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Reflection;
-    using System.Security.Cryptography;
-    using System.Text;
-    using System.Threading;
-    using Microsoft.Xna.Framework;
-    using NDesk.Options;
-    using Protoinject;
-    using Protogame;
+﻿using System;
+using System.Collections.Generic;
+using NDesk.Options;
+using System.Threading.Tasks;
 
+namespace ProtogameAssetTool
+{    
     public static class Program
     {
         public static void Main(string[] args)
@@ -30,7 +19,7 @@
                 { "a|assembly=", "Load an assembly.", v => assemblies.Add(v) },
                 { "p|platform=", "Specify one or more platforms to target.", v => platforms.Add(v) },
                 { "o|output=", "Specify the output folder for the compiled assets.", v => output = v },
-                { "m|operation=", "Specify the mode of operation (either 'bulk', 'remote' or 'builtin', default is 'bulk').", v => operation = v }
+                { "m|operation=", "Specify the mode of operation (either 'compile', 'remote' or 'builtin', default is 'compile').", v => operation = v }
             };
 
             try
@@ -46,6 +35,30 @@
                 return;
             }
 
+            var operationArguments = new OperationArguments
+            {
+                Assemblies = assemblies.ToArray(),
+                Platforms = platforms.ToArray(),
+                OutputPath = output
+            };
+
+            IOperation operationInst;
+            switch (operation)
+            {
+                case "remote":
+                    throw new NotSupportedException();
+                case "builtin":
+                    throw new NotSupportedException();
+                case "compile":
+                default:
+                    operationInst = new CompileOperation();
+                    break;
+            }
+
+            var task = Task.Run(async () => await operationInst.Run(operationArguments).ConfigureAwait(false));
+            task.Wait();
+
+            /*
             if (IntPtr.Size != 8)
             {
                 Console.Error.WriteLine("ERROR: Asset compilation is only supported on 64-bit machines.");
@@ -63,9 +76,9 @@
                 default:
                     BulkCompile(assemblies, platforms, output);
                     break;
-            }
+            }*/
         }
-
+        /*
         private static void SetupKernel(IKernel kernel)
         {
             kernel.Load<ProtogameAssetModule>();
@@ -446,5 +459,6 @@
             return;
         }
 #endif
+*/
     }
 }
