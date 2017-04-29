@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Protogame
 {
-    public class EffectAsset : IAsset, INativeAsset
+    public class EffectAsset : IAsset, INativeAsset, IDisposable
     {
         private readonly IKernel _kernel;
         private readonly IAssetContentManager _assetContentManager;
@@ -30,6 +30,11 @@ namespace Protogame
         public IEffect Effect { get; private set; }
         
         public string Name { get; private set; }
+
+        public void Dispose()
+        {
+            Effect?.NativeEffect?.Dispose();
+        }
 
         public void ReadyOnGameThread()
         {

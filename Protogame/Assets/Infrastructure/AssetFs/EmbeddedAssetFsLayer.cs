@@ -88,11 +88,11 @@ namespace Protogame
             return _knownAssets.Values.ToArray();
         }
 
-        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        public void RegisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
         }
 
-        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        public void UnregisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
         }
 

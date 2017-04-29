@@ -10,14 +10,14 @@ namespace Protogame
     {
         private readonly IAssetFsLayer[] _layers;
         private readonly Dictionary<string, IAssetFsFile> _knownAssets;
-        private readonly HashSet<Action<string>> _onAssetUpdated;
+        private readonly HashSet<Func<string, Task>> _onAssetUpdated;
         private Task _updatingTask;
 
         public AssetFs(IAssetFsLayer[] layers)
         {
             _layers = layers;
             _knownAssets = new Dictionary<string, IAssetFsFile>();
-            _onAssetUpdated = new HashSet<Action<string>>();
+            _onAssetUpdated = new HashSet<Func<string, Task>>();
 
             foreach (var layer in _layers)
             {
@@ -25,15 +25,19 @@ namespace Protogame
             }
         }
 
-        private void OnAssetUpdated(string assetName)
+        private async Task OnAssetUpdated(string assetName)
         {
+            // Wait until we've resorted assets before notifying our
+            // consumers that an asset has been updated.
+            await ProcessAsset(assetName).ConfigureAwait(false);
+
             foreach (var handler in _onAssetUpdated)
             {
-                handler(assetName);
+                await handler(assetName).ConfigureAwait(false);
             }
         }
 
-        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        public void RegisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
             if (!_onAssetUpdated.Contains(onAssetUpdated))
             {
@@ -41,7 +45,7 @@ namespace Protogame
             }
         }
 
-        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        public void UnregisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
             if (_onAssetUpdated.Contains(onAssetUpdated))
             {

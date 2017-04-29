@@ -49,6 +49,11 @@ namespace Protogame
                 }
             }
 
+            if (_asset != asset && assetState == AssetReferenceState.Ready)
+            {
+                (_asset as IDisposable)?.Dispose();
+            }
+
             _asset = (T) asset;
             State = assetState;
         }

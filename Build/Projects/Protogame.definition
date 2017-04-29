@@ -66,6 +66,7 @@
     <Compile Include="Assets\Infrastructure\AssetFs\IAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\IAssetFsFile.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\IAssetFsLayer.cs" />
+    <Compile Include="Assets\Infrastructure\AssetFs\IAssetUpdateNotifier.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\ICompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\LocalFilesystemAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\RuntimeCompiledAssetFs.cs" />

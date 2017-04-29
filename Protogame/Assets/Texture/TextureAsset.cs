@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
-    public class TextureAsset : IAsset, INativeAsset
+    public class TextureAsset : IAsset, INativeAsset, IDisposable
     {
         private readonly IAssetContentManager _assetContentManager;
         private readonly byte[] _data;
@@ -87,6 +87,11 @@ namespace Protogame
                     _assetContentManager.UnsetStream(Name);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            Texture?.Dispose();
         }
     }
 }

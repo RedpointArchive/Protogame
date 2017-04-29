@@ -15,7 +15,7 @@ namespace Protogame
         private readonly Dictionary<string, SemaphoreSlim> _compilerLocks;
         private readonly SemaphoreSlim _compilerLock;
         private readonly TargetPlatform _targetPlatform;
-        private readonly HashSet<Action<string>> _onAssetUpdated;
+        private readonly HashSet<Func<string, Task>> _onAssetUpdated;
         private Task _updatingTask;
 
         protected CompiledAssetFs(
@@ -29,12 +29,12 @@ namespace Protogame
             _compilerLocks = new Dictionary<string, SemaphoreSlim>();
             _compilerLock = new SemaphoreSlim(1);
             _targetPlatform = targetPlatform;
-            _onAssetUpdated = new HashSet<Action<string>>();
+            _onAssetUpdated = new HashSet<Func<string, Task>>();
 
             _assetFs.RegisterUpdateNotifier(OnAssetUpdated);
         }
 
-        private void OnAssetUpdated(string assetName)
+        private async Task OnAssetUpdated(string assetName)
         {
             // TODO: Detect and update known dependencies as well.
 
@@ -45,11 +45,11 @@ namespace Protogame
                     _compiledOverlay.Remove(assetName);
                 }
 
-                handler(assetName);
+                await handler(assetName);
             }
         }
 
-        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        public void RegisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
             if (!_onAssetUpdated.Contains(onAssetUpdated))
             {
@@ -57,7 +57,7 @@ namespace Protogame
             }
         }
 
-        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        public void UnregisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
             if (_onAssetUpdated.Contains(onAssetUpdated))
             {

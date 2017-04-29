@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace Protogame
 {
-    public class AudioAsset : IAsset, INativeAsset
+    public class AudioAsset : IAsset, INativeAsset, IDisposable
     {
         public AudioAsset(string name, byte[] rawData)
         {
@@ -17,7 +17,12 @@ namespace Protogame
         public string Name { get; private set; }
         
         public byte[] RawData { get; set; }
-        
+
+        public void Dispose()
+        {
+            Audio?.Dispose();
+        }
+
         public void ReadyOnGameThread()
         {
             if (RawData != null)

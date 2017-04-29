@@ -53,12 +53,12 @@ namespace Protogame
             return new IAssetFsFile[0];
         }
 
-        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        public void RegisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
             _localLayer.RegisterUpdateNotifier(onAssetUpdated);
         }
 
-        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        public void UnregisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
             _localLayer.UnregisterUpdateNotifier(onAssetUpdated);
         }

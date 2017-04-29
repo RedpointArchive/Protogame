@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {    
-    public class UberEffectAsset : IAsset, INativeAsset
+    public class UberEffectAsset : IAsset, INativeAsset, IDisposable
     {
         private readonly IKernel _kernel;
         private readonly IAssetContentManager _assetContentManager;
@@ -31,7 +31,15 @@ namespace Protogame
         public Dictionary<string, IEffect> Effects { get; private set; }
         
         public string Name { get; private set; }
-        
+
+        public void Dispose()
+        {
+            foreach (var effect in Effects.Values)
+            {
+                effect?.NativeEffect?.Dispose();
+            }
+        }
+
         public void ReadyOnGameThread()
         {
             if (_assetContentManager == null)

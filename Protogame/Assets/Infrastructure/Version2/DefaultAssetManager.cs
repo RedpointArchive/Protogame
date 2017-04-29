@@ -18,7 +18,7 @@ namespace Protogame
 
         private readonly Dictionary<string, ISingleAssetReference<IAsset>> _assets;
         private readonly ConcurrentQueue<ISingleAssetReference<IAsset>> _assetsToLoad;
-        private readonly ConcurrentQueue<ISingleAssetReference<IAsset>> _assetsToFinalize;
+        private readonly ConcurrentQueue<Tuple<IAsset, ISingleAssetReference<IAsset>>> _assetsToFinalize;
         private Thread _loadingThread;
 
         public DefaultAssetManager(
@@ -29,12 +29,13 @@ namespace Protogame
             IConsoleHandle consoleHandle)
         {
             _kernel = kernel;
+            _compiledAssetFs = compiledAssetFs;
             _profiler = profilers.Length > 0 ? profilers[0] : null;
             _consoleHandle = consoleHandle;
 
             _assets = new Dictionary<string, ISingleAssetReference<IAsset>>();
             _assetsToLoad = new ConcurrentQueue<ISingleAssetReference<IAsset>>();
-            _assetsToFinalize = new ConcurrentQueue<ISingleAssetReference<IAsset>>();
+            _assetsToFinalize = new ConcurrentQueue<Tuple<IAsset, ISingleAssetReference<IAsset>>>();
 
             _compiledAssetFs.RegisterUpdateNotifier(OnAssetUpdated);
 
@@ -46,7 +47,7 @@ namespace Protogame
             _compiledAssetFs.UnregisterUpdateNotifier(OnAssetUpdated);
         }
 
-        public void OnAssetUpdated(string assetName)
+        public async Task OnAssetUpdated(string assetName)
         {
             if (!_assets.ContainsKey(assetName))
             {
@@ -62,14 +63,15 @@ namespace Protogame
         {
             while (true)
             {
-                ISingleAssetReference<IAsset> assetReference;
-                if (_assetsToFinalize.TryDequeue(out assetReference))
+                Tuple<IAsset, ISingleAssetReference<IAsset>> assetTuple;
+                if (_assetsToFinalize.TryDequeue(out assetTuple))
                 {
-                    var asset = assetReference.Asset as INativeAsset;
+                    var asset = assetTuple.Item1 as INativeAsset;
+                    var assetReference = assetTuple.Item2;
                     if (asset == null)
                     {
                         _consoleHandle.LogInfo(assetReference.Name + ": No native component; immediately marking as ready.");
-                        assetReference.Update(AssetReferenceState.Ready);
+                        assetReference.Update(assetTuple.Item1, AssetReferenceState.Ready);
                         continue;
                     }
 
@@ -78,17 +80,22 @@ namespace Protogame
                     {
                         _consoleHandle.LogInfo(assetReference.Name + ": Requesting load of native components.");
                         asset.ReadyOnGameThread();
-                        assetReference.Update(AssetReferenceState.Ready);
+                        assetReference.Update(assetTuple.Item1, AssetReferenceState.Ready);
                         _consoleHandle.LogInfo(assetReference.Name + ": Native components loaded successfully; asset marked as ready.");
                     }
                     catch (NoAssetContentManagerException)
                     {
-                        assetReference.Update(AssetReferenceState.Ready);
+                        assetReference.Update(assetTuple.Item1, AssetReferenceState.Ready);
                         _consoleHandle.LogInfo(assetReference.Name + ": No asset content manager Native components loaded successfully; asset marked as ready.");
                     }
                     catch (Exception ex)
                     {
-                        assetReference.Update(ex);
+                        // Only store exceptions if we don't already have a readied
+                        // asset (due to live reload scenarios).
+                        if (!assetReference.IsReady)
+                        {
+                            assetReference.Update(ex);
+                        }
                     }
                 }
 
@@ -136,8 +143,16 @@ namespace Protogame
                             Thread.Sleep(0);
                         }
 
-                        assetReference.Update(assetTask.Result, AssetReferenceState.PartiallyReady);
-                        _assetsToFinalize.Enqueue(assetReference);
+                        // Only move into a partially ready status if the asset isn't already loaded.
+                        // When we do live reload, we want to keep the old asset (with all of it's
+                        // loaded resources) as is until the new asset has been readied on the
+                        // game thread.
+                        if (!assetReference.IsReady)
+                        {
+                            assetReference.Update(assetTask.Result, AssetReferenceState.PartiallyReady);
+                        }
+
+                        _assetsToFinalize.Enqueue(new Tuple<IAsset, ISingleAssetReference<IAsset>>(assetTask.Result, assetReference));
                     }
                     catch (Exception e)
                     {
