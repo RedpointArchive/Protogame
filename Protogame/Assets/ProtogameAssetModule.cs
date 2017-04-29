@@ -50,7 +50,8 @@ namespace Protogame
             kernel.Bind<IAssetFsLayer>().To<CurrentDirLocalFilesystemAssetFsLayer>().InSingletonScope();
             kernel.Bind<IAssetFsLayer>().To<CurrentDirPlatformLocalFilesystemAssetFsLayer>().InSingletonScope();
 #elif PLATFORM_ANDROID
-            // TODO: Android specific loaders
+            kernel.Bind<IAssetFsLayer>().To<RootAndroidAssetFsLayer>().InSingletonScope();
+            kernel.Bind<IAssetFsLayer>().To<PlatformAndroidAssetFsLayer>().InSingletonScope();
 #endif
 
 #if DEBUG

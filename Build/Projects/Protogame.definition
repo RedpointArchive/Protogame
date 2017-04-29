@@ -57,6 +57,7 @@
     <Compile Include="Assets\Font\FontAssetCompiler.cs" />
     <Compile Include="Assets\Font\FontAssetLoader.cs" />
     <Compile Include="Assets\Infrastructure\AssetContentManager.cs" />
+    <Compile Include="Assets\Infrastructure\AssetFs\AndroidAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\AssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\CompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\CompiledEmbeddedAssetFsLayer.cs" />
@@ -69,6 +70,8 @@
     <Compile Include="Assets\Infrastructure\AssetFs\IAssetUpdateNotifier.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\ICompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\LocalFilesystemAssetFsLayer.cs" />
+    <Compile Include="Assets\Infrastructure\AssetFs\PlatformAndroidAssetFsLayer.cs" />
+    <Compile Include="Assets\Infrastructure\AssetFs\RootAndroidAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\RuntimeCompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\SourceDirLocalFilesystemAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\SourceEmbeddedAssetFsLayer.cs" />
@@ -80,8 +83,6 @@
     <Compile Include="Assets\Infrastructure\IAsset.cs" />
     <Compile Include="Assets\Infrastructure\IAssetCompiler.cs" />
     <Compile Include="Assets\Infrastructure\IAssetContentManager.cs" />
-    <Compile Include="Assets\Infrastructure\LoadStrategies\AndroidCompiledLoadStrategy.cs" />
-    <Compile Include="Assets\Infrastructure\LoadStrategies\AndroidSourceLoadStrategy.cs" />
     <Compile Include="Assets\Infrastructure\NoAssetContentManagerException.cs" />
     <Compile Include="Assets\Infrastructure\NullAssetContentManager.cs" />
     <Compile Include="Assets\Infrastructure\TargetPlatform.cs" />

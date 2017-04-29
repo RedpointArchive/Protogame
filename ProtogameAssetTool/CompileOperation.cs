@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ProtogameAssetTool
@@ -55,6 +56,7 @@ namespace ProtogameAssetTool
                 kernel.Rebind<IRenderBatcher>().To<NullRenderBatcher>();
                 kernel.Unbind<IAssetCompiler>();
                 (new ProtogameAssetModule()).LoadRawAssetStrategies(kernel);
+                LoadAndBindTypes(kernel, args.Assemblies);
 
                 var compiledAssetFs = kernel.Get<ICompiledAssetFs>();
                 var assetFs = kernel.Get<IAssetFs>();
@@ -103,6 +105,46 @@ namespace ProtogameAssetTool
                 {
                     Console.WriteLine("Deleting " + compiledAssetOnDisk + "...");
                     File.Delete(compiledAssetOnDisk);
+                }
+            }
+        }
+
+        private void LoadAndBindTypes(IKernel kernel, string[] assemblies)
+        {
+            foreach (var filename in assemblies)
+            {
+                var file = new FileInfo(filename);
+                try
+                {
+                    var assembly = Assembly.LoadFrom(file.FullName);
+                    foreach (var type in assembly.GetTypes())
+                    {
+                        try
+                        {
+                            if (type.IsAbstract || type.IsInterface)
+                                continue;
+                            if (type.Assembly == typeof(FontAsset).Assembly)
+                                continue;
+                            if (typeof(IAssetCompiler).IsAssignableFrom(type))
+                            {
+                                Console.WriteLine("Binding IAssetCompiler: " + type.Name);
+                                kernel.Bind<IAssetCompiler>().To(type);
+                            }
+                            else if (type.GetInterfaces().Any(x => x.Name == "IAssetLoader`1"))
+                            {
+                                Console.WriteLine("Binding IAssetLoader<>: " + type.Name);
+                                kernel.Bind(type.GetInterfaces().First(x => x.Name == "IAssetLoader`1")).To(type);
+                            }
+                        }
+                        catch
+                        {
+                            // Might not be able to load the assembly, so just skip over it.
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Can't load " + file.Name);
                 }
             }
         }

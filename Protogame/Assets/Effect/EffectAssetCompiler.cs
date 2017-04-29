@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Content.Pipeline;
+﻿#if PLATFORM_WINDOWS
+
+using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System;
 using System.IO;
@@ -109,3 +111,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

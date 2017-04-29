@@ -73,8 +73,8 @@ namespace Protogame
 #if PLATFORM_ANDROID
             // We have to make a copy on Android so we can reload assets.
             var copy = new MemoryStream();
-            this.m_MemoryStreams[assetName].Seek(0, SeekOrigin.Begin);
-            this.m_MemoryStreams[assetName].CopyTo(copy);
+            this._memoryStreams[assetName].Seek(0, SeekOrigin.Begin);
+            this._memoryStreams[assetName].CopyTo(copy);
             copy.Seek(0, SeekOrigin.Begin);
             return copy;
 #else
