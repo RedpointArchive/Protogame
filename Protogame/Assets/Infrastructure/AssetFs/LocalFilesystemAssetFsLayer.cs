@@ -37,7 +37,7 @@ namespace Protogame
             }
         }
 
-        private bool AcceptAsset(string assetName)
+        protected virtual bool AcceptAsset(string assetName, string fullPath)
         {
             if (string.IsNullOrWhiteSpace(assetName))
             {
@@ -62,7 +62,7 @@ namespace Protogame
             foreach (var file in directory.GetFiles())
             {
                 var name = FilesystemToAssetName(file.FullName);
-                if (AcceptAsset(name))
+                if (AcceptAsset(name, file.FullName))
                 {
                     _knownFiles.Add(name, new LocalAssetFsFile(name, file.FullName));
                 }
@@ -87,7 +87,7 @@ namespace Protogame
             lock (_dictionaryLock)
             {
                 var name = FilesystemToAssetName(new FileInfo(e.FullPath).FullName);
-                if (AcceptAsset(name))
+                if (AcceptAsset(name, new FileInfo(e.FullPath).FullName))
                 {
                     _knownFiles.Remove(name);
                     NotifyChanged(name);
@@ -100,7 +100,7 @@ namespace Protogame
             lock (_dictionaryLock)
             {
                 var oldName = FilesystemToAssetName(new FileInfo(e.OldFullPath).FullName);
-                if (AcceptAsset(oldName))
+                if (AcceptAsset(oldName, new FileInfo(e.OldFullPath).FullName))
                 {
                     _knownFiles.Remove(oldName);
                     NotifyChanged(oldName);
@@ -110,7 +110,7 @@ namespace Protogame
             lock (_dictionaryLock)
             {
                 var newName = FilesystemToAssetName(new FileInfo(e.FullPath).FullName);
-                if (AcceptAsset(newName))
+                if (AcceptAsset(newName, new FileInfo(e.FullPath).FullName))
                 {
                     if (!_knownFiles.ContainsKey(newName))
                     {
@@ -126,7 +126,7 @@ namespace Protogame
             lock (_dictionaryLock)
             {
                 var name = FilesystemToAssetName(new FileInfo(e.FullPath).FullName);
-                if (AcceptAsset(name))
+                if (AcceptAsset(name, new FileInfo(e.FullPath).FullName))
                 {
                     NotifyChanged(name);
                 }
@@ -138,7 +138,7 @@ namespace Protogame
             lock (_dictionaryLock)
             {
                 var name = FilesystemToAssetName(new FileInfo(e.FullPath).FullName);
-                if (AcceptAsset(name))
+                if (AcceptAsset(name, new FileInfo(e.FullPath).FullName))
                 {
                     if (!_knownFiles.ContainsKey(name))
                     {

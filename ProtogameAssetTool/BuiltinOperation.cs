@@ -38,6 +38,17 @@ namespace ProtogameAssetTool
             public SourceAssetFsLayer(string basePath) : base(basePath)
             {
             }
+
+            protected override bool AcceptAsset(string assetName, string fullPath)
+            { 
+                // Exclude compiled assets from our source layer.
+                if (fullPath.EndsWith(".bin"))
+                {
+                    return false;
+                }
+
+                return base.AcceptAsset(assetName, fullPath);
+            }
         }
 
         public async Task Run(OperationArguments args)
@@ -61,7 +72,7 @@ namespace ProtogameAssetTool
                 
                 var kernel = new StandardKernel();
                 kernel.Load<ProtogameAssetModule>();
-                var sourceLayer = kernel.Get<LocalFilesystemAssetFsLayer>(new NamedConstructorArgument("basePath", Environment.CurrentDirectory));
+                var sourceLayer = kernel.Get<SourceAssetFsLayer>(new NamedConstructorArgument("basePath", Environment.CurrentDirectory));
                 kernel.Unbind<IAssetFsLayer>();
                 kernel.Bind<IAssetFsLayer>().ToMethod(ctx => sourceLayer);
                 kernel.Unbind<ICompiledAssetFs>();
@@ -108,7 +119,7 @@ namespace ProtogameAssetTool
 
                 Console.WriteLine("Deleting compiled assets that have no source asset...");
 
-                var allActualCompiledAssets = FindAllCompiledAssets(targetOutputPath).Select(x => Path.Combine(targetOutputPath, x.Replace('.', Path.DirectorySeparatorChar) + ".bin").ToLowerInvariant()).ToArray();
+                var allActualCompiledAssets = FindAllCompiledAssets(targetOutputPath).Where(x => x.EndsWith("-" + platform)).Select(x => Path.Combine(targetOutputPath, x + ".bin").ToLowerInvariant()).ToArray();
                 var allExpectedCompiledAssets = expectedPaths.Select(x => x.ToLowerInvariant()).ToArray();
                 var hashsetWorking = new HashSet<string>(allActualCompiledAssets);
                 var hashsetExpected = new HashSet<string>(allExpectedCompiledAssets);

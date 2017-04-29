@@ -32,14 +32,7 @@ namespace ProtogameAssetTool
                 Console.WriteLine("Compiled " + assetFile.Name + " for " + targetPlatform.ToString());
             }
         }
-
-        private class SourceAssetFsLayer : LocalFilesystemAssetFsLayer
-        {
-            public SourceAssetFsLayer(string basePath) : base(basePath)
-            {
-            }
-        }
-
+        
         public async Task Run(OperationArguments args)
         {
             foreach (var platform in args.Platforms)
