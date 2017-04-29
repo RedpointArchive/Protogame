@@ -903,8 +903,17 @@
     <None Include="..\Protogame.Resources\effect.ShadowMapGen.fx">
       <Link>Resources\effect.ShadowMapGen.fx</Link>
     </None>
-    <None Include="..\Protogame.Resources\font.Default.asset">
-      <Link>Resources\font.Default.asset</Link>
+    <None Include="..\Protogame.Resources\font.Console.font">
+      <Link>Resources\font.Console.font</Link>
+    </None>
+    <None Include="..\Protogame.Resources\font.Default.font">
+      <Link>Resources\font.Default.font</Link>
+    </None>
+    <None Include="..\Protogame.Resources\font.HiDpi.font">
+      <Link>Resources\font.HiDpi.font</Link>
+    </None>
+    <None Include="..\Protogame.Resources\font.HiDpiConsole.font">
+      <Link>Resources\font.HiDpiConsole.font</Link>
     </None>
     <None Include="..\Protogame.Resources\Macros.inc">
       <Link>Resources\Macros.inc</Link>

@@ -92,7 +92,7 @@ namespace Protogame
                 }
             }
             
-            // TODO: Throw maybe?
+            throw new InvalidOperationException("Unable to locate any font with one of the names: " + fontDefinition.FontName);
         }
 
         private IEnumerable<FontDescription> GetDescriptionsForAsset(FontDefinition definition)

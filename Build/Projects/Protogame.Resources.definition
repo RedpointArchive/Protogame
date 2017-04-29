@@ -5,5 +5,4 @@
   <Source Include="Protogame.Resources" Match="*-Linux.bin" Platform="Linux" />
   <Source Include="Protogame.Resources" Match="*-Android.bin" Platform="Android" />
   <Source Include="Protogame.Resources" Match="*-iOS.bin" Platform="iOS" />
-  <Source Include="Protogame.Resources" Match="*-Ouya.bin" Platform="Ouya" />
 </ContentProject>

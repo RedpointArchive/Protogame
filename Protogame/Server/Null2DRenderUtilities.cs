@@ -24,7 +24,7 @@ namespace Protogame
         public void RenderText(IRenderContext context, Vector2 position, string text, IAssetReference<FontAsset> font,
             HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment verticalAlignment = VerticalAlignment.Top, Color? textColor = null, bool renderShadow = true,
-            Color? shadowColor = null)
+            Color? shadowColor = null, float? rotation = null, Vector2? origin = null, Vector2? scale = null)
         {
             throw new NotSupportedException();
         }

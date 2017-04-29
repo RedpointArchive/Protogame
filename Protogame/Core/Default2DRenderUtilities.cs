@@ -114,7 +114,10 @@ namespace Protogame
             VerticalAlignment verticalAlignment = VerticalAlignment.Top, 
             Color? textColor = null, 
             bool renderShadow = true, 
-            Color? shadowColor = null)
+            Color? shadowColor = null,
+            float? rotation = null,
+            Vector2? origin = null,
+            Vector2? scale = null)
         {
             if (context == null)
             {
@@ -190,11 +193,11 @@ namespace Protogame
             // Draw shadow if required.
             if (renderShadow)
             {
-                context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx + 1, yy + 1), shadowColor.Value);
+                context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx, yy) + (scale ?? Vector2.One), shadowColor.Value, rotation ?? 0, origin ?? Vector2.Zero, scale ?? Vector2.One, SpriteEffects.None, 0);
             }
 
             // Render the main text.
-            context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx, yy), textColor.Value);
+            context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx, yy), textColor.Value, rotation ?? 0, origin ?? Vector2.Zero, scale ?? Vector2.One, SpriteEffects.None, 0);
         }
         
         public void RenderTexture(

@@ -110,7 +110,10 @@ namespace Protogame
             VerticalAlignment verticalAlignment = VerticalAlignment.Top, 
             Color? textColor = null, 
             bool renderShadow = true, 
-            Color? shadowColor = null);
+            Color? shadowColor = null,
+            float? rotation = null,
+            Vector2? origin = null,
+            Vector2? scale = null);
         
         /// <summary>
         /// Renders a texture at the specified position.

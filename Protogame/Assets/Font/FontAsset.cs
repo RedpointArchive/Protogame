@@ -24,6 +24,7 @@ namespace Protogame
             UseKerning = useKerning;
             Spacing = spacing;
             _assetContentManager = assetContentManager;
+            _data = data;
         }
         
         public SpriteFont Font { get; private set; }
