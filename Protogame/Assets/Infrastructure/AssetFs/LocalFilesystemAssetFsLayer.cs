@@ -12,13 +12,13 @@ namespace Protogame
         private readonly FileSystemWatcher _watcher;
         private readonly Dictionary<string, IAssetFsFile> _knownFiles;
         private readonly object _dictionaryLock = new object();
-        private readonly List<string> _changedSinceLastUpdate;
+        private readonly HashSet<Action<string>> _onAssetUpdated;
 
         public LocalFilesystemAssetFsLayer(string basePath)
         {
             _basePath = basePath;
             _knownFiles = new Dictionary<string, IAssetFsFile>();
-            _changedSinceLastUpdate = new List<string>();
+            _onAssetUpdated = new HashSet<Action<string>>();
 
             _watcher = new FileSystemWatcher(_basePath);
             _watcher.IncludeSubdirectories = true;
@@ -34,7 +34,6 @@ namespace Protogame
             lock (_dictionaryLock)
             {
                 ScanDirectory(_basePath);
-                _changedSinceLastUpdate.Clear();
             }
         }
 
@@ -91,10 +90,7 @@ namespace Protogame
                 if (AcceptAsset(name))
                 {
                     _knownFiles.Remove(name);
-                    if (!_changedSinceLastUpdate.Contains(name))
-                    {
-                        _changedSinceLastUpdate.Add(name);
-                    }
+                    NotifyChanged(name);
                 }
             }
         }
@@ -107,10 +103,7 @@ namespace Protogame
                 if (AcceptAsset(oldName))
                 {
                     _knownFiles.Remove(oldName);
-                    if (!_changedSinceLastUpdate.Contains(oldName))
-                    {
-                        _changedSinceLastUpdate.Add(oldName);
-                    }
+                    NotifyChanged(oldName);
                 }
             }
 
@@ -119,11 +112,11 @@ namespace Protogame
                 var newName = FilesystemToAssetName(new FileInfo(e.FullPath).FullName);
                 if (AcceptAsset(newName))
                 {
-                    _knownFiles.Add(newName, new LocalAssetFsFile(newName, new FileInfo(e.FullPath).FullName));
-                    if (!_changedSinceLastUpdate.Contains(newName))
+                    if (!_knownFiles.ContainsKey(newName))
                     {
-                        _changedSinceLastUpdate.Add(newName);
+                        _knownFiles.Add(newName, new LocalAssetFsFile(newName, new FileInfo(e.FullPath).FullName));
                     }
+                    NotifyChanged(newName);
                 }
             }
         }
@@ -135,10 +128,7 @@ namespace Protogame
                 var name = FilesystemToAssetName(new FileInfo(e.FullPath).FullName);
                 if (AcceptAsset(name))
                 {
-                    if (!_changedSinceLastUpdate.Contains(name))
-                    {
-                        _changedSinceLastUpdate.Add(name);
-                    }
+                    NotifyChanged(name);
                 }
             }
         }
@@ -150,11 +140,11 @@ namespace Protogame
                 var name = FilesystemToAssetName(new FileInfo(e.FullPath).FullName);
                 if (AcceptAsset(name))
                 {
-                    _knownFiles.Add(name, new LocalAssetFsFile(name, new FileInfo(e.FullPath).FullName));
-                    if (!_changedSinceLastUpdate.Contains(name))
+                    if (!_knownFiles.ContainsKey(name))
                     {
-                        _changedSinceLastUpdate.Add(name);
+                        _knownFiles.Add(name, new LocalAssetFsFile(name, new FileInfo(e.FullPath).FullName));
                     }
+                    NotifyChanged(name);
                 }
             }
         }
@@ -185,12 +175,27 @@ namespace Protogame
             }
         }
 
-        public void GetChangedSinceLastUpdate(ref List<string> names)
+        private void NotifyChanged(string assetName)
         {
-            lock (_dictionaryLock)
+            foreach (var handler in _onAssetUpdated)
             {
-                names.AddRange(_changedSinceLastUpdate);
-                _changedSinceLastUpdate.Clear();
+                handler(assetName);
+            }
+        }
+
+        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+            if (!_onAssetUpdated.Contains(onAssetUpdated))
+            {
+                _onAssetUpdated.Add(onAssetUpdated);
+            }
+        }
+
+        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+            if (_onAssetUpdated.Contains(onAssetUpdated))
+            {
+                _onAssetUpdated.Remove(onAssetUpdated);
             }
         }
 
@@ -221,6 +226,11 @@ namespace Protogame
                 }
                 memory.Seek(0, SeekOrigin.Begin);
                 return memory;
+            }
+
+            public Task<string[]> GetDependentOnAssetFsFileNames()
+            {
+                return Task.FromResult(new string[0]);
             }
 
             public override string ToString()

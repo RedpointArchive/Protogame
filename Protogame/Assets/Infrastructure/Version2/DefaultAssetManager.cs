@@ -9,7 +9,7 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class DefaultAssetManager : IAssetManager
+    public class DefaultAssetManager : IAssetManager, IDisposable
     {
         private readonly IKernel _kernel;
         private readonly ICompiledAssetFs _compiledAssetFs;
@@ -36,7 +36,26 @@ namespace Protogame
             _assetsToLoad = new ConcurrentQueue<ISingleAssetReference<IAsset>>();
             _assetsToFinalize = new ConcurrentQueue<ISingleAssetReference<IAsset>>();
 
+            _compiledAssetFs.RegisterUpdateNotifier(OnAssetUpdated);
+
             coroutine.Run(FinalizeAssets);
+        }
+
+        public void Dispose()
+        {
+            _compiledAssetFs.UnregisterUpdateNotifier(OnAssetUpdated);
+        }
+
+        public void OnAssetUpdated(string assetName)
+        {
+            if (!_assets.ContainsKey(assetName))
+            {
+                // The asset has never been loaded.
+                return;
+            }
+
+            EnsureLoadingThreadStarted();
+            _assetsToLoad.Enqueue(_assets[assetName]);
         }
 
         private async Task FinalizeAssets()
@@ -144,7 +163,7 @@ namespace Protogame
             SerializedAsset serializedAsset;
             using (var stream = await compiledAsset.GetContentStream().ConfigureAwait(false))
             {
-                serializedAsset = await SerializedAsset.FromStream(stream).ConfigureAwait(false);
+                serializedAsset = await SerializedAsset.FromStream(stream, false).ConfigureAwait(false);
             }
             var loaderType = serializedAsset.GetLoader();
             var loaderInstance = (IAssetLoader)_kernel.TryGet(loaderType);

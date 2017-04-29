@@ -43,7 +43,6 @@ namespace Protogame
 
             kernel.Bind<IAssetFs>().To<AssetFs>().InSingletonScope();
             kernel.Bind<ICompiledAssetFs>().To<RuntimeCompiledAssetFs>().InSingletonScope();
-            kernel.Bind<IEngineHook>().To<AssetFsEngineHook>().InSingletonScope();
             kernel.Bind<IAssetFsLayer>().To<SourceEmbeddedAssetFsLayer>().InSingletonScope();
             kernel.Bind<IAssetFsLayer>().To<CompiledEmbeddedAssetFsLayer>().InSingletonScope();
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX

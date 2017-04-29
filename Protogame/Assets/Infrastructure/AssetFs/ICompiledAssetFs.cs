@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Protogame
@@ -10,5 +11,9 @@ namespace Protogame
         Task<List<Task<IAssetFsFile>>> ListTasks();
 
         Task<IAssetFsFile> Get(string name);
+
+        void RegisterUpdateNotifier(Action<string> onAssetUpdated);
+
+        void UnregisterUpdateNotifier(Action<string> onAssetUpdated);
     }
 }

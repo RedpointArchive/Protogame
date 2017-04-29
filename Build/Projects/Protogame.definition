@@ -58,7 +58,6 @@
     <Compile Include="Assets\Font\FontAssetLoader.cs" />
     <Compile Include="Assets\Infrastructure\AssetContentManager.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\AssetFs.cs" />
-    <Compile Include="Assets\Infrastructure\AssetFs\AssetFsEngineHook.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\CompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\CompiledEmbeddedAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\CurrentDirLocalFilesystemAssetFsLayer.cs" />

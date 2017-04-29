@@ -88,6 +88,14 @@ namespace Protogame
             return _knownAssets.Values.ToArray();
         }
 
+        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+        }
+
+        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+        }
+
         private class EmbeddedAssetFsFile : IAssetFsFile
         {
             private readonly Assembly _assembly;
@@ -125,6 +133,11 @@ namespace Protogame
                 }
                 memory.Seek(0, SeekOrigin.Begin);
                 return memory;
+            }
+
+            public Task<string[]> GetDependentOnAssetFsFileNames()
+            {
+                return Task.FromResult(new string[0]);
             }
 
             public override string ToString()

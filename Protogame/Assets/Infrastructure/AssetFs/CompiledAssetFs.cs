@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Protogame
 {
-    public class CompiledAssetFs : ICompiledAssetFs, IAssetDependencies
+    public class CompiledAssetFs : ICompiledAssetFs, IDisposable
     {
         private readonly IAssetCompiler[] _compilers;
         private readonly IAssetFs _assetFs;
@@ -15,6 +15,8 @@ namespace Protogame
         private readonly Dictionary<string, SemaphoreSlim> _compilerLocks;
         private readonly SemaphoreSlim _compilerLock;
         private readonly TargetPlatform _targetPlatform;
+        private readonly HashSet<Action<string>> _onAssetUpdated;
+        private Task _updatingTask;
 
         protected CompiledAssetFs(
             IAssetFs assetFs,
@@ -27,6 +29,40 @@ namespace Protogame
             _compilerLocks = new Dictionary<string, SemaphoreSlim>();
             _compilerLock = new SemaphoreSlim(1);
             _targetPlatform = targetPlatform;
+            _onAssetUpdated = new HashSet<Action<string>>();
+
+            _assetFs.RegisterUpdateNotifier(OnAssetUpdated);
+        }
+
+        private void OnAssetUpdated(string assetName)
+        {
+            // TODO: Detect and update known dependencies as well.
+
+            foreach (var handler in _onAssetUpdated)
+            {
+                if (_compiledOverlay.ContainsKey(assetName))
+                {
+                    _compiledOverlay.Remove(assetName);
+                }
+
+                handler(assetName);
+            }
+        }
+
+        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+            if (!_onAssetUpdated.Contains(onAssetUpdated))
+            {
+                _onAssetUpdated.Add(onAssetUpdated);
+            }
+        }
+
+        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+            if (_onAssetUpdated.Contains(onAssetUpdated))
+            {
+                _onAssetUpdated.Remove(onAssetUpdated);
+            }
         }
 
         protected virtual void OnCompileStart(IAssetFsFile assetFile, TargetPlatform targetPlatform)
@@ -126,7 +162,7 @@ namespace Protogame
                 var serializedAsset = new SerializedAsset();
                 foreach (var compiler in compilers)
                 {
-                    await compiler.CompileAsync(file, this, _targetPlatform, serializedAsset).ConfigureAwait(false);
+                    await compiler.CompileAsync(file, new AssetDependencies(this, serializedAsset), _targetPlatform, serializedAsset).ConfigureAwait(false);
                 }
 
                 var memory = new MemoryStream();
@@ -142,9 +178,74 @@ namespace Protogame
             }
         }
 
+        public void Dispose()
+        {
+            _assetFs.UnregisterUpdateNotifier(OnAssetUpdated);
+        }
+
+        private class AssetDependencies : IAssetDependencies
+        {
+            private readonly CompiledAssetFs _compiledAssetFs;
+            private readonly SerializedAsset _serializedAsset;
+
+            public AssetDependencies(CompiledAssetFs compiledAssetFs, SerializedAsset serializedAsset)
+            {
+                _compiledAssetFs = compiledAssetFs;
+                _serializedAsset = serializedAsset;
+            }
+
+            Task<IAssetFsFile[]> IAssetDependencies.GetAvailableCompileTimeFiles()
+            {
+                return _compiledAssetFs._assetFs.List();
+            }
+
+            async Task<SerializedAsset> IAssetDependencies.GetOptionalCompileTimeCompiledDependency(string name)
+            {
+                // Always add the dependency, since the compiler will do different things if the dependency
+                // appears on disk.
+                _serializedAsset.AddCompilationDependency(name);
+
+                var compiledAssetFile = await _compiledAssetFs.EnsureCompiled(await _compiledAssetFs._assetFs.Get(name).ConfigureAwait(false)).ConfigureAwait(false);
+                if (compiledAssetFile == null)
+                {
+                    return null;
+                }
+                using (var stream = await compiledAssetFile.GetContentStream().ConfigureAwait(false))
+                {
+                    return await SerializedAsset.FromStream(stream, false).ConfigureAwait(false);
+                }
+            }
+
+            Task<IAssetFsFile> IAssetDependencies.GetOptionalCompileTimeFileDependency(string name)
+            {
+                return _compiledAssetFs._assetFs.Get(name);
+            }
+
+            async Task<SerializedAsset> IAssetDependencies.GetRequiredCompileTimeCompiledDependency(string name)
+            {
+                var asset = await ((IAssetDependencies)this).GetOptionalCompileTimeCompiledDependency(name).ConfigureAwait(false);
+                if (asset == null)
+                {
+                    throw new InvalidOperationException("The required compile-time dependency was not satisified: " + name);
+                }
+                return asset;
+            }
+
+            async Task<IAssetFsFile> IAssetDependencies.GetRequiredCompileTimeFileDependency(string name)
+            {
+                var asset = await ((IAssetDependencies)this).GetOptionalCompileTimeFileDependency(name).ConfigureAwait(false);
+                if (asset == null)
+                {
+                    throw new InvalidOperationException("The required compile-time dependency was not satisified: " + name);
+                }
+                return asset;
+            }
+        }
+
         private class CompiledFsFile : IAssetFsFile
         {
             private readonly MemoryStream _stream;
+            private string[] _dependencies;
 
             public CompiledFsFile(string name, DateTimeOffset compiledDateTimeOffset, MemoryStream stream)
             {
@@ -168,49 +269,22 @@ namespace Protogame
                 _stream.Seek(0, SeekOrigin.Begin);
                 return stream;
             }
-        }
 
-        Task<IAssetFsFile[]> IAssetDependencies.GetAvailableCompileTimeFiles()
-        {
-            return _assetFs.List();
-        }
-
-        async Task<SerializedAsset> IAssetDependencies.GetOptionalCompileTimeCompiledDependency(string name)
-        {
-            var compiledAssetFile = await EnsureCompiled(await _assetFs.Get(name).ConfigureAwait(false)).ConfigureAwait(false);
-            if (compiledAssetFile == null)
+            public async Task<string[]> GetDependentOnAssetFsFileNames()
             {
-                return null;
-            }
-            using (var stream = await compiledAssetFile.GetContentStream().ConfigureAwait(false))
-            {
-                return await SerializedAsset.FromStream(stream).ConfigureAwait(false);
-            }
-        }
+                if (_dependencies != null)
+                {
+                    return _dependencies;
+                }
 
-        Task<IAssetFsFile> IAssetDependencies.GetOptionalCompileTimeFileDependency(string name)
-        {
-            return _assetFs.Get(name);
-        }
-
-        async Task<SerializedAsset> IAssetDependencies.GetRequiredCompileTimeCompiledDependency(string name)
-        {
-            var asset = await ((IAssetDependencies)this).GetOptionalCompileTimeCompiledDependency(name).ConfigureAwait(false);
-            if (asset == null)
-            {
-                throw new InvalidOperationException("The required compile-time dependency was not satisified: " + name);
+                _dependencies = (await SerializedAsset.FromStream(_stream, true).ConfigureAwait(false)).Dependencies.ToArray();
+                return _dependencies;
             }
-            return asset;
-        }
 
-        async Task<IAssetFsFile> IAssetDependencies.GetRequiredCompileTimeFileDependency(string name)
-        {
-            var asset = await ((IAssetDependencies)this).GetOptionalCompileTimeFileDependency(name).ConfigureAwait(false);
-            if (asset == null)
+            public override string ToString()
             {
-                throw new InvalidOperationException("The required compile-time dependency was not satisified: " + name);
+                return Name;
             }
-            return asset;
         }
     }
 }

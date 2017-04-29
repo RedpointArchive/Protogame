@@ -42,15 +42,7 @@ namespace Protogame
 
             return null;
         }
-
-        public void GetChangedSinceLastUpdate(ref List<string> names)
-        {
-            if (_localLayer != null)
-            {
-                _localLayer.GetChangedSinceLastUpdate(ref names);
-            }
-        }
-
+        
         public async Task<IAssetFsFile[]> List()
         {
             if (_localLayer != null)
@@ -59,6 +51,16 @@ namespace Protogame
             }
 
             return new IAssetFsFile[0];
+        }
+
+        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+            _localLayer.RegisterUpdateNotifier(onAssetUpdated);
+        }
+
+        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+            _localLayer.UnregisterUpdateNotifier(onAssetUpdated);
         }
     }
 }

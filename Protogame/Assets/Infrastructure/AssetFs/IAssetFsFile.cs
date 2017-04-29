@@ -13,5 +13,13 @@ namespace Protogame
         DateTimeOffset ModificationTimeUtcTimestamp { get; }
 
         Task<Stream> GetContentStream();
+
+        /*
+         * 
+         * ********************************** TODO EACH FILE MUST HAVE A DEPENDENCIES LIST *****************************
+         * **************** THIS IS NOT IMPLEMENTED, BUT IS REQUIRED SO THAT COMPILED ASSETS GET RECOMPILED WHEN *******************
+         * ****************** ANY OF THEIR DEPENDENCIES CHANGE AS WELL *****************************
+         */
+        Task<string[]> GetDependentOnAssetFsFileNames();
     }
 }

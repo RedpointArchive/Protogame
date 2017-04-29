@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Protogame
@@ -9,6 +10,8 @@ namespace Protogame
 
         Task<IAssetFsFile[]> List();
 
-        void GetChangedSinceLastUpdate(ref List<string> names);
+        void RegisterUpdateNotifier(Action<string> onAssetUpdated);
+
+        void UnregisterUpdateNotifier(Action<string> onAssetUpdated);
     }
 }

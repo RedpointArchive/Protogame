@@ -6,16 +6,47 @@ using System.Threading.Tasks;
 
 namespace Protogame
 {
-    public class AssetFs : IAssetFs, IAsynchronouslyConstructable
+    public class AssetFs : IAssetFs, IAsynchronouslyConstructable, IDisposable
     {
         private readonly IAssetFsLayer[] _layers;
         private readonly Dictionary<string, IAssetFsFile> _knownAssets;
+        private readonly HashSet<Action<string>> _onAssetUpdated;
         private Task _updatingTask;
 
         public AssetFs(IAssetFsLayer[] layers)
         {
             _layers = layers;
             _knownAssets = new Dictionary<string, IAssetFsFile>();
+            _onAssetUpdated = new HashSet<Action<string>>();
+
+            foreach (var layer in _layers)
+            {
+                layer.RegisterUpdateNotifier(OnAssetUpdated);
+            }
+        }
+
+        private void OnAssetUpdated(string assetName)
+        {
+            foreach (var handler in _onAssetUpdated)
+            {
+                handler(assetName);
+            }
+        }
+
+        public void RegisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+            if (!_onAssetUpdated.Contains(onAssetUpdated))
+            {
+                _onAssetUpdated.Add(onAssetUpdated);
+            }
+        }
+
+        public void UnregisterUpdateNotifier(Action<string> onAssetUpdated)
+        {
+            if (_onAssetUpdated.Contains(onAssetUpdated))
+            {
+                _onAssetUpdated.Remove(onAssetUpdated);
+            }
         }
 
         public async Task ConstructAsync()
@@ -49,25 +80,6 @@ namespace Protogame
             return _knownAssets.Values.ToArray();
         }
 
-        public void Update()
-        {
-            if (_updatingTask == null || _updatingTask.IsCompleted)
-            {
-                var list = new List<string>();
-                foreach (var layer in _layers)
-                {
-                    layer.GetChangedSinceLastUpdate(ref list);
-                }
-                _updatingTask = Task.Run(async () =>
-                {
-                    foreach (var name in list)
-                    {
-                        await ProcessAsset(name).ConfigureAwait(false);
-                    }
-                });
-            }
-        }
-
         private async Task ProcessAsset(string name)
         {
             var files = new List<IAssetFsFile>();
@@ -83,6 +95,14 @@ namespace Protogame
             else
             {
                 _knownAssets[name] = file;
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.UnregisterUpdateNotifier(OnAssetUpdated);
             }
         }
     }

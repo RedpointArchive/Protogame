@@ -48,7 +48,8 @@ namespace ProtogameAssetTool
                 case "remote":
                     throw new NotSupportedException();
                 case "builtin":
-                    throw new NotSupportedException();
+                    operationInst = new BuiltinOperation();
+                    break;
                 case "compile":
                 default:
                     operationInst = new CompileOperation();

@@ -16,6 +16,7 @@
     <Reference Include="NDesk.Options" />
   </References>
   <Files>
+    <Compile Include="BuiltinOperation.cs" />
     <Compile Include="CompileOperation.cs" />
     <Compile Include="IOperation.cs" />
     <Compile Include="Legacy\BuiltinRawAssetLoader.cs" />
