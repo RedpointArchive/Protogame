@@ -13,13 +13,15 @@ namespace ProtogameAssetTool
             var platforms = new List<string>();
             var output = string.Empty;
             var operation = string.Empty;
+            string androidPlatformTools = null;
 
             var options = new OptionSet
             {
                 { "a|assembly=", "Load an assembly.", v => assemblies.Add(v) },
                 { "p|platform=", "Specify one or more platforms to target.", v => platforms.Add(v) },
                 { "o|output=", "Specify the output folder for the compiled assets.", v => output = v },
-                { "m|operation=", "Specify the mode of operation (either 'compile', 'remote' or 'builtin', default is 'compile').", v => operation = v }
+                { "m|operation=", "Specify the mode of operation (either 'compile', 'server' or 'builtin', default is 'compile').", v => operation = v },
+                { "android-platform-tools=", "Specifies the path to ADB (used for connecting to a game running on an Android device)", v => androidPlatformTools = v },
             };
 
             try
@@ -39,6 +41,7 @@ namespace ProtogameAssetTool
             {
                 Assemblies = assemblies.ToArray(),
                 Platforms = platforms.ToArray(),
+                AndroidPlatformTools = androidPlatformTools,
                 OutputPath = output
             };
 
@@ -47,6 +50,9 @@ namespace ProtogameAssetTool
             {
                 case "remote":
                     throw new NotSupportedException();
+                case "server":
+                    operationInst = new ServerOperation();
+                    break;
                 case "builtin":
                     operationInst = new BuiltinOperation();
                     break;

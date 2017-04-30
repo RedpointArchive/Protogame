@@ -43,7 +43,7 @@ namespace Protogame
         {
             var asset = new SerializedAsset();
 
-            using (var reader = new BinaryReader(stream))
+            using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
             {
                 var dependencyCount = reader.ReadInt32();
                 for (var i = 0; i < dependencyCount; i++)

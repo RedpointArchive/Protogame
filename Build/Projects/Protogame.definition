@@ -71,6 +71,7 @@
     <Compile Include="Assets\Infrastructure\AssetFs\ICompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\LocalFilesystemAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\PlatformAndroidAssetFsLayer.cs" />
+    <Compile Include="Assets\Infrastructure\AssetFs\RemoteClientAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\RootAndroidAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\RuntimeCompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\SourceDirLocalFilesystemAssetFsLayer.cs" />

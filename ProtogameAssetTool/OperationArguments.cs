@@ -7,5 +7,7 @@
         public string[] Platforms { get; set; }
 
         public string OutputPath { get; set; }
+
+        public string AndroidPlatformTools { get; set; }
     }
 }

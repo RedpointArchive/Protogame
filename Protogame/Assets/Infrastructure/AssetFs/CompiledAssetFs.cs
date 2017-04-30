@@ -245,6 +245,7 @@ namespace Protogame
         private class CompiledFsFile : IAssetFsFile
         {
             private readonly MemoryStream _stream;
+            private readonly SemaphoreSlim _streamSemaphore;
             private string[] _dependencies;
 
             public CompiledFsFile(string name, DateTimeOffset compiledDateTimeOffset, MemoryStream stream)
@@ -252,7 +253,7 @@ namespace Protogame
                 Name = name;
                 ModificationTimeUtcTimestamp = compiledDateTimeOffset;
                 _stream = stream;
-                _stream.Seek(0, SeekOrigin.Begin);
+                _streamSemaphore = new SemaphoreSlim(1);
             }
 
             public string Name { get; }
@@ -263,11 +264,19 @@ namespace Protogame
 
             public async Task<Stream> GetContentStream()
             {
-                var stream = new MemoryStream();
-                await _stream.CopyToAsync(stream).ConfigureAwait(false);
-                stream.Seek(0, SeekOrigin.Begin);
-                _stream.Seek(0, SeekOrigin.Begin);
-                return stream;
+                await _streamSemaphore.WaitAsync();
+                try
+                {
+                    var stream = new MemoryStream();
+                    _stream.Seek(0, SeekOrigin.Begin);
+                    await _stream.CopyToAsync(stream).ConfigureAwait(false);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return stream;
+                }
+                finally
+                {
+                    _streamSemaphore.Release();
+                }
             }
 
             public async Task<string[]> GetDependentOnAssetFsFileNames()
@@ -277,8 +286,17 @@ namespace Protogame
                     return _dependencies;
                 }
 
-                _dependencies = (await SerializedAsset.FromStream(_stream, true).ConfigureAwait(false)).Dependencies.ToArray();
-                return _dependencies;
+                await _streamSemaphore.WaitAsync();
+                try
+                {
+                    _stream.Seek(0, SeekOrigin.Begin);
+                    _dependencies = (await SerializedAsset.FromStream(_stream, true).ConfigureAwait(false)).Dependencies.ToArray();
+                    return _dependencies;
+                }
+                finally
+                {
+                    _streamSemaphore.Release();
+                }
             }
 
             public override string ToString()

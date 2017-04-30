@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ namespace Protogame
             {
                 return;
             }
-            
+
             using (var reader = new StreamReader(sourcePath))
             {
                 sourcePath = reader.ReadLine();
