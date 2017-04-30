@@ -47,14 +47,17 @@ namespace ProtogameAssetTool
                     {
                         Console.WriteLine("Asset " + assetName + " has been deleted, notifying...");
                         _outboundWriter.Write("deleted-asset");
+                        _outboundWriter.Write(assetName);
                     }
                     else
                     {
                         Console.WriteLine("Asset " + assetName + " has been updated, notifying...");
                         _outboundWriter.Write("updated-asset");
+                        await WriteAssetFsFileToStream(_outboundWriter, asset).ConfigureAwait(false);
                     }
-                    _outboundWriter.Write(assetName);
                     _outboundWriter.Flush();
+
+                    Console.WriteLine("Notification complete");
                 }
                 finally
                 {
