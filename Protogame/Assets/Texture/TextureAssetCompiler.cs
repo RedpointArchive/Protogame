@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using MonoGame.Framework.Content.Pipeline.Builder;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using System.Linq;
 
 namespace Protogame
 {
@@ -32,18 +34,64 @@ namespace Protogame
                 var originalWidth = monogameOutput.Faces[0][0].Width;
                 var originalHeight = monogameOutput.Faces[0][0].Height;
 
+                var nameComponents = assetFile.Name.Split('.');
+                nameComponents[nameComponents.Length - 1] = "_FolderOptions";
+                var folderOptionsFile = await assetDependencies.GetOptionalCompileTimeFileDependency(string.Join(".", nameComponents)).ConfigureAwait(false);
+                string[] importFolderOptions = null;
+                if (folderOptionsFile != null)
+                {
+                    using (var optionsReader = new StreamReader(await folderOptionsFile.GetContentStream().ConfigureAwait(false)))
+                    {
+                        importFolderOptions = optionsReader.ReadToEnd()
+                            .Trim()
+                            .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim())
+                            .Where(x => !x.StartsWith("#"))
+                            .ToArray();
+                    }
+                }
+
+                var optionsFile = await assetDependencies.GetOptionalCompileTimeFileDependency(assetFile.Name + ".Options").ConfigureAwait(false);
+                string[] importOptions = null;
+                if (optionsFile != null)
+                {
+                    using (var optionsReader = new StreamReader(await optionsFile.GetContentStream().ConfigureAwait(false)))
+                    {
+                        importOptions = optionsReader.ReadToEnd()
+                            .Trim()
+                            .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim())
+                            .Where(x => !x.StartsWith("#"))
+                            .ToArray();
+                    }
+                }
+
+                if (importOptions == null)
+                {
+                    importOptions = importFolderOptions;
+                }
+                if (importOptions == null)
+                {
+                    importOptions = new string[0];
+                }
+
+                var allowResizeToPowerOfTwo = !IsPowerOfTwo((ulong)originalWidth) || !IsPowerOfTwo((ulong)originalHeight);
+                var allowMakeSquare = originalWidth != originalHeight;
+
                 var manager = new PipelineManager(
                     Environment.CurrentDirectory,
                     Environment.CurrentDirectory,
                     Environment.CurrentDirectory);
                 var dictionary = new OpaqueDataDictionary();
-                dictionary["GenerateMipmaps"] = true;
-                dictionary["ResizeToPowerOfTwo"] = true;
-                dictionary["MakeSquare"] = true;
-                dictionary["TextureFormat"] = TextureProcessorOutputFormat.Compressed;
+                dictionary["GenerateMipmaps"] = importOptions.Contains("GenerateMipmaps");
+                dictionary["ResizeToPowerOfTwo"] = allowResizeToPowerOfTwo && !importOptions.Contains("NoResizeToPowerOfTwo");
+                dictionary["MakeSquare"] = allowMakeSquare && !importOptions.Contains("MakeSquare");
+                dictionary["TextureFormat"] = importOptions.Contains("NoCompress") ? TextureProcessorOutputFormat.Color : TextureProcessorOutputFormat.Compressed;
                 var processor = manager.CreateProcessor("TextureProcessor", dictionary);
                 var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
-                var content = processor.Process(monogameOutput, context);
+                var content = (TextureContent)processor.Process(monogameOutput, context);
+
+                Console.WriteLine("Texture " + assetFile.Name + " resized " + originalWidth + "x" + originalHeight + " -> " + content.Faces[0][0].Width + "x" + content.Faces[0][0].Height);
 
                 output.SetLoader<IAssetLoader<TextureAsset>>();
                 output.SetPlatform(platform);
@@ -61,6 +109,11 @@ namespace Protogame
                 {
                 }
             }
+        }
+
+        private bool IsPowerOfTwo(ulong x)
+        {
+            return (x & (x - 1)) == 0;
         }
     }
 }

@@ -77,6 +77,10 @@ namespace Protogame
         {
         }
 
+        protected virtual void OnCompileFailure(IAssetFsFile assetFile, Exception exception, TargetPlatform targetPlatform)
+        {
+        }
+
         public async Task<IAssetFsFile> Get(string name)
         {
             return await EnsureCompiled(await _assetFs.Get(name).ConfigureAwait(false)).ConfigureAwait(false);
@@ -160,9 +164,17 @@ namespace Protogame
 
                 OnCompileStart(file, _targetPlatform);
                 var serializedAsset = new SerializedAsset();
-                foreach (var compiler in compilers)
+                try
                 {
-                    await compiler.CompileAsync(file, new AssetDependencies(this, serializedAsset), _targetPlatform, serializedAsset).ConfigureAwait(false);
+                    foreach (var compiler in compilers)
+                    {
+                        await compiler.CompileAsync(file, new AssetDependencies(this, serializedAsset), _targetPlatform, serializedAsset).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    OnCompileFailure(file, ex, _targetPlatform);
+                    throw;
                 }
 
                 var memory = new MemoryStream();

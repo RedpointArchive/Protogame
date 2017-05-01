@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
@@ -19,6 +20,9 @@ namespace Protogame
             _assetContentManager = assetContentManager;
             Name = name;
             _data = data;
+            OriginalWidth = originalWidth;
+            OriginalHeight = originalHeight;
+            OriginalSize = new Point(originalWidth, originalHeight);
         }
         
         public TextureAsset(Texture2D texture)
@@ -32,6 +36,9 @@ namespace Protogame
             _data = null;
             Texture = texture;
             _assetContentManager = null;
+            OriginalWidth = texture.Width;
+            OriginalHeight = texture.Height;
+            OriginalSize = new Point(texture.Width, texture.Height);
         }
         
         /// <summary>
@@ -61,6 +68,12 @@ namespace Protogame
         /// they are converted to a square, power-of-two texture by default.
         /// </summary>
         public int OriginalHeight { get; }
+
+        /// <summary>
+        /// The original size of the texture, before it was compiled.  When textures are compiled in Protogame,
+        /// they are converted to a square, power-of-two texture by default.
+        /// </summary>
+        public Point OriginalSize { get; }
 
         public void ReadyOnGameThread()
         {

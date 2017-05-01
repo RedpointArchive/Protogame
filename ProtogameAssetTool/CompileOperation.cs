@@ -72,11 +72,6 @@ namespace ProtogameAssetTool
 
                 await Task.WhenAll(saveTasks).ConfigureAwait(false);
 
-                foreach (var task in saveTasks.Where(x => x.IsFaulted))
-                {
-                    Console.WriteLine(task.Exception);
-                }
-
                 Console.WriteLine("Deleting compiled assets that have no source asset...");
 
                 var allActualCompiledAssets = FindAllCompiledAssets(targetOutputPath).Select(x => Path.Combine(targetOutputPath, x.Replace('.', Path.DirectorySeparatorChar) + ".bin").ToLowerInvariant()).ToArray();

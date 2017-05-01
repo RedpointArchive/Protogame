@@ -23,5 +23,10 @@ namespace ProtogameAssetTool
         {
             Console.WriteLine("Compiled " + assetFile.Name + " for " + targetPlatform.ToString());
         }
+
+        protected override void OnCompileFailure(IAssetFsFile assetFile, Exception ex, TargetPlatform targetPlatform)
+        {
+            Console.WriteLine("Compile of " + assetFile.Name + " failed for " + targetPlatform.ToString() + ": " + ex);
+        }
     }
 }
