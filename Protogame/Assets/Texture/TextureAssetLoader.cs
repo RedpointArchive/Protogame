@@ -17,7 +17,9 @@ namespace Protogame
             return new TextureAsset(
                 _assetContentManager,
                 name,
-                input.GetByteArray("Data"));
+                input.GetByteArray("Data"),
+                input.GetInt32("OriginalWidth"),
+                input.GetInt32("OriginalHeight"));
         }
     }
 }

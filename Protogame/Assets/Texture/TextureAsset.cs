@@ -12,7 +12,9 @@ namespace Protogame
         public TextureAsset(
             IAssetContentManager assetContentManager, 
             string name, 
-            byte[] data)
+            byte[] data,
+            int originalWidth,
+            int originalHeight)
         {
             _assetContentManager = assetContentManager;
             Name = name;
@@ -38,7 +40,7 @@ namespace Protogame
         /// <value>
         /// The name of the asset.
         /// </value>
-        public string Name { get; private set; }
+        public string Name { get; }
         
         /// <summary>
         /// Gets the runtime, MonoGame texture.
@@ -48,6 +50,18 @@ namespace Protogame
         /// </value>
         public Texture2D Texture { get; private set; }
         
+        /// <summary>
+        /// The original width of the texture, before it was compiled.  When textures are compiled in Protogame,
+        /// they are converted to a square, power-of-two texture by default.
+        /// </summary>
+        public int OriginalWidth { get; }
+
+        /// <summary>
+        /// The original height of the texture, before it was compiled.  When textures are compiled in Protogame,
+        /// they are converted to a square, power-of-two texture by default.
+        /// </summary>
+        public int OriginalHeight { get; }
+
         public void ReadyOnGameThread()
         {
             if (_data == null)

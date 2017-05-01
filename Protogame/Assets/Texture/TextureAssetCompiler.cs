@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using MonoGame.Framework.Content.Pipeline.Builder;
+using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 
 namespace Protogame
 {
@@ -28,11 +29,18 @@ namespace Protogame
                 var importer = new TextureImporter();
                 var monogameOutput = importer.Import(tempPath, new DummyContentImporterContext());
 
+                var originalWidth = monogameOutput.Faces[0][0].Width;
+                var originalHeight = monogameOutput.Faces[0][0].Height;
+
                 var manager = new PipelineManager(
                     Environment.CurrentDirectory,
                     Environment.CurrentDirectory,
                     Environment.CurrentDirectory);
                 var dictionary = new OpaqueDataDictionary();
+                dictionary["GenerateMipmaps"] = true;
+                dictionary["ResizeToPowerOfTwo"] = true;
+                dictionary["MakeSquare"] = true;
+                dictionary["TextureFormat"] = TextureProcessorOutputFormat.Compressed;
                 var processor = manager.CreateProcessor("TextureProcessor", dictionary);
                 var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
                 var content = processor.Process(monogameOutput, context);
@@ -40,6 +48,8 @@ namespace Protogame
                 output.SetLoader<IAssetLoader<TextureAsset>>();
                 output.SetPlatform(platform);
                 output.SetByteArray("Data", CompileAndGetBytes(content));
+                output.SetInt32("OriginalWidth", originalWidth);
+                output.SetInt32("OriginalHeight", originalHeight);
             }
             finally
             {

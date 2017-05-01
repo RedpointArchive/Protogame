@@ -221,7 +221,7 @@ namespace Protogame
                 context,
                 position,
                 texture.Asset.Texture,
-                size,
+                size ?? new Vector2(texture.Asset.OriginalWidth, texture.Asset.OriginalHeight),
                 color,
                 rotation,
                 rotationAnchor,

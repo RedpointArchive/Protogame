@@ -10,6 +10,13 @@ namespace Protogame
     /// <interface_ref>Protogame.I3DRenderPass</interface_ref>
     public class Default3DForwardRenderPass : I3DForwardRenderPass
     {
+        private readonly IRenderBatcher _renderBatcher;
+
+        public Default3DForwardRenderPass(IRenderBatcher renderBatcher)
+        {
+            _renderBatcher = renderBatcher;
+        }
+
         public bool IsPostProcessingPass => false;
         public bool SkipWorldRenderBelow => false;
         public bool SkipWorldRenderAbove => false;
@@ -25,6 +32,7 @@ namespace Protogame
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
+            _renderBatcher.FlushRequests(gameContext, renderContext);
         }
 
         public string Name { get; set; }
