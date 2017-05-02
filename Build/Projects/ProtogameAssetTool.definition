@@ -18,8 +18,8 @@
   <Files>
     <Compile Include="BuiltinOperation.cs" />
     <Compile Include="CompileOperation.cs" />
-    <Compile Include="IOperation.cs" />
     <Compile Include="HostCompiledAssetFs.cs" />
+    <Compile Include="IOperation.cs" />
     <Compile Include="Legacy\BuiltinRawAssetLoader.cs" />
     <Compile Include="Legacy\DefaultAssetCleanup.cs" />
     <Compile Include="Legacy\DefaultAssetCompilationEngine.cs" />

@@ -23,7 +23,7 @@ namespace Protogame
 
         public string[] Extensions => new[] { "fbx", "x", "dae" };
 
-        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, ISerializedAsset output)
+        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, IWritableSerializedAsset output)
         {
             var otherAnimations = new Dictionary<string, byte[]>();
             if (assetFile.Extension != "x")

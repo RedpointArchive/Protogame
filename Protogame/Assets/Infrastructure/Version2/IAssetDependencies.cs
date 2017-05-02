@@ -10,8 +10,8 @@ namespace Protogame
 
         Task<IAssetFsFile[]> GetAvailableCompileTimeFiles();
 
-        Task<SerializedAsset> GetRequiredCompileTimeCompiledDependency(string name);
+        Task<IReadableSerializedAsset> GetRequiredCompileTimeCompiledDependency(string name);
 
-        Task<SerializedAsset> GetOptionalCompileTimeCompiledDependency(string name);
+        Task<IReadableSerializedAsset> GetOptionalCompileTimeCompiledDependency(string name);
     }
 }

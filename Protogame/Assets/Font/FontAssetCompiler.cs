@@ -42,16 +42,15 @@ namespace Protogame
             public int End { get; set; }
         }
 
-        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, ISerializedAsset output)
+        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, IWritableSerializedAsset output)
         {
             if (IntPtr.Size == 4)
             {
                 throw new NotSupportedException("Font compilation is only supported under a 64-bit process.");
             }
-
-            var fileContent = await assetFile.GetContentStream().ConfigureAwait(false);
+            
             var json = string.Empty;
-            using (var reader = new StreamReader(fileContent))
+            using (var reader = new StreamReader(await assetFile.GetContentStream().ConfigureAwait(false)))
             {
                 json = await reader.ReadToEndAsync().ConfigureAwait(false);
             }

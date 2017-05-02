@@ -6,6 +6,6 @@ namespace Protogame
     {
         string[] Extensions { get; }
 
-        Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, ISerializedAsset output);
+        Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, IWritableSerializedAsset output);
     }
 }

@@ -163,7 +163,7 @@ namespace Protogame
                 }
 
                 OnCompileStart(file, _targetPlatform);
-                var serializedAsset = new SerializedAsset();
+                var serializedAsset = new WritableSerializedAsset();
                 try
                 {
                     foreach (var compiler in compilers)
@@ -178,7 +178,7 @@ namespace Protogame
                 }
 
                 var memory = new MemoryStream();
-                await serializedAsset.WriteTo(memory).ConfigureAwait(false);
+                serializedAsset.WriteTo(memory);
                 var compiledFsFile = new CompiledFsFile(file.Name, DateTimeOffset.UtcNow, memory);
                 OnCompileFinish(file, compiledFsFile, _targetPlatform);
                 _compiledOverlay[file.Name] = compiledFsFile;
@@ -198,9 +198,9 @@ namespace Protogame
         private class AssetDependencies : IAssetDependencies
         {
             private readonly CompiledAssetFs _compiledAssetFs;
-            private readonly SerializedAsset _serializedAsset;
+            private readonly WritableSerializedAsset _serializedAsset;
 
-            public AssetDependencies(CompiledAssetFs compiledAssetFs, SerializedAsset serializedAsset)
+            public AssetDependencies(CompiledAssetFs compiledAssetFs, WritableSerializedAsset serializedAsset)
             {
                 _compiledAssetFs = compiledAssetFs;
                 _serializedAsset = serializedAsset;
@@ -211,7 +211,7 @@ namespace Protogame
                 return _compiledAssetFs._assetFs.List();
             }
 
-            async Task<SerializedAsset> IAssetDependencies.GetOptionalCompileTimeCompiledDependency(string name)
+            async Task<IReadableSerializedAsset> IAssetDependencies.GetOptionalCompileTimeCompiledDependency(string name)
             {
                 // Always add the dependency, since the compiler will do different things if the dependency
                 // appears on disk.
@@ -222,10 +222,7 @@ namespace Protogame
                 {
                     return null;
                 }
-                using (var stream = await compiledAssetFile.GetContentStream().ConfigureAwait(false))
-                {
-                    return await SerializedAsset.FromStream(stream, false).ConfigureAwait(false);
-                }
+                return ReadableSerializedAsset.FromStream(await compiledAssetFile.GetContentStream().ConfigureAwait(false), false);
             }
 
             Task<IAssetFsFile> IAssetDependencies.GetOptionalCompileTimeFileDependency(string name)
@@ -233,7 +230,7 @@ namespace Protogame
                 return _compiledAssetFs._assetFs.Get(name);
             }
 
-            async Task<SerializedAsset> IAssetDependencies.GetRequiredCompileTimeCompiledDependency(string name)
+            async Task<IReadableSerializedAsset> IAssetDependencies.GetRequiredCompileTimeCompiledDependency(string name)
             {
                 var asset = await ((IAssetDependencies)this).GetOptionalCompileTimeCompiledDependency(name).ConfigureAwait(false);
                 if (asset == null)
@@ -302,7 +299,10 @@ namespace Protogame
                 try
                 {
                     _stream.Seek(0, SeekOrigin.Begin);
-                    _dependencies = (await SerializedAsset.FromStream(_stream, true).ConfigureAwait(false)).Dependencies.ToArray();
+                    using (var asset = ReadableSerializedAsset.FromStream(_stream, true))
+                    {
+                        _dependencies = asset.Dependencies.ToArray();
+                    }
                     return _dependencies;
                 }
                 finally

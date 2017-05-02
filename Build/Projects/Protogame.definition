@@ -98,11 +98,13 @@
     <Compile Include="Assets\Infrastructure\Version2\IAssetManager.cs" />
     <Compile Include="Assets\Infrastructure\Version2\IAssetReference.cs" />
     <Compile Include="Assets\Infrastructure\Version2\INativeAsset.cs" />
-    <Compile Include="Assets\Infrastructure\Version2\ISerializedAsset.cs" />
+    <Compile Include="Assets\Infrastructure\Version2\IReadableSerializedAsset.cs" />
     <Compile Include="Assets\Infrastructure\Version2\ISingleAssetReference.cs" />
+    <Compile Include="Assets\Infrastructure\Version2\IWritableSerializedAsset.cs" />
     <Compile Include="Assets\Infrastructure\Version2\PreferenceListAssetReference.cs" />
-    <Compile Include="Assets\Infrastructure\Version2\SerializedAsset.cs" />
+    <Compile Include="Assets\Infrastructure\Version2\ReadableSerializedAsset.cs" />
     <Compile Include="Assets\Infrastructure\Version2\SerializedAssetExtensions.cs" />
+    <Compile Include="Assets\Infrastructure\Version2\WritableSerializedAsset.cs" />
     <Compile Include="Assets\Language\LanguageAsset.cs" />
     <Compile Include="Assets\Language\LanguageAssetLoader.cs" />
     <Compile Include="Assets\Language\LanguageAssetSaver.cs" />

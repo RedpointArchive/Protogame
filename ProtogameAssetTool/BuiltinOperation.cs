@@ -62,14 +62,14 @@ namespace ProtogameAssetTool
                 "Windows"
             };
 
-            foreach (var platform in platforms)
+            var platformTasks = platforms.Select(platform => Task.Run(async () =>
             {
                 Console.WriteLine("Starting compilation for " + platform + "...");
 
                 var targetPlatform = (TargetPlatform)Enum.Parse(typeof(TargetPlatform), platform);
 
                 var targetOutputPath = Environment.CurrentDirectory;
-                
+
                 var kernel = new StandardKernel();
                 kernel.Load<ProtogameAssetModule>();
                 var sourceLayer = kernel.Get<SourceAssetFsLayer>(new NamedConstructorArgument("basePath", Environment.CurrentDirectory));
@@ -100,18 +100,15 @@ namespace ProtogameAssetTool
                         {
                             expectedPaths.Add(targetPath);
                         }
-                        //if (originalAsset.ModificationTimeUtcTimestamp < compiledAsset.ModificationTimeUtcTimestamp)
-                        //{
-                            Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
-                            using (var writer = new FileStream(targetPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                        Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
+                        using (var writer = new FileStream(targetPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            Console.WriteLine("Saving " + compiledAsset.Name + " to disk for " + platform + "...");
+                            using (var stream = await compiledAsset.GetContentStream().ConfigureAwait(false))
                             {
-                                Console.WriteLine("Saving " + compiledAsset.Name + " to disk for " + platform + "...");
-                                using (var stream = await compiledAsset.GetContentStream().ConfigureAwait(false))
-                                {
-                                    await stream.CopyToAsync(writer).ConfigureAwait(false);
-                                }
+                                await stream.CopyToAsync(writer).ConfigureAwait(false);
                             }
-                        //}
+                        }
                     }));
                 }
 
@@ -129,7 +126,9 @@ namespace ProtogameAssetTool
                     Console.WriteLine("Deleting " + compiledAssetOnDisk + "...");
                     File.Delete(compiledAssetOnDisk);
                 }
-            }
+            })).ToArray();
+
+            await Task.WhenAll(platformTasks);
         }
 
         private IEnumerable<string> FindAllCompiledAssets(string outputRootPath, string prefix = "")

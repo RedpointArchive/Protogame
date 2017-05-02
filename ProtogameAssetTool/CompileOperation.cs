@@ -14,7 +14,7 @@ namespace ProtogameAssetTool
     {
         public async Task Run(OperationArguments args)
         {
-            foreach (var platform in args.Platforms)
+            var platformTasks = args.Platforms.Select(platform => Task.Run(async () =>
             {
                 Console.WriteLine("Starting compilation for " + platform + "...");
 
@@ -84,7 +84,9 @@ namespace ProtogameAssetTool
                     Console.WriteLine("Deleting " + compiledAssetOnDisk + "...");
                     File.Delete(compiledAssetOnDisk);
                 }
-            }
+            })).ToArray();
+
+            await Task.WhenAll(platformTasks);
         }
 
         public static void LoadAndBindTypes(IKernel kernel, string[] assemblies)

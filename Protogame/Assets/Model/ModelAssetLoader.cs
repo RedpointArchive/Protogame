@@ -11,7 +11,7 @@ namespace Protogame
             _modelSerializer = modelSerializer;
         }
         
-        public async Task<IAsset> Load(string name, SerializedAsset input, IAssetManager assetManager)
+        public async Task<IAsset> Load(string name, IReadableSerializedAsset input, IAssetManager assetManager)
         {
             return new ModelAsset(
                 _modelSerializer,

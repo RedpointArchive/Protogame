@@ -12,7 +12,7 @@ namespace Protogame
             _assetContentManager = assetContentManager;
         }
         
-        public async Task<IAsset> Load(string name, SerializedAsset input, IAssetManager assetManager)
+        public async Task<IAsset> Load(string name, IReadableSerializedAsset input, IAssetManager assetManager)
         {
             return new TextureAsset(
                 _assetContentManager,

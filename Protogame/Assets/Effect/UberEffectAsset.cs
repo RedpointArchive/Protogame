@@ -12,7 +12,7 @@ namespace Protogame
         private readonly IKernel _kernel;
         private readonly IAssetContentManager _assetContentManager;
         private readonly IRawLaunchArguments _rawLaunchArguments;
-        private readonly byte[] _effect;
+        private byte[] _effect;
 
         public UberEffectAsset(
             IKernel kernel,
@@ -121,6 +121,12 @@ namespace Protogame
                         }
                     }
                 }
+
+                // Free the resource from main memory since it is now loaded into the GPU.  If the
+                // resource is ever removed from the GPU (i.e. UnloadContent occurs followed by
+                // LoadContent), then the asset will need to be reloaded through the asset management
+                // system.
+                _effect = null;
             }
         }
     }

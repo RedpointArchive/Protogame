@@ -137,7 +137,8 @@ namespace Protogame
                 {
                     try
                     {
-                        var assetTask = Task.Run(async () => await GetUnresolved(assetReference.Name));
+                        _assetToLoadInGetUnresolved = assetReference.Name;
+                        var assetTask = Task.Run(GetUnresolvedFromRunAssetLoadingThread);
                         while (!assetTask.IsCompleted)
                         {
                             Thread.Sleep(0);
@@ -164,6 +165,17 @@ namespace Protogame
             }
         }
 
+        private string _assetToLoadInGetUnresolved;
+
+        /// <remarks>
+        /// We store our to-be-loaded asset name in <see cref="_assetToLoadInGetUnresolved"/> to reduce
+        /// memory allocations, as passing an async lambda to Task.Run results in a lot of garbage collection.
+        /// </remarks>
+        private Task<IAsset> GetUnresolvedFromRunAssetLoadingThread()
+        {
+            return GetUnresolved(_assetToLoadInGetUnresolved);
+        }
+
         public bool SkipCompilation { get; set; }
 
         public bool AllowSourceOnly { get; set; }
@@ -175,19 +187,17 @@ namespace Protogame
             {
                 throw new AssetNotFoundException(name);
             }
-            SerializedAsset serializedAsset;
-            using (var stream = await compiledAsset.GetContentStream().ConfigureAwait(false))
+            using (var serializedAsset = ReadableSerializedAsset.FromStream(await compiledAsset.GetContentStream().ConfigureAwait(false), false))
             {
-                serializedAsset = await SerializedAsset.FromStream(stream, false).ConfigureAwait(false);
+                var loaderType = serializedAsset.GetLoader();
+                var loaderInstance = (IAssetLoader)_kernel.TryGet(loaderType);
+                if (loaderInstance == null)
+                {
+                    throw new InvalidOperationException(
+                        "Unable to load asset '" + name + "'.  " + "No loader for this asset could be found.");
+                }
+                return await loaderInstance.Load(name, serializedAsset, this).ConfigureAwait(false);
             }
-            var loaderType = serializedAsset.GetLoader();
-            var loaderInstance = (IAssetLoader)_kernel.TryGet(loaderType);
-            if (loaderInstance == null)
-            {
-                throw new InvalidOperationException(
-                    "Unable to load asset '" + name + "'.  " + "No loader for this asset could be found.");
-            }
-            return await loaderInstance.Load(name, serializedAsset, this).ConfigureAwait(false);
         }
 
         public IAssetReference<T> GetPreferred<T>(string[] namePreferenceList) where T : class, IAsset

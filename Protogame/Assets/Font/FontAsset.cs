@@ -7,7 +7,7 @@ namespace Protogame
     public class FontAsset : IAsset, INativeAsset
     {
         private readonly IAssetContentManager _assetContentManager;
-        private readonly byte[] _data;
+        private byte[] _data;
         
         public FontAsset(
             IAssetContentManager assetContentManager, 
@@ -62,6 +62,12 @@ namespace Protogame
                     }
 
                     _assetContentManager.UnsetStream(Name);
+
+                    // Free the resource from main memory since it is now loaded into the GPU.  If the
+                    // resource is ever removed from the GPU (i.e. UnloadContent occurs followed by
+                    // LoadContent), then the asset will need to be reloaded through the asset management
+                    // system.
+                    _data = null;
                 }
             }
         }

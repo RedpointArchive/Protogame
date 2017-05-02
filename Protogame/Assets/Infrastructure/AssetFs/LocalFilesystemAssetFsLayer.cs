@@ -247,13 +247,7 @@ namespace Protogame
 
             public async Task<Stream> GetContentStream()
             {
-                var memory = new MemoryStream();
-                using (var file = new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    await file.CopyToAsync(memory).ConfigureAwait(false);
-                }
-                memory.Seek(0, SeekOrigin.Begin);
-                return memory;
+                return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
             }
 
             public Task<string[]> GetDependentOnAssetFsFileNames()

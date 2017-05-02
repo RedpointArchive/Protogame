@@ -14,11 +14,10 @@ namespace Protogame
     {
         public string[] Extensions => new[] { "fx" };
 
-        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, ISerializedAsset output)
+        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, IWritableSerializedAsset output)
         {
-            var content = await assetFile.GetContentStream().ConfigureAwait(false);
             var code = string.Empty;
-            using (var reader = new StreamReader(content))
+            using (var reader = new StreamReader(await assetFile.GetContentStream().ConfigureAwait(false)))
             {
                 code = await reader.ReadToEndAsync().ConfigureAwait(false);
             }

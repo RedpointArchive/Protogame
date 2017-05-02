@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework.Content;
+using System.Reflection;
 
 namespace Protogame
 {    
     public class AssetContentManager : ContentManager, IAssetContentManager
     {
         private readonly Dictionary<string, Stream> _memoryStreams = new Dictionary<string, Stream>();
-        
+        private readonly FieldInfo _scratchField;
+
         public AssetContentManager(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            _scratchField = GetType().BaseType.GetField("scratchBuffer", BindingFlags.NonPublic | BindingFlags.Instance);
         }
         
         public override T Load<T>(string assetName)
@@ -66,6 +69,10 @@ namespace Protogame
 #if !PLATFORM_ANDROID
             this._memoryStreams[assetName] = null;
 #endif
+
+            // Force scratch buffer to be cleared, and enable it for
+            // garbage collection.
+            _scratchField?.SetValue(this, null);
         }
         
         protected override Stream OpenStream(string assetName)

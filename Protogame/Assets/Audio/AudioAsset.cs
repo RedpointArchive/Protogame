@@ -6,17 +6,17 @@ namespace Protogame
 {
     public class AudioAsset : IAsset, INativeAsset, IDisposable
     {
+        private byte[] _data;
+
         public AudioAsset(string name, byte[] rawData)
         {
             Name = name;
-            RawData = rawData;
+            _data = rawData;
         }
         
         public SoundEffect Audio { get; private set; }
 
         public string Name { get; private set; }
-        
-        public byte[] RawData { get; set; }
 
         public void Dispose()
         {
@@ -25,9 +25,9 @@ namespace Protogame
 
         public void ReadyOnGameThread()
         {
-            if (RawData != null)
+            if (_data != null)
             {
-                using (var stream = new MemoryStream(RawData))
+                using (var stream = new MemoryStream(_data))
                 {
                     Audio = SoundEffect.FromStream(stream);
                     if (Audio == null)
@@ -35,6 +35,9 @@ namespace Protogame
                         throw new InvalidOperationException("Unable to load effect from stream.");
                     }
                 }
+
+                // Free our copy of the raw data as it is now loaded into MonoGame.
+                _data = null;
             }
         }
     }

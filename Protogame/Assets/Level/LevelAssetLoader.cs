@@ -4,7 +4,7 @@ namespace Protogame
 {
     public class LevelAssetLoader : IAssetLoader<LevelAsset>
     {
-        public async Task<IAsset> Load(string name, SerializedAsset input, IAssetManager assetManager)
+        public async Task<IAsset> Load(string name, IReadableSerializedAsset input, IAssetManager assetManager)
         {
             return new LevelAsset(
                 name,

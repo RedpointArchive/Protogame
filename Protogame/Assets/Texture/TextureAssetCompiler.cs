@@ -15,7 +15,7 @@ namespace Protogame
     {
         public string[] Extensions => new[] { "png" };
 
-        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, ISerializedAsset output)
+        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, IWritableSerializedAsset output)
         {
             var tempPath = System.IO.Path.GetTempFileName();
             try
