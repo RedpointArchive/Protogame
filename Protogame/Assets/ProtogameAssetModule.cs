@@ -13,13 +13,6 @@ namespace Protogame
     {
         public void Load(IKernel kernel)
         {
-            if (kernel.TryGet<IRawLaunchArguments>() == null)
-            {
-                kernel.Bind<IRawLaunchArguments>()
-                    .ToMethod(x => new DefaultRawLaunchArguments(new string[0]))
-                    .InSingletonScope();
-            }
-
             kernel.Bind<IAssetManager>().To<DefaultAssetManager>().InSingletonScope();
 
             kernel.Bind<IAssetLoader<AudioAsset>>().To<AudioAssetLoader>().InSingletonScope();

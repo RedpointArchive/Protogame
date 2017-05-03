@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Protoinject;
+using System.Diagnostics;
 
 namespace Protogame
 {
@@ -143,6 +144,11 @@ namespace Protogame
         private ILoadingScreen _loadingScreen;
 
         /// <summary>
+        /// The console handle used to emit early startup timing logs.
+        /// </summary>
+        private IConsoleHandle _consoleHandle;
+
+        /// <summary>
         /// Whether we've done an initial early render.
         /// </summary>
         private bool _hasDoneEarlyRender;
@@ -184,6 +190,9 @@ namespace Protogame
         /// <param name="kernel">The dependency injection kernel to use.</param>
         protected CoreGame(IKernel kernel)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
 #if PLATFORM_MACOS
             // On Mac, the MonoGame launcher changes the current working
             // directory which means we can't find any assets.  Change it
@@ -208,6 +217,9 @@ namespace Protogame
                     PrepareDeviceSettings(e.GraphicsDeviceInformation);
                 };
 
+            StartupTrace.TimingEntries["configureGraphicsDeviceManager"] = stopwatch.Elapsed;
+            stopwatch.Restart();
+
             _profiler = kernel.TryGet<IProfiler>(_node);
             if (_profiler == null)
             {
@@ -229,16 +241,38 @@ namespace Protogame
                 analyticsInitializer = kernel.Get<IAnalyticsInitializer>(_node);
             }
 
+            _consoleHandle = kernel.TryGet<IConsoleHandle>(_node);
+            
+            StartupTrace.TimingEntries["constructOptionalGameDependencies"] = stopwatch.Elapsed;
+            stopwatch.Restart();
+
             analyticsInitializer.Initialize(_analyticsEngine);
+            
+            StartupTrace.TimingEntries["initializeAnalytics"] = stopwatch.Elapsed;
+            stopwatch.Restart();
 
             // TODO: Fix this because it means we can't have more than one game using the same IoC container.
             var assetContentManager = new AssetContentManager(Services);
             Content = assetContentManager;
             kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+            
+            StartupTrace.TimingEntries["bindAssetContentManager"] = stopwatch.Elapsed;
+            stopwatch.Restart();
 
             _coroutine = _kernel.Get<ICoroutine>();
+
+            StartupTrace.TimingEntries["constructCoroutine"] = stopwatch.Elapsed;
+            stopwatch.Restart();
+
             _coroutineScheduler = _kernel.Get<ICoroutineScheduler>();
+
+            StartupTrace.TimingEntries["constructCoroutineScheduler"] = stopwatch.Elapsed;
+            stopwatch.Restart();
+
             _loadingScreen = _kernel.Get<ILoadingScreen>();
+
+            StartupTrace.TimingEntries["constructLoadingScreen"] = stopwatch.Elapsed;
+            stopwatch.Restart();
         }
 
         /// <summary>
@@ -432,6 +466,16 @@ namespace Protogame
                     _coroutineScheduler.Update((IGameContext) null, null);
                 }
                 return;
+            }
+
+            if (_consoleHandle != null && !StartupTrace.EmittedTimingEntries)
+            {
+                foreach (var kv in StartupTrace.TimingEntries)
+                {
+                    _consoleHandle.LogDebug("{0}: {1}ms", kv.Key, Math.Round(kv.Value.TotalMilliseconds, 2));
+                }
+
+                StartupTrace.EmittedTimingEntries = true;
             }
 
             using (_profiler.Measure("update", GameContext.FrameCount.ToString()))

@@ -199,22 +199,20 @@ namespace ProtogameAssetTool
                                         switch (logLevel)
                                         {
                                             case ConsoleLogLevel.Debug:
-                                                Console.ForegroundColor = ConsoleColor.Gray;
+                                                Console.Write("[debug] ");
                                                 break;
                                             case ConsoleLogLevel.Info:
-                                                Console.ForegroundColor = ConsoleColor.Cyan;
+                                                Console.Write("[info ] ");
                                                 break;
                                             case ConsoleLogLevel.Warning:
-                                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                                Console.Write("[warn ] ");
                                                 break;
                                             case ConsoleLogLevel.Error:
-                                                Console.ForegroundColor = ConsoleColor.Red;
+                                                Console.Write("[error] ");
                                                 break;
                                         }
 
                                         Console.WriteLine(_inboundReader.ReadString());
-
-                                        Console.ForegroundColor = ConsoleColor.White;
                                     }
                                     break;
                                 }

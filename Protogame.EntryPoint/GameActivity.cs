@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework;
 using Protoinject;
 
 using Protogame;
+using System.Diagnostics;
 
 [Activity(
     Label = "@string/app_name",
@@ -31,7 +32,13 @@ public class GameActivity : AndroidGameActivity
     {
         base.OnCreate(bundle);
 
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         var kernel = new StandardKernel();
+        kernel.Bind<IRawLaunchArguments>()
+            .ToMethod(x => new DefaultRawLaunchArguments(new string[0]))
+            .InSingletonScope();
 
         Func<System.Reflection.Assembly, Type[]> TryGetTypes = assembly =>
         {
@@ -52,12 +59,18 @@ public class GameActivity : AndroidGameActivity
             typeSource.AddRange(assembly.GetCustomAttributes<ConfigurationAttribute>().Select(x => x.GameConfigurationOrServerClass));
         }
 
+        StartupTrace.TimingEntries["scanForConfigurationAttributes"] = stopwatch.Elapsed;
+        stopwatch.Restart();
+
         if (typeSource.Count == 0)
         {
             // Scan all types to find implementors of IGameConfiguration
             typeSource.AddRange(from assembly in AppDomain.CurrentDomain.GetAssemblies()
                                 from type in TryGetTypes(assembly)
                                 select type);
+
+            StartupTrace.TimingEntries["scanForGameConfigurationImplementations"] = stopwatch.Elapsed;
+            stopwatch.Restart();
         }
 
         // Search the application domain for implementations of
@@ -78,12 +91,18 @@ public class GameActivity : AndroidGameActivity
                 "You must have at least one implementation of " +
                 "IGameConfiguration in your game.");
         }
+        
+        StartupTrace.TimingEntries["constructGameConfigurationImplementations"] = stopwatch.Elapsed;
+        stopwatch.Restart();
 
         Game game = null;
 
         foreach (var configuration in gameConfigurations)
         {
             configuration.ConfigureKernel(kernel);
+
+            StartupTrace.TimingEntries["configureKernel(" + configuration.GetType().FullName + ")"] = stopwatch.Elapsed;
+            stopwatch.Restart();
 
             // We only construct one game.  In the event there are
             // multiple game configurations (such as a third-party library
@@ -92,6 +111,9 @@ public class GameActivity : AndroidGameActivity
             if (game == null)
             {
                 game = configuration.ConstructGame(kernel);
+
+                StartupTrace.TimingEntries["constructGame(" + configuration.GetType().FullName + ")"] = stopwatch.Elapsed;
+                stopwatch.Restart();
             }
         }
 
@@ -107,6 +129,9 @@ public class GameActivity : AndroidGameActivity
         game.Run();
 
         ((ICoreGame)game).AndroidGameView.RequestFocus();
+        
+        StartupTrace.TimingEntries["finalizeStartup"] = stopwatch.Elapsed;
+        stopwatch.Stop();
     }
 
     public override void OnWindowFocusChanged(bool hasFocus)
