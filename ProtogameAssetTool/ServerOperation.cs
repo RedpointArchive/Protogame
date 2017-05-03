@@ -189,6 +189,35 @@ namespace ProtogameAssetTool
                                     Console.WriteLine("Request complete: get-asset-content " + assetName);
                                     break;
                                 }
+                            case "logs":
+                                {
+                                    var logCount = _inboundReader.ReadInt32();
+                                    for (var i = 0; i < logCount; i++)
+                                    {
+                                        var logLevel = (ConsoleLogLevel)_inboundReader.ReadInt32();
+
+                                        switch (logLevel)
+                                        {
+                                            case ConsoleLogLevel.Debug:
+                                                Console.ForegroundColor = ConsoleColor.Gray;
+                                                break;
+                                            case ConsoleLogLevel.Info:
+                                                Console.ForegroundColor = ConsoleColor.Cyan;
+                                                break;
+                                            case ConsoleLogLevel.Warning:
+                                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                                break;
+                                            case ConsoleLogLevel.Error:
+                                                Console.ForegroundColor = ConsoleColor.Red;
+                                                break;
+                                        }
+
+                                        Console.WriteLine(_inboundReader.ReadString());
+
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                    }
+                                    break;
+                                }
                         }
                     }
                 }

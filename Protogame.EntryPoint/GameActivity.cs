@@ -3,14 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
 using Android.Content.PM;
 
 using Microsoft.Xna.Framework;
@@ -20,10 +17,12 @@ using Protoinject;
 using Protogame;
 
 [Activity(
-    Label = "Game",
+    Label = "@string/app_name",
+    Icon = "@drawable/icon",
+    Theme = "@android:style/Theme.NoTitleBar",
     MainLauncher = true,
     AlwaysRetainTaskState = true,
-    LaunchMode = Android.Content.PM.LaunchMode.SingleInstance,
+    LaunchMode = LaunchMode.SingleInstance,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden,
     ScreenOrientation = ScreenOrientation.Landscape)]
 public class GameActivity : AndroidGameActivity
@@ -34,28 +33,46 @@ public class GameActivity : AndroidGameActivity
 
         var kernel = new StandardKernel();
 
-        Func<System.Reflection.Assembly, Type[]> tryGetTypes = assembly =>
-		{
-			try
-			{
-				return assembly.GetTypes();
-			}
-			catch
-			{
-				return new Type[0];
-			}
-		};
+        Func<System.Reflection.Assembly, Type[]> TryGetTypes = assembly =>
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch
+            {
+                return new Type[0];
+            }
+        };
+
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var typeSource = new List<Type>();
+        foreach (var assembly in assemblies)
+        {
+            typeSource.AddRange(assembly.GetCustomAttributes<ConfigurationAttribute>().Select(x => x.GameConfigurationOrServerClass));
+        }
+
+        if (typeSource.Count == 0)
+        {
+            // Scan all types to find implementors of IGameConfiguration
+            typeSource.AddRange(from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                                from type in TryGetTypes(assembly)
+                                select type);
+        }
 
         // Search the application domain for implementations of
         // the IGameConfiguration.
-        var configurations =
-            (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-             from type in tryGetTypes(assembly)
-             where typeof(IGameConfiguration).IsAssignableFrom(type) &&
-                   !type.IsInterface && !type.IsAbstract
-             select Activator.CreateInstance(type) as IGameConfiguration).ToList();
+        var gameConfigurations = new List<IGameConfiguration>();
+        foreach (var type in typeSource)
+        {
+            if (typeof(IGameConfiguration).IsAssignableFrom(type) &&
+                !type.IsInterface && !type.IsAbstract)
+            {
+                gameConfigurations.Add(Activator.CreateInstance(type) as IGameConfiguration);
+            }
+        }
 
-        if (configurations.Count == 0)
+        if (gameConfigurations.Count == 0)
         {
             throw new InvalidOperationException(
                 "You must have at least one implementation of " +
@@ -64,7 +81,7 @@ public class GameActivity : AndroidGameActivity
 
         Game game = null;
 
-        foreach (var configuration in configurations)
+        foreach (var configuration in gameConfigurations)
         {
             configuration.ConfigureKernel(kernel);
 
@@ -84,9 +101,29 @@ public class GameActivity : AndroidGameActivity
                 "No implementation of IGameConfiguration provided " +
                 "returned a game instance from ConstructGame.");
         }
-
+        
         SetContentView(((ICoreGame)game).AndroidGameView);
+
         game.Run();
+
+        ((ICoreGame)game).AndroidGameView.RequestFocus();
+    }
+
+    public override void OnWindowFocusChanged(bool hasFocus)
+    {
+        base.OnWindowFocusChanged(hasFocus);
+
+        if (hasFocus)
+        {
+            HideSystemUi();
+        }
+    }
+
+    private void HideSystemUi()
+    {
+        Window.DecorView.SystemUiVisibility =
+            (StatusBarVisibility)(SystemUiFlags.LayoutStable | SystemUiFlags.LayoutHideNavigation | SystemUiFlags.LayoutFullscreen | SystemUiFlags.HideNavigation | SystemUiFlags.Fullscreen | SystemUiFlags.ImmersiveSticky);
+        
     }
 }
 

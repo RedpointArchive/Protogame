@@ -51,7 +51,8 @@ namespace Protogame
             kernel.Bind<IAssetFsLayer>().To<CurrentDirPlatformLocalFilesystemAssetFsLayer>().InSingletonScope();
 #elif PLATFORM_ANDROID
 #if DEBUG
-            kernel.Bind<IAssetFsLayer>().To<RemoteClientAssetFs>().InSingletonScope();
+            kernel.Bind<IRemoteClientInboundHandler>().To<RemoteClientAssetFsInboundHandler>().InSingletonScope();
+            kernel.Bind<IAssetFsLayer>().To<RemoteClientAssetFsLayer>().InSingletonScope();
 #endif
             kernel.Bind<IAssetFsLayer>().To<RootAndroidAssetFsLayer>().InSingletonScope();
             kernel.Bind<IAssetFsLayer>().To<PlatformAndroidAssetFsLayer>().InSingletonScope();
