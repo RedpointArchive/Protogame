@@ -80,18 +80,13 @@ namespace Protogame
     /// <module>Core API</module>
     /// <internal>True</internal>
     /// <interface_ref>Protogame.CoreGame{TInitialWorld}</interface_ref>
-    public abstract class CoreGame<TInitialWorld, TWorldManager> : Game, ICoreGame
+    public abstract class CoreGame<TInitialWorld, TWorldManager> : ICoreGame
         where TInitialWorld : IWorld where TWorldManager : IWorldManager
     {
         /// <summary>
         /// The dependency injection kernel.
         /// </summary>
         private readonly IKernel _kernel;
-
-        /// <summary>
-        /// The graphics device manager instance.
-        /// </summary>
-        private readonly GraphicsDeviceManager _graphicsDeviceManager;
 
         /// <summary>
         /// The current profiler instance.
@@ -154,6 +149,11 @@ namespace Protogame
         private bool _hasDoneEarlyRender;
 
         /// <summary>
+        /// The MonoGame game instance that is hosting this game.
+        /// </summary>
+        private HostGame _hostGame;
+
+        /// <summary>
         /// Gets the current game context.  You should not generally access this property; outside
         /// an explicit Update or Render loop, the state of the game context is not guaranteed.  Inside
         /// the context of an Update or Render loop, the game context is already provided.
@@ -208,18 +208,6 @@ namespace Protogame
             _kernel = kernel;
             _node = _kernel.CreateEmptyNode("Game");
 
-            _graphicsDeviceManager = new GraphicsDeviceManager(this);
-            // ReSharper disable once VirtualMemberCallInConstructor
-            PrepareGraphicsDeviceManager(_graphicsDeviceManager);
-            _graphicsDeviceManager.PreparingDeviceSettings +=
-                (sender, e) =>
-                {
-                    PrepareDeviceSettings(e.GraphicsDeviceInformation);
-                };
-
-            StartupTrace.TimingEntries["configureGraphicsDeviceManager"] = stopwatch.Elapsed;
-            stopwatch.Restart();
-
             _profiler = kernel.TryGet<IProfiler>(_node);
             if (_profiler == null)
             {
@@ -251,14 +239,6 @@ namespace Protogame
             StartupTrace.TimingEntries["initializeAnalytics"] = stopwatch.Elapsed;
             stopwatch.Restart();
 
-            // TODO: Fix this because it means we can't have more than one game using the same IoC container.
-            var assetContentManager = new AssetContentManager(Services);
-            Content = assetContentManager;
-            kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
-            
-            StartupTrace.TimingEntries["bindAssetContentManager"] = stopwatch.Elapsed;
-            stopwatch.Restart();
-
             _coroutine = _kernel.Get<ICoroutine>();
 
             StartupTrace.TimingEntries["constructCoroutine"] = stopwatch.Elapsed;
@@ -281,7 +261,15 @@ namespace Protogame
         /// <value>
         /// The game window.
         /// </value>
-        public new IGameWindow Window { get; private set; }
+        public IGameWindow Window => _hostGame?.ProtogameWindow;
+
+        /// <summary>
+        /// The graphics device used by the game.
+        /// </summary>
+        /// <value>
+        /// The graphics device.
+        /// </value>
+        public GraphicsDevice GraphicsDevice => _hostGame?.GraphicsDevice;
 
         /// <summary>
         /// The graphics device manager used by the game.
@@ -289,7 +277,7 @@ namespace Protogame
         /// <value>
         /// The graphics device manager.
         /// </value>
-        public GraphicsDeviceManager GraphicsDeviceManager => _graphicsDeviceManager;
+        public GraphicsDeviceManager GraphicsDeviceManager => _hostGame?.GraphicsDeviceManager;
 
         /// <summary>
         /// The number of frames to skip before updating or rendering.
@@ -297,9 +285,20 @@ namespace Protogame
         public int SkipFrames { get; set; }
 
         /// <summary>
-        /// The load content.
+        /// Called by <see cref="HostGame"/> to assign itself to this game
+        /// instance, allowing us to access MonoGame game members.
         /// </summary>
-        protected override void LoadContent()
+        /// <param name="hostGame">The MonoGame game instance.</param>
+        public void AssignHost(HostGame hostGame)
+        {
+            _hostGame = hostGame;
+            
+            var assetContentManager = new AssetContentManager(_hostGame.Services);
+            _hostGame.Content = assetContentManager;
+            _kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+        }
+        
+        public void LoadContent()
         {
             _loadContentTask = _coroutine.Run(async () =>
             {
@@ -307,11 +306,13 @@ namespace Protogame
             });
         }
 
+        public void UnloadContent()
+        {
+
+        }
+
         protected virtual async Task LoadContentAsync()
         {
-            // Construct a platform-independent game window.
-            Window = ConstructGameWindow();
-
 #if PLATFORM_ANDROID
             // On Android, disable viewport / backbuffer scaling because we expect games
             // to make use of the full display area.
@@ -324,7 +325,7 @@ namespace Protogame
             // Register for the window resize event so we can scale
             // the window correctly.
             var shouldHandleResize = true;
-            base.Window.ClientSizeChanged += (sender, e) =>
+            _hostGame.Window.ClientSizeChanged += (sender, e) =>
             {
                 if (!shouldHandleResize)
                 {
@@ -342,7 +343,7 @@ namespace Protogame
 
             // Register for the window close event so we can dispatch
             // it correctly.
-            var form = System.Windows.Forms.Control.FromHandle(base.Window.Handle) as System.Windows.Forms.Form;
+            var form = System.Windows.Forms.Control.FromHandle(_hostGame.Window.Handle) as System.Windows.Forms.Form;
             if (form != null)
             {
                 form.FormClosing += (sender, args) =>
@@ -373,10 +374,10 @@ namespace Protogame
                 new IConstructorArgument[]
                 {
                     new NamedConstructorArgument("game", this),
-                    new NamedConstructorArgument("graphics", _graphicsDeviceManager),
+                    new NamedConstructorArgument("graphics", _hostGame.GraphicsDeviceManager),
                     new NamedConstructorArgument("world", null),
                     new NamedConstructorArgument("worldManager", worldManager),
-                    new NamedConstructorArgument("window", ConstructGameWindow())
+                    new NamedConstructorArgument("window", _hostGame.ProtogameWindow)
                 }, null);
 
             // If we are using the new rendering pipeline, we need to ensure that
@@ -430,12 +431,8 @@ namespace Protogame
         {
             throw new NotSupportedException();
         }
-
-        /// <summary>
-        /// Cleans up and disposes resources used by the game.
-        /// </summary>
-        /// <param name="disposing">No documentation.</param>
-        protected override void Dispose(bool disposing)
+        
+        public void Dispose(bool disposing)
         {
             GameContext?.World?.Dispose();
 
@@ -445,17 +442,9 @@ namespace Protogame
 
                 _analyticsEngine.FlushAndStop();
             }
-
-            base.Dispose(disposing);
         }
-
-        /// <summary>
-        /// The update.
-        /// </summary>
-        /// <param name="gameTime">
-        /// The game time.
-        /// </param>
-        protected override void Update(GameTime gameTime)
+        
+        public void Update(GameTime gameTime)
         {
             if (GameContext == null)
             {
@@ -511,23 +500,15 @@ namespace Protogame
 
                     GameContext.WorldManager.Update(this);
                 }
-
-                base.Update(gameTime);
             }
         }
-
-        /// <summary>
-        /// The draw.
-        /// </summary>
-        /// <param name="gameTime">
-        /// The game time.
-        /// </param>
-        protected override void Draw(GameTime gameTime)
+        
+        public void Draw(GameTime gameTime)
         {
             if (GameContext == null)
             {
                 // LoadContent hasn't finished running yet.  Use the early game loading screen.
-                _loadingScreen.RenderEarly(this);
+                _loadingScreen.RenderEarly(this, _hostGame.SplashScreenSpriteBatch, _hostGame.SplashScreenTexture);
                 _hasDoneEarlyRender = true;
                 return;
             }
@@ -541,7 +522,7 @@ namespace Protogame
                 // This can be used in case MonoGame does not initialize correctly before the first frame.
                 if (GameContext.FrameCount < SkipFrames)
                 {
-                    GraphicsDevice.Clear(Color.Black);
+                    _hostGame.GraphicsDevice.Clear(Color.Black);
                     return;
                 }
 
@@ -559,8 +540,6 @@ namespace Protogame
 
                     GameContext.WorldManager.Render(this);
                 }
-
-                base.Draw(gameTime);
 
 #if PLATFORM_ANDROID
                 // Recorrect the viewport on Android, which seems to be completely bogus by default.
@@ -580,7 +559,7 @@ namespace Protogame
         /// on the game window or presses Alt-F4.
         /// </summary>
         /// <param name="cancel">Whether or not to cancel the form closure.</param>
-        protected virtual void CloseRequested(out bool cancel)
+        public virtual void CloseRequested(out bool cancel)
         {
             cancel = false;
         }
@@ -594,7 +573,7 @@ namespace Protogame
         /// </para>
         /// </summary>
         /// <param name="graphicsDeviceManager">The graphics device manager to prepare.</param>
-        protected virtual void PrepareGraphicsDeviceManager(GraphicsDeviceManager graphicsDeviceManager)
+        public virtual void PrepareGraphicsDeviceManager(GraphicsDeviceManager graphicsDeviceManager)
         {
         }
 
@@ -606,7 +585,7 @@ namespace Protogame
         /// </para>
         /// </summary>
         /// <param name="window">The game window to prepare.</param>
-        protected virtual void PrepareGameWindow(IGameWindow window)
+        public virtual void PrepareGameWindow(IGameWindow window)
         {
         }
 
@@ -618,15 +597,15 @@ namespace Protogame
         /// override PrepareDeviceSettings in your derived class.
         /// </remarks>
         /// <param name="deviceInformation">The device information.</param>
-        protected virtual void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)
+        public virtual void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)
 		{
             deviceInformation.PresentationParameters.RenderTargetUsage =
                 RenderTargetUsage.PreserveContents;
-            
+
 #if PLATFORM_WINDOWS
             // This will select the highest available multisampling.
             deviceInformation.PresentationParameters.MultiSampleCount = 32;
-            _graphicsDeviceManager.PreferMultiSampling = true;
+            _hostGame.GraphicsDeviceManager.PreferMultiSampling = true;
 #else
             // On non-Windows platforms, MonoGame's support for multisampling is
             // just totally broken.  Even if we ask for it here, the maximum
@@ -639,118 +618,8 @@ namespace Protogame
             // the render targets on OpenGL platforms aren't initialised to a valid
             // state for the GPU to use.
             deviceInformation.PresentationParameters.MultiSampleCount = 0;
-            _graphicsDeviceManager.PreferMultiSampling = false;
+            _hostGame.GraphicsDeviceManager.PreferMultiSampling = false;
 #endif
         }
-
-        /// <summary>
-        /// Constructs an implementation of <see cref="IGameWindow"/> based on the current game.  This method
-        /// abstracts the current platform.
-        /// </summary>
-        /// <returns>
-        /// The game window instance.
-        /// </returns>
-        private IGameWindow ConstructGameWindow()
-        {
-#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
-            return new DefaultGameWindow(base.Window);
-#elif PLATFORM_ANDROID || PLATFORM_OUYA
-            return new AndroidGameWindow((Microsoft.Xna.Framework.AndroidGameWindow)base.Window);
-#endif
-        }
-
-#if PLATFORM_ANDROID || PLATFORM_OUYA
-        public Android.Views.View AndroidGameView
-        {
-            get
-            {
-                return (Android.Views.View)this.Services.GetService(typeof(Android.Views.View));
-            }
-        }
-#endif
-
-        /// <summary>
-        /// Runs code before MonoGame performs any initialization logic.
-        /// </summary>
-        // ReSharper disable once EmptyConstructor
-        static CoreGame()
-        {
-#if PLATFORM_LINUX
-            LoadPrimusRunPathForDualGPUDevices();
-#endif
-        }
-
-#if PLATFORM_LINUX
-        public static void LoadPrimusRunPathForDualGPUDevices()
-        {
-            const string primusRunPath = "/usr/bin/primusrun";
-            var basePath = new System.IO.FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName;
-            if (System.IO.File.Exists(primusRunPath))
-            {
-                // primusrun exists, we should try and upgrade
-                // the graphics before libGL is loaded so that we
-                // can use the NVIDIA GPU instead of Intel (which
-                // generally doesn't work with the render pipeline
-                // on Linux).
-                Console.Error.WriteLine(
-                    "Detected Linux system with primusrun; will attempt to use NVIDIA GPU!");
-                var process = new System.Diagnostics.Process();
-                process.StartInfo = new System.Diagnostics.ProcessStartInfo
-                {
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    FileName = primusRunPath,
-                    Arguments = "env",
-                    WorkingDirectory = basePath
-                };
-                process.Start();
-                using (var output = process.StandardOutput)
-                {
-                    var regex = new System.Text.RegularExpressions.Regex(
-                        "^LD_LIBRARY_PATH=(.*)$",
-                        System.Text.RegularExpressions.RegexOptions.Multiline);
-                    var m = regex.Match(output.ReadToEnd());
-                    if (m.Success)
-                    {
-                        var ldLibraryPath = m.Groups[1].Value;
-
-                        Console.Error.WriteLine("Creating symbolic links to NVIDIA libGL...");
-                        var created = new System.Collections.Generic.List<string>();
-                        foreach (var path in ldLibraryPath.Split(':'))
-                        {
-                            var dir = new System.IO.DirectoryInfo(path);
-                            if (dir.Exists)
-                            {
-                                foreach (var f in dir.GetFiles())
-                                {
-                                    if (!created.Contains(f.Name) && !System.IO.File.Exists(System.IO.Path.Combine(basePath, f.Name)))
-                                    {
-                                        Console.Error.WriteLine("Mapping " + f.Name + " to " + f.FullName + "...");
-                                        var ln = new System.Diagnostics.Process();
-                                        ln.StartInfo = new System.Diagnostics.ProcessStartInfo
-                                        {
-                                            UseShellExecute = false,
-                                            FileName = "/usr/bin/ln",
-                                            Arguments = "-s '" + f.FullName + "' '" + System.IO.Path.Combine(basePath, f.Name) + "'",
-                                            WorkingDirectory = basePath
-                                        };
-                                        ln.Start();
-                                        ln.WaitForExit();
-                                        created.Add(f.Name);
-                                    }
-                                }
-                            }
-                        }
-                        Console.Error.WriteLine("Created symbolic links so that NVIDIA GPU is used.");
-                    }
-                    else
-                    {
-                        Console.Error.WriteLine(
-                            "Unable to find newer LD_LIBRARY_PATH, rendering might not work correctly!");
-                    }
-                }
-            }
-        }
-#endif
     }
 }

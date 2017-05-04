@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Protogame
 {
@@ -70,6 +71,22 @@ namespace Protogame
             {
                 return new AggregateException(_preferenceList.Where(x => x.LoadingException != null).Select(x => x.LoadingException));
             }
+        }
+
+        public async Task WaitUntilReady()
+        {
+            while (State != AssetReferenceState.Ready &&
+                State != AssetReferenceState.Unavailable)
+            {
+                await Task.Yield();
+            }
+
+            if (State == AssetReferenceState.Unavailable)
+            {
+                throw LoadingException;
+            }
+
+            // Otherwise, asset is ready.
         }
     }
 }

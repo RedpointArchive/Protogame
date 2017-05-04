@@ -20,10 +20,10 @@ namespace Protogame
 
         /// <summary>
         /// Called at application startup to construct the main game
-        /// instance.  This instance will be run as the main game.
+        /// instance.  This instance will be associated with the host game.
         /// </summary>
         /// <param name="kernel">The dependency injection kernel.</param>
         /// <returns>The game instance to run.</returns>
-        Game ConstructGame(IKernel kernel);
+        ICoreGame ConstructGame(IKernel kernel);
     }
 }

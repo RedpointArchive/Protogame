@@ -15,7 +15,7 @@ namespace Protogame
     /// <module>Graphics</module>
     /// <internal>True</internal>
     /// <interface_ref>Protogame.IRenderPipeline</interface_ref>
-    public class DefaultRenderPipeline : IRenderPipeline
+    public class DefaultRenderPipeline : IRenderPipeline, IAsynchronouslyConstructable
     {
         private readonly List<IRenderPass> _standardRenderPasses;
 
@@ -63,6 +63,11 @@ namespace Protogame
             _transientPostProcessingRenderPasses = new List<IRenderPass>();
             _renderPass = null;
             _isFirstRenderPass = false;
+        }
+
+        public async Task ConstructAsync()
+        {
+            await _loadingScreen.WaitForLoadingScreenAssets();
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)

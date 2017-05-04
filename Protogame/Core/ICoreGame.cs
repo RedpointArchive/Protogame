@@ -1,42 +1,66 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+
 namespace Protogame
 {
-    /// <summary>
-    /// The CoreGame interface.
-    /// </summary>
     public interface ICoreGame
     {
-        /// <summary>
-        /// Gets the game context.
-        /// </summary>
-        /// <value>
-        /// The game context.
-        /// </value>
+        IGameWindow Window { get; }
+
+        GraphicsDevice GraphicsDevice { get; }
+
+        GraphicsDeviceManager GraphicsDeviceManager { get; }
+
         IGameContext GameContext { get; }
-
-        /// <summary>
-        /// Gets the render context.
-        /// </summary>
-        /// <value>
-        /// The render context.
-        /// </value>
+        
         IRenderContext RenderContext { get; }
-
-        /// <summary>
-        /// Gets the update context.
-        /// </summary>
-        /// <value>
-        /// The update context.
-        /// </value>
+        
         IUpdateContext UpdateContext { get; }
 
-#if PLATFORM_ANDROID || PLATFORM_OUYA
+        void AssignHost(HostGame hostGame);
+
+        void LoadContent();
+
+        void UnloadContent();
+
+        void Update(GameTime gameTime);
+
+        void Draw(GameTime gameTime);
+
+        void Dispose(bool disposing);
+
         /// <summary>
-        /// Gets the Android game view.
+        /// Prepares the graphics device manager.
+        /// <para>
+        /// If you want to change the initial size of the game window on startup, this is the place
+        /// to do it.  Override this method, and then set <see cref="Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferWidth"/>
+        /// and <see cref="Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferHeight"/>.
+        /// </para>
         /// </summary>
-        /// <value>
-        /// The Android game view.
-        /// </value>
-        Android.Views.View AndroidGameView { get; }
-#endif
+        /// <param name="graphicsDeviceManager">The graphics device manager to prepare.</param>
+        void PrepareGraphicsDeviceManager(GraphicsDeviceManager graphicsDeviceManager);
+
+        /// <summary>
+        /// Prepares the game window.
+        /// <para>
+        /// If you want to change the initial position of the game window on startup, this is the place
+        /// to do it.  Override this method, and then set the window properties.
+        /// </para>
+        /// </summary>
+        /// <param name="window">The game window to prepare.</param>
+        void PrepareGameWindow(IGameWindow window);
+
+        /// <summary>
+        /// Prepares the graphics devices settings.
+        /// </summary>
+        /// <remarks>
+        /// The default configuration is to enable multisampling.  To disable multisampling,
+        /// override PrepareDeviceSettings in your derived class.
+        /// </remarks>
+        /// <param name="deviceInformation">The device information.</param>
+        void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation);
+
+        void CloseRequested(out bool cancel);
     }
 }

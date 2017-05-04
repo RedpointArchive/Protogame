@@ -31,7 +31,7 @@ namespace Protogame
         /// <typeparam name="T">
         /// The type of the game instance that is running.
         /// </typeparam>
-        void Render<T>(T game) where T : Game, ICoreGame;
+        void Render<T>(T game) where T : ICoreGame;
 
         /// <summary>
         /// The main update call.  This is invoked by Protogame's <see cref="CoreGame&lt;TInitialWorld&gt;"/>
@@ -45,6 +45,6 @@ namespace Protogame
         /// <typeparam name="T">
         /// The type of the game instance that is running.
         /// </typeparam>
-        void Update<T>(T game) where T : Game, ICoreGame;
+        void Update<T>(T game) where T : ICoreGame;
     }
 }

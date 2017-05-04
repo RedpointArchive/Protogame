@@ -303,6 +303,7 @@
     <Compile Include="Core\EntityGroup.cs" />
     <Compile Include="Core\HasTransformExtensions.cs" />
     <Compile Include="Core\HorizontalAlignment.cs" />
+    <Compile Include="Core\HostGame.cs" />
     <Compile Include="Core\I2DRenderUtilities.cs" />
     <Compile Include="Core\I3DRenderUtilities.cs" />
     <Compile Include="Core\IAudioHandle.cs" />
@@ -339,6 +340,7 @@
     <Compile Include="Core\NetworkTransform.cs" />
     <Compile Include="Core\ProtogameBaseModule.cs" />
     <Compile Include="Core\ProtogameCoreModule.cs" />
+    <Compile Include="Core\StartupSequence.cs" />
     <Compile Include="Core\StartupTrace.cs" />
     <Compile Include="Core\TransformContainer.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
