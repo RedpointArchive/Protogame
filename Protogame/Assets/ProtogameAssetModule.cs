@@ -69,11 +69,15 @@ namespace Protogame
             if (IntPtr.Size == 8)
             {
                 kernel.Bind<IAssetCompiler>().To<AudioAssetCompiler>().InSingletonScope();
+#if PLATFORM_WINDOWS
                 kernel.Bind<IAssetCompiler>().To<EffectAssetCompiler>().InSingletonScope();
                 kernel.Bind<IAssetCompiler>().To<UberEffectAssetCompiler>().InSingletonScope();
                 kernel.Bind<IAssetCompiler>().To<FontAssetCompiler>().InSingletonScope();
+#endif
+#if PLATFORM_WINDOWS || PLATFORM_LINUX
                 kernel.Bind<IAssetCompiler>().To<ModelAssetCompiler>().InSingletonScope();
                 kernel.Bind<IAssetCompiler>().To<TextureAssetCompiler>().InSingletonScope();
+#endif
             }
 
             kernel.Bind<IAssetCompiler>().To<AtfLevelAssetCompiler>().InSingletonScope();
