@@ -264,11 +264,6 @@ namespace Protogame
 
             StartupTrace.TimingEntries["constructCoroutineScheduler"] = stopwatch.Elapsed;
             stopwatch.Restart();
-
-            _loadingScreen = _kernel.Get<ILoadingScreen>();
-
-            StartupTrace.TimingEntries["constructLoadingScreen"] = stopwatch.Elapsed;
-            stopwatch.Restart();
         }
 
         /// <summary>
@@ -308,10 +303,13 @@ namespace Protogame
         public void AssignHost(HostGame hostGame)
         {
             _hostGame = hostGame;
-            
+
             var assetContentManager = new AssetContentManager(_hostGame.Services);
             _hostGame.Content = assetContentManager;
             _kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
+
+            // We can't load the loading screen until we have access to MonoGame's asset content manager.
+            _loadingScreen = _kernel.Get<ILoadingScreen>();
         }
         
         public void LoadContent()
