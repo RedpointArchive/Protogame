@@ -6,21 +6,34 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using System.Threading.Tasks;
 
 namespace Protogame
 {
-    public class UberEffectAssetCompiler : IAssetCompiler<UberEffectAsset>
+    public class UberEffectAssetCompiler : BaseEffectAssetLoader, IAssetCompiler
     {
-        public void Compile(UberEffectAsset asset, TargetPlatform platform)
+        public string[] Extensions => new[] { "fx" };
+
+        public async Task CompileAsync(IAssetFsFile assetFile, IAssetDependencies assetDependencies, TargetPlatform platform, IWritableSerializedAsset output)
         {
-            if (string.IsNullOrEmpty(asset.Code))
+            var code = string.Empty;
+            using (var reader = new StreamReader(await assetFile.GetContentStream().ConfigureAwait(false)))
             {
+                code = await reader.ReadToEndAsync().ConfigureAwait(false);
+            }
+
+            if (!code.Contains("// uber"))
+            {
+                // Do nothing with this file.
                 return;
             }
 
+            var dirName = Path.GetDirectoryName(assetFile.Name.Replace(".", "/"));
+            code = await ResolveIncludes(assetDependencies, dirName.Replace(Path.DirectorySeparatorChar, '.'), code).ConfigureAwait(false);
+
             var allPassed = true;
             var effectCodes = new Dictionary<string, Tuple<string, byte[], byte[]>>();
-            foreach (var rawLine in asset.Code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var rawLine in code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var line = rawLine.Trim();
                 if (line.StartsWith("#line"))
@@ -39,8 +52,8 @@ namespace Protogame
                 Console.WriteLine();
                 Console.Write("Compiling uber shader variant " + name + "... ");
 
-                var output = new EffectContent();
-                output.EffectCode = this.GetEffectPrefixCode() + asset.Code;
+                var effectOutput = new EffectContent();
+                effectOutput.EffectCode = this.GetEffectPrefixCode() + code;
 
                 string tempPath = null, tempOutputPath = null;
                 try
@@ -50,19 +63,19 @@ namespace Protogame
 
                     using (var writer = new StreamWriter(tempPath))
                     {
-                        writer.Write(output.EffectCode);
+                        writer.Write(effectOutput.EffectCode);
                     }
 
-                    output.Identity = new ContentIdentity(tempPath);
+                    effectOutput.Identity = new ContentIdentity(tempPath);
 
                     var debugContent = EffectCompilerHelper.Compile(
-                        output,
+                        effectOutput,
                         tempOutputPath,
                         platform,
                         true,
                         defines);
                     var releaseContent = EffectCompilerHelper.Compile(
-                        output,
+                        effectOutput,
                         tempOutputPath,
                         platform,
                         false,
@@ -119,16 +132,11 @@ namespace Protogame
                     var data = new byte[len];
                     memory.Seek(0, SeekOrigin.Begin);
                     memory.Read(data, 0, data.Length);
-                    asset.PlatformData = new PlatformData { Platform = platform, Data = data };
-                }
-            }
 
-            try
-            {
-                asset.ReadyOnGameThread();
-            }
-            catch (NoAssetContentManagerException)
-            {
+                    output.SetLoader<IAssetLoader<UberEffectAsset>>();
+                    output.SetPlatform(platform);
+                    output.SetByteArray("Data", data);
+                }
             }
         }
 

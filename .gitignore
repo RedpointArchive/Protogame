@@ -34,3 +34,6 @@ Protoinject/
 level_editor.xsd
 
 Protogame.combined.xml
+
+packages/
+Protogame.Tests/Expected.RenderPipeline.output*.bin

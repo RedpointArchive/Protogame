@@ -1,44 +1,25 @@
+using System;
+using System.Threading.Tasks;
+
 namespace Protogame
 {
-    public class TextureAssetLoader : IAssetLoader
+    public class TextureAssetLoader : IAssetLoader<TextureAsset>
     {
-        private readonly IAssetContentManager m_AssetContentManager;
+        private readonly IAssetContentManager _assetContentManager;
         
         public TextureAssetLoader(IAssetContentManager assetContentManager)
         {
-            this.m_AssetContentManager = assetContentManager;
-        }
-
-        public bool CanLoad(IRawAsset data)
-        {
-            return data.GetProperty<string>("Loader") == typeof(TextureAssetLoader).FullName;
+            _assetContentManager = assetContentManager;
         }
         
-        public IAsset Load(string name, IRawAsset data)
+        public async Task<IAsset> Load(string name, IReadableSerializedAsset input, IAssetManager assetManager)
         {
-            if (data is CompiledAsset)
-            {
-                return new TextureAsset(this.m_AssetContentManager, name, null, data.GetProperty<PlatformData>("PlatformData"), false);
-            }
-
-            PlatformData platformData = null;
-            if (data.GetProperty<PlatformData>("PlatformData") != null)
-            {
-                platformData = new PlatformData
-                {
-                    Platform = data.GetProperty<PlatformData>("PlatformData").Platform,
-                    Data = data.GetProperty<PlatformData>("PlatformData").Data
-                };
-            }
-
-            var texture = new TextureAsset(
-                this.m_AssetContentManager,
+            return new TextureAsset(
+                _assetContentManager,
                 name,
-                ByteReader.ReadAsByteArray(data.GetProperty<object>("RawData")),
-                platformData,
-                data.GetProperty<bool>("SourcedFromRaw"));
-
-            return texture;
+                input.GetByteArray("Data"),
+                input.GetInt32("OriginalWidth"),
+                input.GetInt32("OriginalHeight"));
         }
     }
 }

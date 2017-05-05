@@ -9,61 +9,69 @@ using Protoinject;
 
 namespace Protogame
 {
-    public class DefaultAssetManager : IAssetManager
+    public class DefaultAssetManager : IAssetManager, IDisposable
     {
         private readonly IKernel _kernel;
-        private readonly IAssetLoader[] _assetLoaders;
-        private readonly IAssetSaver[] _assetSavers;
+        private readonly ICompiledAssetFs _compiledAssetFs;
         private readonly IProfiler _profiler;
-        private readonly IRawAssetLoader _rawAssetLoader;
-        private readonly IRawAssetSaver _rawAssetSaver;
-        private readonly ITransparentAssetCompiler _transparentAssetCompiler;
         private readonly IConsoleHandle _consoleHandle;
 
         private readonly Dictionary<string, ISingleAssetReference<IAsset>> _assets;
         private readonly ConcurrentQueue<ISingleAssetReference<IAsset>> _assetsToLoad;
-        private readonly ConcurrentQueue<ISingleAssetReference<IAsset>> _assetsToFinalize;
+        private readonly ConcurrentQueue<Tuple<IAsset, ISingleAssetReference<IAsset>>> _assetsToFinalize;
         private Thread _loadingThread;
 
         public DefaultAssetManager(
             IKernel kernel,
-            IAssetLoader[] assetLoaders,
-            IAssetSaver[] assetSavers,
+            ICompiledAssetFs compiledAssetFs,
             IProfiler[] profilers,
-            IRawAssetLoader rawAssetLoader,
-            IRawAssetSaver rawAssetSaver,
-            ITransparentAssetCompiler transparentAssetCompiler,
             ICoroutine coroutine,
             IConsoleHandle consoleHandle)
         {
             _kernel = kernel;
-            _assetLoaders = assetLoaders;
-            _assetSavers = assetSavers;
+            _compiledAssetFs = compiledAssetFs;
             _profiler = profilers.Length > 0 ? profilers[0] : null;
-            _rawAssetLoader = rawAssetLoader;
-            _rawAssetSaver = rawAssetSaver;
-            _transparentAssetCompiler = transparentAssetCompiler;
             _consoleHandle = consoleHandle;
 
             _assets = new Dictionary<string, ISingleAssetReference<IAsset>>();
             _assetsToLoad = new ConcurrentQueue<ISingleAssetReference<IAsset>>();
-            _assetsToFinalize = new ConcurrentQueue<ISingleAssetReference<IAsset>>();
+            _assetsToFinalize = new ConcurrentQueue<Tuple<IAsset, ISingleAssetReference<IAsset>>>();
+
+            _compiledAssetFs.RegisterUpdateNotifier(OnAssetUpdated);
 
             coroutine.Run(FinalizeAssets);
+        }
+
+        public void Dispose()
+        {
+            _compiledAssetFs.UnregisterUpdateNotifier(OnAssetUpdated);
+        }
+
+        public async Task OnAssetUpdated(string assetName)
+        {
+            if (!_assets.ContainsKey(assetName))
+            {
+                // The asset has never been loaded.
+                return;
+            }
+
+            EnsureLoadingThreadStarted();
+            _assetsToLoad.Enqueue(_assets[assetName]);
         }
 
         private async Task FinalizeAssets()
         {
             while (true)
             {
-                ISingleAssetReference<IAsset> assetReference;
-                if (_assetsToFinalize.TryDequeue(out assetReference))
+                Tuple<IAsset, ISingleAssetReference<IAsset>> assetTuple;
+                if (_assetsToFinalize.TryDequeue(out assetTuple))
                 {
-                    var asset = assetReference.Asset as INativeAsset;
+                    var asset = assetTuple.Item1 as INativeAsset;
+                    var assetReference = assetTuple.Item2;
                     if (asset == null)
                     {
                         _consoleHandle.LogInfo(assetReference.Name + ": No native component; immediately marking as ready.");
-                        assetReference.Update(AssetReferenceState.Ready);
+                        assetReference.Update(assetTuple.Item1, AssetReferenceState.Ready);
                         continue;
                     }
 
@@ -72,17 +80,22 @@ namespace Protogame
                     {
                         _consoleHandle.LogInfo(assetReference.Name + ": Requesting load of native components.");
                         asset.ReadyOnGameThread();
-                        assetReference.Update(AssetReferenceState.Ready);
+                        assetReference.Update(assetTuple.Item1, AssetReferenceState.Ready);
                         _consoleHandle.LogInfo(assetReference.Name + ": Native components loaded successfully; asset marked as ready.");
                     }
                     catch (NoAssetContentManagerException)
                     {
-                        assetReference.Update(AssetReferenceState.Ready);
+                        assetReference.Update(assetTuple.Item1, AssetReferenceState.Ready);
                         _consoleHandle.LogInfo(assetReference.Name + ": No asset content manager Native components loaded successfully; asset marked as ready.");
                     }
                     catch (Exception ex)
                     {
-                        assetReference.Update(ex);
+                        // Only store exceptions if we don't already have a readied
+                        // asset (due to live reload scenarios).
+                        if (!assetReference.IsReady)
+                        {
+                            assetReference.Update(ex);
+                        }
                     }
                 }
 
@@ -124,8 +137,23 @@ namespace Protogame
                 {
                     try
                     {
-                        assetReference.Update(GetUnresolved(assetReference.Name), AssetReferenceState.PartiallyReady);
-                        _assetsToFinalize.Enqueue(assetReference);
+                        _assetToLoadInGetUnresolved = assetReference.Name;
+                        var assetTask = Task.Run(GetUnresolvedFromRunAssetLoadingThread);
+                        while (!assetTask.IsCompleted)
+                        {
+                            Thread.Sleep(0);
+                        }
+
+                        // Only move into a partially ready status if the asset isn't already loaded.
+                        // When we do live reload, we want to keep the old asset (with all of it's
+                        // loaded resources) as is until the new asset has been readied on the
+                        // game thread.
+                        if (!assetReference.IsReady)
+                        {
+                            assetReference.Update(assetTask.Result, AssetReferenceState.PartiallyReady);
+                        }
+
+                        _assetsToFinalize.Enqueue(new Tuple<IAsset, ISingleAssetReference<IAsset>>(assetTask.Result, assetReference));
                     }
                     catch (Exception e)
                     {
@@ -137,74 +165,39 @@ namespace Protogame
             }
         }
 
+        private string _assetToLoadInGetUnresolved;
+
+        /// <remarks>
+        /// We store our to-be-loaded asset name in <see cref="_assetToLoadInGetUnresolved"/> to reduce
+        /// memory allocations, as passing an async lambda to Task.Run results in a lot of garbage collection.
+        /// </remarks>
+        private Task<IAsset> GetUnresolvedFromRunAssetLoadingThread()
+        {
+            return GetUnresolved(_assetToLoadInGetUnresolved);
+        }
+
         public bool SkipCompilation { get; set; }
 
         public bool AllowSourceOnly { get; set; }
 
-        public IAsset GetUnresolved(string name)
+        public async Task<IAsset> GetUnresolved(string name)
         {
-            var candidatesWithTimes = _rawAssetLoader.LoadRawAssetCandidatesWithModificationDates(name);
-            var loaders = _assetLoaders.ToArray();
-            var failedDueToCompilation = false;
-            var hasMoreThanZeroCandidates = false;
-
-            var candidates = candidatesWithTimes.OrderByDescending(x => x.Value).Select(x => x.Key).ToList();
-
-            foreach (var candidate in candidates)
-            {
-                hasMoreThanZeroCandidates = true;
-
-                foreach (var loader in loaders)
-                {
-                    var canLoad = false;
-                    try
-                    {
-                        canLoad = loader.CanLoad(candidate);
-                    }
-                    catch (Exception)
-                    {
-                    }
-
-                    if (canLoad)
-                    {
-                        var result = loader.Load(name, candidate);
-                        
-                        if (!this.SkipCompilation)
-                        {
-                            _transparentAssetCompiler.Handle(result);
-
-                            if (result.SourceOnly && (!this.AllowSourceOnly || name == "font.Default"))
-                            {
-                                // We can't have source only assets past this point.  The compilation
-                                // failed, but we definitely do have a source representation, so let's
-                                // keep that around if we need to throw an exception.
-                                failedDueToCompilation = true;
-                                Console.WriteLine(
-                                    "WARNING: Unable to compile " + name
-                                    + " at runtime (a compiled version may be used).");
-                                break;
-                            }
-                        }
-                        
-                        return result;
-                    }
-                }
-            }
-
-            if (failedDueToCompilation)
-            {
-                throw new AssetNotCompiledException(name);
-            }
-
-            if (!hasMoreThanZeroCandidates)
+            var compiledAsset = await _compiledAssetFs.Get(name);
+            if (compiledAsset == null)
             {
                 throw new AssetNotFoundException(name);
             }
-
-            // NOTE: We don't use asset defaults with the local asset manager, if it
-            // doesn't exist, the load fails.
-            throw new InvalidOperationException(
-                "Unable to load asset '" + name + "'.  " + "No loader for this asset could be found.");
+            using (var serializedAsset = ReadableSerializedAsset.FromStream(await compiledAsset.GetContentStream().ConfigureAwait(false), false))
+            {
+                var loaderType = serializedAsset.GetLoader();
+                var loaderInstance = (IAssetLoader)_kernel.TryGet(loaderType);
+                if (loaderInstance == null)
+                {
+                    throw new InvalidOperationException(
+                        "Unable to load asset '" + name + "'.  " + "No loader for this asset could be found.");
+                }
+                return await loaderInstance.Load(name, serializedAsset, this).ConfigureAwait(false);
+            }
         }
 
         public IAssetReference<T> GetPreferred<T>(string[] namePreferenceList) where T : class, IAsset

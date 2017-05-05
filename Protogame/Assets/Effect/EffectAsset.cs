@@ -1,89 +1,49 @@
 using Protoinject;
 using System;
-using System.Diagnostics;
 using System.IO;
 using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
 
 namespace Protogame
-{    
-    public class EffectAsset : MarshalByRefObject, IAsset
+{
+    public class EffectAsset : IAsset, INativeAsset, IDisposable
     {
         private readonly IKernel _kernel;
-        
         private readonly IAssetContentManager _assetContentManager;
-
         private readonly IRawLaunchArguments _rawLaunchArguments;
+        private byte[] _effect;
 
         public EffectAsset(
             IKernel kernel,
             IAssetContentManager assetContentManager,
             IRawLaunchArguments rawLaunchArguments,
             string name, 
-            string code, 
-            PlatformData platformData, 
-            bool sourcedFromRaw)
+            byte[] effect)
         {
-            this.Name = name;
-            this.Code = code;
-            this.PlatformData = platformData;
             _kernel = kernel;
-            this._assetContentManager = assetContentManager;
+            _assetContentManager = assetContentManager;
             _rawLaunchArguments = rawLaunchArguments;
-            this.SourcedFromRaw = sourcedFromRaw;
-
-            if (this.PlatformData != null)
-            {
-                try
-                {
-                    this.ReloadEffect();
-                }
-                catch (NoAssetContentManagerException)
-                {
-                }
-            }
-        }
-        
-        public string Code { get; set; }
-        
-        public bool CompiledOnly
-        {
-            get
-            {
-                return this.Code == null;
-            }
+            Name = name;
+            _effect = effect;
         }
         
         public IEffect Effect { get; private set; }
         
         public string Name { get; private set; }
-        
-        public PlatformData PlatformData { get; set; }
-        
-        public bool SourceOnly
+
+        public void Dispose()
         {
-            get
-            {
-                return this.PlatformData == null;
-            }
+            Effect?.NativeEffect?.Dispose();
         }
 
-        /// <summary>
-        /// Gets a value indicating whether or not this asset was sourced from a raw file (such as a PNG image).
-        /// </summary>
-        /// <value>
-        /// The sourced from raw.
-        /// </value>
-        public bool SourcedFromRaw { get; private set; }
-        
-        public void ReloadEffect()
+        public void ReadyOnGameThread()
         {
-            if (this._assetContentManager == null)
+            if (_assetContentManager == null)
             {
                 throw new NoAssetContentManagerException();
             }
 
-            if (this._assetContentManager != null && this.PlatformData != null)
+            if (_assetContentManager != null && _effect != null)
             {
                 // We don't load XNB-based effects because MonoGame doesn't have a reader
                 // that supports them, and the XNB format mangles the shader bytecode if we
@@ -91,7 +51,7 @@ namespace Protogame
                 // as that doesn't seem to get picked up by the MonoGame content manager.
 
                 // FIXME: We shouldn't be casting IAssetContentManager like this!
-                var assetContentManager = this._assetContentManager as AssetContentManager;
+                var assetContentManager = _assetContentManager as AssetContentManager;
                 if (assetContentManager == null)
                 {
                     throw new NoAssetContentManagerException();
@@ -106,7 +66,7 @@ namespace Protogame
 
                     var availableSemantics = _kernel.GetAll<IEffectSemantic>();
 
-                    using (var stream = new MemoryStream(this.PlatformData.Data))
+                    using (var stream = new MemoryStream(_effect))
                     {
                         using (var reader = new BinaryReader(stream))
                         {
@@ -123,13 +83,13 @@ namespace Protogame
                                         var releaseCode = reader.ReadBytes(releaseLength);
                                         if (_rawLaunchArguments.Arguments.Contains("--debug-shaders"))
                                         {
-                                            this.Effect = new ProtogameEffect(graphicsDevice, debugCode,
-                                                this.Name, availableSemantics);
+                                            Effect = new ProtogameEffect(graphicsDevice, debugCode,
+                                                Name, availableSemantics);
                                         }
                                         else
                                         {
-                                            this.Effect = new ProtogameEffect(graphicsDevice, releaseCode,
-                                                this.Name, availableSemantics);
+                                            Effect = new ProtogameEffect(graphicsDevice, releaseCode,
+                                                Name, availableSemantics);
                                         }
                                         break;
                                     default:
@@ -139,22 +99,18 @@ namespace Protogame
                             else
                             {
                                 // This is a legacy shader with no versioning.
-                                this.Effect = new ProtogameEffect(graphicsDevice, this.PlatformData.Data, this.Name, availableSemantics);
+                                Effect = new ProtogameEffect(graphicsDevice, _effect, Name, availableSemantics);
                             }
                         }
                     }
                 }
-            }
-        }
-        
-        public T Resolve<T>() where T : class, IAsset
-        {
-            if (typeof(T).IsAssignableFrom(typeof(EffectAsset)))
-            {
-                return this as T;
-            }
 
-            throw new InvalidOperationException("Asset already resolved to EffectAsset.");
+                // Free the resource from main memory since it is now loaded into the GPU.  If the
+                // resource is ever removed from the GPU (i.e. UnloadContent occurs followed by
+                // LoadContent), then the asset will need to be reloaded through the asset management
+                // system.
+                _effect = null;
+            }
         }
     }
 }

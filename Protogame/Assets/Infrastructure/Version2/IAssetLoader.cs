@@ -1,9 +1,13 @@
-﻿namespace Protogame
+﻿using System.Threading.Tasks;
+
+namespace Protogame
 {
     public interface IAssetLoader
     {
-        bool CanLoad(IRawAsset data);
+        Task<IAsset> Load(string name, IReadableSerializedAsset input, IAssetManager assetManager);
+    }
 
-        IAsset Load(string name, IRawAsset data);
+    public interface IAssetLoader<T> : IAssetLoader
+    {   
     }
 }

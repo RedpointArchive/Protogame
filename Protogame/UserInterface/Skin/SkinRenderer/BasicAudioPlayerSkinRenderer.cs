@@ -19,17 +19,14 @@ namespace Protogame
         public void Render(IRenderContext renderContext, Rectangle layout, AudioPlayer audioPlayer)
         {
             _basicSkinHelper.DrawSunken(renderContext, layout);
-
-            if (audioPlayer.Audio?.PlatformData != null)
-            {
-                _renderUtilities.RenderText(
-                    renderContext,
-                    new Vector2(layout.Center.X, layout.Center.Y + 12),
-                    "No visualization available.",
-                    _fontAsset,
-                    HorizontalAlignment.Center,
-                    VerticalAlignment.Center);
-            }
+            
+            _renderUtilities.RenderText(
+                renderContext,
+                new Vector2(layout.Center.X, layout.Center.Y + 12),
+                "No visualization available.",
+                _fontAsset,
+                HorizontalAlignment.Center,
+                VerticalAlignment.Center);
         }
 
         public Vector2 MeasureText(IRenderContext renderContext, string text, AudioPlayer container)

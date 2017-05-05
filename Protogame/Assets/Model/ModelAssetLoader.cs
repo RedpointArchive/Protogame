@@ -1,6 +1,8 @@
+using System.Threading.Tasks;
+
 namespace Protogame
 {
-    public class ModelAssetLoader : IAssetLoader
+    public class ModelAssetLoader : IAssetLoader<ModelAsset>
     {
         private readonly IModelSerializer _modelSerializer;
 
@@ -9,39 +11,12 @@ namespace Protogame
             _modelSerializer = modelSerializer;
         }
         
-        public bool CanLoad(IRawAsset data)
+        public async Task<IAsset> Load(string name, IReadableSerializedAsset input, IAssetManager assetManager)
         {
-            return data.GetProperty<string>("Loader") == typeof(ModelAssetLoader).FullName;
-        }
-
-        public IAsset Load(string name, IRawAsset data)
-        {
-            if (data is CompiledAsset)
-            {
-                return new ModelAsset(_modelSerializer, name, null, null, data.GetProperty<PlatformData>("PlatformData"), false, string.Empty, null);
-            }
-
-            PlatformData platformData = null;
-            if (data.GetProperty<PlatformData>("PlatformData") != null)
-            {
-                platformData = new PlatformData
-                {
-                    Platform = data.GetProperty<PlatformData>("PlatformData").Platform,
-                    Data = data.GetProperty<PlatformData>("PlatformData").Data
-                };
-            }
-
-            var model = new ModelAsset(
+            return new ModelAsset(
                 _modelSerializer,
-                name, 
-                ByteReader.ReadAsByteArray(data.GetProperty<object>("RawData")),
-                data.GetProperty<System.Collections.Generic.Dictionary<string, byte[]>>("RawAdditionalAnimations"), 
-                platformData,
-                data.GetProperty<bool>("SourcedFromRaw"),
-                data.GetProperty<string>("Extension"),
-                data.GetProperty<string[]>("ImportOptions"));
-
-            return model;
+                name,
+                input.GetByteArray("Data"));
         }
     }
 }

@@ -1,19 +1,15 @@
+using System.Threading.Tasks;
+
 namespace Protogame
 {
-    public class LevelAssetLoader : IAssetLoader
+    public class LevelAssetLoader : IAssetLoader<LevelAsset>
     {
-        public bool CanLoad(IRawAsset data)
-        {
-            return data.GetProperty<string>("Loader") == typeof(LevelAssetLoader).FullName;
-        }
-        
-        public IAsset Load(string name, IRawAsset data)
+        public async Task<IAsset> Load(string name, IReadableSerializedAsset input, IAssetManager assetManager)
         {
             return new LevelAsset(
-                name, 
-                data.GetProperty<string>("LevelData"),
-                data.GetProperty<LevelDataFormat>("LevelDataFormat"),
-                data.GetProperty<string>("SourcePath"));
+                name,
+                input.GetString("LevelData"),
+                input.GetString("LevelDataFormat"));
         }
     }
 }

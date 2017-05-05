@@ -1,3 +1,5 @@
+#if FALSE
+
 namespace Protogame
 {
     public class LanguageAssetLoader : IAssetLoader
@@ -14,3 +16,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

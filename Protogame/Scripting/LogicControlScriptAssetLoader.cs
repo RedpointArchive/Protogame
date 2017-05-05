@@ -1,3 +1,5 @@
+#if FALSE
+
 namespace Protogame
 {
     public class LogicControlScriptAssetLoader : IAssetLoader
@@ -16,3 +18,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

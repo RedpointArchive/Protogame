@@ -13,8 +13,8 @@ namespace Protogame
         {
             kernel.Bind<ITileset>().To<DefaultTileset>();
             kernel.Bind<ILevelManager>().To<DefaultLevelManager>();
-            kernel.Bind<ILevelReader>().To<OgmoLevelReader>().Named(LevelDataFormat.OgmoEditor.ToString()).EnforceOnePerScope();
-            kernel.Bind<ILevelReader>().To<ATFLevelReader>().Named(LevelDataFormat.ATF.ToString()).EnforceOnePerScope();
+            kernel.Bind<ILevelReader>().To<OgmoLevelReader>().Named("OgmoEditor").EnforceOnePerScope();
+            kernel.Bind<ILevelReader>().To<ATFLevelReader>().Named("ATF").EnforceOnePerScope();
         }
     }
 }

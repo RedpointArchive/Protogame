@@ -1,3 +1,5 @@
+#if FALSE
+
 using Protoinject;
 
 namespace Protogame
@@ -27,3 +29,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

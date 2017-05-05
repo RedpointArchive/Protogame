@@ -1,8 +1,0 @@
-﻿{
-    "Loader":"Protogame.FontAssetLoader",
-    "FontSize":10,
-    "FontName":"Droid Sans",
-    "UseKerning":true,
-    "Spacing":0,
-    "PlatformData":null
-}

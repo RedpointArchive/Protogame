@@ -1,3 +1,5 @@
+#if FALSE
+
 namespace Protogame
 {
     public class VariableAssetSaver : IAssetSaver
@@ -17,3 +19,5 @@ namespace Protogame
         }
     }
 }
+
+#endif

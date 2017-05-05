@@ -13,10 +13,10 @@ namespace Protogame
         /// </summary>
         public void Load(IKernel kernel)
         {
-            kernel.Bind<IAssetLoader>().To<LogicControlScriptAssetLoader>();
-            kernel.Bind<IAssetSaver>().To<LogicControlScriptAssetSaver>();
+            //kernel.Bind<IAssetLoader>().To<LogicControlScriptAssetLoader>();
+            //kernel.Bind<IAssetSaver>().To<LogicControlScriptAssetSaver>();
 
-            kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
+            //kernel.Bind<ILoadStrategy>().To<RawLogicControlScriptLoadStrategy>();
         }
     }
 }

@@ -4,6 +4,8 @@
 // uber DiffuseSkinned								: HAS_GLOBAL_DIFFUSE;HAS_BONES
 // uber Image										: HAS_VERTEX_PRIMARY_UV_COORDS;HAS_TEXTURE_MAP;HAS_NO_NORMALS
 // uber ImageTiled									: HAS_VERTEX_PRIMARY_UV_COORDS;HAS_TEXTURE_MAP;HAS_NO_NORMALS;HAS_TILED_TEXTURE_MAP
+// uber ImageBlended								: HAS_VERTEX_PRIMARY_UV_COORDS;HAS_TEXTURE_MAP;HAS_NO_NORMALS;USE_TEXTURE_ALPHA
+// uber ImageBlendedTiled							: HAS_VERTEX_PRIMARY_UV_COORDS;HAS_TEXTURE_MAP;HAS_NO_NORMALS;HAS_TILED_TEXTURE_MAP;USE_TEXTURE_ALPHA
 // uber Texture										: HAS_VERTEX_PRIMARY_UV_COORDS;HAS_TEXTURE_MAP
 // uber TextureSkinned								: HAS_VERTEX_PRIMARY_UV_COORDS;HAS_TEXTURE_MAP;HAS_BONES
 // uber TextureNormal								: HAS_VERTEX_PRIMARY_UV_COORDS;HAS_TEXTURE_MAP;HAS_NORMAL_MAP
@@ -248,9 +250,9 @@ struct VertexShaderInputBatched
 	uint4 BoneIndices : PROTOGAME_BLENDINDICES(0);
 #endif
 	float4 InstanceWorld1 : PROTOGAME_TEXCOORD(1);
-    float4 InstanceWorld2 : PROTOGAME_TEXCOORD(2);
-    float4 InstanceWorld3 : PROTOGAME_TEXCOORD(3);
-    float4 InstanceWorld4 : PROTOGAME_TEXCOORD(4);
+	float4 InstanceWorld2 : PROTOGAME_TEXCOORD(2);
+	float4 InstanceWorld3 : PROTOGAME_TEXCOORD(3);
+	float4 InstanceWorld4 : PROTOGAME_TEXCOORD(4);
 };
 
 
@@ -292,7 +294,7 @@ ForwardVertexShaderOutput ForwardVertexShader(VertexShaderInput input)
 ForwardVertexShaderOutput ForwardVertexShaderBatched(VertexShaderInputBatched input)
 {
 	ForwardVertexShaderOutput output;
-    
+
 	COMPUTE_VERTEX(float4x4(input.InstanceWorld1, input.InstanceWorld2, input.InstanceWorld3, input.InstanceWorld4));
 
 	return output;
@@ -305,7 +307,11 @@ ForwardPixelShaderOutput ForwardPixelShader(ForwardVertexShaderOutput input)
 #if defined(HAS_SAMPLED_COLOR)
 	output.Color = input.Color;
 #elif defined(HAS_VERTEX_PRIMARY_UV_COORDS)
+#if defined(USE_TEXTURE_ALPHA)
+	output.Color = PROTOGAME_SAMPLE_TEXTURE(Texture, input.TexCoord).rgba;
+#else
 	output.Color = float4(PROTOGAME_SAMPLE_TEXTURE(Texture, input.TexCoord).rgb, 1);
+#endif
 #else
 	output.Color = float4(1, 0, 0, 1);
 #endif
@@ -408,7 +414,7 @@ DeferredVertexShaderOutput DeferredVertexShaderBatched(VertexShaderInputBatched 
 	DeferredVertexShaderOutput output;
 
 	// input.InstanceWorld
-    // float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+	// float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
 	COMPUTE_VERTEX(float4x4(input.InstanceWorld1, input.InstanceWorld2, input.InstanceWorld3, input.InstanceWorld4));
 
 	output.Depth.x = output.Position.z;
