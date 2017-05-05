@@ -12,8 +12,8 @@ namespace Protogame
     public class DefaultRemoteClient : IRemoteClient
     {
         private readonly IRemoteClientInboundHandler[] _notifiers;
-        private readonly TcpListener _inboundMessagesTcpListener;
-        private readonly TcpListener _outboundMessagesTcpListener;
+        private TcpListener _inboundMessagesTcpListener;
+        private TcpListener _outboundMessagesTcpListener;
         private readonly Task _task;
         private BinaryReader _outboundReader;
         private BinaryWriter _outboundWriter;
@@ -27,10 +27,6 @@ namespace Protogame
         public DefaultRemoteClient(IRemoteClientInboundHandler[] notifiers)
         {
             _notifiers = notifiers;
-            _inboundMessagesTcpListener = new TcpListener(IPAddress.Any, 23400);
-            _inboundMessagesTcpListener.Start();
-            _outboundMessagesTcpListener = new TcpListener(IPAddress.Any, 23401);
-            _outboundMessagesTcpListener.Start();
 
             _outboundSemaphore = new SemaphoreSlim(1);
 
@@ -39,6 +35,34 @@ namespace Protogame
 
         private async Task ListenForClients()
         {
+            while (true)
+            {
+                try
+                {
+                    _inboundMessagesTcpListener = new TcpListener(IPAddress.Any, 23400);
+                    _inboundMessagesTcpListener.Start();
+                    break;
+                }
+                catch
+                {
+                    await Task.Delay(1000);
+                }
+            }
+
+            while (true)
+            {
+                try
+                {
+                    _outboundMessagesTcpListener = new TcpListener(IPAddress.Any, 23401);
+                    _outboundMessagesTcpListener.Start();
+                    break;
+                }
+                catch
+                {
+                    await Task.Delay(1000);
+                }
+            }
+
             while (true)
             {
                 TcpClient inboundClient = null;
@@ -93,6 +117,11 @@ namespace Protogame
             try
             {
                 _inboundMessagesTcpListener.Stop();
+            }
+            catch { }
+            try
+            {
+                _outboundMessagesTcpListener.Stop();
             }
             catch { }
         }

@@ -85,6 +85,27 @@ namespace Protogame
 
         protected override void LoadContent()
         {
+            GraphicsDevice.DeviceLost += (sender, e) =>
+            {
+                _coreGame?.DeviceLost();
+            };
+            GraphicsDevice.DeviceReset += (sender, e) =>
+            {
+                _coreGame?.DeviceReset();
+            };
+            GraphicsDevice.DeviceResetting += (sender, e) =>
+            {
+                _coreGame?.DeviceResetting();
+            };
+            GraphicsDevice.ResourceCreated += (sender, e) =>
+            {
+                _coreGame?.ResourceCreated(e.Resource);
+            };
+            GraphicsDevice.ResourceDestroyed += (sender, e) =>
+            {
+                _coreGame?.ResourceDestroyed(e.Name, e.Tag);
+            };
+
             // Construct a platform-independent game window.
             ProtogameWindow = ConstructGameWindow();
 

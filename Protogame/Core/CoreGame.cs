@@ -149,6 +149,16 @@ namespace Protogame
         private bool _hasDoneEarlyRender;
 
         /// <summary>
+        /// Whether we're ready for the world manager to start rendering.
+        /// </summary>
+        private bool _isReadyForMainRenderTakeover;
+
+        /// <summary>
+        /// Whether we've run LoadContentAsync at least once.
+        /// </summary>
+        private bool _hasDoneInitialLoadContent;
+
+        /// <summary>
         /// The MonoGame game instance that is hosting this game.
         /// </summary>
         private HostGame _hostGame;
@@ -300,6 +310,8 @@ namespace Protogame
         
         public void LoadContent()
         {
+            _consoleHandle.LogDebug("LoadContent called");
+
             _loadContentTask = _coroutine.Run(async () =>
             {
                 await LoadContentAsync();
@@ -308,114 +320,148 @@ namespace Protogame
 
         public void UnloadContent()
         {
+            _consoleHandle.LogDebug("UnloadContent called");
+        }
 
+        public void DeviceLost()
+        {
+            _consoleHandle.LogDebug("DeviceLost called");
+        }
+
+        public void DeviceResetting()
+        {
+            _consoleHandle.LogDebug("DeviceResetting called");
+        }
+
+        public void DeviceReset()
+        {
+            _consoleHandle.LogDebug("DeviceReset called");
+        }
+
+        public void ResourceCreated(object resource)
+        {
+            _consoleHandle.LogDebug("ResourceCreated called ({0})", resource);
+        }
+
+        public void ResourceDestroyed(string name, object tag)
+        {
+            _consoleHandle.LogDebug("ResourceDestroyed called ({0}, {1})", name, tag);
         }
 
         protected virtual async Task LoadContentAsync()
         {
+            if (!_hasDoneInitialLoadContent)
+            {
+                _hasDoneInitialLoadContent = true;
+
 #if PLATFORM_ANDROID
-            // On Android, disable viewport / backbuffer scaling because we expect games
-            // to make use of the full display area.
-            this.GraphicsDeviceManager.IsFullScreen = true;
-            this.GraphicsDeviceManager.PreferredBackBufferHeight = this.Window.ClientBounds.Height;
-            this.GraphicsDeviceManager.PreferredBackBufferWidth = this.Window.ClientBounds.Width;
+                // On Android, disable viewport / backbuffer scaling because we expect games
+                // to make use of the full display area.
+                this.GraphicsDeviceManager.IsFullScreen = true;
+                this.GraphicsDeviceManager.PreferredBackBufferHeight = this.Window.ClientBounds.Height;
+                this.GraphicsDeviceManager.PreferredBackBufferWidth = this.Window.ClientBounds.Width;
 #endif
 
 #if PLATFORM_WINDOWS
-            // Register for the window resize event so we can scale
-            // the window correctly.
-            var shouldHandleResize = true;
-            _hostGame.Window.ClientSizeChanged += (sender, e) =>
-            {
-                if (!shouldHandleResize)
+                // Register for the window resize event so we can scale
+                // the window correctly.
+                var shouldHandleResize = true;
+                _hostGame.Window.ClientSizeChanged += (sender, e) =>
                 {
-                    return;
-                }
-
-                shouldHandleResize = false;
-                var width = base.Window.ClientBounds.Width;
-                var height = base.Window.ClientBounds.Height;
-                GameContext.Graphics.PreferredBackBufferWidth = width;
-                GameContext.Graphics.PreferredBackBufferHeight = height;
-                GameContext.Graphics.ApplyChanges();
-                shouldHandleResize = true;
-            };
-
-            // Register for the window close event so we can dispatch
-            // it correctly.
-            var form = System.Windows.Forms.Control.FromHandle(_hostGame.Window.Handle) as System.Windows.Forms.Form;
-            if (form != null)
-            {
-                form.FormClosing += (sender, args) =>
-                {
-                    bool cancel;
-                    CloseRequested(out cancel);
-
-                    if (cancel)
+                    if (!shouldHandleResize)
                     {
-                        args.Cancel = true;
+                        return;
                     }
+
+                    shouldHandleResize = false;
+                    var width = base.Window.ClientBounds.Width;
+                    var height = base.Window.ClientBounds.Height;
+                    GameContext.Graphics.PreferredBackBufferWidth = width;
+                    GameContext.Graphics.PreferredBackBufferHeight = height;
+                    GameContext.Graphics.ApplyChanges();
+                    shouldHandleResize = true;
                 };
-            }
+
+                // Register for the window close event so we can dispatch
+                // it correctly.
+                var form = System.Windows.Forms.Control.FromHandle(_hostGame.Window.Handle) as System.Windows.Forms.Form;
+                if (form != null)
+                {
+                    form.FormClosing += (sender, args) =>
+                    {
+                        bool cancel;
+                        CloseRequested(out cancel);
+
+                        if (cancel)
+                        {
+                            args.Cancel = true;
+                        }
+                    };
+                }
 #endif
 
-            // Allow the user to configure the game window now.
-            PrepareGameWindow(Window);
+                // Allow the user to configure the game window now.
+                PrepareGameWindow(Window);
 
-            // Construct the world manager.
-            var worldManager = await _kernel.GetAsync<TWorldManager>(_node, null, null, new IInjectionAttribute[0], new IConstructorArgument[0], null);
+                // Construct the world manager.
+                var worldManager = await _kernel.GetAsync<TWorldManager>(_node, null, null, new IInjectionAttribute[0], new IConstructorArgument[0], null);
 
-            // Create the game context.
-            GameContext = await _kernel.GetAsync<IGameContext>(
-                _node,
-                null,
-                null,
-                new IInjectionAttribute[0],
-                new IConstructorArgument[]
+                // Create the game context.
+                GameContext = await _kernel.GetAsync<IGameContext>(
+                    _node,
+                    null,
+                    null,
+                    new IInjectionAttribute[0],
+                    new IConstructorArgument[]
+                    {
+                        new NamedConstructorArgument("game", this),
+                        new NamedConstructorArgument("graphics", _hostGame.GraphicsDeviceManager),
+                        new NamedConstructorArgument("world", null),
+                        new NamedConstructorArgument("worldManager", worldManager),
+                        new NamedConstructorArgument("window", _hostGame.ProtogameWindow)
+                    }, null);
+
+                // If we are using the new rendering pipeline, we need to ensure that
+                // the rendering context and the render pipeline world manager share
+                // the same render pipeline.
+                var renderPipelineWorldManager = worldManager as RenderPipelineWorldManager;
+                IRenderPipeline renderPipeline = null;
+                if (renderPipelineWorldManager != null)
                 {
-                    new NamedConstructorArgument("game", this),
-                    new NamedConstructorArgument("graphics", _hostGame.GraphicsDeviceManager),
-                    new NamedConstructorArgument("world", null),
-                    new NamedConstructorArgument("worldManager", worldManager),
-                    new NamedConstructorArgument("window", _hostGame.ProtogameWindow)
-                }, null);
+                    renderPipeline = renderPipelineWorldManager.RenderPipeline;
+                }
 
-            // If we are using the new rendering pipeline, we need to ensure that
-            // the rendering context and the render pipeline world manager share
-            // the same render pipeline.
-            var renderPipelineWorldManager = worldManager as RenderPipelineWorldManager;
-            IRenderPipeline renderPipeline = null;
-            if (renderPipelineWorldManager != null)
-            {
-                renderPipeline = renderPipelineWorldManager.RenderPipeline;
-            }
+                // Create the update and render contexts.
+                UpdateContext = await _kernel.GetAsync<IUpdateContext>(_node, null, null, new IInjectionAttribute[0], new IConstructorArgument[0], null);
+                RenderContext = await _kernel.GetAsync<IRenderContext>(
+                    _node, null, null, new IInjectionAttribute[0], new IConstructorArgument[]
+                    {
+                        new NamedConstructorArgument("renderPipeline", renderPipeline)
+                    },
+                    null);
 
-            // Create the update and render contexts.
-            UpdateContext = await _kernel.GetAsync<IUpdateContext>(_node, null, null, new IInjectionAttribute[0], new IConstructorArgument[0], null);
-            RenderContext = await _kernel.GetAsync<IRenderContext>(
-                _node, null, null, new IInjectionAttribute[0], new IConstructorArgument[]
+                // Configure the render pipeline if possible.
+                if (renderPipeline != null)
                 {
-                    new NamedConstructorArgument("renderPipeline", renderPipeline)
-                },
-                null);
+                    InternalConfigureRenderPipeline(renderPipeline);
+                }
 
-            // Configure the render pipeline if possible.
-            if (renderPipeline != null)
-            {
-                InternalConfigureRenderPipeline(renderPipeline);
+                // Retrieve all engine hooks.  These can be set up by additional modules
+                // to change runtime behaviour.
+                _engineHooks =
+                    (await _kernel.GetAllAsync<IEngineHook>(_node, null, null,
+                        new IInjectionAttribute[] { new FromGameAttribute() }, new IConstructorArgument[0], null)).ToArray();
+
+                // Now we're ready to enable the main loop and turn off
+                // early loading screen rendering.
+                _isReadyForMainRenderTakeover = true;
+
+                // Request the game context to load the world.
+                GameContext.SwitchWorld<TInitialWorld>();
+
+                // Register with analytics services.
+                _analyticsEngine.LogGameplayEvent("Game:Start");
             }
-
-            // Retrieve all engine hooks.  These can be set up by additional modules
-            // to change runtime behaviour.
-            _engineHooks =
-                (await _kernel.GetAllAsync<IEngineHook>(_node, null, null,
-                    new IInjectionAttribute[] {new FromGameAttribute()}, new IConstructorArgument[0], null)).ToArray();
-
-            // Request the game context to load the world.
-            GameContext.SwitchWorld<TInitialWorld>();
-
-            // Register with analytics services.
-            _analyticsEngine.LogGameplayEvent("Game:Start");
         }
 
         /// <summary>
@@ -446,7 +492,7 @@ namespace Protogame
         
         public void Update(GameTime gameTime)
         {
-            if (GameContext == null)
+            if (!_isReadyForMainRenderTakeover)
             {
                 // LoadContent hasn't finished running yet.  At this point, we don't even have
                 // the engine hooks loaded, so manually update the coroutine scheduler.
@@ -505,7 +551,7 @@ namespace Protogame
         
         public void Draw(GameTime gameTime)
         {
-            if (GameContext == null)
+            if (!_isReadyForMainRenderTakeover)
             {
                 // LoadContent hasn't finished running yet.  Use the early game loading screen.
                 _loadingScreen.RenderEarly(this, _hostGame.SplashScreenSpriteBatch, _hostGame.SplashScreenTexture);

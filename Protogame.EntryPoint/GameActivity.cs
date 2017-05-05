@@ -40,7 +40,13 @@ public class GameActivity : AndroidGameActivity
         SetContentView(view);
         _hostGame.Run();
     }
-    
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        _hostGame.Dispose();
+    }
+
     protected override void OnResume()
     {
         base.OnResume();

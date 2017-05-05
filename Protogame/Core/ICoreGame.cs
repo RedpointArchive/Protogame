@@ -24,6 +24,16 @@ namespace Protogame
 
         void UnloadContent();
 
+        void DeviceLost();
+
+        void DeviceResetting();
+
+        void DeviceReset();
+
+        void ResourceCreated(object resource);
+
+        void ResourceDestroyed(string name, object tag);
+
         void Update(GameTime gameTime);
 
         void Draw(GameTime gameTime);
