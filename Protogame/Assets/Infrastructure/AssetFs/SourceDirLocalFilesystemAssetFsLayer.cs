@@ -54,12 +54,18 @@ namespace Protogame
 
         public void RegisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
-            _localLayer.RegisterUpdateNotifier(onAssetUpdated);
+            if (_localLayer != null)
+            {
+                _localLayer.RegisterUpdateNotifier(onAssetUpdated);
+            }
         }
 
         public void UnregisterUpdateNotifier(Func<string, Task> onAssetUpdated)
         {
-            _localLayer.UnregisterUpdateNotifier(onAssetUpdated);
+            if (_localLayer != null)
+            {
+                _localLayer.UnregisterUpdateNotifier(onAssetUpdated);
+            }
         }
     }
 }

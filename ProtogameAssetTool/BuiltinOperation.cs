@@ -40,7 +40,19 @@ namespace ProtogameAssetTool
             }
 
             protected override bool AcceptAsset(string assetName, string fullPath)
-            { 
+            {
+                // Ignore things that look like build output directories.
+                if (assetName.StartsWith("bin.") || assetName.StartsWith("obj."))
+                {
+                    return false;
+                }
+
+                // Ignore C# files.
+                if (fullPath.EndsWith(".cs"))
+                {
+                    return false;
+                }
+
                 // Exclude compiled assets from our source layer.
                 if (fullPath.EndsWith(".bin"))
                 {
