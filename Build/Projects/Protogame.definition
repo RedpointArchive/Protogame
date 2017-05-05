@@ -341,6 +341,7 @@
     <Compile Include="Core\ProtogameBaseModule.cs" />
     <Compile Include="Core\ProtogameCoreModule.cs" />
     <Compile Include="Core\StartupSequence.cs" />
+    <Compile Include="Core\StartupSequenceResult.cs" />
     <Compile Include="Core\StartupTrace.cs" />
     <Compile Include="Core\TransformContainer.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />

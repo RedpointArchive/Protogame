@@ -18,6 +18,8 @@ namespace Protogame
         
         IUpdateContext UpdateContext { get; }
 
+        bool IsMouseVisible { get; set; }
+
         void AssignHost(HostGame hostGame);
 
         void LoadContent();
@@ -72,5 +74,7 @@ namespace Protogame
         void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation);
 
         void CloseRequested(out bool cancel);
+
+        void Exit();
     }
 }

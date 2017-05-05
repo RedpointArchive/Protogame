@@ -189,7 +189,8 @@ namespace Protogame
             {
                 ThreadPool.QueueUserWorkItem(o =>
                 {
-                    _pendingCoreGame = new StartupSequence().Start(new string[0]);
+                    var result = StartupSequence.Start(new string[0]);
+                    _pendingCoreGame = result.GameInstance;
                 });
                 _hasStartedDelayLoad = true;
             }

@@ -279,7 +279,7 @@ namespace Protogame.Tests
                 pipeline.AddFixedRenderPass(factory.Create2DBatchedRenderPass());
             }
 
-            protected override void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)
+            public override void PrepareDeviceSettings(GraphicsDeviceInformation deviceInformation)
             {
                 base.PrepareDeviceSettings(deviceInformation);
 
@@ -308,7 +308,7 @@ namespace Protogame.Tests
             kernel.Bind<IAssert>().ToMethod(x => _assert);
             kernel.Bind<ITestAttachment>().ToMethod(x => _testAttachment);
 
-            using (var game = new RenderPipelineGame(kernel))
+            using (var game = new HostGame(new RenderPipelineGame(kernel)))
             {
                 game.Run();
             }

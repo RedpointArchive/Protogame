@@ -192,7 +192,13 @@ namespace Protogame
         /// The current update context.
         /// </value>
         public IRenderContext RenderContext { get; private set; }
-        
+
+        public bool IsMouseVisible
+        {
+            get { return _hostGame?.IsMouseVisible ?? false; }
+            set { if (_hostGame != null) { _hostGame.IsMouseVisible = value; } }
+        }
+
         /// <summary>
         /// Initializes an instance of a game in Protogame.  This constructor is always called
         /// as the base constructor to your game implementation.
@@ -348,6 +354,11 @@ namespace Protogame
             _consoleHandle.LogDebug("ResourceDestroyed called ({0}, {1})", name, tag);
         }
 
+        public void Exit()
+        {
+            _hostGame?.Exit();
+        }
+
         protected virtual async Task LoadContentAsync()
         {
             if (!_hasDoneInitialLoadContent)
@@ -374,8 +385,8 @@ namespace Protogame
                     }
 
                     shouldHandleResize = false;
-                    var width = base.Window.ClientBounds.Width;
-                    var height = base.Window.ClientBounds.Height;
+                    var width = _hostGame.Window.ClientBounds.Width;
+                    var height = _hostGame.Window.ClientBounds.Height;
                     GameContext.Graphics.PreferredBackBufferWidth = width;
                     GameContext.Graphics.PreferredBackBufferHeight = height;
                     GameContext.Graphics.ApplyChanges();
