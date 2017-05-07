@@ -190,11 +190,16 @@ namespace Protogame
             using (var serializedAsset = ReadableSerializedAsset.FromStream(await compiledAsset.GetContentStream().ConfigureAwait(false), false))
             {
                 var loaderType = serializedAsset.GetLoader();
-                var loaderInstance = (IAssetLoader)_kernel.TryGet(loaderType);
-                if (loaderInstance == null)
+                IAssetLoader loaderInstance;
+                try
+                {
+                    loaderInstance = (IAssetLoader)_kernel.Get(loaderType);
+                }
+                catch (Exception ex)
                 {
                     throw new InvalidOperationException(
-                        "Unable to load asset '" + name + "'.  " + "No loader for this asset could be found.");
+                        "Unable to load asset '" + name + "' because no suitable loader could be resolved.",
+                        ex);
                 }
                 return await loaderInstance.Load(name, serializedAsset, this).ConfigureAwait(false);
             }
