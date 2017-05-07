@@ -182,6 +182,16 @@ namespace Protogame.Tests
             {
                 _isValidRun = _texture.IsReady;
 
+                if (_texture.State == AssetReferenceState.Unavailable)
+                {
+                    throw new AggregateException(_texture.LoadingException);
+                }
+
+                if (_customPostProcess.Effect.State == AssetReferenceState.Unavailable)
+                {
+                    throw new AggregateException(_customPostProcess.Effect.LoadingException);
+                }
+
                 if (!_texture.IsReady || !_customPostProcess.Effect.IsReady)
                 {
                     return;
@@ -307,6 +317,7 @@ namespace Protogame.Tests
             kernel.Load<ProtogameAssetModule>();
             kernel.Bind<IAssert>().ToMethod(x => _assert);
             kernel.Bind<ITestAttachment>().ToMethod(x => _testAttachment);
+            kernel.Bind<IRawLaunchArguments>().ToMethod(x => new DefaultRawLaunchArguments(new string[0]));
 
             using (var game = new HostGame(new RenderPipelineGame(kernel)))
             {

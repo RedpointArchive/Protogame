@@ -354,7 +354,9 @@ namespace Protogame
 
         public void Exit()
         {
+#if !PLATFORM_IOS
             _hostGame?.Exit();
+#endif
         }
 
         protected virtual async Task LoadContentAsync()

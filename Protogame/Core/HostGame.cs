@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Threading.Tasks;
 using System.Threading;
+#if PLATFORM_LINUX
+using System;
+#endif
 
 namespace Protogame
 {
