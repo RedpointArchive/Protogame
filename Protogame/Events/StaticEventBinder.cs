@@ -656,6 +656,12 @@ namespace Protogame
                         }
 
                         var gameContext = (IGameContext) context;
+
+                        if (gameContext.World == null)
+                        {
+                            return false;
+                        }
+
                         var gameEventEngine = (IEventEngine<IGameContext>)eventEngine;
                         var allEntities = gameContext.World.GetEntitiesForWorld(_kernel.Hierarchy);
                         var entitiesMatchingType = allEntities.OfType<TComponentizedEntity>();

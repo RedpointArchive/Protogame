@@ -1,23 +1,15 @@
-﻿#if FALSE
+﻿using System.Threading.Tasks;
 
 namespace Protogame
 {
-    public class UserInterfaceAssetLoader : IAssetLoader
+    public class UserInterfaceAssetLoader : IAssetLoader<UserInterfaceAsset>
     {
-        public bool CanLoad(IRawAsset data)
-        {
-            return data.GetProperty<string>("Loader") == typeof(UserInterfaceAssetLoader).FullName;
-        }
-
-        public IAsset Load(string name, IRawAsset data)
+        public async Task<IAsset> Load(string name, IReadableSerializedAsset input, IAssetManager assetManager)
         {
             return new UserInterfaceAsset(
                 name,
-                data.GetProperty<string>("UserInterfaceData"),
-                data.GetProperty<UserInterfaceFormat>("UserInterfaceFormat"),
-                data.GetProperty<string>("SourcePath"));
+                input.GetString("UserInterfaceData"),
+                input.GetString("UserInterfaceFormat"));
         }
     }
 }
-
-#endif

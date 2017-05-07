@@ -92,5 +92,13 @@ namespace Protogame
                 throw new AggregateException(LoadingException);
             }
         }
+        public async Task WaitUntilReadyOptional()
+        {
+            while (State != AssetReferenceState.Ready &&
+                State != AssetReferenceState.Unavailable)
+            {
+                await Task.Yield();
+            }
+        }
     }
 }

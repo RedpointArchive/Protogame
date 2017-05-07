@@ -10,6 +10,11 @@ namespace Protogame
     /// <interface_ref>Protogame.ICanvasRenderPass</interface_ref>
     public class DefaultCanvasRenderPass : ICanvasRenderPass
     {
+        public DefaultCanvasRenderPass()
+        {
+            TextureSortMode = SpriteSortMode.Immediate;
+        }
+
         public bool IsPostProcessingPass => false;
         public bool SkipWorldRenderBelow => false;
         public bool SkipWorldRenderAbove => false;
