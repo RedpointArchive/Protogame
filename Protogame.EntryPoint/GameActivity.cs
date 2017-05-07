@@ -1,92 +1,72 @@
 #if PLATFORM_ANDROID || PLATFORM_OUYA
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
 using Android.Content.PM;
 
 using Microsoft.Xna.Framework;
 
-using Protoinject;
-
 using Protogame;
 
+#if DEBUG
+[assembly: Application(Debuggable = true)]
+#else
+[assembly: Application(Debuggable = false)]
+#endif
+
 [Activity(
-    Label = "Game",
+    Label = "@string/app_name",
+    Icon = "@drawable/icon",
+    Theme = "@style/Protogame.Splash",
+    Immersive = true,
     MainLauncher = true,
     AlwaysRetainTaskState = true,
-    LaunchMode = Android.Content.PM.LaunchMode.SingleInstance,
+    LaunchMode = LaunchMode.SingleInstance,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden,
     ScreenOrientation = ScreenOrientation.Landscape)]
 public class GameActivity : AndroidGameActivity
 {
-    protected override void OnCreate(Bundle bundle)
+    private HostGame _hostGame;
+    private bool _hasInitedGame;
+
+    protected override async void OnCreate(Bundle bundle)
     {
         base.OnCreate(bundle);
+        HideSystemUi();
 
-        var kernel = new StandardKernel();
+        _hostGame = new HostGame(this);
+        var view = (View)_hostGame.Services.GetService(typeof(View));
+        SetContentView(view);
+        _hostGame.Run();
+    }
 
-        Func<System.Reflection.Assembly, Type[]> tryGetTypes = assembly =>
-		{
-			try
-			{
-				return assembly.GetTypes();
-			}
-			catch
-			{
-				return new Type[0];
-			}
-		};
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        _hostGame.Dispose();
+    }
 
-        // Search the application domain for implementations of
-        // the IGameConfiguration.
-        var configurations =
-            (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-             from type in tryGetTypes(assembly)
-             where typeof(IGameConfiguration).IsAssignableFrom(type) &&
-                   !type.IsInterface && !type.IsAbstract
-             select Activator.CreateInstance(type) as IGameConfiguration).ToList();
+    protected override void OnResume()
+    {
+        base.OnResume();
+        HideSystemUi();
+    }
 
-        if (configurations.Count == 0)
+    public override void OnWindowFocusChanged(bool hasFocus)
+    {
+        base.OnWindowFocusChanged(hasFocus);
+
+        if (hasFocus)
         {
-            throw new InvalidOperationException(
-                "You must have at least one implementation of " +
-                "IGameConfiguration in your game.");
+            HideSystemUi();
         }
+    }
 
-        Game game = null;
-
-        foreach (var configuration in configurations)
-        {
-            configuration.ConfigureKernel(kernel);
-
-            // We only construct one game.  In the event there are
-            // multiple game configurations (such as a third-party library
-            // providing additional game tools, it's expected that libraries
-            // will return null for ConstructGame).
-            if (game == null)
-            {
-                game = configuration.ConstructGame(kernel);
-            }
-        }
-
-        if (game == null)
-        {
-            throw new InvalidOperationException(
-                "No implementation of IGameConfiguration provided " +
-                "returned a game instance from ConstructGame.");
-        }
-
-        SetContentView(((ICoreGame)game).AndroidGameView);
-        game.Run();
+    private void HideSystemUi()
+    {
+        Window.DecorView.SystemUiVisibility =
+            (StatusBarVisibility)(SystemUiFlags.LayoutStable | SystemUiFlags.LayoutHideNavigation | SystemUiFlags.LayoutFullscreen | SystemUiFlags.HideNavigation | SystemUiFlags.Fullscreen | SystemUiFlags.ImmersiveSticky);
     }
 }
 

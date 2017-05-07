@@ -1,39 +1,38 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Protoinject;
 
 namespace Protogame
 {
     public class DefaultLoadingScreen : ILoadingScreen
     {
-        private readonly IKernel _kernel;
-
         private I2DRenderUtilities _renderUtilities;
         private IAssetManager _assetManager;
 
         private IAssetReference<FontAsset> _defaultFont;
 
-        public DefaultLoadingScreen(IKernel kernel)
+        public DefaultLoadingScreen(
+            I2DRenderUtilities renderUtilities,
+            IAssetManager assetManager)
         {
-            _kernel = kernel;
+            _renderUtilities = renderUtilities;
+            _assetManager = assetManager;
+#if PLATFORM_ANDROID
+            _defaultFont = assetManager.Get<FontAsset>("font.HiDpi");
+#else
+            _defaultFont = assetManager.Get<FontAsset>("font.Default");
+#endif
+        }
+
+        public async Task WaitForLoadingScreenAssets()
+        {
+            await _defaultFont.WaitUntilReady();
         }
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)
         {
-            if (_renderUtilities == null)
-            {
-                _renderUtilities = _kernel.Get<I2DRenderUtilities>();
-            }
-
-            if (_assetManager == null)
-            {
-                _assetManager = _kernel.Get<IAssetManager>();
-            }
-
-            if (_defaultFont == null)
-            {
-                _defaultFont = _assetManager.Get<FontAsset>("font.Default");
-            }
-
             if (renderContext.IsCurrentRenderPass<I2DBatchedLoadingScreenRenderPass>())
             {
                 var bounds = renderContext.GraphicsDevice.PresentationParameters.Bounds;
@@ -66,7 +65,7 @@ namespace Protogame
             }
         }
 
-        public void RenderEarly(Game game)
+        public void RenderEarly(ICoreGame game, SpriteBatch hostLoadedSpriteBatch, Texture2D hostLoadedSplashScreenTexture)
         {
             game.GraphicsDevice.Clear(new Color(0x33, 0x33, 0x33, 0xFF));
         }

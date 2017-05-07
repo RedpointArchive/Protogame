@@ -8,15 +8,18 @@ namespace Protogame
 
     public class ClientConsole : IConsole
     {
+        private readonly ILogShipping _logShipping;
         private readonly IConsoleInput _consoleInput;
         private readonly IConsoleRender _consoleRender;
 
         private readonly List<ConsoleEntry> _log = new List<ConsoleEntry>();
         
         public ClientConsole(
+            ILogShipping logShipping,
             IConsoleInput consoleInput,
             IConsoleRender consoleRender)
         {
+            _logShipping = logShipping;
             _consoleInput = consoleInput;
             _consoleRender = consoleRender;
         }
@@ -108,6 +111,8 @@ namespace Protogame
 
         private void LogInternal(ConsoleEntry consoleEntry)
         {
+            _logShipping.AddLog(new PendingLogForShip { Message = consoleEntry.Message, LogLevel = consoleEntry.LogLevel });
+
             if (_log.Count > 0)
             {
                 var last = _log[_log.Count - 1];

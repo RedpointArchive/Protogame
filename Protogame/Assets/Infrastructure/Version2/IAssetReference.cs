@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Protogame
 {
@@ -11,5 +12,7 @@ namespace Protogame
         bool IsReady { get; }
         
         Exception LoadingException { get; }
+
+        Task WaitUntilReady();
     }
 }

@@ -13,13 +13,6 @@ namespace Protogame
     {
         public void Load(IKernel kernel)
         {
-            if (kernel.TryGet<IRawLaunchArguments>() == null)
-            {
-                kernel.Bind<IRawLaunchArguments>()
-                    .ToMethod(x => new DefaultRawLaunchArguments(new string[0]))
-                    .InSingletonScope();
-            }
-
             kernel.Bind<IAssetManager>().To<DefaultAssetManager>().InSingletonScope();
 
             kernel.Bind<IAssetLoader<AudioAsset>>().To<AudioAssetLoader>().InSingletonScope();
@@ -51,7 +44,8 @@ namespace Protogame
             kernel.Bind<IAssetFsLayer>().To<CurrentDirPlatformLocalFilesystemAssetFsLayer>().InSingletonScope();
 #elif PLATFORM_ANDROID
 #if DEBUG
-            kernel.Bind<IAssetFsLayer>().To<RemoteClientAssetFs>().InSingletonScope();
+            kernel.Bind<IRemoteClientInboundHandler>().To<RemoteClientAssetFsInboundHandler>().InSingletonScope();
+            kernel.Bind<IAssetFsLayer>().To<RemoteClientAssetFsLayer>().InSingletonScope();
 #endif
             kernel.Bind<IAssetFsLayer>().To<RootAndroidAssetFsLayer>().InSingletonScope();
             kernel.Bind<IAssetFsLayer>().To<PlatformAndroidAssetFsLayer>().InSingletonScope();

@@ -35,7 +35,7 @@ namespace Protogame
         /// <value>
         /// The game instance.
         /// </value>
-        Game Game { get; }
+        ICoreGame Game { get; }
 
         /// <summary>
         /// Gets the amount of game time elapsed since the last update or render step.

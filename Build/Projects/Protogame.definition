@@ -71,7 +71,8 @@
     <Compile Include="Assets\Infrastructure\AssetFs\ICompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\LocalFilesystemAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\PlatformAndroidAssetFsLayer.cs" />
-    <Compile Include="Assets\Infrastructure\AssetFs\RemoteClientAssetFs.cs" />
+    <Compile Include="Assets\Infrastructure\AssetFs\RemoteClientAssetFsInboundHandler.cs" />
+    <Compile Include="Assets\Infrastructure\AssetFs\RemoteClientAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\RootAndroidAssetFsLayer.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\RuntimeCompiledAssetFs.cs" />
     <Compile Include="Assets\Infrastructure\AssetFs\SourceDirLocalFilesystemAssetFsLayer.cs" />
@@ -268,12 +269,17 @@
     <Compile Include="Console\ClientConsoleInput.cs" />
     <Compile Include="Console\ClientConsoleRender.cs" />
     <Compile Include="Console\ConsoleLogLevel.cs" />
+    <Compile Include="Console\ConsoleLogShippingEngineHook.cs" />
     <Compile Include="Console\ConsoleState.cs" />
     <Compile Include="Console\DefaultConsoleHandle.cs" />
+    <Compile Include="Console\DefaultLogShipping.cs" />
     <Compile Include="Console\IConsole.cs" />
     <Compile Include="Console\IConsoleHandle.cs" />
     <Compile Include="Console\IConsoleInput.cs" />
     <Compile Include="Console\IConsoleRender.cs" />
+    <Compile Include="Console\ILogShipping.cs" />
+    <Compile Include="Console\NullLogShipping.cs" />
+    <Compile Include="Console\PendingLogForShip.cs" />
     <Compile Include="Console\ServerConsole.cs" />
     <Compile Include="Core\BoundingBox.cs" />
     <Compile Include="Core\ConfigurationAttribute.cs" />
@@ -297,6 +303,7 @@
     <Compile Include="Core\EntityGroup.cs" />
     <Compile Include="Core\HasTransformExtensions.cs" />
     <Compile Include="Core\HorizontalAlignment.cs" />
+    <Compile Include="Core\HostGame.cs" />
     <Compile Include="Core\I2DRenderUtilities.cs" />
     <Compile Include="Core\I3DRenderUtilities.cs" />
     <Compile Include="Core\IAudioHandle.cs" />
@@ -333,6 +340,9 @@
     <Compile Include="Core\NetworkTransform.cs" />
     <Compile Include="Core\ProtogameBaseModule.cs" />
     <Compile Include="Core\ProtogameCoreModule.cs" />
+    <Compile Include="Core\StartupSequence.cs" />
+    <Compile Include="Core\StartupSequenceResult.cs" />
+    <Compile Include="Core\StartupTrace.cs" />
     <Compile Include="Core\TransformContainer.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
     <Compile Include="Coroutine\CoroutineEngineHook.cs" />
@@ -667,6 +677,11 @@
     <Compile Include="Profiling\ProfilerPosition.cs" />
     <Compile Include="Profiling\ProtogamePerformanceIoCModule.cs" />
     <Compile Include="Profiling\ProtogameProfilingModule.cs" />
+    <Compile Include="Remote\DefaultRemoteClient.cs" />
+    <Compile Include="Remote\IRemoteClient.cs" />
+    <Compile Include="Remote\IRemoteClientInboundHandler.cs" />
+    <Compile Include="Remote\IRemoteClientReaderWriter.cs" />
+    <Compile Include="Remote\NullRemoteClient.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <Platforms>Android,Ouya</Platforms>
     </Compile>

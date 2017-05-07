@@ -29,7 +29,7 @@ namespace Protogame
         public DefaultGameContext(
             IKernel kernel,
             IAnalyticsEngine analyticsEngine,
-            Game game, 
+            ICoreGame game, 
             GraphicsDeviceManager graphics, 
             IGameWindow window, 
             IWorld world, 
@@ -50,7 +50,7 @@ namespace Protogame
         
         public int FrameCount { get; set; }
         
-        public Game Game { get; }
+        public ICoreGame Game { get; }
         
         public GameTime GameTime { get; set; }
         

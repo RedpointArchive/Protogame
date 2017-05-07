@@ -24,12 +24,12 @@ namespace Protogame
             get { return _renderPipeline; }
         }
 
-        public void Render<T>(T game) where T : Microsoft.Xna.Framework.Game, ICoreGame
+        public void Render<T>(T game) where T : ICoreGame
         {
             _renderPipeline.Render(game.GameContext, game.RenderContext);
         }
 
-        public void Update<T>(T game) where T : Microsoft.Xna.Framework.Game, ICoreGame
+        public void Update<T>(T game) where T : ICoreGame
         {
             game.UpdateContext.Update(game.GameContext);
 

@@ -5,6 +5,13 @@ namespace Protogame
 {
     public class ServerConsole : IConsole
     {
+        private readonly ILogShipping _logShipping;
+
+        public ServerConsole(ILogShipping logShipping)
+        {
+            _logShipping = logShipping;
+        }
+
         public ConsoleState State => ConsoleState.OpenNoInput;
 
         public void Render(IGameContext gameContext, IRenderContext renderContext)
@@ -24,11 +31,15 @@ namespace Protogame
 
         public void Log(string message)
         {
+            _logShipping.AddLog(new PendingLogForShip { Message = message, LogLevel = ConsoleLogLevel.Debug });
+
             Console.WriteLine(message);
         }
 
         public void LogStructured(INode node, string format, object[] args)
         {
+            _logShipping.AddLog(new PendingLogForShip { Message = args == null ? format : string.Format(format, args), LogLevel = ConsoleLogLevel.Debug });
+
             if (args == null)
             {
                 Console.WriteLine(format);
@@ -41,6 +52,8 @@ namespace Protogame
 
         public void LogStructured(INode node, ConsoleLogLevel logLevel, string format, object[] args)
         {
+            _logShipping.AddLog(new PendingLogForShip { Message = args == null ? format : string.Format(format, args), LogLevel = logLevel });
+
             switch (logLevel)
             {
                 case ConsoleLogLevel.Debug:

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Protogame
 {
@@ -76,6 +77,20 @@ namespace Protogame
             }
 
             State = assetState;
+        }
+
+        public async Task WaitUntilReady()
+        {
+            while (State != AssetReferenceState.Ready &&
+                State != AssetReferenceState.Unavailable)
+            {
+                await Task.Yield();
+            }
+
+            if (State == AssetReferenceState.Unavailable)
+            {
+                throw new AggregateException(LoadingException);
+            }
         }
     }
 }

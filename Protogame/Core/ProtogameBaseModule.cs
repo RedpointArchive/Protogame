@@ -26,6 +26,14 @@ namespace Protogame
             kernel.Bind<IRenderCache>().To<DefaultRenderCache>().InSingletonScope();
             kernel.Bind<IRenderAutoCache>().To<DefaultRenderAutoCache>().InSingletonScope();
             kernel.Bind<IEngineHook>().To<RenderAutoCacheEngineHook>().InParentScope();
+#if DEBUG
+            kernel.Bind<IRemoteClient>().To<DefaultRemoteClient>().InSingletonScope();
+            kernel.Bind<ILogShipping>().To<DefaultLogShipping>().InSingletonScope();
+            kernel.Bind<IEngineHook>().To<ConsoleLogShippingEngineHook>();
+#else
+            kernel.Bind<IRemoteClient>().To<NullRemoteClient>().InSingletonScope();
+            kernel.Bind<ILogShipping>().To<NullLogShipping>().InSingletonScope();
+#endif
         }
     }
 }
