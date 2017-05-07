@@ -88,5 +88,14 @@ namespace Protogame
 
             // Otherwise, asset is ready.
         }
+
+        public async Task WaitUntilReadyOptional()
+        {
+            while (State != AssetReferenceState.Ready &&
+                State != AssetReferenceState.Unavailable)
+            {
+                await Task.Yield();
+            }
+        }
     }
 }

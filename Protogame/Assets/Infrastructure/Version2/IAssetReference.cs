@@ -14,5 +14,7 @@ namespace Protogame
         Exception LoadingException { get; }
 
         Task WaitUntilReady();
+
+        Task WaitUntilReadyOptional();
     }
 }

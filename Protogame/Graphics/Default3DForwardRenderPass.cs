@@ -32,7 +32,9 @@ namespace Protogame
         /// with the rendering of 3D objects.
         /// </summary>
         public bool ClearDepthBuffer { get; set; }
-        
+
+        public bool ClearDepthBufferAtEnd { get; set; }
+
         public BlendState BlendState { get; set; }
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
@@ -50,11 +52,27 @@ namespace Protogame
             {
                 renderContext.GraphicsDevice.BlendState = BlendState;
             }
+            else
+            {
+                renderContext.GraphicsDevice.BlendState = Microsoft.Xna.Framework.Graphics.BlendState.Opaque;
+            }
+
+            renderContext.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            renderContext.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
         }
 
         public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
             _renderBatcher.FlushRequests(gameContext, renderContext);
+
+            if (ClearDepthBufferAtEnd)
+            {
+                renderContext.GraphicsDevice.Clear(
+                    ClearOptions.DepthBuffer,
+                    Microsoft.Xna.Framework.Color.Transparent,
+                    renderContext.GraphicsDevice.Viewport.MaxDepth,
+                    0);
+            }
         }
 
         public string Name { get; set; }

@@ -154,11 +154,9 @@
     <Compile Include="Assets\Tileset\TilesetAsset.cs" />
     <Compile Include="Assets\Tileset\TilesetAssetLoader.cs" />
     <Compile Include="Assets\Tileset\TilesetAssetSaver.cs" />
-    <Compile Include="Assets\UserInterface\RawUserInterfaceLoadStrategy.cs" />
     <Compile Include="Assets\UserInterface\UserInterfaceAsset.cs" />
+    <Compile Include="Assets\UserInterface\UserInterfaceAssetCompiler.cs" />
     <Compile Include="Assets\UserInterface\UserInterfaceAssetLoader.cs" />
-    <Compile Include="Assets\UserInterface\UserInterfaceAssetSaver.cs" />
-    <Compile Include="Assets\UserInterface\UserInterfaceFormat.cs" />
     <Compile Include="Assets\Variable\VariableAsset.cs" />
     <Compile Include="Assets\Variable\VariableAssetLoader.cs" />
     <Compile Include="Assets\Variable\VariableAssetSaver.cs" />
@@ -217,6 +215,7 @@
     <Compile Include="Component\Builtin\Render3DPlaneComponent.cs" />
     <Compile Include="Component\Builtin\StandardDirectionalLightComponent.cs" />
     <Compile Include="Component\Builtin\StandardPointLightComponent.cs" />
+    <Compile Include="Component\Builtin\UserInterfaceComponent.cs" />
     <Compile Include="Component\ComponentExtensions.cs" />
     <Compile Include="Component\ComponentizedEntity.cs" />
     <Compile Include="Component\ComponentizedObject.cs" />
@@ -819,6 +818,7 @@
     <Compile Include="UserInterface\Control\Container\RelativeContainer.cs" />
     <Compile Include="UserInterface\Control\Container\ScrollableContainer.cs" />
     <Compile Include="UserInterface\Control\Container\SingleContainer.cs" />
+    <Compile Include="UserInterface\Control\Container\TextureContainer.cs" />
     <Compile Include="UserInterface\Control\Container\VerticalContainer.cs" />
     <Compile Include="UserInterface\Control\FileSelect.cs" />
     <Compile Include="UserInterface\Control\FontViewer.cs" />
@@ -849,6 +849,7 @@
     <Compile Include="UserInterface\Controller\NodeProcessor\ListItemUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\ListViewUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\NodeProcessor\TextBoxUserInterfaceNodeProcessor.cs" />
+    <Compile Include="UserInterface\Controller\NodeProcessor\TextureUserInterfaceNodeProcessor.cs" />
     <Compile Include="UserInterface\Controller\UserInterfaceBehaviourHandler.cs" />
     <Compile Include="UserInterface\Core\CanvasEntity.cs" />
     <Compile Include="UserInterface\Core\DefaultLayoutPosition.cs" />

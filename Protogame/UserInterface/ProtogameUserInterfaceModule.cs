@@ -41,6 +41,10 @@ namespace Protogame
                 .To<CanvasFragmentUserInterfaceNodeProcessor>()
                 .Named("fragment")
                 .InSingletonScope();
+            kernel.Bind<IUserInterfaceNodeProcessor>()
+                .To<TextureUserInterfaceNodeProcessor>()
+                .Named("texture")
+                .InSingletonScope();
 
             kernel.Bind<ISkinRenderer<AdjustedContainer>>().To<BasicAdjustedContainerSkinRenderer>().InSingletonScope();
             kernel.Bind<ISkinRenderer<AudioPlayer>>().To<BasicAudioPlayerSkinRenderer>().InSingletonScope();
