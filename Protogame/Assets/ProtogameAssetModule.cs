@@ -23,6 +23,7 @@ namespace Protogame
             kernel.Bind<IAssetLoader<ModelAsset>>().To<ModelAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader<TextureAsset>>().To<TextureAssetLoader>().InSingletonScope();
             kernel.Bind<IAssetLoader<UserInterfaceAsset>>().To<UserInterfaceAssetLoader>().InSingletonScope();
+            kernel.Bind<IAssetLoader<TilesetAsset>>().To<TilesetAssetLoader>().InSingletonScope();
 
             kernel.Bind<IModelSerializer>().To<ModelSerializerGeneric>().InSingletonScope();
             kernel.Bind<ITextureFromHintPath>().To<TextureFromHintPath>().InSingletonScope();
@@ -78,6 +79,7 @@ namespace Protogame
             kernel.Bind<IAssetCompiler>().To<AtfLevelAssetCompiler>().InSingletonScope();
             kernel.Bind<IAssetCompiler>().To<OgmoLevelAssetCompiler>().InSingletonScope();
             kernel.Bind<IAssetCompiler>().To<UserInterfaceAssetCompiler>().InSingletonScope();
+            kernel.Bind<IAssetCompiler>().To<TilesetAssetCompiler>().InSingletonScope();
 #endif
         }
     }

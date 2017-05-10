@@ -83,7 +83,6 @@
     <Compile Include="Assets\Infrastructure\ContentCompilation\DummyContentProcessorContext.cs" />
     <Compile Include="Assets\Infrastructure\ContentCompilation\MonoGameContentCompiler.cs" />
     <Compile Include="Assets\Infrastructure\IAsset.cs" />
-    <Compile Include="Assets\Infrastructure\IAssetCompiler.cs" />
     <Compile Include="Assets\Infrastructure\IAssetContentManager.cs" />
     <Compile Include="Assets\Infrastructure\NoAssetContentManagerException.cs" />
     <Compile Include="Assets\Infrastructure\NullAssetContentManager.cs" />
@@ -152,8 +151,8 @@
     <Compile Include="Assets\Texture\TextureAssetCompiler.cs" />
     <Compile Include="Assets\Texture\TextureAssetLoader.cs" />
     <Compile Include="Assets\Tileset\TilesetAsset.cs" />
+    <Compile Include="Assets\Tileset\TilesetAssetCompiler.cs" />
     <Compile Include="Assets\Tileset\TilesetAssetLoader.cs" />
-    <Compile Include="Assets\Tileset\TilesetAssetSaver.cs" />
     <Compile Include="Assets\UserInterface\UserInterfaceAsset.cs" />
     <Compile Include="Assets\UserInterface\UserInterfaceAssetCompiler.cs" />
     <Compile Include="Assets\UserInterface\UserInterfaceAssetLoader.cs" />
