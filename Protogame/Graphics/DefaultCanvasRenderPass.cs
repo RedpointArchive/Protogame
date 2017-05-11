@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -44,6 +45,20 @@ namespace Protogame
                     renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth,
                     renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight);
             }
+
+#if PLATFORM_WINDOWS
+            renderContext.World = Matrix.CreateTranslation(0.5f, 0.5f, 0);
+#else
+            renderContext.World = Matrix.Identity;
+#endif
+            renderContext.Projection = Matrix.CreateOrthographicOffCenter(
+                0,
+                renderContext.GraphicsDevice.Viewport.Width,
+                renderContext.GraphicsDevice.Viewport.Height,
+                0,
+                0,
+                -1);
+            renderContext.View = Matrix.Identity;
 
             renderContext.SpriteBatch.Begin(TextureSortMode);
         }
