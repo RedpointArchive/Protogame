@@ -36,14 +36,22 @@ namespace Protogame.ATFLevelEditor
                     .ToArray();
             if (scaleRawValue.Length == 3 && rotateRawValue.Length == 3 && translateRawValue.Length == 3)
             {
+                var rotateMatrix = 
+                    Matrix.CreateRotationX(rotateRawValue[0]) *
+                    Matrix.CreateRotationY(rotateRawValue[1]) *
+                    Matrix.CreateRotationZ(rotateRawValue[2]);
+                var rotateValue = Quaternion.Identity;
+                Vector3 scale, translation;
+                Quaternion rotation;
+                if (rotateMatrix.Decompose(out scale, out rotation, out translation))
+                {
+                    rotateValue = rotation;
+                }
+                
                 var scaleValue = new Vector3(
                     scaleRawValue[0],
                     scaleRawValue[1],
                     scaleRawValue[2]);
-                var rotateValue = (
-                    Matrix.CreateRotationX(rotateRawValue[0]) *
-                    Matrix.CreateRotationY(rotateRawValue[1]) *
-                    Matrix.CreateRotationZ(rotateRawValue[2])).Rotation;
                 var translateValue = new Vector3(
                     translateRawValue[0],
                     translateRawValue[1],
