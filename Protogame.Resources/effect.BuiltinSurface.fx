@@ -1,5 +1,7 @@
 ﻿// uber Color										: HAS_VERTEX_COLOR
 // uber ColorSkinned								: HAS_VERTEX_COLOR;HAS_BONES
+// uber ColorNoNormals								: HAS_VERTEX_COLOR;HAS_NO_NORMALS
+// uber ColorSkinnedNoNormals						: HAS_VERTEX_COLOR;HAS_BONES;HAS_NO_NORMALS
 // uber Diffuse										: HAS_GLOBAL_DIFFUSE
 // uber DiffuseSkinned								: HAS_GLOBAL_DIFFUSE;HAS_BONES
 // uber Image										: HAS_VERTEX_PRIMARY_UV_COORDS;HAS_TEXTURE_MAP;HAS_NO_NORMALS
