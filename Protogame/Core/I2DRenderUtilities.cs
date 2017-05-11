@@ -113,7 +113,8 @@ namespace Protogame
             Color? shadowColor = null,
             float? rotation = null,
             Vector2? origin = null,
-            Vector2? scale = null);
+            Vector2? scale = null,
+            bool ensureAligned = true);
         
         /// <summary>
         /// Renders a texture at the specified position.

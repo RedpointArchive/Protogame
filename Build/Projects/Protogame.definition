@@ -806,6 +806,7 @@
     <Compile Include="UserInterface\Control\ButtonUIState.cs" />
     <Compile Include="UserInterface\Control\Canvas.cs" />
     <Compile Include="UserInterface\Control\CanvasFragment.cs" />
+    <Compile Include="UserInterface\Control\CheckBox.cs" />
     <Compile Include="UserInterface\Control\Container\AdjustedContainer.cs" />
     <Compile Include="UserInterface\Control\Container\BaseContainer.cs" />
     <Compile Include="UserInterface\Control\Container\EmptyContainer.cs" />

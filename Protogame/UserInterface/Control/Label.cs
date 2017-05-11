@@ -28,6 +28,8 @@ namespace Protogame
 
         public Color? ShadowColor { get; set; }
 
+        public IContainer AttachTo { get; set; }
+
         public void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
             skinDelegator.Render(context, layout, this);
@@ -39,6 +41,11 @@ namespace Protogame
         
         public bool HandleEvent(ISkinLayout skin, Rectangle layout, IGameContext context, Event @event)
         {
+            if (AttachTo != null)
+            {
+                return AttachTo.HandleEvent(skin, layout, context, @event);
+            }
+
             return false;
         }
     }

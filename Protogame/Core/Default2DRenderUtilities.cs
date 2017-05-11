@@ -117,7 +117,8 @@ namespace Protogame
             Color? shadowColor = null,
             float? rotation = null,
             Vector2? origin = null,
-            Vector2? scale = null)
+            Vector2? scale = null,
+            bool ensureAligned = true)
         {
             if (context == null)
             {
@@ -187,8 +188,11 @@ namespace Protogame
             }
 
             // Normalize location to prevent blurring artifacts.
-            xx = (int)xx;
-            yy = (int)yy;
+            if (ensureAligned)
+            {
+                xx = (int) xx;
+                yy = (int) yy;
+            }
 
             // Draw shadow if required.
             if (renderShadow)

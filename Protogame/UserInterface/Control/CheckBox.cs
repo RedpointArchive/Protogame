@@ -1,19 +1,18 @@
 using System;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
-    public class Button : IContainer
+    public class CheckBox : IContainer
     {
         private bool _shouldAppearPressedWhenMouseIsOver;
+        private Rectangle _mouseDownLayout;
 
-        public Button()
+        public CheckBox()
         {
-            State = ButtonUIState.None;
         }
 
-        public event EventHandler Click;
+        public event EventHandler Changed;
 
         public IContainer[] Children => IContainerConstant.EmptyContainers;
 
@@ -25,9 +24,9 @@ namespace Protogame
 
         public object Userdata { get; set; }
 
-        public ButtonUIState State { get; private set; }
+        public bool Checked { get; private set; }
 
-        public string Text { get; set; }
+        public bool IsDown { get; private set; }
 
         public virtual void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
@@ -44,12 +43,8 @@ namespace Protogame
             var mousePressEvent = @event as MousePressEvent;
             var mouseReleaseEvent = @event as MouseReleaseEvent;
             var mouseMoveEvent = @event as MouseMoveEvent;
-            var touchEvent = @event as TouchEvent;
-            var touchPressEvent = @event as TouchPressEvent;
-            var touchHeldEvent = @event as TouchHeldEvent;
-            var touchReleaseEvent = @event as TouchReleaseEvent;
 
-            if (mouseEvent == null && touchEvent == null)
+            if (mouseEvent == null)
             {
                 return false;
             }
@@ -63,74 +58,45 @@ namespace Protogame
                 y = mouseEvent.MouseState.Y;
             }
 
-            if (touchPressEvent != null)
-            {
-                x = (int)touchPressEvent.X;
-                y = (int)touchPressEvent.Y;
-            }
-
-            if (touchReleaseEvent != null)
-            {
-                x = (int)touchReleaseEvent.X;
-                y = (int)touchReleaseEvent.Y;
-            }
-
-            if (touchHeldEvent != null)
-            {
-                x = (int)touchHeldEvent.X;
-                y = (int)touchHeldEvent.Y;
-            }
-
             if (layout.Contains(x, y))
             {
                 if (mouseMoveEvent != null)
                 {
                     if (_shouldAppearPressedWhenMouseIsOver)
                     {
-                        State = ButtonUIState.Clicked;
-                    }
-                    else
-                    {
-                        State = ButtonUIState.Hover;
+                        IsDown = true;
                     }
                 }
                 else if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
                 {
                     _shouldAppearPressedWhenMouseIsOver = true;
-                    State = ButtonUIState.Clicked;
+                    _mouseDownLayout = layout;
+                    IsDown = true;
                     this.Focus();
                     return true;
                 }
                 else if (mouseReleaseEvent != null && mouseReleaseEvent.Button == MouseButton.Left)
                 {
-                    if (_shouldAppearPressedWhenMouseIsOver)
+                    if (_mouseDownLayout == layout)
                     {
-                        if (Click != null && State != ButtonUIState.Clicked)
-                        {
-                            Click(this, new EventArgs());
-                        }
+                        Checked = !Checked;
+                        Changed?.Invoke(this, new EventArgs());
 
                         _shouldAppearPressedWhenMouseIsOver = false;
                     }
 
-                    State = ButtonUIState.None;
+                    IsDown = false;
                     this.Focus();
                 }
             }
             else if (mouseMoveEvent != null)
             {
-                State = ButtonUIState.None;
+                IsDown = false;
             }
 
             if (mouseReleaseEvent != null && mouseReleaseEvent.Button == MouseButton.Left)
             {
-                State = ButtonUIState.None;
-                _shouldAppearPressedWhenMouseIsOver = false;
-            }
-
-            if (touchReleaseEvent != null && layout.Contains(x, y))
-            {
-                State = ButtonUIState.None;
+                IsDown = false;
                 _shouldAppearPressedWhenMouseIsOver = false;
             }
 
