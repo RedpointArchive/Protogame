@@ -221,6 +221,19 @@ namespace Protogame
                 return;
             }
 
+            var scaledSourceArea = sourceArea;
+            if (scaledSourceArea != null)
+            {
+                var scaledSize = new Vector2(
+                    texture.Asset.OriginalWidth / (float)texture.Asset.Texture.Width,
+                    texture.Asset.OriginalHeight / (float)texture.Asset.Texture.Height);
+                scaledSourceArea = new Rectangle(
+                    (int)(scaledSourceArea.Value.X / scaledSize.X),
+                    (int)(scaledSourceArea.Value.Y / scaledSize.Y),
+                    (int)(scaledSourceArea.Value.Width / scaledSize.X),
+                    (int)(scaledSourceArea.Value.Height / scaledSize.Y));
+            }
+
             RenderTexture(
                 context,
                 position,
@@ -231,7 +244,7 @@ namespace Protogame
                 rotationAnchor,
                 flipHorizontally,
                 flipVertically,
-                sourceArea);
+                scaledSourceArea);
         }
         
         public void RenderTexture(
