@@ -68,7 +68,20 @@ namespace Protogame
 
         public Vector3 AbsolutePosition => Vector3.Transform(Vector3.Zero, AbsoluteMatrix);
 
-        public Quaternion AbsoluteRotation => AbsoluteMatrixWithoutScale.Rotation;
+        public Quaternion AbsoluteRotation
+        {
+            get
+            {
+                Vector3 scale, translation;
+                Quaternion rotation;
+                if (AbsoluteMatrixWithoutScale.Decompose(out scale, out rotation, out translation))
+                {
+                    return rotation;
+                }
+
+                return Quaternion.Identity;
+            }
+        }
 
         public IFinalTransform Parent => _parent.FinalTransform;
 
