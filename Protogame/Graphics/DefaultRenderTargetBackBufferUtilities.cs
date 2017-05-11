@@ -30,13 +30,27 @@ namespace Protogame
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight,
                     false,
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat,
+                    GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat),
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
                     RenderTargetUsage.PreserveContents);
             }
 
             return renderTarget;
+        }
+
+        /// <remarks>
+        /// On DirectX platforms, MonoGame silently converts the Color surface format to BGRA32 for
+        /// the backbuffer.  In our case, we want our render targets to exactly match the format the
+        /// backbuffer is using, so we can use the exact same settings.
+        /// </remarks>
+        private SurfaceFormat GetRealBackBufferFormat(SurfaceFormat backBufferFormat)
+        {
+#if PLATFORM_WINDOWS
+            return backBufferFormat == SurfaceFormat.Color ? SurfaceFormat.Bgra32 : backBufferFormat;
+#else
+            return backBufferFormat;
+#endif
         }
 
         public RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount)
@@ -59,7 +73,7 @@ namespace Protogame
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight,
                     false,
-                    surfaceFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat,
+                    surfaceFormat ?? GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat),
                     depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
                     multiSampleCount ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
                     RenderTargetUsage.PreserveContents);
@@ -86,7 +100,7 @@ namespace Protogame
                     return true;
                 }
 
-                if (renderTarget.Format != gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat)
+                if (renderTarget.Format != GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat))
                 {
                     return true;
                 }
@@ -123,7 +137,7 @@ namespace Protogame
                     return true;
                 }
 
-                if (renderTarget.Format != (surfaceFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat))
+                if (renderTarget.Format != (surfaceFormat ?? GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat)))
                 {
                     return true;
                 }
