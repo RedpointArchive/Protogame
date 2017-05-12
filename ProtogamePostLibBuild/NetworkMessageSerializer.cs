@@ -118,7 +118,7 @@ namespace ProtogamePostBuild
 
             foreach (var variable in method.Body.Variables)
             {
-                var targetVariable = new VariableDefinition(variable.Name, targetType.Module.Import(variable.VariableType));
+                var targetVariable = new VariableDefinition(targetType.Module.Import(variable.VariableType));
                 target.Body.Variables.Add(targetVariable);
             }
 
