@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Protoinject;
+using System;
 
 namespace Protogame
 {
@@ -61,13 +62,46 @@ namespace Protogame
                         _cachedTextureAssetRef = Texture.Asset.Texture;
                         _cachedPixelWidth = _cachedTextureAssetRef.Width;
                         _cachedPixelHeight = _cachedTextureAssetRef.Height;
-                        _cachedPixelData = new Color[_cachedPixelWidth * _cachedPixelHeight];
+                        if (IsCompressedFormat(_cachedTextureAssetRef.Format))
+                        {
+                            throw new InvalidOperationException(
+                                "The texture provided to the PerPixelCollisionTexture component is a " +
+                                "compressed texture.  Only uncompressed textures can be used with the " +
+                                "per-pixel collision algorithm, as the texture must be read to the CPU.");
+                        }
+                        else
+                        {
+                            _cachedPixelData = new Color[_cachedPixelWidth * _cachedPixelHeight];
+                        }
                         _cachedTextureAssetRef.GetData(_cachedPixelData);
                     }
                 }
             }
 
             Update();
+        }
+
+        private static bool IsCompressedFormat(SurfaceFormat format)
+        {
+            switch (format)
+            {
+                case SurfaceFormat.Dxt1:
+                case SurfaceFormat.Dxt1a:
+                case SurfaceFormat.Dxt1SRgb:
+                case SurfaceFormat.Dxt3:
+                case SurfaceFormat.Dxt3SRgb:
+                case SurfaceFormat.Dxt5:
+                case SurfaceFormat.Dxt5SRgb:
+                case SurfaceFormat.RgbaAtcExplicitAlpha:
+                case SurfaceFormat.RgbaAtcInterpolatedAlpha:
+                case SurfaceFormat.RgbaPvrtc2Bpp:
+                case SurfaceFormat.RgbaPvrtc4Bpp:
+                case SurfaceFormat.RgbEtc1:
+                case SurfaceFormat.RgbPvrtc2Bpp:
+                case SurfaceFormat.RgbPvrtc4Bpp:
+                    return true;
+            }
+            return false;
         }
 
         private void Update()
