@@ -39,25 +39,5 @@ namespace ProtogamePostBuild
 
             return _loadedAssemblies[name];
         }
-
-        public override AssemblyDefinition Resolve(string fullName)
-        {
-            if (!_loadedAssemblies.ContainsKey(AssemblyNameReference.Parse(fullName)))
-            {
-                return base.Resolve(fullName);
-            }
-
-            return _loadedAssemblies[AssemblyNameReference.Parse(fullName)];
-        }
-
-        public override AssemblyDefinition Resolve(string fullName, ReaderParameters parameters)
-        {
-            if (!_loadedAssemblies.ContainsKey(AssemblyNameReference.Parse(fullName)))
-            {
-                return base.Resolve(fullName, parameters);
-            }
-
-            return _loadedAssemblies[AssemblyNameReference.Parse(fullName)];
-        }
     }
 }
