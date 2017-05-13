@@ -47,9 +47,9 @@ namespace ProtogamePostBuild
                     File.Exists(Path.Combine(Path.GetDirectoryName(intermediateAssembly) ?? string.Empty,
                         Path.GetFileNameWithoutExtension(intermediateAssembly) + ".dll.mdb"));
                 var temporaryAssembly = AssemblyDefinition.ReadAssembly(temporaryAssemblyName,
-                    new ReaderParameters { ReadSymbols = false, AssemblyResolver = resolver });
+                    new ReaderParameters { ReadSymbols = false, AssemblyResolver = resolver, InMemory = true });
                 var targetAssembly = AssemblyDefinition.ReadAssembly(intermediateAssembly,
-                    new ReaderParameters { ReadSymbols = readSymbols, AssemblyResolver = resolver });
+                    new ReaderParameters { ReadSymbols = readSymbols, AssemblyResolver = resolver, InMemory = true });
 
                 // This copies just enough for the protobuf serializer to copy across (e.g.
                 // it doesn't support generics or anything fancy).
@@ -118,7 +118,7 @@ namespace ProtogamePostBuild
 
             foreach (var variable in method.Body.Variables)
             {
-                var targetVariable = new VariableDefinition(variable.Name, targetType.Module.Import(variable.VariableType));
+                var targetVariable = new VariableDefinition(targetType.Module.Import(variable.VariableType));
                 target.Body.Variables.Add(targetVariable);
             }
 

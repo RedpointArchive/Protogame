@@ -1,34 +1,41 @@
 #!/usr/bin/env groovy
-stage("Windows") {
-  node('windows') {
-    checkout poll: false, changelog: false, scm: scm
-    bat ("Protobuild.exe --upgrade-all")
-    bat ('Protobuild.exe --automated-build')
-    stash includes: '*.nupkg', name: 'windows-packages'
-  }
+stage("Build") {
+  parallel (
+    "Windows" : {
+      node('windows') {
+        checkout poll: false, changelog: false, scm: scm
+        bat ("Protobuild.exe --upgrade-all")
+        bat ('Protobuild.exe --automated-build')
+        stash includes: '*.nupkg', name: 'windows-packages'
+      }
+    },
+    "Mac": {
+      node('mac') {
+        checkout poll: false, changelog: false, scm: scm
+        sh ("mono Protobuild.exe --upgrade-all MacOS")
+        sh ("mono Protobuild.exe --upgrade-all Android")
+        sh ("mono Protobuild.exe --upgrade-all iOS")
+        sh ("mono Protobuild.exe --automated-build")
+        stash includes: '*.nupkg', name: 'mac-packages'
+      }
+    },
+    "Linux": {
+      node('linux') {
+        checkout poll: true, changelog: true, scm: scm
+        sh ("bash -c 'Xorg -noreset +extension GLX +extension RANDR +extension RENDER -config /xorg.conf :2 & echo \"\$!\" > xorg.pid'")
+        try {
+          sh ("mono Protobuild.exe --upgrade-all")
+          sh ("DISPLAY=:2 mono Protobuild.exe --automated-build")
+          stash includes: '*.nupkg', name: 'linux-packages'
+        } finally {
+          sh ("if [ -e xorg.pid ]; then kill \$(<xorg.pid); fi")
+        }
+      }
+    }
+  )
 }
 
-stage("Mac") {
-  node('mac') {
-    checkout poll: false, changelog: false, scm: scm
-    sh ("mono Protobuild.exe --upgrade-all MacOS")
-    sh ("mono Protobuild.exe --upgrade-all Android")
-    sh ("mono Protobuild.exe --upgrade-all iOS")
-    sh ("mono Protobuild.exe --automated-build")
-    stash includes: '*.nupkg', name: 'mac-packages'
-  }
-}
-
-stage("Linux") {
-  node('linux') {
-    checkout poll: true, changelog: true, scm: scm
-    sh ("mono Protobuild.exe --upgrade-all")
-    sh ("mono Protobuild.exe --automated-build")
-    stash includes: '*.nupkg', name: 'linux-packages'
-  }
-}
-
-stage("Unified") {
+stage("Package") {
   node('windows') {
     // Ensure a seperate working directory to the normal linux node above.
     ws {
