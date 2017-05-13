@@ -32,7 +32,7 @@ namespace Protogame
         {
             if (RenderPipelineStateAvailable != null)
             {
-                RenderPipelineStateAvailable(postProcessingSource);
+                RenderPipelineStateAvailable(gameContext, renderContext, previousPass, postProcessingSource);
             }
 
             // Blit to the output.
@@ -45,6 +45,6 @@ namespace Protogame
 
         public string Name { get; set; }
 
-        public Action<RenderTarget2D> RenderPipelineStateAvailable { get; set; }
+        public Action<IGameContext, IRenderContext, IRenderPass, RenderTarget2D> RenderPipelineStateAvailable { get; set; }
     }
 }
