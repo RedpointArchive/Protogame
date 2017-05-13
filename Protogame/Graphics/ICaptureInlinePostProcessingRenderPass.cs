@@ -19,6 +19,6 @@ namespace Protogame
         /// render pass.  This callback makes the current source render
         /// target available for capture.
         /// </summary>
-        Action<RenderTarget2D> RenderPipelineStateAvailable { get; set; }
+        Action<IGameContext, IRenderContext, IRenderPass, RenderTarget2D> RenderPipelineStateAvailable { get; set; }
     }
 }

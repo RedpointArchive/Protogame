@@ -8,6 +8,7 @@ using Protoinject;
 using Prototest.Library.Version1;
 using Prototest.Library.Version13;
 using ICategorize = Prototest.Library.Version13.ICategorize;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame.Tests
 {
@@ -32,6 +33,12 @@ namespace Protogame.Tests
             private readonly ICustomPostProcessingRenderPass _customPostProcess;
 
             private readonly ICaptureInlinePostProcessingRenderPass _captureInlinePostProcess;
+
+            private readonly IGraphicsBlit _graphicsBlit;
+
+            private readonly IRenderTargetBackBufferUtilities _renderTargetBackBufferUtilities;
+
+            private RenderTarget2D _renderTarget;
 
             private class Combination
             {
@@ -81,7 +88,14 @@ namespace Protogame.Tests
 
             private bool _isValidRun;
 
-            public RenderPipelineWorld(IAssetManager assetManager, I2DRenderUtilities renderUtilities, IGraphicsFactory graphicsFactory, IAssert assert, ITestAttachment testAttachment)
+            public RenderPipelineWorld(
+                IAssetManager assetManager, 
+                I2DRenderUtilities renderUtilities, 
+                IGraphicsFactory graphicsFactory, 
+                IAssert assert, 
+                ITestAttachment testAttachment, 
+                IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities, 
+                IGraphicsBlit graphicsBlit)
             {
                 _renderUtilities = renderUtilities;
                 _assert = assert;
@@ -91,18 +105,25 @@ namespace Protogame.Tests
                 _blurPostProcess = graphicsFactory.CreateBlurPostProcessingRenderPass();
                 _customPostProcess = graphicsFactory.CreateCustomPostProcessingRenderPass("effect.MakeRed");
                 _captureInlinePostProcess = graphicsFactory.CreateCaptureInlinePostProcessingRenderPass();
-                _captureInlinePostProcess.RenderPipelineStateAvailable = d =>
+                _renderTargetBackBufferUtilities = renderTargetBackBufferUtilities;
+                _graphicsBlit = graphicsBlit;
+                _captureInlinePostProcess.RenderPipelineStateAvailable = (gameContext, renderContext, previousPass, d) =>
                 {
                     if (!_isValidRun)
                     {
                         return;
                     }
 
+                    _renderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_renderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, 1);
+
+                    // Blit to the capture target.
+                    _graphicsBlit.Blit(renderContext, d, _renderTarget);
+
 #if MANUAL_TEST
 #elif RECORDING
                     using (var writer = new StreamWriter("output" + _frame + ".png"))
                     {
-                        d.SaveAsPng(writer.BaseStream, Width, Height);
+                        _renderTarget.SaveAsPng(writer.BaseStream, Width, Height);
                     }
 #else
                     var baseStream =
@@ -110,7 +131,7 @@ namespace Protogame.Tests
                             "Protogame.Tests.Expected.RenderPipeline.output" + _frame + ".png");
                     _assert.NotNull(baseStream);
                     var memoryStream = new MemoryStream();
-                    d.SaveAsPng(memoryStream, Width, Height);
+                    _renderTarget.SaveAsPng(memoryStream, Width, Height);
                     // ReSharper disable once AssignNullToNotNullAttribute
                     var expected = new Bitmap(baseStream);
                     var actual = new Bitmap(memoryStream);
