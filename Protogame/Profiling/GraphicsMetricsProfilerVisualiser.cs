@@ -86,7 +86,8 @@ namespace Protogame
                     new Vector2(rectangle.X + x, rectangle.Y + y),
                     metrics[i].Item1 + ": " + metrics[i].Item2,
                     _defaultFont,
-                    textColor: metrics[i].Item2 > metrics[i].Item3 ? Color.Red : Color.White);
+                    textColor: metrics[i].Item2 > metrics[i].Item3 ? Color.Red : Color.White,
+                    renderShadow: false);
             }
 
             ParameterSetsCreated = 0;

@@ -64,7 +64,8 @@ namespace Protogame
                     renderContext,
                     new Vector2(rectangle.X + x, rectangle.Y + y),
                     metrics[i].Item1 + ": " + metrics[i].Item2,
-                    _defaultFont);
+                    _defaultFont,
+                    renderShadow: false);
             }
         }
     }

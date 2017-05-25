@@ -55,14 +55,16 @@ namespace Protogame
                 new Vector2(rectangle.X + rectangle.Width - 2, rectangle.Y + y),
                 "max",
                 _defaultFont,
-                HorizontalAlignment.Right);
+                HorizontalAlignment.Right,
+                renderShadow: false);
 
             _renderUtilities.RenderText(
                 renderContext,
                 new Vector2(rectangle.X + rectangle.Width - 2 - columnWidth, rectangle.Y + y),
                 "avg",
                 _defaultFont,
-                HorizontalAlignment.Right);
+                HorizontalAlignment.Right,
+                renderShadow: false);
 
             y += 20;
 
@@ -72,7 +74,8 @@ namespace Protogame
                     renderContext,
                     new Vector2(rectangle.X + 2, rectangle.Y + y),
                     entry.Key,
-                    _defaultFont);
+                    _defaultFont,
+                    renderShadow: false);
 
                 _renderUtilities.RenderText(
                     renderContext,
@@ -80,7 +83,8 @@ namespace Protogame
                     Math.Round(entry.Value) + "us",
                     _defaultFont,
                     HorizontalAlignment.Right,
-                    textColor: Math.Round(entry.Value) > MicrosecondLimit ? Color.Red : Color.White);
+                    textColor: Math.Round(entry.Value) > MicrosecondLimit ? Color.Red : Color.White,
+                    renderShadow: false);
 
                 _renderUtilities.RenderText(
                     renderContext,
@@ -88,7 +92,8 @@ namespace Protogame
                     Math.Round(_averageOverTimePeriod[entry.Key]) + "us",
                     _defaultFont,
                     HorizontalAlignment.Right,
-                    textColor: Math.Round(_averageOverTimePeriod[entry.Key]) > MicrosecondLimit ? Color.Red : Color.White);
+                    textColor: Math.Round(_averageOverTimePeriod[entry.Key]) > MicrosecondLimit ? Color.Red : Color.White,
+                    renderShadow: false);
 
                 y += 20;
             }

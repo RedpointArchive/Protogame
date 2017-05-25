@@ -62,7 +62,8 @@ namespace Protogame
                     renderContext,
                     new Vector2(2, h - 16),
                     inputBuffer.ToString(),
-                    _fontAsset);
+                    _fontAsset,
+                    renderShadow: false);
                 o = 32;
             }
 
@@ -90,7 +91,8 @@ namespace Protogame
                     new Vector2(2, h - o - a * 16),
                     logEntries[i].Item2,
                     _fontAsset,
-                    textColor: color);
+                    textColor: color,
+                    renderShadow: false);
                 a++;
             }
         }

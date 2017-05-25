@@ -143,13 +143,15 @@ namespace Protogame
                     renderContext,
                     new Vector2(rectangle.X + 2, rectangle.Y + 2 + n),
                     title,
-                    _defaultFont);
+                    _defaultFont,
+                    renderShadow: false);
 
                 _renderUtilities.RenderText(
                     renderContext,
                     new Vector2(rectangle.X + 2 + 60, rectangle.Y + 2 + n),
                     "last",
-                    _defaultFont);
+                    _defaultFont,
+                    renderShadow: false);
 
                 _renderUtilities.RenderText(
                     renderContext,
@@ -157,13 +159,15 @@ namespace Protogame
                     lastBytes + s,
                     _defaultFont,
                     HorizontalAlignment.Right,
-                    textColor: lastBytes >= 512 ? Color.Red : Color.White);
+                    textColor: lastBytes >= 512 ? Color.Red : Color.White,
+                    renderShadow: false);
 
                 _renderUtilities.RenderText(
                     renderContext,
                     new Vector2(rectangle.X + 2 + 180, rectangle.Y + 2 + n),
                     "max",
-                    _defaultFont);
+                    _defaultFont,
+                    renderShadow: false);
 
                 _renderUtilities.RenderText(
                     renderContext,
@@ -171,7 +175,8 @@ namespace Protogame
                     maxBytes + s,
                     _defaultFont,
                     HorizontalAlignment.Right,
-                    textColor: maxBytes >= 512 ? Color.Red : Color.White);
+                    textColor: maxBytes >= 512 ? Color.Red : Color.White,
+                    renderShadow: false);
             }
         }
     }
