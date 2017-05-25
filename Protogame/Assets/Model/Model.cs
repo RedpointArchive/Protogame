@@ -44,6 +44,11 @@
         private ModelVertexMapping _cachedModelVertexMapping;
 
         /// <summary>
+        /// The localised bounding region which is used for frustrum culling.
+        /// </summary>
+        private LocalisedBoundingRegion _localisedBoundingRegion;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Model"/> class.
         /// </summary>
         /// <param name="availableAnimations">
@@ -274,6 +279,28 @@
                     mappedVerticies.SetValue(vertex, i);
                 }
 
+                var radius = 0f;
+                foreach (var vert in this.Vertexes)
+                {
+                    if (vert.Position.HasValue)
+                    {
+                        if (vert.Position.Value.X > radius)
+                        {
+                            radius = vert.Position.Value.X;
+                        }
+                        if (vert.Position.Value.Y > radius)
+                        {
+                            radius = vert.Position.Value.Y;
+                        }
+                        if (vert.Position.Value.Z > radius)
+                        {
+                            radius = vert.Position.Value.Z;
+                        }
+                    }
+                }
+
+                _localisedBoundingRegion = new LocalisedBoundingRegion(radius);
+
                 vertexBuffer = new VertexBuffer(
                     renderContext.GraphicsDevice,
                     _cachedModelVertexMapping.VertexDeclaration,
@@ -331,7 +358,8 @@
                         vb,
                         new[] { mappedVerticies });
                     ib.SetData(mappedIndicies);
-                });
+                },
+                _localisedBoundingRegion);
         }
 
         public void Dispose()

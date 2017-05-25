@@ -40,24 +40,24 @@ namespace Protogame
 
             var metrics = new[]
             {
-                new Tuple<string, ulong>("cc", (ulong)graphicsMetrics.ClearCount),
-                new Tuple<string, ulong>("psc", (ulong)graphicsMetrics.PixelShaderCount),
-                new Tuple<string, ulong>("dc", (ulong)graphicsMetrics.DrawCount),
-                new Tuple<string, ulong>("pc", (ulong)graphicsMetrics.PrimitiveCount),
-                new Tuple<string, ulong>("sc", (ulong)graphicsMetrics.SpriteCount),
-                new Tuple<string, ulong>("tgc", (ulong)graphicsMetrics.TargetCount),
-                new Tuple<string, ulong>("txc", (ulong)graphicsMetrics.TextureCount),
-                new Tuple<string, ulong>("vsc", (ulong)graphicsMetrics.VertexShaderCount),
-                new Tuple<string, ulong>("vbc", (ulong)_renderCache.VertexBuffersCached),
-                new Tuple<string, ulong>("ibc", (ulong)_renderCache.IndexBuffersCached),
-                new Tuple<string, ulong>("vbac", (ulong)_renderAutoCache.VertexBuffersCached),
-                new Tuple<string, ulong>("ibac", (ulong)_renderAutoCache.IndexBuffersCached),
-                new Tuple<string, ulong>("bch", _renderBatcher.LastBatchCount),
-                new Tuple<string, ulong>("apy", _renderBatcher.LastApplyCount),
-                new Tuple<string, ulong>("sav", _renderBatcher.LastBatchSaveCount),
+                new Tuple<string, ulong, ulong>("cc", (ulong)graphicsMetrics.ClearCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("psc", (ulong)graphicsMetrics.PixelShaderCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("dc", (ulong)graphicsMetrics.DrawCount, 200),
+                new Tuple<string, ulong, ulong>("pc", (ulong)graphicsMetrics.PrimitiveCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("sc", (ulong)graphicsMetrics.SpriteCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("tgc", (ulong)graphicsMetrics.TargetCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("txc", (ulong)graphicsMetrics.TextureCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("vsc", (ulong)graphicsMetrics.VertexShaderCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("vbc", (ulong)_renderCache.VertexBuffersCached, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("ibc", (ulong)_renderCache.IndexBuffersCached, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("vbac", (ulong)_renderAutoCache.VertexBuffersCached, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("ibac", (ulong)_renderAutoCache.IndexBuffersCached, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("bch", _renderBatcher.LastBatchCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("apy", _renderBatcher.LastApplyCount, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("sav", _renderBatcher.LastBatchSaveCount, ulong.MaxValue),
                 null,
-                new Tuple<string, ulong>("pscr", ParameterSetsCreated),
-                new Tuple<string, ulong>("rrcr", RenderRequestsCreated),
+                new Tuple<string, ulong, ulong>("pscr", ParameterSetsCreated, ulong.MaxValue),
+                new Tuple<string, ulong, ulong>("rrcr", RenderRequestsCreated, ulong.MaxValue),
             };
 
             _renderUtilities.RenderLine(
@@ -85,7 +85,8 @@ namespace Protogame
                     renderContext,
                     new Vector2(rectangle.X + x, rectangle.Y + y),
                     metrics[i].Item1 + ": " + metrics[i].Item2,
-                    _defaultFont);
+                    _defaultFont,
+                    textColor: metrics[i].Item2 > metrics[i].Item3 ? Color.Red : Color.White);
             }
 
             ParameterSetsCreated = 0;

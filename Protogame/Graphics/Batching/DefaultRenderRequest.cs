@@ -21,7 +21,8 @@ namespace Protogame
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
             Matrix[] instances, 
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
 #if DEBUG
             GraphicsMetricsProfilerVisualiser.RenderRequestsCreated++;
@@ -37,6 +38,7 @@ namespace Protogame
             MeshIndexBuffer = meshIndexBuffer;
             PrimitiveType = primitiveType;
             Instances = instances;
+            BoundingRegion = boundingRegion;
             _computeCombinedBuffers = computeCombinedBuffers;
 
             // Now that the parameter set has been used in a request, prevent it
@@ -77,11 +79,18 @@ namespace Protogame
 
         public Matrix[] Instances { get; }
 
+        public LocalisedBoundingRegion BoundingRegion { get; set; }
+
         public void ComputeInstancesToCustomBuffers(List<Matrix> matrices, VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
         {
             _computeCombinedBuffers(matrices, vertexBuffer, indexBuffer);
         }
 
         public bool SupportsComputingInstancesToCustomBuffers => _computeCombinedBuffers != null;
+
+        public override string ToString()
+        {
+            return StateHash.ToString() + ": " + MeshVertexBuffer.VertexCount;
+        }
     }
 }

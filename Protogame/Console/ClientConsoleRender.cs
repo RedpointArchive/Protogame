@@ -67,10 +67,10 @@ namespace Protogame
             }
 
             var a = 0;
-            for (var i = Math.Max(0, logEntries.Count - 30); i < logEntries.Count; i++)
+            for (var i = logEntries.Count - 1; i >= Math.Max(0, logEntries.Count - 30); i--)
             {
                 var color = Color.White;
-                switch (logEntries[logEntries.Count - i - 1].Item1)
+                switch (logEntries[i].Item1)
                 {
                     case ConsoleLogLevel.Debug:
                         color = Color.White;
@@ -88,7 +88,7 @@ namespace Protogame
                 _renderUtilities.RenderText(
                     renderContext,
                     new Vector2(2, h - o - a * 16),
-                    logEntries[logEntries.Count - i - 1].Item2,
+                    logEntries[i].Item2,
                     _fontAsset,
                     textColor: color);
                 a++;

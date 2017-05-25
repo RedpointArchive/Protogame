@@ -378,6 +378,7 @@ namespace Protogame
                     indicies,
                     PrimitiveType.TriangleList,
                     transform, 
+                    null,
                     null));
         }
         

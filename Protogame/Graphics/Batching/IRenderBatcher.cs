@@ -30,7 +30,8 @@ namespace Protogame
             IndexBuffer meshIndexBuffer, 
             PrimitiveType primitiveType,
             Matrix world, 
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers);
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion);
 
         IRenderRequest CreateSingleRequestFromState(
             IRenderContext renderContext, 
@@ -40,7 +41,8 @@ namespace Protogame
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
             Matrix world, 
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers);
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion);
 
         IRenderRequest CreateInstancedRequest(
             IRenderContext renderContext,
@@ -53,7 +55,8 @@ namespace Protogame
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
             Matrix[] instanceWorldTransforms,
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers);
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion);
 
         IRenderRequest CreateInstancedRequestFromState(
             IRenderContext renderContext,
@@ -63,6 +66,7 @@ namespace Protogame
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType, 
             Matrix[] instancedWorldTransforms,
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers);
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion);
     }
 }

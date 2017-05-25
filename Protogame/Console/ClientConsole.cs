@@ -13,6 +13,7 @@ namespace Protogame
         private readonly IConsoleRender _consoleRender;
 
         private readonly List<ConsoleEntry> _log = new List<ConsoleEntry>();
+        private readonly object _logLock = new object();
         
         public ClientConsole(
             ILogShipping logShipping,
@@ -33,16 +34,19 @@ namespace Protogame
                 return;
             }
 
-            _consoleRender.Render(
-                gameContext,
-                renderContext,
-                _consoleInput.InputBuffer,
-                State,
-                _log.Select(x => new Tuple<ConsoleLogLevel, string>(x.LogLevel, x.Name == string.Empty ? x.Message : $"<{x.Name,-20}> ({x.Count,5}) {x.Message}")).ToList());
-
-            if (_log.Count > 200)
+            lock (_logLock)
             {
-                _log.RemoveRange(0, _log.Count - 200);
+                if (_log.Count > 30)
+                {
+                    _log.RemoveRange(0, _log.Count - 30);
+                }
+
+                _consoleRender.Render(
+                    gameContext,
+                    renderContext,
+                    _consoleInput.InputBuffer,
+                    State,
+                    _log.Select(x => new Tuple<ConsoleLogLevel, string>(x.LogLevel, x.Name == string.Empty ? x.Message : $"<{x.Name,-20}> ({x.Count,5}) {x.Message}")).ToList());
             }
         }
         
@@ -113,22 +117,25 @@ namespace Protogame
         {
             _logShipping.AddLog(new PendingLogForShip { Message = consoleEntry.Message, LogLevel = consoleEntry.LogLevel });
 
-            if (_log.Count > 0)
+            lock (_logLock)
             {
-                var last = _log[_log.Count - 1];
-
-                if (last.Name != string.Empty && last.Name == consoleEntry.Name && last.Message == consoleEntry.Message)
+                if (_log.Count > 0)
                 {
-                    last.Count++;
+                    var last = _log[_log.Count - 1];
+
+                    if (last.Name != string.Empty && last.Name == consoleEntry.Name && last.Message == consoleEntry.Message)
+                    {
+                        last.Count++;
+                    }
+                    else
+                    {
+                        _log.Add(consoleEntry);
+                    }
                 }
                 else
                 {
                     _log.Add(consoleEntry);
                 }
-            }
-            else
-            {
-                _log.Add(consoleEntry);
             }
         }
 

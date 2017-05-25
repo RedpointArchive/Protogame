@@ -11,9 +11,12 @@ namespace Protogame
     {
         private readonly INode _node;
 
+        private readonly IFinalTransform _finalTransform;
+
         private readonly I3DRenderUtilities _renderUtilities;
 
         private readonly ITextureFromHintPath _textureFromHintPath;
+
         private readonly IRenderBatcher _renderBatcher;
 
         private readonly IAssetManager _assetManager;
@@ -88,6 +91,7 @@ namespace Protogame
             IRenderBatcher renderBatcher)
         {
             _node = node;
+            _finalTransform = new DefaultFinalTransform(this, _node);
             _renderUtilities = renderUtilities;
             _textureFromHintPath = textureFromHintPath;
             _renderBatcher = renderBatcher;
@@ -128,7 +132,7 @@ namespace Protogame
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
+        public IFinalTransform FinalTransform => _finalTransform;
 
         public IAnimation Animation { get; set; }
 

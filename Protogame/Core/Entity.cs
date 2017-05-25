@@ -11,11 +11,14 @@ namespace Protogame
     /// <module>Core API</module>
     public class Entity : IBoundingBox, IEntity
     {
+        private readonly IFinalTransform _finalTransform;
+
         /// <summary>
         /// Initializes a new entity.
         /// </summary>
         public Entity()
         {
+            _finalTransform = new DefaultFinalTransform(this, null);
             Transform = new DefaultTransform();
         }
         
@@ -96,6 +99,6 @@ namespace Protogame
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform => this.GetDetachedFinalTransformImplementation();
+        public IFinalTransform FinalTransform => _finalTransform;
     }
 }

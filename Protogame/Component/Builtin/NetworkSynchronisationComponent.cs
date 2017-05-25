@@ -761,15 +761,15 @@ namespace Protogame
                         if (timeMachine != null)
                         {
                             var lastValueRelative = lastValueSerialized.DeserializeFromNetwork();
-                            var lastValueAbsolute = DefaultFinalTransform.Create(entity.FinalTransform.ParentObject,
+                            var lastValueAbsolute = new TemporaryFinalTransform(entity.FinalTransform.ParentObject,
                                 new TransformContainer(lastValueRelative));
 
                             var clientLocalTickValueRelative = timeMachine.Get(_localTick) as ITransform;
-                            var clientLocalTickValueAbsolute = DefaultFinalTransform.Create(entity.FinalTransform.ParentObject,
+                            var clientLocalTickValueAbsolute = new TemporaryFinalTransform(entity.FinalTransform.ParentObject,
                                 new TransformContainer(clientLocalTickValueRelative));
 
                             var clientRewindValueRelative = timeMachine.Get(_localTick - _networkEngine.ClientRenderDelayTicks) as ITransform;
-                            var clientRewindValueAbsolute = DefaultFinalTransform.Create(entity.FinalTransform.ParentObject,
+                            var clientRewindValueAbsolute = new TemporaryFinalTransform(entity.FinalTransform.ParentObject,
                                 new TransformContainer(clientRewindValueRelative));
 
                             var lastValuePoint = Vector3.Transform(Vector3.Zero, lastValueAbsolute.AbsoluteMatrix);

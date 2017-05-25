@@ -95,9 +95,16 @@ namespace Protogame
             }
             else
             {
-                var v = _gen0PerformanceCounter.RawValue;
-                gen0Value = v - _lastGen0Count;
-                _lastGen0Count = v;
+                try
+                {
+                    var v = _gen0PerformanceCounter.RawValue;
+                    gen0Value = v - _lastGen0Count;
+                    _lastGen0Count = v;
+                }
+                catch
+                {
+                    gen0Value = 0;
+                }
             }
             if (_gen1PerformanceCounter == null)
             {
@@ -105,9 +112,16 @@ namespace Protogame
             }
             else
             {
-                var v = _gen1PerformanceCounter.RawValue;
-                gen1Value = v - _lastGen1Count;
-                _lastGen1Count = v;
+                try
+                {
+                    var v = _gen1PerformanceCounter.RawValue;
+                    gen1Value = v - _lastGen1Count;
+                    _lastGen1Count = v;
+                }
+                catch
+                {
+                    gen1Value = 0;
+                }
             }
             if (_gen2PerformanceCounter == null)
             {
@@ -115,9 +129,16 @@ namespace Protogame
             }
             else
             {
-                var v = _gen2PerformanceCounter.RawValue;
-                gen2Value = v - _lastGen2Count;
-                _lastGen2Count = v;
+                try
+                {
+                    var v = _gen2PerformanceCounter.RawValue;
+                    gen2Value = v - _lastGen2Count;
+                    _lastGen2Count = v;
+                }
+                catch
+                {
+                    gen2Value = 0;
+                }
             }
 
             var metrics = new[]

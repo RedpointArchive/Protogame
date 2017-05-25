@@ -28,14 +28,16 @@ namespace Protogame
         public IRenderRequest CreateSingleRequest(IRenderContext renderContext, RasterizerState rasterizerState, BlendState blendState,
             DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world,
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
             throw new NotImplementedException();
         }
 
         public IRenderRequest CreateSingleRequestFromState(IRenderContext renderContext, IEffect effect,
             IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer,
-            PrimitiveType primitiveType, Matrix world, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            PrimitiveType primitiveType, Matrix world, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
             throw new NotImplementedException();
         }
@@ -43,14 +45,16 @@ namespace Protogame
         public IRenderRequest CreateInstancedRequest(IRenderContext renderContext, RasterizerState rasterizerState,
             BlendState blendState, DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType,
-            Matrix[] instanceWorldTransforms, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            Matrix[] instanceWorldTransforms, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
             throw new NotImplementedException();
         }
 
         public IRenderRequest CreateInstancedRequestFromState(IRenderContext renderContext, IEffect effect,
             IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer,
-            PrimitiveType primitiveType, Matrix[] instancedWorldTransforms, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            PrimitiveType primitiveType, Matrix[] instancedWorldTransforms, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
             throw new NotImplementedException();
         }
