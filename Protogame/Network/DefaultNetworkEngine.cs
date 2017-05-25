@@ -64,6 +64,11 @@ namespace Protogame
 
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
+            if (gameContext.World == null)
+            {
+                return;
+            }
+
             UpdateFrames();
 
             if (gameContext.World != _currentWorld || _shadowWorld == null)

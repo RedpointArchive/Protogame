@@ -8,6 +8,7 @@ using MonoGame.Framework.Content.Pipeline.Builder;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 
 namespace Protogame
 {
@@ -82,14 +83,7 @@ namespace Protogame
                     Environment.CurrentDirectory,
                     Environment.CurrentDirectory,
                     Environment.CurrentDirectory);
-                var dictionary = new OpaqueDataDictionary();
-                dictionary["GenerateMipmaps"] = importOptions.Contains("GenerateMipmaps");
-                dictionary["ResizeToPowerOfTwo"] = allowResizeToPowerOfTwo && !importOptions.Contains("NoResizeToPowerOfTwo");
-                dictionary["MakeSquare"] = allowMakeSquare && !importOptions.Contains("MakeSquare");
-                dictionary["TextureFormat"] = importOptions.Contains("NoCompress") ? TextureProcessorOutputFormat.Color : TextureProcessorOutputFormat.Compressed;
-                var processor = manager.CreateProcessor("TextureProcessor", dictionary);
-                var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
-                var content = (TextureContent)processor.Process(monogameOutput, context);
+                TextureContent content = CompileTexture(assetFile, platform, monogameOutput, importOptions, allowResizeToPowerOfTwo, allowMakeSquare, manager);
 
                 Console.WriteLine("Texture " + assetFile.Name + " resized " + originalWidth + "x" + originalHeight + " -> " + content.Faces[0][0].Width + "x" + content.Faces[0][0].Height);
 
@@ -109,6 +103,36 @@ namespace Protogame
                 {
                 }
             }
+        }
+        
+        [HandleProcessCorruptedStateExceptions]
+        private static TextureContent CompileTexture(IAssetFsFile assetFile, TargetPlatform platform, TextureContent monogameOutput, string[] importOptions, bool allowResizeToPowerOfTwo, bool allowMakeSquare, PipelineManager manager)
+        {
+            var dictionary = new OpaqueDataDictionary();
+            dictionary["GenerateMipmaps"] = importOptions.Contains("GenerateMipmaps");
+            dictionary["ResizeToPowerOfTwo"] = allowResizeToPowerOfTwo && !importOptions.Contains("NoResizeToPowerOfTwo");
+            dictionary["MakeSquare"] = allowMakeSquare && !importOptions.Contains("MakeSquare");
+            dictionary["TextureFormat"] = importOptions.Contains("NoCompress") ? TextureProcessorOutputFormat.Color : TextureProcessorOutputFormat.Compressed;
+            var processor = manager.CreateProcessor("TextureProcessor", dictionary);
+            var context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
+            TextureContent content;
+
+            try
+            {
+                content = (TextureContent)processor.Process(monogameOutput, context);
+            }
+            catch (AccessViolationException)
+            {
+                // Sometimes the nvtt compressor crashes on some textures.  Workaround by turning off compression
+                // in this case.
+                Console.WriteLine("WARNING: Disabling texture compression on " + assetFile.Name + " due to nvtt bugs");
+                dictionary["TextureFormat"] = TextureProcessorOutputFormat.Color;
+                processor = manager.CreateProcessor("TextureProcessor", dictionary);
+                context = new DummyContentProcessorContext(TargetPlatformCast.ToMonoGamePlatform(platform));
+                content = (TextureContent)processor.Process(monogameOutput, context);
+            }
+
+            return content;
         }
 
         private bool IsPowerOfTwo(ulong x)

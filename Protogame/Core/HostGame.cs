@@ -181,10 +181,13 @@ namespace Protogame
 
             _splashSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             var rect = new Rectangle(0, 0, width, height);
-            _splashSpriteBatch.Draw(
-                _splash, 
-                rect, 
-                Color.White);
+            if (_splash != null)
+            {
+                _splashSpriteBatch.Draw(
+                    _splash,
+                    rect,
+                    Color.White);
+            }
             _splashSpriteBatch.End();
             
             if (!_hasStartedDelayLoad && _coreGame == null)

@@ -7,8 +7,11 @@ namespace Protogame
     /// </summary>
     public class BoundingBox : IBoundingBox
     {
+        private readonly IFinalTransform _finalTransform;
+
         public BoundingBox()
         {
+            _finalTransform = new DefaultFinalTransform(this, null);
             Transform = new DefaultTransform();
         }
 
@@ -65,9 +68,6 @@ namespace Protogame
         /// </summary>
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform
-        {
-            get { return this.GetDetachedFinalTransformImplementation(); }
-        }
+        public IFinalTransform FinalTransform => _finalTransform;
     }
 }

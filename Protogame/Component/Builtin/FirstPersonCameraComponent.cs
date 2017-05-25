@@ -7,6 +7,7 @@ namespace Protogame
     public class FirstPersonCameraComponent : IPrerenderableComponent, IHasTransform, IEnabledComponent
     {
         private readonly INode _node;
+        private readonly IFinalTransform _finalTransform;
         private readonly IDebugRenderer _debugRenderer;
 
         private readonly IFirstPersonCamera _firstPersonCamera;
@@ -17,6 +18,7 @@ namespace Protogame
             IFirstPersonCamera firstPersonCamera)
         {
             _node = node;
+            _finalTransform = new DefaultFinalTransform(this, _node);
             _debugRenderer = debugRenderer;
             _firstPersonCamera = firstPersonCamera;
             HeadOffset = new Vector3(0, 0, 0);
@@ -120,10 +122,7 @@ namespace Protogame
             }
         }
 
-        public IFinalTransform FinalTransform
-        {
-            get { return this.GetAttachedFinalTransformImplementation(_node); }
-        }
+        public IFinalTransform FinalTransform => _finalTransform;
 
         /// <summary>
         /// Computes a world space directional vector based on a directional vector local to the camera, using the 

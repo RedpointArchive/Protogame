@@ -303,6 +303,7 @@ namespace Protogame
         public void AssignHost(HostGame hostGame)
         {
             _hostGame = hostGame;
+            _hostGame.Exiting += _hostGame_Exiting;
 
             var assetContentManager = new AssetContentManager(_hostGame.Services);
             _hostGame.Content = assetContentManager;
@@ -311,7 +312,12 @@ namespace Protogame
             // We can't load the loading screen until we have access to MonoGame's asset content manager.
             _loadingScreen = _kernel.Get<ILoadingScreen>();
         }
-        
+
+        private void _hostGame_Exiting(object sender, EventArgs e)
+        {
+            Exiting?.Invoke(sender, e);
+        }
+
         public void LoadContent()
         {
             _consoleHandle.LogDebug("LoadContent called");
@@ -351,6 +357,8 @@ namespace Protogame
         {
             _consoleHandle.LogDebug("ResourceDestroyed called ({0}, {1})", name, tag);
         }
+
+        public event EventHandler Exiting;
 
         public void Exit()
         {

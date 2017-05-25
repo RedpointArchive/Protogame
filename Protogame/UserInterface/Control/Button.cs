@@ -105,7 +105,7 @@ namespace Protogame
                 {
                     if (_shouldAppearPressedWhenMouseIsOver)
                     {
-                        if (Click != null && State != ButtonUIState.Clicked)
+                        if (Click != null && State == ButtonUIState.Clicked)
                         {
                             Click(this, new EventArgs());
                         }

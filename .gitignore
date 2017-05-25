@@ -37,3 +37,5 @@ Protogame.combined.xml
 
 packages/
 Protogame.Tests/Expected.RenderPipeline.output*.bin
+
+HiveMP.*/

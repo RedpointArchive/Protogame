@@ -228,12 +228,29 @@ namespace Protogame
 
         private IEffectParameterSet GetEffectParameterSet(IMaterial material, ref bool changedRenderRequest, ref string changedRenderRequestBy)
         {
+            Texture2D lastCachedDiffuseTexture = null;
+            Texture2D lastCachedNormalMapTexture = null;
+            Texture2D lastCachedSpecularColorMapTexture = null;
+
+            if (_lastCachedDiffuseTexture == null || _lastCachedDiffuseTexture.IsReady)
+            {
+                lastCachedDiffuseTexture = _lastCachedDiffuseTexture?.Asset?.Texture;
+            }
+            if (_lastCachedNormalMapTexture == null || _lastCachedNormalMapTexture.IsReady)
+            {
+                lastCachedNormalMapTexture = _lastCachedNormalMapTexture?.Asset?.Texture;
+            }
+            if (_lastCachedSpecularColorMapTexture == null || _lastCachedSpecularColorMapTexture.IsReady)
+            {
+                lastCachedSpecularColorMapTexture = _lastCachedSpecularColorMapTexture?.Asset?.Texture;
+            }
+
             if (_effectUsedForParameterSetCache == _cachedEffect &&
                 changedRenderRequest == false &&
-                (/*!_lastDidSetDiffuseTexture || */_lastSetDiffuseTexture == _lastCachedDiffuseTexture?.Asset?.Texture) &&
-                (/*!_lastDidSetNormalMap || */_lastSetNormalMap == _lastCachedNormalMapTexture?.Asset?.Texture) &&
+                (/*!_lastDidSetDiffuseTexture || */_lastSetDiffuseTexture == lastCachedDiffuseTexture) &&
+                (/*!_lastDidSetNormalMap || */_lastSetNormalMap == lastCachedNormalMapTexture) &&
                 (!_lastDidSetSpecularPower || _lastSetSpecularPower == _lastCachedSpecularPower) &&
-                (/*!_lastDidSetSpecularColorMap || */_lastSetSpecularColorMap == _lastCachedSpecularColorMapTexture?.Asset?.Texture) &&
+                (/*!_lastDidSetSpecularColorMap || */_lastSetSpecularColorMap == lastCachedSpecularColorMapTexture) &&
                 (!_lastDidSetSpecularColor || _lastSetSpecularColor == _lastCachedSpecularColor) &&
                 (!_lastDidSetDiffuseColor || _lastSetDiffuseColor == (material.ColorDiffuse ?? Color.Black)))
             {
@@ -263,7 +280,8 @@ namespace Protogame
 
             if (_cachedEffectParameterSet.HasSemantic<ITextureEffectSemantic>())
             {
-                if (_lastCachedDiffuseTexture?.Asset?.Texture != null)
+                if (_lastCachedDiffuseTexture != null &&
+                    _lastCachedDiffuseTexture.IsReady)
                 {
                     _cachedEffectParameterSet.GetSemantic<ITextureEffectSemantic>().Texture =
                         _lastCachedDiffuseTexture.Asset.Texture;
@@ -274,7 +292,8 @@ namespace Protogame
 
             if (_cachedEffectParameterSet.HasSemantic<INormalMapEffectSemantic>())
             {
-                if (_lastCachedNormalMapTexture?.Asset?.Texture != null)
+                if (_lastCachedNormalMapTexture != null &&
+                    _lastCachedNormalMapTexture.IsReady)
                 {
                     _cachedEffectParameterSet.GetSemantic<INormalMapEffectSemantic>().NormalMap =
                         _lastCachedNormalMapTexture.Asset.Texture;
@@ -292,7 +311,7 @@ namespace Protogame
                     _lastSetSpecularPower = _lastCachedSpecularPower.Value;
                     _lastDidSetSpecularPower = true;
 
-                    if (_lastCachedSpecularColorMapTexture != null)
+                    if (_lastCachedSpecularColorMapTexture != null && _lastCachedSpecularColorMapTexture.IsReady)
                     {
                         semantic.SpecularColorMap = _lastCachedSpecularColorMapTexture.Asset.Texture;
                         _lastSetSpecularColorMap = _lastCachedSpecularColorMapTexture.Asset.Texture;

@@ -85,6 +85,11 @@ namespace Protogame
         private readonly IComponentCallable<List<ILight>> _getLights;
 
         /// <summary>
+        /// The final transform object, which is cached after first access.
+        /// </summary>
+        private IFinalTransform _finalTransform;
+
+        /// <summary>
         /// This interface gets get called very frequently, so we optimize their invocation by
         /// iterating over them and calling them directly rather than using the <c>RegisterCallable</c>
         /// infrastructure.
@@ -250,7 +255,12 @@ namespace Protogame
                     throw new InvalidOperationException("Componentized entities must be created through the dependency injection kernel!");
                 }
 
-                return this.GetAttachedFinalTransformImplementation(_node);
+                if (_finalTransform == null)
+                {
+                    _finalTransform = new DefaultFinalTransform(this, _node);
+                }
+
+                return _finalTransform;
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿namespace Protogame
 {
     using Microsoft.Xna.Framework;
+    using Protoinject;
 
     /// <summary>
     /// Represents a wall which blocks raycasts by AI agents.
@@ -13,9 +14,12 @@
     public class Wall : IEntity
     {
         private readonly I2DRenderUtilities m_2DRenderUtilities;
+        private readonly IFinalTransform _finalTransform;
 
-        public Wall(I2DRenderUtilities twoDRenderUtilities, Vector2 start, Vector2 end)
+        public Wall(I2DRenderUtilities twoDRenderUtilities, INode node, Vector2 start, Vector2 end)
         {
+            _finalTransform = new DefaultFinalTransform(this, node);
+
             this.Start = start;
             this.End = end;
             this.DebugRender = false;
@@ -107,9 +111,6 @@
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform
-        {
-            get { return this.GetDetachedFinalTransformImplementation(); }
-        }
+        public IFinalTransform FinalTransform => _finalTransform;
     }
 }

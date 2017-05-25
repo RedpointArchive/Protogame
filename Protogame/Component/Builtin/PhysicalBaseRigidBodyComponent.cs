@@ -9,6 +9,7 @@ namespace Protogame
     public abstract class PhysicalBaseRigidBodyComponent : IUpdatableComponent, IPhysicalComponent, IServerUpdatableComponent, IEnabledComponent, ISynchronisedObject, IHasTransform
     {
         private readonly INode _node;
+        private readonly IFinalTransform _finalTransform;
         private readonly IPhysicsEngine _physicsEngine;
 
         private Shape _shape;
@@ -30,6 +31,7 @@ namespace Protogame
         protected PhysicalBaseRigidBodyComponent(INode node, IPhysicsEngine physicsEngine)
         {
             _node = node;
+            _finalTransform = new DefaultFinalTransform(this, node);
             _physicsEngine = physicsEngine;
             _addedRigidBody = false;
 
@@ -290,7 +292,7 @@ namespace Protogame
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
+        public IFinalTransform FinalTransform => _finalTransform;
 
         public void SetBatchedEntity(BatchedControlEntity entity)
         {

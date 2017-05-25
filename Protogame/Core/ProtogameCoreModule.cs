@@ -64,10 +64,6 @@ namespace Protogame
             kernel.Bind<IRenderBatcher>().To<DefaultRenderBatcher>().InSingletonScope();
 
             kernel.Bind<ILoadingScreen>().To<DefaultLoadingScreen>().InSingletonScope();
-
-            kernel.Bind<ICoroutineScheduler>().To<DefaultCoroutineScheduler>().InSingletonScope();
-            kernel.Bind<IEngineHook>().To<CoroutineEngineHook>();
-            kernel.Bind<ICoroutine>().To<DefaultCoroutine>();
         }
     }
 }

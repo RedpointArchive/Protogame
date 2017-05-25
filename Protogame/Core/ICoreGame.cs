@@ -76,5 +76,7 @@ namespace Protogame
         void CloseRequested(out bool cancel);
 
         void Exit();
+
+        event EventHandler Exiting;
     }
 }
