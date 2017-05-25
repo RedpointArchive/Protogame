@@ -164,6 +164,23 @@ namespace Protogame
         private HostGame _hostGame;
 
         /// <summary>
+        /// Whether resize events can be handled.
+        /// </summary>
+        private bool _shouldHandleResize;
+
+        /// <summary>
+        /// The current known window width, this is used to detect window maximize / minimize, which
+        /// doesn't seem to fire OnClientSizeChanged.
+        /// </summary>
+        private int _windowWidth;
+
+        /// <summary>
+        /// The current known window height, this is used to detect window maximize / minimize, which
+        /// doesn't seem to fire OnClientSizeChanged.
+        /// </summary>
+        private int _windowHeight;
+
+        /// <summary>
         /// Gets the current game context.  You should not generally access this property; outside
         /// an explicit Update or Render loop, the state of the game context is not guaranteed.  Inside
         /// the context of an Update or Render loop, the game context is already provided.
@@ -305,6 +322,10 @@ namespace Protogame
             _hostGame = hostGame;
             _hostGame.Exiting += _hostGame_Exiting;
 
+            _shouldHandleResize = true;
+            _windowWidth = _hostGame.Window.ClientBounds.Width;
+            _windowHeight = _hostGame.Window.ClientBounds.Height;
+
             var assetContentManager = new AssetContentManager(_hostGame.Services);
             _hostGame.Content = assetContentManager;
             _kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
@@ -367,6 +388,22 @@ namespace Protogame
 #endif
         }
 
+        private void OnClientSizeChanged()
+        {
+            if (!_shouldHandleResize)
+            {
+                return;
+            }
+
+            _shouldHandleResize = false;
+            _windowWidth = _hostGame.Window.ClientBounds.Width;
+            _windowHeight = _hostGame.Window.ClientBounds.Height;
+            GameContext.Graphics.PreferredBackBufferWidth = _windowWidth;
+            GameContext.Graphics.PreferredBackBufferHeight = _windowHeight;
+            GameContext.Graphics.ApplyChanges();
+            _shouldHandleResize = true;
+        }
+
         protected virtual async Task LoadContentAsync()
         {
             if (!_hasDoneInitialLoadContent)
@@ -384,21 +421,9 @@ namespace Protogame
 #if PLATFORM_WINDOWS
                 // Register for the window resize event so we can scale
                 // the window correctly.
-                var shouldHandleResize = true;
                 _hostGame.Window.ClientSizeChanged += (sender, e) =>
                 {
-                    if (!shouldHandleResize)
-                    {
-                        return;
-                    }
-
-                    shouldHandleResize = false;
-                    var width = _hostGame.Window.ClientBounds.Width;
-                    var height = _hostGame.Window.ClientBounds.Height;
-                    GameContext.Graphics.PreferredBackBufferWidth = width;
-                    GameContext.Graphics.PreferredBackBufferHeight = height;
-                    GameContext.Graphics.ApplyChanges();
-                    shouldHandleResize = true;
+                    OnClientSizeChanged();
                 };
 
                 // Register for the window close event so we can dispatch
@@ -531,6 +556,14 @@ namespace Protogame
 
                 StartupTrace.EmittedTimingEntries = true;
             }
+            
+#if PLATFORM_WINDOWS
+            if (_windowWidth != _hostGame.Window.ClientBounds.Width ||
+                _windowHeight != _hostGame.Window.ClientBounds.Height)
+            {
+                OnClientSizeChanged();
+            }
+#endif
 
             using (_profiler.Measure("update", GameContext.FrameCount.ToString()))
             {
