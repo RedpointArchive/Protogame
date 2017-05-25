@@ -279,26 +279,28 @@
                     mappedVerticies.SetValue(vertex, i);
                 }
 
-                var radius = 0f;
+                float maxX = 0f, maxY = 0f, maxZ = 0f;
                 foreach (var vert in this.Vertexes)
                 {
                     if (vert.Position.HasValue)
                     {
-                        if (vert.Position.Value.X > radius)
+                        if (Math.Abs(vert.Position.Value.X) > maxX)
                         {
-                            radius = vert.Position.Value.X;
+                            maxX = Math.Abs(vert.Position.Value.X);
                         }
-                        if (vert.Position.Value.Y > radius)
+                        if (Math.Abs(vert.Position.Value.Y) > maxY)
                         {
-                            radius = vert.Position.Value.Y;
+                            maxY = Math.Abs(vert.Position.Value.Y);
                         }
-                        if (vert.Position.Value.Z > radius)
+                        if (Math.Abs(vert.Position.Value.Z) > maxZ)
                         {
-                            radius = vert.Position.Value.Z;
+                            maxZ = Math.Abs(vert.Position.Value.Z);
                         }
                     }
                 }
 
+                var radius = new Vector3(maxX, maxY, maxZ).Length() * 2;
+                
                 _localisedBoundingRegion = new LocalisedBoundingRegion(radius);
 
                 vertexBuffer = new VertexBuffer(
