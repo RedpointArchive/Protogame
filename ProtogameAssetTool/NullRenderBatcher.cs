@@ -29,12 +29,12 @@ namespace ProtogameAssetTool
             throw new NotSupportedException();
         }
 
-        public IRenderRequest CreateSingleRequest(IRenderContext renderContext, RasterizerState rasterizerState, BlendState blendState, DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+        public IRenderRequest CreateSingleRequest(IRenderContext renderContext, RasterizerState rasterizerState, BlendState blendState, DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers, LocalisedBoundingRegion boundingRegion)
         {
             throw new NotSupportedException();
         }
 
-        public IRenderRequest CreateSingleRequestFromState(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+        public IRenderRequest CreateSingleRequestFromState(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix world, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers, LocalisedBoundingRegion boundingRegion)
         {
             throw new NotSupportedException();
         }
@@ -43,12 +43,12 @@ namespace ProtogameAssetTool
             BlendState blendState, DepthStencilState depthStencilState, IEffect effect, IEffectParameterSet effectParameterSet,
             VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType,
             Matrix[] instanceWorldTransforms,
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers, LocalisedBoundingRegion boundingRegion)
         {
             throw new NotSupportedException();
         }
 
-        public IRenderRequest CreateInstancedRequestFromState(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix[] instancedWorldTransforms, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+        public IRenderRequest CreateInstancedRequestFromState(IRenderContext renderContext, IEffect effect, IEffectParameterSet effectParameterSet, VertexBuffer meshVertexBuffer, IndexBuffer meshIndexBuffer, PrimitiveType primitiveType, Matrix[] instancedWorldTransforms, Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers, LocalisedBoundingRegion boundingRegion)
         {
             throw new NotSupportedException();
         }

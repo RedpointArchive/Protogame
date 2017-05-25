@@ -10,6 +10,8 @@ namespace Protogame
     /// <interface_ref>Protogame.ITileset</interface_ref>
     public class DefaultTileset : ITileset
     {
+        private readonly IFinalTransform _finalTransform;
+
         /// <summary>
         /// The m_ cell size height.
         /// </summary>
@@ -40,6 +42,7 @@ namespace Protogame
         /// </summary>
         public DefaultTileset()
         {
+            _finalTransform = new DefaultFinalTransform(this, null);
             this.m_Entities = new IEntity[0];
             this.m_CellSizeWidth = 0;
             this.m_CellSizeHeight = 0;
@@ -128,9 +131,6 @@ namespace Protogame
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform
-        {
-            get { return this.GetDetachedFinalTransformImplementation(); }
-        }
+        public IFinalTransform FinalTransform => _finalTransform;
     }
 }

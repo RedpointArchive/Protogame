@@ -2,6 +2,7 @@
 #pragma warning disable 1591
 
 using Microsoft.Xna.Framework;
+using Protoinject;
 
 namespace Protogame
 {
@@ -13,43 +14,28 @@ namespace Protogame
     /// <interface_ref>Protogame.IFinalTransform</interface_ref>
     public class DefaultFinalTransform : IFinalTransform
     {
-        private IHasTransform _parent;
+        private IHasTransform _currentObject;
 
-        private IHasTransform _child;
+        private INode _currentNode;
 
-        private DefaultFinalTransform()
+        public DefaultFinalTransform(IHasTransform currentObject, INode currentNode)
         {
-        }
-
-        public static IFinalTransform Create(IHasTransform parent, IHasTransform child)
-        {
-            var attachedTransform = new DefaultFinalTransform
-            {
-                _parent = parent,
-                _child = child
-            };
-            return attachedTransform;
-        }
-
-        public static IFinalTransform Create(IHasTransform detachedChild)
-        {
-            var attachedTransform = new DefaultFinalTransform
-            {
-                _child = detachedChild
-            };
-            return attachedTransform;
+            _currentObject = currentObject;
+            _currentNode = currentNode;
         }
 
         public Matrix AbsoluteMatrix
         {
             get
             {
-                if (_parent != null)
+                var parent = _currentNode?.Parent?.UntypedValue as IHasTransform;
+
+                if (parent != null)
                 {
-                    return _child.Transform.LocalMatrix * _parent.FinalTransform.AbsoluteMatrix;
+                    return _currentObject.Transform.LocalMatrix * parent.FinalTransform.AbsoluteMatrix;
                 }
 
-                return _child.Transform.LocalMatrix;
+                return _currentObject.Transform.LocalMatrix;
             }
         }
 
@@ -57,12 +43,14 @@ namespace Protogame
         {
             get
             {
-                if (_parent != null)
+                var parent = _currentNode?.Parent?.UntypedValue as IHasTransform;
+
+                if (parent != null)
                 {
-                    return _child.Transform.LocalMatrixWithoutScale * _parent.FinalTransform.AbsoluteMatrixWithoutScale;
+                    return _currentObject.Transform.LocalMatrixWithoutScale * parent.FinalTransform.AbsoluteMatrixWithoutScale;
                 }
 
-                return _child.Transform.LocalMatrixWithoutScale;
+                return _currentObject.Transform.LocalMatrixWithoutScale;
             }
         }
 
@@ -83,19 +71,21 @@ namespace Protogame
             }
         }
 
-        public IFinalTransform Parent => _parent.FinalTransform;
+        public IFinalTransform Parent => (_currentNode?.Parent?.UntypedValue as IHasTransform)?.FinalTransform;
 
-        public IHasTransform ParentObject => _parent;
+        public IHasTransform ParentObject => _currentNode?.Parent?.UntypedValue as IHasTransform;
 
-        public ITransform Child => _child.Transform;
+        public ITransform Child => _currentObject.Transform;
 
-        public IHasTransform ChildObject => _child;
+        public IHasTransform ChildObject => _currentObject;
 
         public override string ToString()
         {
-            if (_child.Transform.IsSRTMatrix)
+            if (_currentObject.Transform.IsSRTMatrix)
             {
-                if ((_parent != null && _parent.Transform.IsSRTMatrix) || _parent == null)
+                var parent = _currentNode?.Parent?.UntypedValue as IHasTransform;
+
+                if ((parent != null && parent.Transform.IsSRTMatrix) || parent == null)
                 {
                     return "AT SRT P: " + AbsolutePosition + " R: " + AbsoluteRotation + " M: " + AbsoluteMatrix;
                 }

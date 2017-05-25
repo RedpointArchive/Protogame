@@ -58,16 +58,14 @@ namespace Protogame
             kernel.Bind<ILightFactory>().ToFactory().DiscardNodeOnResolve();
             kernel.Bind<IStandardDirectionalLight>().To<DefaultStandardDirectionalLight>().InParentScope().AllowManyPerScope();
             kernel.Bind<IStandardPointLight>().To<DefaultStandardPointLight>().InParentScope().AllowManyPerScope();
-            
+            kernel.Bind<ILightRenderer<IStandardDirectionalLight>>().To<DefaultStandardDirectionalLightRenderer>().InSingletonScope();
+            kernel.Bind<ILightRenderer<IStandardPointLight>>().To<DefaultStandardPointLightRenderer>().InSingletonScope();
+
             kernel.Bind<IDebugRenderer>().To<NullDebugRenderer>().InSingletonScope();
 
             kernel.Bind<IRenderBatcher>().To<DefaultRenderBatcher>().InSingletonScope();
 
             kernel.Bind<ILoadingScreen>().To<DefaultLoadingScreen>().InSingletonScope();
-
-            kernel.Bind<ICoroutineScheduler>().To<DefaultCoroutineScheduler>().InSingletonScope();
-            kernel.Bind<IEngineHook>().To<CoroutineEngineHook>();
-            kernel.Bind<ICoroutine>().To<DefaultCoroutine>();
         }
     }
 }

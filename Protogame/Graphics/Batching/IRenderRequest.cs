@@ -28,6 +28,8 @@ namespace Protogame
 
         Matrix[] Instances { get; }
 
+        LocalisedBoundingRegion BoundingRegion { get; }
+
         void ComputeInstancesToCustomBuffers(List<Matrix> matrices, VertexBuffer vertexBuffer, IndexBuffer indexBuffer);
 
         bool SupportsComputingInstancesToCustomBuffers { get; }

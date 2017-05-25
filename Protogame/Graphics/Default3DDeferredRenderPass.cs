@@ -257,9 +257,9 @@ namespace Protogame
             renderContext.GraphicsDevice.BlendState = _lightBlendState;
             renderContext.GraphicsDevice.DepthStencilState = _lightDepthStencilState;
             
-            foreach (var light in lights)
+            foreach (var renderPair in lights.GroupBy(x => x.LightRenderer))
             {
-                light.Render(gameContext, renderContext, lightContext);
+                renderPair.Key.Render(gameContext, renderContext, lightContext, renderPair);
             }
 
             renderContext.GraphicsDevice.BlendState = _previousBlendState;

@@ -7,6 +7,8 @@ namespace Protogame
     {
         private readonly INode _node;
 
+        private readonly IFinalTransform _finalTransform;
+
         private readonly I3DRenderUtilities _renderUtilities;
 
         private IAssetReference<UberEffectAsset> _defaultSurfaceEffect;
@@ -14,6 +16,7 @@ namespace Protogame
         public Render3DCubeComponent(INode node, I3DRenderUtilities renderUtilities, IAssetManager assetManager)
         {
             _node = node;
+            _finalTransform = new DefaultFinalTransform(this, node);
             _renderUtilities = renderUtilities;
             _defaultSurfaceEffect = assetManager.Get<UberEffectAsset>("effect.BuiltinSurface");
 
@@ -29,7 +32,7 @@ namespace Protogame
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform => this.GetAttachedFinalTransformImplementation(_node);
+        public IFinalTransform FinalTransform => _finalTransform;
 
         public void Render(ComponentizedEntity entity, IGameContext gameContext, IRenderContext renderContext)
         {

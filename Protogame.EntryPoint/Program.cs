@@ -122,7 +122,10 @@ public static class Program
     {
         var result = StartupSequence.Start(args);
         _kernel = result.Kernel;
-        _game = new HostGame(result.GameInstance);
+        if (result.GameInstance != null)
+        {
+            _game = new HostGame(result.GameInstance);
+        }
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
         _server = result.ServerInstance;
 #endif

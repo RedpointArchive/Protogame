@@ -34,6 +34,9 @@ namespace Protogame
             kernel.Bind<IRemoteClient>().To<NullRemoteClient>().InSingletonScope();
             kernel.Bind<ILogShipping>().To<NullLogShipping>().InSingletonScope();
 #endif
+            kernel.Bind<ICoroutineScheduler>().To<DefaultCoroutineScheduler>().InSingletonScope();
+            kernel.Bind<IEngineHook>().To<CoroutineEngineHook>();
+            kernel.Bind<ICoroutine>().To<DefaultCoroutine>();
         }
     }
 }

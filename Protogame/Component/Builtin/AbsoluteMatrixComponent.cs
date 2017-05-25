@@ -1,17 +1,20 @@
-﻿namespace Protogame
+﻿using Protoinject;
+
+namespace Protogame
 {
     public class AbsoluteMatrixComponent : IHasTransform
     {
-        public AbsoluteMatrixComponent()
+        private readonly IFinalTransform _finalTransform;
+
+        public AbsoluteMatrixComponent(INode node)
         {
+            _finalTransform = new DefaultFinalTransform(this, node);
+
             Transform = new DefaultTransform();
         }
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform
-        {
-            get { return this.GetDetachedFinalTransformImplementation(); }
-        }
+        public IFinalTransform FinalTransform => _finalTransform;
     }
 }

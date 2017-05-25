@@ -21,7 +21,7 @@ namespace Protogame
 
         private Dictionary<int, List<Matrix>> _requestInstances = new Dictionary<int, List<Matrix>>();
 
-        private VertexBuffer _vertexBuffer;
+        private DynamicVertexBuffer _vertexBuffer;
 
         private int _vertexBufferLastInstanceCount;
 
@@ -93,6 +93,29 @@ namespace Protogame
                         request.Effect.NativeEffect.Parameters["View"]?.SetValue(renderContext.View);
                         request.Effect.NativeEffect.Parameters["Projection"]?.SetValue(renderContext.Projection);
 
+                        List<Matrix> filteredInstances;
+                        if (kv.Value.BoundingRegion != null)
+                        {
+                            // TODO: Reduce allocations here.
+                            filteredInstances = new List<Matrix>(_requestInstances[kv.Key].Count);
+                            foreach (var ri in _requestInstances[kv.Key])
+                            {
+                                if (kv.Value.BoundingRegion.Intersects(renderContext.BoundingFrustum, Vector3.Transform(Vector3.Zero, ri)))
+                                {
+                                    filteredInstances.Add(ri);
+                                }
+                            }
+
+                            if (filteredInstances.Count == 0)
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            filteredInstances = _requestInstances[kv.Key];
+                        }
+
 #if PLATFORM_WINDOWS
                         var allowInstancedCalls = true;
 #else
@@ -104,20 +127,19 @@ namespace Protogame
                         {
 #if PLATFORM_WINDOWS
                             if (_vertexBuffer == null ||
-                                _requestInstances[kv.Key].Count > _vertexBufferLastInstanceCount)
+                                filteredInstances.Count > _vertexBufferLastInstanceCount)
                             {
                                 _vertexBuffer?.Dispose();
 
-                                _vertexBuffer = new VertexBuffer(
+                                _vertexBuffer = new DynamicVertexBuffer(
                                     renderContext.GraphicsDevice,
                                     _vertexDeclaration,
-                                    _requestInstances[kv.Key].Count,
+                                    filteredInstances.Count,
                                     BufferUsage.WriteOnly);
-                                _vertexBufferLastInstanceCount = _requestInstances[kv.Key].Count;
+                                _vertexBufferLastInstanceCount = filteredInstances.Count;
                             }
-
-                            var matrices = _requestInstances[kv.Key];
-                            _vertexBuffer.SetData(matrices.ToArray(), 0, matrices.Count);
+                            
+                            _vertexBuffer.SetData(filteredInstances.ToArray(), 0, filteredInstances.Count);
                             renderContext.GraphicsDevice.SetVertexBuffers(
                                 new VertexBufferBinding(request.MeshVertexBuffer),
                                 new VertexBufferBinding(_vertexBuffer, 0, 1));
@@ -131,18 +153,18 @@ namespace Protogame
                                     0,
                                     0,
                                     pc,
-                                    matrices.Count);
+                                    filteredInstances.Count);
                             }
 #endif
                         }
                         else
                         {
                             // If there's less than 5 instances, just push the draw calls to the GPU.
-                            if (_requestInstances[kv.Key].Count <= 5 || !request.SupportsComputingInstancesToCustomBuffers)
+                            if (filteredInstances.Count <= 5 || !request.SupportsComputingInstancesToCustomBuffers)
                             {
                                 renderContext.GraphicsDevice.SetVertexBuffer(request.MeshVertexBuffer);
 
-                                foreach (var instance in _requestInstances[kv.Key])
+                                foreach (var instance in filteredInstances)
                                 {
                                     request.Effect.NativeEffect.Parameters["World"]?.SetValue(instance);
 
@@ -165,7 +187,7 @@ namespace Protogame
                                 var buffersNeedComputing = false;
                                 var vertexBuffer = _renderAutoCache.AutoCache("renderbatcher-" + kv.Key, new object[]
                                 {
-                                    _requestInstances[kv.Key].Count,
+                                    filteredInstances.Count,
                                     request.MeshVertexBuffer.VertexCount,
                                     request.MeshVertexBuffer.VertexDeclaration
                                 }, gameContext, () =>
@@ -174,12 +196,12 @@ namespace Protogame
                                     return new VertexBuffer(
                                         renderContext.GraphicsDevice,
                                         request.MeshVertexBuffer.VertexDeclaration,
-                                        _requestInstances[kv.Key].Count*request.MeshVertexBuffer.VertexCount,
+                                        filteredInstances.Count*request.MeshVertexBuffer.VertexCount,
                                         BufferUsage.WriteOnly);
                                 });
                                 var indexBuffer = _renderAutoCache.AutoCache("renderbatcher-" + kv.Key, new object[]
                                 {
-                                    _requestInstances[kv.Key].Count,
+                                    filteredInstances.Count,
                                     request.MeshVertexBuffer.VertexCount,
                                 }, gameContext, () =>
                                 {
@@ -187,7 +209,7 @@ namespace Protogame
                                     return new IndexBuffer(
                                         renderContext.GraphicsDevice,
                                         IndexElementSize.ThirtyTwoBits,
-                                        _requestInstances[kv.Key].Count*request.MeshIndexBuffer.IndexCount,
+                                        filteredInstances.Count*request.MeshIndexBuffer.IndexCount,
                                         BufferUsage.WriteOnly);
                                 });
 
@@ -195,7 +217,7 @@ namespace Protogame
                                 {
                                     // Compute a pre-transformed vertex and index buffer for rendering.
                                     request.ComputeInstancesToCustomBuffers(
-                                        _requestInstances[kv.Key],
+                                        filteredInstances,
                                         vertexBuffer,
                                         indexBuffer);
                                 }
@@ -215,12 +237,12 @@ namespace Protogame
                                         request.PrimitiveType,
                                         0,
                                         0,
-                                        pc * _requestInstances[kv.Key].Count);
+                                        pc * filteredInstances.Count);
                                 }
                             }
                         }
 
-                        _requestInstances[kv.Key].Clear();
+                        filteredInstances.Clear();
                     }
 
                     _requestLookup.Clear();
@@ -240,7 +262,8 @@ namespace Protogame
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
             Matrix world, 
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
             return new DefaultRenderRequest(
                 renderContext,
@@ -254,7 +277,8 @@ namespace Protogame
                 meshIndexBuffer,
                 primitiveType,
                 new [] { world },
-                computeCombinedBuffers);
+                computeCombinedBuffers,
+                boundingRegion);
         }
 
         public IRenderRequest CreateSingleRequestFromState(
@@ -265,7 +289,8 @@ namespace Protogame
             IndexBuffer meshIndexBuffer, 
             PrimitiveType primitiveType, 
             Matrix world, 
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
             return CreateSingleRequest(
                 renderContext,
@@ -278,7 +303,8 @@ namespace Protogame
                 meshIndexBuffer,
                 primitiveType,
                 world, 
-                computeCombinedBuffers);
+                computeCombinedBuffers,
+                boundingRegion);
         }
         
         public IRenderRequest CreateInstancedRequest(
@@ -292,7 +318,8 @@ namespace Protogame
             IndexBuffer meshIndexBuffer, 
             PrimitiveType primitiveType,
             Matrix[] instanceWorldTransforms,
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
             return new DefaultRenderRequest(
                 renderContext,
@@ -306,7 +333,8 @@ namespace Protogame
                 meshIndexBuffer,
                 primitiveType,
                 instanceWorldTransforms,
-                computeCombinedBuffers);
+                computeCombinedBuffers,
+                boundingRegion);
         }
 
         public IRenderRequest CreateInstancedRequestFromState(
@@ -317,7 +345,8 @@ namespace Protogame
             IndexBuffer meshIndexBuffer,
             PrimitiveType primitiveType,
             Matrix[] instancedWorldTransforms,
-            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers)
+            Action<List<Matrix>, VertexBuffer, IndexBuffer> computeCombinedBuffers,
+            LocalisedBoundingRegion boundingRegion)
         {
             return CreateInstancedRequest(
                 renderContext,
@@ -330,7 +359,8 @@ namespace Protogame
                 meshIndexBuffer,
                 primitiveType,
                 instancedWorldTransforms,
-                computeCombinedBuffers);
+                computeCombinedBuffers,
+                boundingRegion);
         }
 
         private void SetupForRequest(IRenderContext renderContext, IRenderRequest request, out int pc, bool setVertexBuffers)

@@ -90,6 +90,8 @@ namespace Protogame
                     }
                     catch (Exception ex)
                     {
+                        LogExceptions(assetReference.Name, ex);
+
                         // Only store exceptions if we don't already have a readied
                         // asset (due to live reload scenarios).
                         if (!assetReference.IsReady)
@@ -157,11 +159,29 @@ namespace Protogame
                     }
                     catch (Exception e)
                     {
+                        LogExceptions(assetReference.Name, e);
+
                         assetReference.Update(e);
                     }
                 }
 
                 Thread.Sleep(0);
+            }
+        }
+
+        private void LogExceptions(string name, Exception e)
+        {
+            var aggregateException = e as AggregateException;
+            if (aggregateException != null)
+            {
+                foreach (var ie in aggregateException.InnerExceptions)
+                {
+                    LogExceptions(name, ie);
+                }
+            }
+            else
+            {
+                _consoleHandle.LogError(name + ": " + e.Message);
             }
         }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Protogame
 {
-    public class UserInterfaceComponent : IUpdatableComponent
+    public class UserInterfaceComponent : IUpdatableComponent, IDisposable
     {
         private readonly IAssetManager _assetManager;
         private string _userInterfaceControllerAsset;
@@ -66,6 +66,11 @@ namespace Protogame
         public void RegisterBehaviour<TContainerType>(string name, UserInterfaceBehaviourEvent @event, UserInterfaceBehaviourHandler<TContainerType> callback)
         {
             _behaviourRegistration.Add(controller => controller.RegisterBehaviour<TContainerType>(name, @event, callback));
+        }
+
+        public void Dispose()
+        {
+            _userInterfaceController.Dispose();
         }
     }
 }

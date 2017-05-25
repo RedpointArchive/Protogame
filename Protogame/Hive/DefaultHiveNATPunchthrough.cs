@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HiveMP.NATPunchthrough.Api;
 using HiveMP.NATPunchthrough.Model;
 using HiveMP.TemporarySession.Model;
+using Newtonsoft.Json;
 
 namespace Protogame
 {
@@ -32,7 +33,14 @@ namespace Protogame
         {
             var natPunchthroughApi = new NATPunchthroughApi();
             natPunchthroughApi.Configuration.ApiKey["api_key"] = userSession.ApiKey;
-            return await natPunchthroughApi.EndpointsGetAsync(targetSession);
+            try
+            {
+                return await natPunchthroughApi.EndpointsGetAsync(targetSession);
+            }
+            catch
+            {
+                return new List<NATEndpoint>();
+            }
         }
 
         public async Task<BackgroundNATPunchthrough> StartBackgroundNATPunchthrough(TempSessionWithSecrets userSession, UdpClient udpClient)
@@ -133,7 +141,26 @@ namespace Protogame
 
             while (true)
             {
-                var negotation = await natPunchthroughApi.PunchthroughPutAsync(userSession.Id);
+                NATNegotation negotation;
+                try
+                {
+                    negotation = await natPunchthroughApi.PunchthroughPutAsync(userSession.Id);
+                }
+                catch (HiveMP.NATPunchthrough.Client.ApiException ex)
+                {
+                    // There are no NAT punchthrough servers for us to use, send a UDP packet to 
+                    // localhost so we get an outbound address and port.
+                    var b = new byte[] { (byte)'a' };
+                    await udpClient.SendAsync(
+                        b,
+                        1,
+                        "localhost",
+                        4242);
+                    await Task.Delay(100);
+
+                    return udpClient;
+                }
+
                 if (negotation.Port == null)
                 {
                     throw new InvalidOperationException();
@@ -160,6 +187,11 @@ namespace Protogame
 
                 await Task.Delay(100);
             }
+        }
+
+        private class HiveError
+        {
+            public int code { get; set; }
         }
     }
 }

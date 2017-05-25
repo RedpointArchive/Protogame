@@ -10,6 +10,8 @@ namespace Protogame
     {
         private readonly INode _node;
 
+        private readonly IFinalTransform _finalTransform;
+
         private INode<IEntity>[] _entityCache = new INode<IEntity>[0];
 
         private INode<IServerEntity>[] _serverEntityCache = new INode<IServerEntity>[0];
@@ -29,6 +31,7 @@ namespace Protogame
         public EntityGroup(INode node, IEditorQuery<EntityGroup> editorQuery)
         {
             _node = node;
+            _finalTransform = new DefaultFinalTransform(this, node);
             Transform = new DefaultTransform();
 
             // EditorGroup is used to represent game groups in the editor
@@ -78,10 +81,7 @@ namespace Protogame
 
         public ITransform Transform { get; }
 
-        public IFinalTransform FinalTransform
-        {
-            get { return this.GetAttachedFinalTransformImplementation(_node); }
-        }
+        public IFinalTransform FinalTransform => _finalTransform;
 
         public void Update(IServerContext serverContext, IUpdateContext updateContext)
         {

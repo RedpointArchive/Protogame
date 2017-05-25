@@ -299,7 +299,6 @@
     <Compile Include="Core\DefaultUpdateContext.cs" />
     <Compile Include="Core\Entity.cs" />
     <Compile Include="Core\EntityGroup.cs" />
-    <Compile Include="Core\HasTransformExtensions.cs" />
     <Compile Include="Core\HorizontalAlignment.cs" />
     <Compile Include="Core\HostGame.cs" />
     <Compile Include="Core\I2DRenderUtilities.cs" />
@@ -341,6 +340,7 @@
     <Compile Include="Core\StartupSequence.cs" />
     <Compile Include="Core\StartupSequenceResult.cs" />
     <Compile Include="Core\StartupTrace.cs" />
+    <Compile Include="Core\TemporaryFinalTransform.cs" />
     <Compile Include="Core\TransformContainer.cs" />
     <Compile Include="Core\VerticalAlignment.cs" />
     <Compile Include="Coroutine\CoroutineEngineHook.cs" />
@@ -489,13 +489,18 @@
     <Compile Include="Graphics\IRenderTargetBackBufferUtilities.cs" />
     <Compile Include="Graphics\Lighting\DefaultLightContext.cs" />
     <Compile Include="Graphics\Lighting\DefaultStandardDirectionalLight.cs" />
+    <Compile Include="Graphics\Lighting\DefaultStandardDirectionalLightRenderer.cs" />
     <Compile Include="Graphics\Lighting\DefaultStandardPointLight.cs" />
+    <Compile Include="Graphics\Lighting\DefaultStandardPointLightRenderer.cs" />
     <Compile Include="Graphics\Lighting\IHasLights.cs" />
     <Compile Include="Graphics\Lighting\ILight.cs" />
     <Compile Include="Graphics\Lighting\ILightContext.cs" />
     <Compile Include="Graphics\Lighting\ILightFactory.cs" />
+    <Compile Include="Graphics\Lighting\ILightRenderer.cs" />
     <Compile Include="Graphics\Lighting\IStandardDirectionalLight.cs" />
     <Compile Include="Graphics\Lighting\IStandardPointLight.cs" />
+    <Compile Include="Graphics\LocalisedBoundingRegion.cs" />
+    <Compile Include="Graphics\LocalisedBoundingRegionType.cs" />
     <Compile Include="Graphics\RenderAutoCacheEngineHook.cs" />
     <Compile Include="Graphics\RenderPipelineRenderContext.cs" />
     <Compile Include="Graphics\RenderPipelineTechniqueName.cs" />
