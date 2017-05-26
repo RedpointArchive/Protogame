@@ -29,6 +29,10 @@ namespace Protogame
 
         public string Text { get; set; }
 
+        public IAssetReference<TextureAsset> Icon { get; set; }
+
+        public bool Toggled { get; set; }
+
         public virtual void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
             skinDelegator.Render(context, layout, this);
