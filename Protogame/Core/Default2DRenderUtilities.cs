@@ -90,7 +90,7 @@ namespace Protogame
                 RenderLine(
                     context, 
                     new Vector2(rectangle.X, rectangle.Y), 
-                    new Vector2(rectangle.X, rectangle.Y + rectangle.Height), 
+                    new Vector2(rectangle.X, rectangle.Y + rectangle.Height + 1), 
                     color);
                 RenderLine(
                     context, 
@@ -99,7 +99,7 @@ namespace Protogame
                     color);
                 RenderLine(
                     context, 
-                    new Vector2(rectangle.X + rectangle.Width, rectangle.Y), 
+                    new Vector2(rectangle.X + rectangle.Width, rectangle.Y + 1), 
                     new Vector2(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height), 
                     color);
             }
