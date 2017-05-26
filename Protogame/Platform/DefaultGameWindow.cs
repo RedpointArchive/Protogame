@@ -1,3 +1,5 @@
+#pragma warning disable CS1591
+
 using Microsoft.Xna.Framework;
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
@@ -9,28 +11,13 @@ namespace Protogame
     /// </summary>
     public class DefaultGameWindow : IGameWindow
     {
-        /// <summary>
-        /// Stores a reference to the underlying XNA game window.
-        /// </summary>
         private readonly GameWindow _gameWindow;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Protogame.DefaultGameWindow"/> class.
-        /// </summary>
-        /// <param name="gameWindow">
-        /// The underlying XNA game window to wrap.
-        /// </param>
         public DefaultGameWindow(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
         }
-
-        /// <summary>
-        /// Gets the client bounds of the window.
-        /// </summary>
-        /// <value>
-        /// The client bounds of the window.
-        /// </value>
+        
         public Rectangle ClientBounds
         {
             get
@@ -38,14 +25,7 @@ namespace Protogame
                 return _gameWindow.ClientBounds;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the title of the window. Ignored on platforms where
-        /// the title is non-existent (such as mobile platforms).
-        /// </summary>
-        /// <value>
-        /// The title shown on the window.
-        /// </value>
+        
         public string Title
         {
             get
@@ -58,14 +38,7 @@ namespace Protogame
                 _gameWindow.Title = value;
             }
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the user is allowed to resize the window.  Ignored
-        /// on platforms where the window is of a fixed size.
-        /// </summary>
-        /// <value>
-        /// Whether or not the user is allowed to resize the window.
-        /// </value>
+        
         public bool AllowUserResizing
         {
             get
@@ -83,15 +56,31 @@ namespace Protogame
                 }
             }
         }
-
-        /// <summary>
-        /// The underlying MonoGame window object.  The type and presence of this property
-        /// varies per-platform, so it's access should always be within a platform specific block.
-        /// </summary>
+        
         public GameWindow PlatformWindow
         {
             get { return _gameWindow; }
         }
+
+#if PLATFORM_WINDOWS
+        public void Maximize()
+        {
+            var form = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(_gameWindow.Handle);
+            form.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+        }
+
+        public void Minimize()
+        {
+            var form = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(_gameWindow.Handle);
+            form.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+        }
+
+        public void Restore()
+        {
+            var form = (System.Windows.Forms.Form)System.Windows.Forms.Form.FromHandle(_gameWindow.Handle);
+            form.WindowState = System.Windows.Forms.FormWindowState.Normal;
+        }
+#endif
     }
 }
 
