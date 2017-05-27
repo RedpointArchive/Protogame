@@ -42,5 +42,13 @@ namespace Protogame
 #elif PLATFORM_ANDROID || PLATFORM_OUYA
         Microsoft.Xna.Framework.AndroidGameWindow PlatformWindow { get; }
 #endif
+
+#if PLATFORM_WINDOWS
+        void Maximize();
+
+        void Minimize();
+
+        void Restore();
+#endif
     }
 }
