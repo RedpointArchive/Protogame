@@ -338,6 +338,16 @@ namespace Protogame
                     });
             }
 
+            if (_lastMouseState.HasValue)
+            {
+                if (mouseState.ScrollWheelValue != _lastMouseState.Value.ScrollWheelValue)
+                {
+                    _eventEngine.Fire(
+                        gameContext,
+                        new MouseScrollEvent { ScrollDelta = (_lastMouseState.Value.ScrollWheelValue - mouseState.ScrollWheelValue), MouseState = mouseState });
+                }
+            }
+
             _lastMouseState = mouseState;
         }
 

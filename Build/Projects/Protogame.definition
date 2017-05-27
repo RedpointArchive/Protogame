@@ -399,6 +399,7 @@
     <Compile Include="Events\MouseMoveEvent.cs" />
     <Compile Include="Events\MousePressEvent.cs" />
     <Compile Include="Events\MouseReleaseEvent.cs" />
+    <Compile Include="Events\MouseScrollEvent.cs" />
     <Compile Include="Events\ProtogameEventsIoCModule.cs" />
     <Compile Include="Events\ProtogameEventsModule.cs" />
     <Compile Include="Events\StaticEventBinder.cs" />
@@ -835,6 +836,7 @@
     <Compile Include="UserInterface\Control\ListView.cs" />
     <Compile Include="UserInterface\Control\MainMenu.cs" />
     <Compile Include="UserInterface\Control\MenuItem.cs" />
+    <Compile Include="UserInterface\Control\ProtogameEventArgs.cs" />
     <Compile Include="UserInterface\Control\TextBox.cs" />
     <Compile Include="UserInterface\Control\TextureViewer.cs" />
     <Compile Include="UserInterface\Control\TreeItem.cs" />

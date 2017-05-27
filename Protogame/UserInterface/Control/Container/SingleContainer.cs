@@ -13,7 +13,7 @@ namespace Protogame
         
         public IContainer[] Children => new[] { _child };
         
-        public bool Focused { get; set; }
+        public virtual bool Focused { get; set; }
         
         public int Order { get; set; }
         
@@ -34,7 +34,7 @@ namespace Protogame
         public virtual void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
             skinDelegator.Render(context, layout, this);
-            _child?.Render(context, skinLayout, skinDelegator, layout);
+            _child?.Render(context, skinLayout, skinDelegator, GetChildLayout(layout, skinLayout));
         }
         
         public void SetChild(IContainer child)
@@ -55,12 +55,26 @@ namespace Protogame
         
         public virtual void Update(ISkinLayout skinLayout, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
-            _child?.Update(skinLayout, layout, gameTime, ref stealFocus);
+            _child?.Update(skinLayout, GetChildLayout(layout, skinLayout), gameTime, ref stealFocus);
         }
         
         public bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
         {
-            return _child != null && _child.HandleEvent(skinLayout, layout, context, @event);
+            return _child != null && _child.HandleEvent(skinLayout, GetChildLayout(layout, skinLayout), context, @event);
+        }
+
+        protected Rectangle GetChildLayout(Rectangle layout, ISkinLayout skinLayout)
+        {
+            var leftPadding = skinLayout.GetLeftPadding(this, _child);
+            var rightPadding = skinLayout.GetRightPadding(this, _child);
+            var topPadding = skinLayout.GetTopPadding(this, _child);
+            var bottomPadding = skinLayout.GetBottomPadding(this, _child);
+
+            return new Rectangle(
+                layout.X + leftPadding,
+                layout.Y + topPadding,
+                layout.Width - leftPadding - rightPadding,
+                layout.Height - topPadding - bottomPadding);
         }
     }
 }

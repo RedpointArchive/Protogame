@@ -13,7 +13,7 @@ namespace Protogame
             State = ButtonUIState.None;
         }
 
-        public event EventHandler Click;
+        public event EventHandler<ProtogameEventArgs> Click;
 
         public IContainer[] Children => IContainerConstant.EmptyContainers;
 
@@ -111,7 +111,7 @@ namespace Protogame
                     {
                         if (Click != null && State == ButtonUIState.Clicked)
                         {
-                            Click(this, new EventArgs());
+                            Click(this, new ProtogameEventArgs(context));
                         }
 
                         _shouldAppearPressedWhenMouseIsOver = false;

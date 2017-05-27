@@ -39,29 +39,68 @@ namespace Protogame
 
         public RenderTarget2D ChildContent => _renderTarget;
 
+        public bool NeedsVerticalScrollbar { get; private set; }
+
+        public bool NeedsHorizontalScrollbar { get; private set; }
+
         public virtual void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
-            var layoutWidth = layout.Width - skinLayout.HorizontalScrollBarHeight;
-            var layoutHeight = layout.Height - skinLayout.VerticalScrollBarWidth;
+            var constrainedLayoutWidth = layout.Width - skinLayout.VerticalScrollBarWidth;
+            var constrainedLayoutHeight = layout.Height - skinLayout.HorizontalScrollBarHeight;
+
+            var realLayoutWidth = layout.Width;
+            var realLayoutHeight = layout.Height;
+
+            NeedsVerticalScrollbar = false;
+            NeedsHorizontalScrollbar = false;
 
             int childWidth, childHeight;
             if (!(_child is IHasDesiredSize))
             {
-                childWidth = layoutWidth;
-                childHeight = layoutHeight;
+                childWidth = layout.Width;
+                childHeight = layout.Height;
             }
             else
             {
                 var hasDesiredSize = (IHasDesiredSize) _child;
-                childWidth = hasDesiredSize.GetDesiredWidth(skinLayout) ?? layoutWidth;
-                childHeight = hasDesiredSize.GetDesiredHeight(skinLayout) ?? layoutHeight;
-                if (childWidth < layoutWidth)
+                childWidth = hasDesiredSize.GetDesiredWidth(skinLayout) ?? layout.Width;
+                childHeight = hasDesiredSize.GetDesiredHeight(skinLayout) ?? layout.Height;
+                if (childHeight > layout.Height)
                 {
-                    childWidth = layoutWidth;
+                    NeedsVerticalScrollbar = true;
+                    realLayoutWidth = constrainedLayoutWidth;
+
+                    // Introducing a vertical scrollbar modifies the width, so update that.
+                    childWidth = hasDesiredSize.GetDesiredWidth(skinLayout) ?? constrainedLayoutWidth;
+
+                    if (childWidth > constrainedLayoutWidth)
+                    {
+                        NeedsHorizontalScrollbar = true;
+                        realLayoutHeight = constrainedLayoutHeight;
+                    }
                 }
-                if (childHeight < layoutHeight)
+                else if (childWidth > layout.Width)
                 {
-                    childHeight = layoutHeight;
+                    NeedsHorizontalScrollbar = true;
+                    realLayoutHeight = constrainedLayoutHeight;
+
+                    // Introducing a horizontal scrollbar modifies the height, so update that.
+                    childHeight = hasDesiredSize.GetDesiredHeight(skinLayout) ?? constrainedLayoutHeight;
+
+                    if (childHeight > constrainedLayoutHeight)
+                    {
+                        NeedsVerticalScrollbar = true;
+                        realLayoutWidth = constrainedLayoutWidth;
+                    }
+                }
+
+                if (childWidth < realLayoutWidth)
+                {
+                    childWidth = realLayoutWidth;
+                }
+                if (childHeight < realLayoutHeight)
+                {
+                    childHeight = realLayoutHeight;
                 }
             }
 
@@ -127,8 +166,27 @@ namespace Protogame
                 return false;
             }
 
-            var layoutWidth = layout.Width - skinLayout.HorizontalScrollBarHeight;
-            var layoutHeight = layout.Height - skinLayout.VerticalScrollBarWidth;
+            var layoutWidth = layout.Width - (NeedsVerticalScrollbar ? skinLayout.VerticalScrollBarWidth : 0);
+            var layoutHeight = layout.Height - (NeedsHorizontalScrollbar ? skinLayout.HorizontalScrollBarHeight : 0);
+            
+            var mouseScrollEvent = @event as MouseScrollEvent;
+
+            if (mouseScrollEvent != null)
+            {
+                if (this.Focused)
+                {
+                    var scrollAmount = (1f / _renderTarget.Height) * 40f;
+                    ScrollY += (mouseScrollEvent.ScrollDelta / 120f) * scrollAmount;
+                    if (ScrollY < 0)
+                    {
+                        ScrollY = 0;
+                    }
+                    if (ScrollY > 1)
+                    {
+                        ScrollY = 1;
+                    }
+                }
+            }
 
             if (_isVerticalScrolling)
             {
