@@ -17,5 +17,25 @@
         public int HorizontalScrollBarHeight => 16;
 
         public int VerticalScrollBarWidth => 16;
+
+        public int GetLeftPadding(IContainer container, object context)
+        {
+            return 0;
+        }
+
+        public int GetRightPadding(IContainer container, object context)
+        {
+            return 0;
+        }
+
+        public int GetTopPadding(IContainer container, object context)
+        {
+            return 0;
+        }
+
+        public int GetBottomPadding(IContainer container, object context)
+        {
+            return 0;
+        }
     }
 }

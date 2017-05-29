@@ -19,5 +19,13 @@ namespace Protogame
         int HorizontalScrollBarHeight { get; }
 
         int VerticalScrollBarWidth { get; }
+
+        int GetLeftPadding(IContainer container, object context);
+
+        int GetRightPadding(IContainer container, object context);
+
+        int GetTopPadding(IContainer container, object context);
+
+        int GetBottomPadding(IContainer container, object context);
     }
 }

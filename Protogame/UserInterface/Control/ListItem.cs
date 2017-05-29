@@ -1,14 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 
 namespace Protogame
-{    
+{
     public class ListItem : IContainer
     {
         public IContainer[] Children => IContainerConstant.EmptyContainers;
-        
+
         public bool Focused { get; set; }
-        
-        public int Indent => (Text ?? string.Empty).Split('.').Length;
+
+        public int Indent { get; set; }
         
         public int Order { get; set; }
         
@@ -17,6 +17,8 @@ namespace Protogame
         public object Userdata { get; set; }
         
         public virtual string Text { get; set; }
+
+        public virtual IAssetReference<TextureAsset> Icon { get; set; }
         
         public void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
