@@ -21,15 +21,19 @@ namespace Protogame
 
         private readonly short[] _indicies = { 1, 3, 0, 2 };
 
+        private readonly IBackBufferDimensions _backBufferDimensions;
         private readonly IAssetReference<UberEffectAsset> _blitEffect;
 
         private VertexBuffer _vertexBuffer;
 
         private IndexBuffer _indexBuffer;
 
-        public DefaultGraphicsBlit(IAssetManager assetManager)
+        public DefaultGraphicsBlit(
+            IAssetManager assetManager,
+            IBackBufferDimensions backBufferDimensions)
         {
             _blitEffect = assetManager.Get<UberEffectAsset>("effect.BuiltinSurface");
+            _backBufferDimensions = backBufferDimensions;
         }
 
         public void BlitMRT(
@@ -101,8 +105,9 @@ namespace Protogame
             else
             {
                 // TODO: renderContext.GraphicsDevice.GetRenderTargets();
-                destWidth = renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth;
-                destHeight = renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight;
+                var backBufferSize = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
+                destWidth = backBufferSize.X;
+                destHeight = backBufferSize.Y;
             }
 
             offset = offset ?? new Vector2(0, 0);

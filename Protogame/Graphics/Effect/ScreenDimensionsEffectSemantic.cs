@@ -5,6 +5,8 @@ namespace Protogame
 {
     public class ScreenDimensionsEffectSemantic : IScreenDimensionsEffectSemantic
     {
+        private readonly IBackBufferDimensions _backBufferDimensions;
+
         private IEffectParameterSet _parameterSet;
 
         private IEffectWritableParameter _screenDimensionsParam;
@@ -12,6 +14,11 @@ namespace Protogame
         private int _lastScreenX;
 
         private int _lastScreenY;
+
+        public ScreenDimensionsEffectSemantic(IBackBufferDimensions backBufferDimensions)
+        {
+            _backBufferDimensions = backBufferDimensions;
+        }
 
         public bool ShouldAttachToParameterSet(IEffectParameterSet parameterSet)
         {
@@ -31,7 +38,7 @@ namespace Protogame
 
         public IEffectSemantic Clone(IEffectParameterSet parameterSet)
         {
-            var clone = new ScreenDimensionsEffectSemantic();
+            var clone = new ScreenDimensionsEffectSemantic(_backBufferDimensions);
             clone.AttachToParameterSet(parameterSet);
             return clone;
         }
@@ -46,8 +53,10 @@ namespace Protogame
 
         public void OnApply(IRenderContext renderContext)
         {
-            var width = renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            var height = renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            var size = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
+
+            var width = size.X;
+            var height = size.Y;
 
             var needsUpdate = false;
             if (_lastScreenX != width)

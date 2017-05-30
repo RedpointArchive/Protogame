@@ -5,13 +5,13 @@ namespace Protogame
 {
     public class CurrentDirPlatformLocalFilesystemAssetFsLayer : LocalFilesystemAssetFsLayer
     {
-        public CurrentDirPlatformLocalFilesystemAssetFsLayer()
-            : base(GetPath())
+        public CurrentDirPlatformLocalFilesystemAssetFsLayer(IBaseDirectory baseDirectory)
+            : base(GetPath(baseDirectory))
         { }
 
-        private static string GetPath()
+        private static string GetPath(IBaseDirectory baseDirectory)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "Content", TargetPlatformUtility.GetExecutingPlatform().ToString());
+            var path = Path.Combine(baseDirectory.FullPath, "Content", TargetPlatformUtility.GetExecutingPlatform().ToString());
             Directory.CreateDirectory(path);
             return path;
         }

@@ -7,7 +7,7 @@ using System;
 
 namespace Protogame
 {
-    public class HostGame : Game
+    public class HostGame : Game, IHostGame
     {
         private GraphicsDeviceManager _graphicsDeviceManager;
         private SpriteBatch _splashSpriteBatch;

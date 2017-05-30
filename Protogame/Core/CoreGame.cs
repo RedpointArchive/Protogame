@@ -161,7 +161,7 @@ namespace Protogame
         /// <summary>
         /// The MonoGame game instance that is hosting this game.
         /// </summary>
-        private HostGame _hostGame;
+        private IHostGame _hostGame;
 
         /// <summary>
         /// Whether resize events can be handled.
@@ -312,12 +312,16 @@ namespace Protogame
         /// </summary>
         public int SkipFrames { get; set; }
 
+        public IHostGame HostGame => _hostGame;
+
+        public bool HasLoadedContent => _isReadyForMainRenderTakeover;
+
         /// <summary>
         /// Called by <see cref="HostGame"/> to assign itself to this game
         /// instance, allowing us to access MonoGame game members.
         /// </summary>
         /// <param name="hostGame">The MonoGame game instance.</param>
-        public void AssignHost(HostGame hostGame)
+        public void AssignHost(IHostGame hostGame)
         {
             _hostGame = hostGame;
             _hostGame.Exiting += _hostGame_Exiting;
@@ -332,6 +336,11 @@ namespace Protogame
 
             // We can't load the loading screen until we have access to MonoGame's asset content manager.
             _loadingScreen = _kernel.Get<ILoadingScreen>();
+        }
+
+        public void EnableImmediateStartFromHost()
+        {
+            _hasDoneEarlyRender = true;
         }
 
         private void _hostGame_Exiting(object sender, EventArgs e)
@@ -534,7 +543,7 @@ namespace Protogame
             }
         }
         
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             if (!_isReadyForMainRenderTakeover)
             {
@@ -601,7 +610,7 @@ namespace Protogame
             }
         }
         
-        public void Draw(GameTime gameTime)
+        public virtual void Draw(GameTime gameTime)
         {
             if (!_isReadyForMainRenderTakeover)
             {

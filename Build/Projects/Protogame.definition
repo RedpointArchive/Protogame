@@ -286,6 +286,8 @@
     <Compile Include="Core\Default3DRenderUtilities.cs" />
     <Compile Include="Core\DefaultAudioHandle.cs" />
     <Compile Include="Core\DefaultAudioUtilities.cs" />
+    <Compile Include="Core\DefaultBackBufferDimensions.cs" />
+    <Compile Include="Core\DefaultBaseDirectory.cs" />
     <Compile Include="Core\DefaultBoundingBoxUtilities.cs" />
     <Compile Include="Core\DefaultFinalTransform.cs" />
     <Compile Include="Core\DefaultGameContext.cs" />
@@ -305,6 +307,8 @@
     <Compile Include="Core\I3DRenderUtilities.cs" />
     <Compile Include="Core\IAudioHandle.cs" />
     <Compile Include="Core\IAudioUtilities.cs" />
+    <Compile Include="Core\IBackBufferDimensions.cs" />
+    <Compile Include="Core\IBaseDirectory.cs" />
     <Compile Include="Core\IBoundingBox.cs" />
     <Compile Include="Core\IBoundingBoxUtilities.cs" />
     <Compile Include="Core\ICommand.cs" />
@@ -319,6 +323,7 @@
     <Compile Include="Core\IHasSize.cs" />
     <Compile Include="Core\IHasTransform.cs" />
     <Compile Include="Core\IHasVelocity.cs" />
+    <Compile Include="Core\IHostGame.cs" />
     <Compile Include="Core\IKeyboardStringReader.cs" />
     <Compile Include="Core\ILoadingScreen.cs" />
     <Compile Include="Core\IPrerenderableEntity.cs" />
@@ -821,6 +826,7 @@
     <Compile Include="UserInterface\Control\Container\HorizontalContainer.cs" />
     <Compile Include="UserInterface\Control\Container\IContainer.cs" />
     <Compile Include="UserInterface\Control\Container\IContainerConstant.cs" />
+    <Compile Include="UserInterface\Control\Container\RawTextureContainer.cs" />
     <Compile Include="UserInterface\Control\Container\RelativeContainer.cs" />
     <Compile Include="UserInterface\Control\Container\ScrollableContainer.cs" />
     <Compile Include="UserInterface\Control\Container\SingleContainer.cs" />

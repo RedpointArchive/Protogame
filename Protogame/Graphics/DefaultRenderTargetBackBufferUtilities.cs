@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Protogame
 {
@@ -10,6 +11,13 @@ namespace Protogame
     /// <interface_ref>Protogame.IRenderTargetBackBufferUtilities</interface_ref>
     public class DefaultRenderTargetBackBufferUtilities : IRenderTargetBackBufferUtilities
     {
+        private readonly IBackBufferDimensions _backBufferDimensions;
+
+        public DefaultRenderTargetBackBufferUtilities(IBackBufferDimensions backBufferDimensions)
+        {
+            _backBufferDimensions = backBufferDimensions;
+        }
+
         public RenderTarget2D UpdateRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext)
         {
             if (IsRenderTargetOutOfDate(renderTarget, gameContext))
@@ -19,20 +27,108 @@ namespace Protogame
                     renderTarget.Dispose();
                 }
 
-                if (gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth == 0 &&
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight == 0)
+                var size = _backBufferDimensions.GetSize(gameContext.Graphics.GraphicsDevice);
+
+                if (size.X == 0 && size.Y == 0)
                 {
                     return null;
                 }
 
                 renderTarget = new RenderTarget2D(
                     gameContext.Graphics.GraphicsDevice,
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight,
+                    size.X,
+                    size.Y,
                     false,
                     GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat),
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
                     gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
+                    RenderTargetUsage.PreserveContents);
+            }
+
+            return renderTarget;
+        }
+        public RenderTarget2D UpdateSizedRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, Vector2 size)
+        {
+            if (IsSizedRenderTargetOutOfDate(renderTarget, gameContext, size))
+            {
+                if (renderTarget != null)
+                {
+                    renderTarget.Dispose();
+                }
+
+                if (size.X < 1 &&
+                    size.Y < 1)
+                {
+                    return null;
+                }
+
+                renderTarget = new RenderTarget2D(
+                    gameContext.Graphics.GraphicsDevice,
+                    (int)size.X,
+                    (int)size.Y,
+                    false,
+                    GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat),
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
+                    gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
+                    RenderTargetUsage.PreserveContents);
+            }
+
+            return renderTarget;
+        }
+
+        public RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount)
+        {
+            if (IsCustomRenderTargetOutOfDate(renderTarget, gameContext, surfaceFormat, depthFormat, multiSampleCount))
+            {
+                if (renderTarget != null)
+                {
+                    renderTarget.Dispose();
+                }
+
+                var size = _backBufferDimensions.GetSize(gameContext.Graphics.GraphicsDevice);
+
+                if (size.X == 0 && size.Y == 0)
+                {
+                    return null;
+                }
+
+                renderTarget = new RenderTarget2D(
+                    gameContext.Graphics.GraphicsDevice,
+                    size.X,
+                    size.Y,
+                    false,
+                    surfaceFormat ?? GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat),
+                    depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
+                    multiSampleCount ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
+                    RenderTargetUsage.PreserveContents);
+            }
+
+            return renderTarget;
+        }
+
+        public RenderTarget2D UpdateCustomSizedRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, Vector2 size, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount)
+        {
+            if (IsCustomSizedRenderTargetOutOfDate(renderTarget, gameContext, size, surfaceFormat, depthFormat, multiSampleCount))
+            {
+                if (renderTarget != null)
+                {
+                    renderTarget.Dispose();
+                }
+
+                if (size.X < 1 ||
+                    size.Y < 1)
+                {
+                    return null;
+                }
+
+                renderTarget = new RenderTarget2D(
+                    gameContext.Graphics.GraphicsDevice,
+                    (int)size.X,
+                    (int)size.Y,
+                    false,
+                    surfaceFormat ?? GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat),
+                    depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
+                    multiSampleCount ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
                     RenderTargetUsage.PreserveContents);
             }
 
@@ -53,35 +149,6 @@ namespace Protogame
 #endif
         }
 
-        public RenderTarget2D UpdateCustomRenderTarget(RenderTarget2D renderTarget, IGameContext gameContext, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount)
-        {
-            if (IsCustomRenderTargetOutOfDate(renderTarget, gameContext, surfaceFormat, depthFormat, multiSampleCount))
-            {
-                if (renderTarget != null)
-                {
-                    renderTarget.Dispose();
-                }
-
-                if (gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth == 0 &&
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight == 0)
-                {
-                    return null;
-                }
-
-                renderTarget = new RenderTarget2D(
-                    gameContext.Graphics.GraphicsDevice,
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                    gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight,
-                    false,
-                    surfaceFormat ?? GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat),
-                    depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat,
-                    multiSampleCount ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount,
-                    RenderTargetUsage.PreserveContents);
-            }
-
-            return renderTarget;
-        }
-
         public bool IsRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext)
         {
             if (renderTarget == null)
@@ -90,12 +157,51 @@ namespace Protogame
             }
             else
             {
-                if (renderTarget.Width != gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth)
+                var size = _backBufferDimensions.GetSize(gameContext.Graphics.GraphicsDevice);
+
+                if (renderTarget.Width != size.X)
                 {
                     return true;
                 }
 
-                if (renderTarget.Height != gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight)
+                if (renderTarget.Height != size.Y)
+                {
+                    return true;
+                }
+
+                if (renderTarget.Format != GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat))
+                {
+                    return true;
+                }
+
+                if (renderTarget.DepthStencilFormat != gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat)
+                {
+                    return true;
+                }
+
+                if (renderTarget.MultiSampleCount != gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsSizedRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, Vector2 size)
+        {
+            if (renderTarget == null)
+            {
+                return true;
+            }
+            else
+            {
+                if (renderTarget.Width != size.X)
+                {
+                    return true;
+                }
+
+                if (renderTarget.Height != size.Y)
                 {
                     return true;
                 }
@@ -127,12 +233,51 @@ namespace Protogame
             }
             else
             {
-                if (renderTarget.Width != gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth)
+                var size = _backBufferDimensions.GetSize(gameContext.Graphics.GraphicsDevice);
+
+                if (renderTarget.Width != size.X)
                 {
                     return true;
                 }
 
-                if (renderTarget.Height != gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight)
+                if (renderTarget.Height != size.Y)
+                {
+                    return true;
+                }
+
+                if (renderTarget.Format != (surfaceFormat ?? GetRealBackBufferFormat(gameContext.Graphics.GraphicsDevice.PresentationParameters.BackBufferFormat)))
+                {
+                    return true;
+                }
+
+                if (renderTarget.DepthStencilFormat != (depthFormat ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.DepthStencilFormat))
+                {
+                    return true;
+                }
+
+                if (renderTarget.MultiSampleCount != (multiSampleCount ?? gameContext.Graphics.GraphicsDevice.PresentationParameters.MultiSampleCount))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsCustomSizedRenderTargetOutOfDate(RenderTarget2D renderTarget, IGameContext gameContext, Vector2 size, SurfaceFormat? surfaceFormat, DepthFormat? depthFormat, int? multiSampleCount)
+        {
+            if (renderTarget == null)
+            {
+                return true;
+            }
+            else
+            {
+                if (renderTarget.Width != size.X)
+                {
+                    return true;
+                }
+
+                if (renderTarget.Height != size.Y)
                 {
                     return true;
                 }

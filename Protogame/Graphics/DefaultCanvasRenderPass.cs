@@ -11,8 +11,13 @@ namespace Protogame
     /// <interface_ref>Protogame.ICanvasRenderPass</interface_ref>
     public class DefaultCanvasRenderPass : ICanvasRenderPass
     {
-        public DefaultCanvasRenderPass()
+        private readonly IBackBufferDimensions _backBufferDimensions;
+
+        public DefaultCanvasRenderPass(
+            IBackBufferDimensions backBufferDimensions)
         {
+            _backBufferDimensions = backBufferDimensions;
+
             TextureSortMode = SpriteSortMode.Immediate;
         }
 
@@ -39,11 +44,12 @@ namespace Protogame
             }
             else
             {
+                var size = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
                 renderContext.GraphicsDevice.Viewport = new Viewport(
                     0,
                     0,
-                    renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                    renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight);
+                    size.X,
+                    size.Y);
             }
 
 #if PLATFORM_WINDOWS
