@@ -8,6 +8,8 @@ namespace Protogame
     {
         IGameWindow Window { get; }
 
+        IHostGame HostGame { get; }
+
         GraphicsDevice GraphicsDevice { get; }
 
         GraphicsDeviceManager GraphicsDeviceManager { get; }
@@ -20,7 +22,11 @@ namespace Protogame
 
         bool IsMouseVisible { get; set; }
 
-        void AssignHost(HostGame hostGame);
+        bool HasLoadedContent { get; }
+
+        void AssignHost(IHostGame hostGame);
+
+        void EnableImmediateStartFromHost();
 
         void LoadContent();
 

@@ -12,6 +12,13 @@ namespace Protogame
     /// <internal>True</internal>
     public class FirstPersonCamera : IFirstPersonCamera
     {
+        private readonly IBackBufferDimensions _backBufferDimensions;
+
+        public FirstPersonCamera(IBackBufferDimensions backBufferDimensions)
+        {
+            _backBufferDimensions = backBufferDimensions;
+        }
+
         public void Apply(
             IRenderContext renderContext, 
             Vector3 position,
@@ -21,8 +28,8 @@ namespace Protogame
             float nearPlaneDistance,
             float farPlaneDistance)
         {
-            var viewport = renderContext.GraphicsDevice.PresentationParameters;
-            var aspectRatio = viewport.BackBufferWidth / (float)viewport.BackBufferHeight;
+            var size = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
+            var aspectRatio = size.X / (float)size.Y;
 
             up = up ?? Vector3.Up;
             renderContext.CameraPosition = position;

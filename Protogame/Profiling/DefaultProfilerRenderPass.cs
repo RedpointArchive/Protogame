@@ -8,6 +8,7 @@ namespace Protogame
     public class DefaultProfilerRenderPass : IProfilerRenderPass
     {
         private readonly I2DRenderUtilities _renderUtilities;
+        private readonly IBackBufferDimensions _backBufferDimensions;
         private readonly IConsole _console;
 
         public bool IsPostProcessingPass => false;
@@ -19,9 +20,11 @@ namespace Protogame
 
         public DefaultProfilerRenderPass(
             I2DRenderUtilities renderUtilities,
+            IBackBufferDimensions backBufferDimensions,
             [Optional] IConsole console)
         {
             _renderUtilities = renderUtilities;
+            _backBufferDimensions = backBufferDimensions;
             _console = console;
 
             Enabled = true;
@@ -55,12 +58,14 @@ namespace Protogame
             }
             
             renderContext.SpriteBatch.Begin(SpriteSortMode.Immediate);
-            
+
+            var size = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
+
             foreach (var visualiser in Visualisers)
             {
-                var height = visualiser.GetHeight(renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight);
+                var height = visualiser.GetHeight(size.Y);
                 var rect = new Rectangle(
-                    Position == ProfilerPosition.TopLeft ? 0 : (renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth - 300),
+                    Position == ProfilerPosition.TopLeft ? 0 : (size.X - 300),
                     y,
                     300,
                     height);

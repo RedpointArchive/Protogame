@@ -32,8 +32,8 @@ namespace Protogame
             {
                 var syncContext = (SynchronizationContext) _coroutineScheduler;
                 SynchronizationContext.SetSynchronizationContext(syncContext);
+                // The await inside WrapCoroutine will cause it to be placed on the coroutine scheduler.
                 var task = WrapCoroutine(coroutine);
-                syncContext.Post(async _=> { await task; }, null);
                 return task;
             }
             finally
@@ -49,8 +49,8 @@ namespace Protogame
             {
                 var syncContext = (SynchronizationContext)_coroutineScheduler;
                 SynchronizationContext.SetSynchronizationContext(syncContext);
+                // The await inside WrapCoroutine will cause it to be placed on the coroutine scheduler.
                 var task = WrapCoroutine(coroutine);
-                syncContext.Post(async _ => { await task; }, null);
                 return task;
             }
             finally

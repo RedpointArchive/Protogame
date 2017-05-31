@@ -32,7 +32,9 @@ namespace Protogame
         private readonly IProfiler _profiler;
 
         private readonly ILoadingScreen _loadingScreen;
-        
+
+        private readonly IBackBufferDimensions _backBufferDimensions;
+
         private readonly IEngineHook[] _engineHooks;
 
         private RenderTarget2D _primary;
@@ -50,12 +52,14 @@ namespace Protogame
             IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities,
             IProfiler profiler,
             ILoadingScreen loadingScreen,
+            IBackBufferDimensions backBufferDimensions,
             [FromGame] IEngineHook[] engineHooks)
         {
             _graphicsBlit = graphicsBlit;
             _renderTargetBackBufferUtilities = renderTargetBackBufferUtilities;
             _profiler = profiler;
             _loadingScreen = loadingScreen;
+            _backBufferDimensions = backBufferDimensions;
             _engineHooks = engineHooks;
             _standardRenderPasses = new List<IRenderPass>();
             _postProcessingRenderPasses = new List<IRenderPass>();
@@ -327,11 +331,12 @@ namespace Protogame
             }
             else
             {
+                var size = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
                 newViewport = new Viewport(
                     0,
                     0,
-                    renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                    renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight);
+                    size.X,
+                    size.Y);
             }
 
             var currentViewport = renderContext.GraphicsDevice.Viewport;

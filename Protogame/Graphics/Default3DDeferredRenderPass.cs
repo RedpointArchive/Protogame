@@ -18,6 +18,7 @@ namespace Protogame
         private readonly IRenderTargetBackBufferUtilities _renderTargetBackBufferUtilities;
         private readonly IGraphicsBlit _graphicsBlit;
         private readonly IRenderBatcher _renderBatcher;
+        private readonly IBackBufferDimensions _backBufferDimensions;
         private readonly IAssetReference<EffectAsset> _gbufferClearEffect;
         private readonly IAssetReference<EffectAsset> _gbufferCombineEffect;
 
@@ -45,12 +46,14 @@ namespace Protogame
             IRenderTargetBackBufferUtilities renderTargetBackBufferUtilities,
             IGraphicsBlit graphicsBlit,
             IAssetManager assetManager,
-            IRenderBatcher renderBatcher)
+            IRenderBatcher renderBatcher,
+            IBackBufferDimensions backBufferDimensions)
         {
             _hierarchy = hierarchy;
             _renderTargetBackBufferUtilities = renderTargetBackBufferUtilities;
             _graphicsBlit = graphicsBlit;
             _renderBatcher = renderBatcher;
+            _backBufferDimensions = backBufferDimensions;
             _gbufferClearEffect =
                 assetManager.Get<EffectAsset>("effect.GBufferClear");
             _gbufferCombineEffect =
@@ -229,6 +232,7 @@ namespace Protogame
             renderContext.GraphicsDevice.Clear(Color.Transparent);
             renderContext.PopRenderTarget();
 
+            var size = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
             var lightContext = new DefaultLightContext(
                 _colorRenderTarget,
                 _normalRenderTarget,
@@ -241,8 +245,8 @@ namespace Protogame
                 _rasterizerStateCullClockwiseFace,
                 _rasterizerStateCullCounterClockwiseFace,
                 new Vector2(
-                    0.5f/renderContext.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                    0.5f/renderContext.GraphicsDevice.PresentationParameters.BackBufferHeight));
+                    0.5f/size.X,
+                    0.5f/size.Y));
 
             var lights = new List<ILight>();
 

@@ -37,6 +37,8 @@ namespace Protogame
             kernel.Bind<ICoroutineScheduler>().To<DefaultCoroutineScheduler>().InSingletonScope();
             kernel.Bind<IEngineHook>().To<CoroutineEngineHook>();
             kernel.Bind<ICoroutine>().To<DefaultCoroutine>();
+            kernel.Bind<IBaseDirectory>().To<DefaultBaseDirectory>().InSingletonScope();
+            kernel.Bind<IBackBufferDimensions>().To<DefaultBackBufferDimensions>().InSingletonScope();
         }
     }
 }

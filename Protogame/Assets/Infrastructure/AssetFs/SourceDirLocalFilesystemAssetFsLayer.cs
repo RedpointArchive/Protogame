@@ -8,11 +8,11 @@ namespace Protogame
     {
         private readonly LocalFilesystemAssetFsLayer _localLayer;
 
-        public SourceDirLocalFilesystemAssetFsLayer()
+        public SourceDirLocalFilesystemAssetFsLayer(IBaseDirectory baseDirectory)
         {
             _localLayer = null;
 
-            var sourcePath = Path.Combine(Environment.CurrentDirectory, "Content", ".source");
+            var sourcePath = Path.Combine(baseDirectory.FullPath, "Content", ".source");
             if (!File.Exists(sourcePath))
             {
                 return;
@@ -22,7 +22,7 @@ namespace Protogame
             {
                 sourcePath = reader.ReadLine();
 
-                if (string.Equals(sourcePath, Path.Combine(Environment.CurrentDirectory, "Content"), StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(sourcePath, Path.Combine(baseDirectory.FullPath, "Content"), StringComparison.OrdinalIgnoreCase))
                 {
                     return;
                 }
