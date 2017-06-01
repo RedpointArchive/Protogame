@@ -30,8 +30,8 @@ namespace Protogame
                     Matrix.CreateTranslation(
                         -new Vector3(centerOfScreenPosition, 0)
                         + new Vector3(
-                            (batchedRenderPass.Viewport?.Width ?? size.X) / 2,
-                            (batchedRenderPass.Viewport?.Height ?? size.Y) / 2,
+                            (batchedRenderPass.Viewport?.Width ?? size.Width) / 2,
+                            (batchedRenderPass.Viewport?.Height ?? size.Height) / 2,
                             0)));
             }
         }

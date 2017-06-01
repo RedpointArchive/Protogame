@@ -34,7 +34,7 @@ namespace Protogame
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass,
             RenderTarget2D postProcessingSource)
         {
-            _renderTarget = _renderTargetBackBufferUtilities.UpdateRenderTarget(_renderTarget, gameContext);
+            _renderTarget = _renderTargetBackBufferUtilities.UpdateRenderTarget(_renderTarget, renderContext);
 
             // Blit to the capture target.
             _graphicsBlit.Blit(renderContext, postProcessingSource, _renderTarget);

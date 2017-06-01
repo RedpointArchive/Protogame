@@ -11,13 +11,9 @@ namespace Protogame
 
         GraphicsDevice GraphicsDevice { get; }
 
-        GraphicsDeviceManager GraphicsDeviceManager { get; }
-
         IGameWindow ProtogameWindow { get; }
 
         event EventHandler<EventArgs> Exiting;
-
-        GameWindow Window { get; }
 
         GameServiceContainer Services { get; }
 

@@ -87,8 +87,8 @@ namespace Protogame
                     renderContext.GraphicsDevice.Viewport.MaxDepth,
                     0);
 
-                _primary = _renderTargetBackBufferUtilities.UpdateRenderTarget(_primary, gameContext);
-                _secondary = _renderTargetBackBufferUtilities.UpdateRenderTarget(_secondary, gameContext);
+                _primary = _renderTargetBackBufferUtilities.UpdateRenderTarget(_primary, renderContext);
+                _secondary = _renderTargetBackBufferUtilities.UpdateRenderTarget(_secondary, renderContext);
 
                 if (_primary == null || _secondary == null)
                 {
@@ -335,8 +335,8 @@ namespace Protogame
                 newViewport = new Viewport(
                     0,
                     0,
-                    size.X,
-                    size.Y);
+                    size.Width,
+                    size.Height);
             }
 
             var currentViewport = renderContext.GraphicsDevice.Viewport;

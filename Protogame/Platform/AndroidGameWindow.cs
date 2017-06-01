@@ -72,13 +72,14 @@ namespace Protogame
             }
         }
 
-        /// <summary>
-        /// The underlying MonoGame window object.  The type and presence of this property
-        /// varies per-platform, so it's access should always be within a platform specific block.
-        /// </summary>
-        public AndroidMonoGameWindow PlatformWindow
+        public bool IsFullscreen => true;
+
+        public void SetFullscreen(bool fullscreen)
         {
-            get { return this.m_GameWindow; }
+        }
+
+        public void Resize(int width, int height)
+        {
         }
 
         public void SetCursorPosition(int x, int y)

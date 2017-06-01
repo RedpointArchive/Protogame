@@ -99,8 +99,8 @@ namespace Protogame
             {
                 // TODO: renderContext.GraphicsDevice.GetRenderTargets();
                 var backBufferSize = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
-                destWidth = backBufferSize.X;
-                destHeight = backBufferSize.Y;
+                destWidth = backBufferSize.Width;
+                destHeight = backBufferSize.Height;
             }
 
             offset = offset ?? new Vector2(0, 0);

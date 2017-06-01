@@ -46,14 +46,6 @@ namespace Protogame
         GameTime GameTime { get; set; }
 
         /// <summary>
-        /// Gets the graphics device manager, which provide a high-level API to the graphics device.
-        /// </summary>
-        /// <value>
-        /// The graphics device manager.
-        /// </value>
-        GraphicsDeviceManager Graphics { get; }
-
-        /// <summary>
         /// Gets the game window.
         /// </summary>
         /// <value>

@@ -1,5 +1,6 @@
 #pragma warning disable CS1591
 
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -12,9 +13,10 @@ namespace Protogame
     /// </summary>
     public class DefaultGameWindow : IGameWindow
     {
+        private readonly HostGame _hostGame;
         private readonly GameWindow _gameWindow;
 
-        public DefaultGameWindow(GameWindow gameWindow)
+        public DefaultGameWindow(HostGame hostGame, GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
         }
@@ -57,10 +59,21 @@ namespace Protogame
                 }
             }
         }
-        
-        public GameWindow PlatformWindow
+
+        public bool IsFullscreen => _hostGame.GraphicsDeviceManager.IsFullScreen;
+
+        public void Resize(int width, int height)
         {
-            get { return _gameWindow; }
+            _hostGame.GraphicsDeviceManager.PreferredBackBufferWidth = width;
+            _hostGame.GraphicsDeviceManager.PreferredBackBufferHeight = height;
+            _hostGame.GraphicsDeviceManager.ApplyChanges();
+        }
+
+        public void SetFullscreen(bool fullscreen)
+        {
+            _hostGame.GraphicsDeviceManager.HardwareModeSwitch = false;
+            _hostGame.GraphicsDeviceManager.IsFullScreen = fullscreen;
+            _hostGame.GraphicsDeviceManager.ApplyChanges();
         }
 
         public void SetCursorPosition(int x, int y)

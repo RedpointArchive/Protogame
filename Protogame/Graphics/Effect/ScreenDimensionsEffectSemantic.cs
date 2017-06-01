@@ -55,8 +55,8 @@ namespace Protogame
         {
             var size = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
 
-            var width = size.X;
-            var height = size.Y;
+            var width = size.Width;
+            var height = size.Height;
 
             var needsUpdate = false;
             if (_lastScreenX != width)

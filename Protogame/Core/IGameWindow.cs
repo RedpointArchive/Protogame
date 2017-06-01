@@ -34,14 +34,22 @@ namespace Protogame
         bool AllowUserResizing { get; set; }
 
         /// <summary>
-        /// The underlying MonoGame window object.  The type and presence of this property
-        /// varies per-platform, so it's access should always be within a platform specific block.
+        /// Resize the game window to the specified dimensions.
         /// </summary>
-#if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
-        GameWindow PlatformWindow { get; }
-#elif PLATFORM_ANDROID || PLATFORM_OUYA
-        Microsoft.Xna.Framework.AndroidGameWindow PlatformWindow { get; }
-#endif
+        /// <param name="width">The new width of the window.</param>
+        /// <param name="height">The new height of the window.</param>
+        void Resize(int width, int height);
+
+        /// <summary>
+        /// Gets whether or not the game is currently in fullscreen mode.
+        /// </summary>
+        bool IsFullscreen { get; }
+
+        /// <summary>
+        /// Turns fullscreen mode on or off immediately.
+        /// </summary>
+        /// <param name="fullscreen">True if the game should be fullscreen, false otherwise.</param>
+        void SetFullscreen(bool fullscreen);
 
         /// <summary>
         /// Sets the position of the mouse cursor on the screen, relative to the window.

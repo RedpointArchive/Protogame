@@ -279,6 +279,7 @@
     <Compile Include="Console\NullLogShipping.cs" />
     <Compile Include="Console\PendingLogForShip.cs" />
     <Compile Include="Console\ServerConsole.cs" />
+    <Compile Include="Core\BackBufferSize.cs" />
     <Compile Include="Core\BoundingBox.cs" />
     <Compile Include="Core\ConfigurationAttribute.cs" />
     <Compile Include="Core\CoreGame.cs" />
