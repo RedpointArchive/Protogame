@@ -36,7 +36,7 @@ namespace Protogame
             set;
         }
 
-        public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
+        public virtual void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
             if (Viewport != null)
             {
@@ -69,7 +69,7 @@ namespace Protogame
             renderContext.SpriteBatch.Begin(TextureSortMode);
         }
 
-        public void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
+        public virtual void EndRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass nextPass)
         {
             renderContext.SpriteBatch.End();
         }
