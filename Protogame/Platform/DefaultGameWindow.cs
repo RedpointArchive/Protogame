@@ -1,6 +1,7 @@
 #pragma warning disable CS1591
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
 
@@ -60,6 +61,11 @@ namespace Protogame
         public GameWindow PlatformWindow
         {
             get { return _gameWindow; }
+        }
+
+        public void SetCursorPosition(int x, int y)
+        {
+            Mouse.SetPosition(x, y);
         }
 
 #if PLATFORM_WINDOWS
