@@ -40,7 +40,7 @@ namespace Protogame
             var mousePressEvent = @event as MousePressEvent;
             if (mousePressEvent != null)
             {
-                if (!layout.Contains(mousePressEvent.MouseState.X, mousePressEvent.MouseState.Y))
+                if (!layout.Contains(mousePressEvent.X, mousePressEvent.Y))
                 {
                     return false;
                 }
@@ -55,7 +55,7 @@ namespace Protogame
             var mouseReleaseEvent = @event as MouseReleaseEvent;
             if (mouseReleaseEvent != null)
             {
-                if (!layout.Contains(mouseReleaseEvent.MouseState.X, mouseReleaseEvent.MouseState.Y))
+                if (!layout.Contains(mouseReleaseEvent.X, mouseReleaseEvent.Y))
                 {
                     return false;
                 }

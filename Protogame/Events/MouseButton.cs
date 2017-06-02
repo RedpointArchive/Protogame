@@ -1,22 +1,23 @@
 namespace Protogame
 {
     /// <summary>
-    /// The mouse button.
+    /// Represents a button on a mouse.
     /// </summary>
+    /// <module>Events</module>
     public enum MouseButton
     {
         /// <summary>
-        /// The left.
+        /// The left mouse button.
         /// </summary>
         Left, 
 
         /// <summary>
-        /// The right.
+        /// The right mouse button.
         /// </summary>
         Right, 
 
         /// <summary>
-        /// The middle.
+        /// The middle mouse button.
         /// </summary>
         Middle
     }

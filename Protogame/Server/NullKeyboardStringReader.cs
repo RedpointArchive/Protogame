@@ -9,7 +9,7 @@ namespace Protogame
     {
         public int FirstRepeatKeyInterval { get; set; }
         public int RepeatKeyInterval { get; set; }
-        public void Process(KeyboardState keyboard, GameTime time, StringBuilder text)
+        public void Process(Keys[] pressedKeys, GameTime time, StringBuilder text)
         {
             throw new NotSupportedException();
         }

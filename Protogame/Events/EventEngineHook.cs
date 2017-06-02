@@ -247,18 +247,18 @@ namespace Protogame
             {
                 if (keyboardState.IsKeyDown(key))
                 {
-                    _eventEngine.Fire(gameContext, new KeyHeldEvent { Key = key, KeyboardState = keyboardState });
+                    _eventEngine.Fire(gameContext, new KeyHeldEvent(keyboardState) { Key = key });
                 }
 
                 var change = keyboardState.IsKeyChanged(this, key);
 
                 if (change == KeyState.Down)
                 {
-                    _eventEngine.Fire(gameContext, new KeyPressEvent { Key = key, KeyboardState = keyboardState });
+                    _eventEngine.Fire(gameContext, new KeyPressEvent(keyboardState) { Key = key });
                 }
                 else if (change == KeyState.Up)
                 {
-                    _eventEngine.Fire(gameContext, new KeyReleaseEvent { Key = key, KeyboardState = keyboardState });
+                    _eventEngine.Fire(gameContext, new KeyReleaseEvent(keyboardState) { Key = key });
                 }
             }
         }
@@ -286,55 +286,52 @@ namespace Protogame
             {
                 _eventEngine.Fire(
                     gameContext, 
-                    new MousePressEvent { Button = MouseButton.Left, MouseState = mouseState });
+                    new MousePressEvent(mouseState) { Button = MouseButton.Left });
             }
 
             if (middleChange == ButtonState.Pressed)
             {
                 _eventEngine.Fire(
                     gameContext, 
-                    new MousePressEvent { Button = MouseButton.Middle, MouseState = mouseState });
+                    new MousePressEvent(mouseState) { Button = MouseButton.Middle });
             }
 
             if (rightChange == ButtonState.Pressed)
             {
                 _eventEngine.Fire(
                     gameContext, 
-                    new MousePressEvent { Button = MouseButton.Right, MouseState = mouseState });
+                    new MousePressEvent(mouseState) { Button = MouseButton.Right });
             }
 
             if (leftChange == ButtonState.Released)
             {
                 _eventEngine.Fire(
                     gameContext,
-                    new MouseReleaseEvent { Button = MouseButton.Left, MouseState = mouseState });
+                    new MouseReleaseEvent(mouseState) { Button = MouseButton.Left });
             }
 
             if (middleChange == ButtonState.Released)
             {
                 _eventEngine.Fire(
                     gameContext,
-                    new MouseReleaseEvent { Button = MouseButton.Middle, MouseState = mouseState });
+                    new MouseReleaseEvent(mouseState) { Button = MouseButton.Middle });
             }
 
             if (rightChange == ButtonState.Released)
             {
                 _eventEngine.Fire(
                     gameContext,
-                    new MouseReleaseEvent { Button = MouseButton.Right, MouseState = mouseState });
+                    new MouseReleaseEvent(mouseState) { Button = MouseButton.Right });
             }
 
             if (mouseState.X != _lastMouseState.Value.X || mouseState.Y != _lastMouseState.Value.Y)
             {
                 _eventEngine.Fire(
                     gameContext, 
-                    new MouseMoveEvent
+                    new MouseMoveEvent(mouseState)
                     {
-                        X = mouseState.X, 
-                        Y = mouseState.Y, 
                         LastX = _lastMouseState.Value.X, 
-                        LastY = _lastMouseState.Value.Y, 
-                        MouseState = mouseState
+                        LastY = _lastMouseState.Value.Y,
                     });
             }
 
@@ -344,7 +341,7 @@ namespace Protogame
                 {
                     _eventEngine.Fire(
                         gameContext,
-                        new MouseScrollEvent { ScrollDelta = (_lastMouseState.Value.ScrollWheelValue - mouseState.ScrollWheelValue), MouseState = mouseState });
+                        new MouseScrollEvent(mouseState) { ScrollDelta = (_lastMouseState.Value.ScrollWheelValue - mouseState.ScrollWheelValue) });
                 }
             }
 

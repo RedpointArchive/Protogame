@@ -31,8 +31,8 @@ namespace Protogame
             }
 
             var state = Keyboard.GetState();
-
-            _keyboardStringReader.Process(state, gameContext.GameTime, this._inputBuffer);
+            
+            _keyboardStringReader.Process(state.GetPressedKeys(), gameContext.GameTime, this._inputBuffer);
             if (this._inputBuffer.ToString().LastIndexOf('`') != -1)
             {
                 this._inputBuffer.Remove(this._inputBuffer.ToString().LastIndexOf('`'), 1);

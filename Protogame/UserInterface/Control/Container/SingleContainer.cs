@@ -58,7 +58,7 @@ namespace Protogame
             _child?.Update(skinLayout, GetChildLayout(layout, skinLayout), gameTime, ref stealFocus);
         }
         
-        public bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
+        public virtual bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
         {
             return _child != null && _child.HandleEvent(skinLayout, GetChildLayout(layout, skinLayout), context, @event);
         }

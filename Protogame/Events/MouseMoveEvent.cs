@@ -1,40 +1,57 @@
+using Microsoft.Xna.Framework.Input;
+using System;
+
 namespace Protogame
 {
     /// <summary>
-    /// The mouse move event.
+    /// Represents movement of the mouse cursor on the screen
     /// </summary>
+    /// <module>Events</module>
+    [Serializable]
     public class MouseMoveEvent : MouseEvent
     {
         /// <summary>
-        /// Gets or sets the last x.
+        /// Constructs a new default <see cref="MouseMoveEvent"/>.
         /// </summary>
-        /// <value>
-        /// The last x.
-        /// </value>
+        public MouseMoveEvent()
+        {
+        }
+
+        /// <summary>
+        /// Constructs a new <see cref="MouseMoveEvent"/> from a <see cref="MouseState"/>.
+        /// </summary>
+        /// <param name="state">The MonoGame representation of the mouse.</param>
+        public MouseMoveEvent(MouseState state) : base(state)
+        {
+        }
+
+        /// <summary>
+        /// Constructs a new <see cref="MouseMoveEvent"/> from an existing <see cref="MouseMoveEvent"/>.
+        /// </summary>
+        /// <param name="mouseEvent">The existing mouse move event.</param>
+        public MouseMoveEvent(MouseMoveEvent mouseEvent) : base(mouseEvent)
+        {
+            LastX = mouseEvent.LastX;
+            LastY = mouseEvent.LastY;
+        }
+
+        /// <summary>
+        /// Clones the current mouse event instance and returns a copy.
+        /// </summary>
+        /// <returns>A copy of the current mouse event.</returns>
+        public override MouseEvent Clone()
+        {
+            return new MouseMoveEvent(this);
+        }
+
+        /// <summary>
+        /// The previous horizontal position of the mouse cursor in relation to the window.
+        /// </summary>
         public int LastX { get; set; }
 
         /// <summary>
-        /// Gets or sets the last y.
+        /// The previous vertical position of the mouse cursor in relation to the window.
         /// </summary>
-        /// <value>
-        /// The last y.
-        /// </value>
         public int LastY { get; set; }
-
-        /// <summary>
-        /// Gets or sets the x.
-        /// </summary>
-        /// <value>
-        /// The x.
-        /// </value>
-        public int X { get; set; }
-
-        /// <summary>
-        /// Gets or sets the y.
-        /// </summary>
-        /// <value>
-        /// The y.
-        /// </value>
-        public int Y { get; set; }
     }
 }

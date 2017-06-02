@@ -284,25 +284,25 @@ namespace Protogame
                
                 if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
                 {
-                    if (horizontalScrollBarRectangle.Contains(mousePressEvent.MouseState.Position))
+                    if (horizontalScrollBarRectangle.Contains(mousePressEvent.Position))
                     {
                         if (ChildWidth > layout.Width)
                         {
                             _isHorizontalScrolling = true;
-                            _horizontalScrollOffset = mousePressEvent.MouseState.Position.X - horizontalScrollBarRectangle.X;
-                            _horizontalScrollStart = mousePressEvent.MouseState.Position.X;
+                            _horizontalScrollOffset = mousePressEvent.X - horizontalScrollBarRectangle.X;
+                            _horizontalScrollStart = mousePressEvent.X;
                         }
 
                         return true;
                     }
 
-                    if (verticalScrollBarRectangle.Contains(mousePressEvent.MouseState.Position))
+                    if (verticalScrollBarRectangle.Contains(mousePressEvent.Position))
                     {
                         if (ChildHeight > layout.Height)
                         {
                             _isVerticalScrolling = true;
-                            _verticalScrollOffset = mousePressEvent.MouseState.Position.Y - verticalScrollBarRectangle.Y;
-                            _verticalScrollStart = mousePressEvent.MouseState.Position.Y;
+                            _verticalScrollOffset = mousePressEvent.Y - verticalScrollBarRectangle.Y;
+                            _verticalScrollStart = mousePressEvent.Y;
                         }
 
                         return true;
@@ -323,16 +323,8 @@ namespace Protogame
                     scrollXPixels = (int)(ScrollX * (Math.Max(ChildWidth, layoutWidth) - layoutWidth));
                     scrollYPixels = (int)(ScrollY * (Math.Max(ChildHeight, layoutHeight) - layoutHeight));
 
-                    originalState = mouseEvent.MouseState;
-                    mouseEvent.MouseState = new MouseState(
-                        mouseEvent.MouseState.X + scrollXPixels,
-                        mouseEvent.MouseState.Y + scrollYPixels,
-                        mouseEvent.MouseState.ScrollWheelValue,
-                        mouseEvent.MouseState.LeftButton,
-                        mouseEvent.MouseState.MiddleButton,
-                        mouseEvent.MouseState.RightButton,
-                        mouseEvent.MouseState.XButton1,
-                        mouseEvent.MouseState.XButton2);
+                    mouseEvent.X += scrollXPixels;
+                    mouseEvent.Y += scrollYPixels;
 
                     var mouseMoveEvent = @event as MouseMoveEvent;
 
@@ -354,7 +346,8 @@ namespace Protogame
                 // Restore event state.
                 if (mouseEvent != null)
                 {
-                    mouseEvent.MouseState = originalState;
+                    mouseEvent.X -= scrollXPixels;
+                    mouseEvent.Y -= scrollYPixels;
 
                     var mouseMoveEvent = @event as MouseMoveEvent;
 

@@ -36,7 +36,7 @@ namespace Protogame
             {
                 return false;
             }
-            if (!layout.Contains(mouseEvent.MouseState.X, mouseEvent.MouseState.Y))
+            if (!layout.Contains(mouseEvent.X, mouseEvent.Y))
             {
                 return false;
             }

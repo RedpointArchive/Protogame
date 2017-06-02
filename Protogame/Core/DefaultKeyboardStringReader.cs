@@ -187,12 +187,12 @@ namespace Protogame
         /// <param name="text">
         /// The StringBuilder to be modified based on keyboard state.
         /// </param>
-        public void Process(KeyboardState keyboard, GameTime time, StringBuilder text)
+        public void Process(Keys[] pressedKeys, GameTime time, StringBuilder text)
         {
-            var keys = keyboard.GetPressedKeys();
+            var keys = pressedKeys;
 
             // check and see if shift is down, caps lock is on, and/or num lock is on
-            var shift = keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift);
+            var shift = pressedKeys.Contains(Keys.LeftShift) || pressedKeys.Contains(Keys.RightShift);
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
             var capsLock = Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock);
