@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
 using System.Diagnostics;
 #endif
@@ -12,9 +13,9 @@ namespace Protogame
         private readonly IAssetReference<FontAsset> _defaultFont;
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-        private readonly PerformanceCounter _gen0PerformanceCounter;
-        private readonly PerformanceCounter _gen1PerformanceCounter;
-        private readonly PerformanceCounter _gen2PerformanceCounter;
+        private PerformanceCounter _gen0PerformanceCounter;
+        private PerformanceCounter _gen1PerformanceCounter;
+        private PerformanceCounter _gen2PerformanceCounter;
 #endif
 
         private const string CategoryName = "Process";
@@ -32,16 +33,21 @@ namespace Protogame
             _defaultFont = assetManager.Get<FontAsset>("font.Default");
 
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
-            string instanceName;
-            if (TryGetInstanceName(Process.GetCurrentProcess(), out instanceName))
+            // TryGetInstanceName can take up to 1.5 seconds to complete! Queue the work of resolving
+            // these metrics on a background thread so we don't block game startup.
+            ThreadPool.QueueUserWorkItem(o =>
             {
-                _gen0PerformanceCounter = new PerformanceCounter(".NET CLR Memory", "# Gen 0 Collections",
-                    instanceName, true);
-                _gen1PerformanceCounter = new PerformanceCounter(".NET CLR Memory", "# Gen 1 Collections",
-                    instanceName, true);
-                _gen2PerformanceCounter = new PerformanceCounter(".NET CLR Memory", "# Gen 2 Collections",
-                    instanceName, true);
-            }
+                string instanceName;
+                if (TryGetInstanceName(Process.GetCurrentProcess(), out instanceName))
+                {
+                    _gen0PerformanceCounter = new PerformanceCounter(".NET CLR Memory", "# Gen 0 Collections",
+                        instanceName, true);
+                    _gen1PerformanceCounter = new PerformanceCounter(".NET CLR Memory", "# Gen 1 Collections",
+                        instanceName, true);
+                    _gen2PerformanceCounter = new PerformanceCounter(".NET CLR Memory", "# Gen 2 Collections",
+                        instanceName, true);
+                }
+            });
 #endif
         }
 
