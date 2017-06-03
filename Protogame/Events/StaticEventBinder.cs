@@ -33,6 +33,7 @@ namespace Protogame
         protected StaticEventBinder()
         {
             this._bindings = new List<Func<TContext, IEventEngine<TContext>, Event, bool>>();
+            Priority = 100;
         }
         
         protected interface IBindable<TEvent>
@@ -124,13 +125,7 @@ namespace Protogame
         {
         }
         
-        public int Priority
-        {
-            get
-            {
-                return 100;
-            }
-        }
+        public int Priority { get; set; }
         
         public void Assign(IKernel kernel)
         {
