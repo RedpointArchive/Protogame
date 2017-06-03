@@ -24,6 +24,8 @@ namespace Protogame
 
         bool HasLoadedContent { get; }
 
+        bool IsActive { get; }
+
         void AssignHost(IHostGame hostGame);
 
         void EnableImmediateStartFromHost();

@@ -28,5 +28,7 @@ namespace Protogame
         SpriteBatch SplashScreenSpriteBatch { get; }
 
         Texture2D SplashScreenTexture { get; }
+
+        bool IsActive { get; }
     }
 }

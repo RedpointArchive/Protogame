@@ -91,6 +91,11 @@ namespace Protogame
         /// </param>
         public void Update(IGameContext gameContext, IUpdateContext updateContext)
         {
+            if (!gameContext.Game.IsActive)
+            {
+                return;
+            }
+
             UpdateKeyboard(gameContext);
             UpdateMouse(gameContext);
 
