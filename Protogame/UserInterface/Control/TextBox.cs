@@ -68,7 +68,7 @@ namespace Protogame
 
             if (mousePressEvent != null && mousePressEvent.Button == MouseButton.Left)
             {
-                if (layout.Contains(mousePressEvent.MouseState.X, mousePressEvent.MouseState.Y))
+                if (layout.Contains(mousePressEvent.X, mousePressEvent.Y))
                 {
                     this.Focus();
 
@@ -102,10 +102,9 @@ namespace Protogame
 
             if (keyEvent != null)
             {
-                var keyboard = keyEvent.KeyboardState;
                 if (Focused)
                 {
-                    _keyboardReader.Process(keyboard, context.GameTime, _textBuilder);
+                    _keyboardReader.Process(keyEvent.PressedKeys, context.GameTime, _textBuilder);
                     if (_textBuilder.ToString() != _previousValue)
                     {
                         TextChanged?.Invoke(this, new EventArgs());

@@ -10,6 +10,6 @@ namespace Protogame
         
         int RepeatKeyInterval { get; set; }
         
-        void Process(KeyboardState keyboard, GameTime time, StringBuilder text);
+        void Process(Keys[] pressedKeys, GameTime time, StringBuilder text);
     }
 }

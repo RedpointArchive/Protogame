@@ -54,8 +54,8 @@ namespace Protogame
 
             if (mouseEvent != null)
             {
-                x = mouseEvent.MouseState.X;
-                y = mouseEvent.MouseState.Y;
+                x = mouseEvent.X;
+                y = mouseEvent.Y;
             }
 
             if (layout.Contains(x, y))

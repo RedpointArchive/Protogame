@@ -137,7 +137,14 @@ namespace Protogame
 
             _nextWorldTask = _coroutine.Run(async () =>
             {
-                _nextWorld = await _kernel.GetAsync<T>((INode)null, (string)null, (string)null, new IInjectionAttribute[0], new IConstructorArgument[0], (Dictionary<Type, List<IMapping>>)null);
+                try
+                {
+                    _nextWorld = await _kernel.GetAsync<T>((INode)null, (string)null, (string)null, new IInjectionAttribute[0], new IConstructorArgument[0], (Dictionary<Type, List<IMapping>>)null);
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
             });
         }
 
