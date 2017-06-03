@@ -11,6 +11,7 @@ namespace Protogame
         public Button()
         {
             State = ButtonUIState.None;
+            Enabled = true;
         }
 
         public event EventHandler<ProtogameEventArgs> Click;
@@ -32,6 +33,8 @@ namespace Protogame
         public IAssetReference<TextureAsset> Icon { get; set; }
 
         public bool Toggled { get; set; }
+
+        public bool Enabled { get; set; }
 
         public virtual void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
@@ -87,6 +90,12 @@ namespace Protogame
 
             if (layout.Contains(x, y))
             {
+                if (!Enabled)
+                {
+                    // Consume the event but don't do anything because the button is not enabled.
+                    return true;
+                }
+
                 if (mouseMoveEvent != null)
                 {
                     if (_shouldAppearPressedWhenMouseIsOver)
