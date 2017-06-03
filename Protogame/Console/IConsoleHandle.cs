@@ -25,5 +25,7 @@ namespace Protogame
         void LogError(string messageFormat);
 
         void LogError(string messageFormat, params object[] objects);
+
+        void LogError(Exception exception);
     }
 }

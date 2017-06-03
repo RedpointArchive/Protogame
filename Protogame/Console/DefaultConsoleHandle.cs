@@ -1,3 +1,4 @@
+using System;
 using Protoinject;
 
 namespace Protogame
@@ -113,6 +114,11 @@ namespace Protogame
             }
 
             _console.LogStructured(_node.Parent, ConsoleLogLevel.Error, messageFormat, objects);
+        }
+
+        public void LogError(Exception exception)
+        {
+            LogError(exception.Message + Environment.NewLine + exception.StackTrace.TrimEnd());
         }
     }
 }
