@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Protoinject;
 
@@ -22,6 +23,20 @@ namespace Protogame
         {
             var implementation = _kernel.Get<ISkinRenderer<TContainer>>();
             return implementation.MeasureText(context, text, container);
+        }
+
+        public void Render<TContainer>(IRenderContext renderContext, Rectangle layout, Rectangle renderedLayout, TContainer container) where TContainer : IContainer
+        {
+            var implementation = _kernel.Get<ISkinRenderer<TContainer>>();
+            var scrollableImplementation = implementation as IScrollableAwareSkinRenderer<TContainer>;
+            if (scrollableImplementation != null)
+            {
+                scrollableImplementation.Render(renderContext, layout, renderedLayout, container);
+            }
+            else
+            {
+                implementation.Render(renderContext, layout, container);
+            }
         }
     }
 }

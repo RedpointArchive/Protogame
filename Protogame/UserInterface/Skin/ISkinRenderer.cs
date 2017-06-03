@@ -11,4 +11,13 @@ namespace Protogame
 
         Vector2 MeasureText(IRenderContext renderContext, string text, TContainer container);
     }
+
+    public interface IScrollableAwareSkinRenderer<in TContainer> : ISkinRenderer<TContainer> where TContainer : IContainer
+    {
+        void Render(
+            IRenderContext renderContext,
+            Rectangle layout,
+            Rectangle renderedLayout,
+            TContainer container);
+    }
 }
