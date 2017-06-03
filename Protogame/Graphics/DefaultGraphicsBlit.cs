@@ -11,15 +11,8 @@ namespace Protogame
     /// <interface_ref>Protogame.IGraphicsBlit</interface_ref>
     public class DefaultGraphicsBlit : IGraphicsBlit
     {
-        private readonly VertexPositionNormalTexture[] _vertexes =
-        {
-            new VertexPositionNormalTexture(new Vector3(0, 1, 0), Vector3.Zero, new Vector2(0, 1)),
-            new VertexPositionNormalTexture(new Vector3(0, 0, 0), Vector3.Zero, new Vector2(0, 0)),
-            new VertexPositionNormalTexture(new Vector3(1, 1, 0), Vector3.Zero, new Vector2(1, 1)),
-            new VertexPositionNormalTexture(new Vector3(1, 0, 0), Vector3.Zero, new Vector2(1, 0))
-        };
-
-        private readonly short[] _indicies = { 1, 3, 0, 2 };
+        private VertexPositionNormalTexture[] _vertexes;
+        private short[] _indicies;
 
         private readonly IBackBufferDimensions _backBufferDimensions;
         private readonly IAssetReference<UberEffectAsset> _blitEffect;
@@ -136,6 +129,17 @@ namespace Protogame
 
             if (_vertexBuffer == null)
             {
+                if (_vertexes == null)
+                {
+                    _vertexes = new[]
+                    {
+                        new VertexPositionNormalTexture(new Vector3(0, 1, 0), Vector3.Zero, new Vector2(0, 1)),
+                        new VertexPositionNormalTexture(new Vector3(0, 0, 0), Vector3.Zero, new Vector2(0, 0)),
+                        new VertexPositionNormalTexture(new Vector3(1, 1, 0), Vector3.Zero, new Vector2(1, 1)),
+                        new VertexPositionNormalTexture(new Vector3(1, 0, 0), Vector3.Zero, new Vector2(1, 0))
+                    };
+                }
+
                 _vertexBuffer = new VertexBuffer(renderContext.GraphicsDevice, typeof (VertexPositionNormalTexture),
                     _vertexes.Length, BufferUsage.WriteOnly);
                 _vertexBuffer.SetData(_vertexes);
@@ -143,6 +147,11 @@ namespace Protogame
 
             if (_indexBuffer == null)
             {
+                if (_indicies == null)
+                {
+                    _indicies = new short[] { 1, 3, 0, 2 };
+                }
+
                 _indexBuffer = new IndexBuffer(renderContext.GraphicsDevice, typeof (short), _indicies.Length,
                     BufferUsage.WriteOnly);
                 _indexBuffer.SetData(_indicies);

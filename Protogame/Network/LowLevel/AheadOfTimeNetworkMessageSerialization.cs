@@ -9,38 +9,54 @@ namespace Protogame
 {
     public class AheadOfTimeNetworkMessageSerialization : INetworkMessageSerialization
     {
+        private readonly INetworkMessage[] _networkMessages;
+
         private Dictionary<string, Type> _stringToType;
 
         private Dictionary<Type, string> _typeToString;
 
         private Dictionary<Type, TypeModel> _typeToSerializer;
 
+        private bool _hasInited;
+
         public AheadOfTimeNetworkMessageSerialization(INetworkMessage[] networkMessages)
         {
-            var mapped = networkMessages.Select(x => x.GetType())
+            _networkMessages = networkMessages;
+        }
+
+        private void Init()
+        {
+            var mapped = _networkMessages.Select(x => x.GetType())
                 .Select(x => new
                 {
                     Type = x,
                     Attribute =
-                        x.GetCustomAttributes(typeof (NetworkMessageAttribute), false).FirstOrDefault() as
+                        x.GetCustomAttributes(typeof(NetworkMessageAttribute), false).FirstOrDefault() as
                             NetworkMessageAttribute
                 }).Where(x => x.Attribute != null).ToList();
             _stringToType = mapped.ToDictionary(k => k.Attribute.MessageType, v => v.Type);
             _typeToString = mapped.ToDictionary(k => k.Type, v => v.Attribute.MessageType);
 
-            var assembliesToSerializers = networkMessages.Select(x => x.GetType().Assembly).Distinct()
+            var assembliesToSerializers = _networkMessages.Select(x => x.GetType().Assembly).Distinct()
                 .ToDictionary(
                     k => k,
-                    v => (TypeModel) Activator.CreateInstance(
+                    v => (TypeModel)Activator.CreateInstance(
                         v.GetType("_NetworkSerializers.<>GeneratedSerializer")));
-            _typeToSerializer = networkMessages.Select(x => x.GetType())
+            _typeToSerializer = _networkMessages.Select(x => x.GetType())
                 .ToDictionary(
                     k => k,
                     v => assembliesToSerializers[v.Assembly]);
+
+            _hasInited = true;
         }
 
         public byte[] Serialize<T>(T message)
         {
+            if (!_hasInited)
+            {
+                Init();
+            }
+
             var serialized = InternalSerialize(message);
             var type = _typeToString[typeof(T)];
 
@@ -54,6 +70,11 @@ namespace Protogame
 
         public byte[] Serialize(object message)
         {
+            if (!_hasInited)
+            {
+                Init();
+            }
+
             var serialized = InternalSerialize(message);
             var type = _typeToString[message.GetType()];
 
@@ -67,6 +88,11 @@ namespace Protogame
 
         public object Deserialize(byte[] message, out Type type)
         {
+            if (!_hasInited)
+            {
+                Init();
+            }
+
             var len = message[0];
             var tlen = message.Length;
             var typeBytes = new byte[len];
@@ -80,6 +106,11 @@ namespace Protogame
 
         public object Deserialize(byte[] message)
         {
+            if (!_hasInited)
+            {
+                Init();
+            }
+
             Type discarded;
             return Deserialize(message, out discarded);
         }
