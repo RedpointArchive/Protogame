@@ -129,15 +129,37 @@ namespace Protogame
 
             try
             {
-                _child?.Render(
-                    context,
-                    skinLayout,
-                    skinDelegator,
-                    new Rectangle(
-                        -(int)(ScrollX * (System.Math.Max(childWidth, realLayoutWidth) - realLayoutWidth)),
-                        -(int)(ScrollY * (System.Math.Max(childHeight, realLayoutHeight) - realLayoutHeight)),
-                        childWidth,
-                        childHeight));
+                var scrollableChild = _child as IScrollableAwareChild;
+
+                if (scrollableChild != null)
+                {
+                    scrollableChild.Render(
+                        context,
+                        skinLayout,
+                        skinDelegator,
+                        new Rectangle(
+                            -(int)(ScrollX * (System.Math.Max(childWidth, realLayoutWidth) - realLayoutWidth)),
+                            -(int)(ScrollY * (System.Math.Max(childHeight, realLayoutHeight) - realLayoutHeight)),
+                            childWidth,
+                            childHeight),
+                        new Rectangle(
+                            0,
+                            0,
+                            realLayoutWidth,
+                            realLayoutHeight));
+                }
+                else
+                {
+                    _child?.Render(
+                        context,
+                        skinLayout,
+                        skinDelegator,
+                        new Rectangle(
+                            -(int)(ScrollX * (System.Math.Max(childWidth, realLayoutWidth) - realLayoutWidth)),
+                            -(int)(ScrollY * (System.Math.Max(childHeight, realLayoutHeight) - realLayoutHeight)),
+                            childWidth,
+                            childHeight));
+                }
             }
             finally
             {

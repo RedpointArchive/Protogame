@@ -835,6 +835,7 @@
     <Compile Include="UserInterface\Control\FileSelect.cs" />
     <Compile Include="UserInterface\Control\FontViewer.cs" />
     <Compile Include="UserInterface\Control\Form.cs" />
+    <Compile Include="UserInterface\Control\IScrollableAwareChild.cs" />
     <Compile Include="UserInterface\Control\Label.cs" />
     <Compile Include="UserInterface\Control\Link.cs" />
     <Compile Include="UserInterface\Control\LinkState.cs" />
