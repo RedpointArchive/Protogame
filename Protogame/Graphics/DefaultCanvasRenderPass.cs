@@ -12,13 +12,14 @@ namespace Protogame
     public class DefaultCanvasRenderPass : ICanvasRenderPass
     {
         private readonly IBackBufferDimensions _backBufferDimensions;
-
+        private readonly IInterlacedBatchingDepthProvider _interlacedBatchingDepthProvider;
+        
         public DefaultCanvasRenderPass(
-            IBackBufferDimensions backBufferDimensions)
+            IBackBufferDimensions backBufferDimensions,
+            IInterlacedBatchingDepthProvider interlacedBatchingDepthProvider)
         {
             _backBufferDimensions = backBufferDimensions;
-
-            TextureSortMode = SpriteSortMode.Immediate;
+            _interlacedBatchingDepthProvider = interlacedBatchingDepthProvider;
         }
 
         public bool IsPostProcessingPass => false;
@@ -38,6 +39,8 @@ namespace Protogame
 
         public virtual void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
+            _interlacedBatchingDepthProvider.Reset();
+
             if (Viewport != null)
             {
                 renderContext.GraphicsDevice.Viewport = Viewport.Value;
