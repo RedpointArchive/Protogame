@@ -37,9 +37,14 @@ namespace Protogame
         {
             Init();
 
-            var session = await _temporarySessionApi.SessionPutAsync();
-            _tempSessions.Add(session);
-            return session;
+            // Ensure this does not run as part of a coroutine - force it to
+            // a background thread with Task.Run.
+            return await Task.Run(async () =>
+            {
+                var session = await _temporarySessionApi.SessionPutAsync();
+                _tempSessions.Add(session);
+                return session;
+            });
         }
 
         public IReadOnlyCollection<TempSessionWithSecrets> ActiveTemporarySessions => _tempSessions.AsReadOnly();
