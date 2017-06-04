@@ -109,6 +109,35 @@ namespace Protogame
             }
         }
 
+        private Ray _originalRaycastRay;
+        private PhysicsRaycastCallback _originalRaycastCallback;
+
+        public bool Raycast(Ray ray, PhysicsRaycastCallback callback, ref RigidBody rigidBody, ref object owner, ref Vector3 normal, ref float distance)
+        {
+            _originalRaycastRay = ray;
+            _originalRaycastCallback = callback;
+
+            JVector jnormal;
+            if (_physicsWorld.CollisionSystem.Raycast(
+                    ray.Position.ToJitterVector(),
+                    ray.Direction.ToJitterVector(),
+                    callback == null ? null : (RaycastCallback)RaycastCallback,
+                    out rigidBody,
+                    out jnormal,
+                    out distance))
+            {
+                owner = rigidBody.WeakTagOrNull;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool RaycastCallback(RigidBody body, JVector normal, float fraction)
+        {
+            return _originalRaycastCallback(body, body.WeakTagOrNull, normal.ToXNAVector(), _originalRaycastRay, fraction);
+        }
+
         private void EventsOnBodiesEndCollide(RigidBody body1, RigidBody body2)
         {
             if (body1.WeakTagOrNull != null && body2.WeakTagOrNull != null)
