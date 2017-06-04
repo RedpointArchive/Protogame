@@ -80,6 +80,10 @@ namespace Protogame
         {
             get { return this.m_GameWindow; }
         }
+
+        public void SetCursorPosition(int x, int y)
+        {
+        }
     }
 }
 #endif
