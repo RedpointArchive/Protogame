@@ -1,10 +1,21 @@
 namespace Protogame
 {
+    using System;
     using System.Linq;
     using Microsoft.Xna.Framework;
-    
-    public class HorizontalContainer : FlowContainer
+
+    public class HorizontalContainer : FlowContainer, IHasDesiredSize
     {
+        public int? GetDesiredHeight(ISkinLayout skin)
+        {
+            return null;
+        }
+
+        public int? GetDesiredWidth(ISkinLayout skin)
+        {
+            return GetPureChildrenSize();
+        }
+
         public override void Render(IRenderContext context, ISkinLayout skinLayout, ISkinDelegator skinDelegator, Rectangle layout)
         {
             skinDelegator.Render(context, layout, this);

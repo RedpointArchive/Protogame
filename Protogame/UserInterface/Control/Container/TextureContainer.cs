@@ -64,7 +64,7 @@ namespace Protogame
                 case "stretch":
                 default:
                     // Nothing to do.
-                    return;
+                    break;
             }
 
             _renderUtilities.RenderTexture(

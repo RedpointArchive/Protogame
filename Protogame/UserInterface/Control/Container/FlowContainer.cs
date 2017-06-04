@@ -100,7 +100,7 @@ namespace Protogame
             _sizes.Insert(index, size);
         }
         
-        public void Update(ISkinLayout skinLayout, Rectangle layout, GameTime gameTime, ref bool stealFocus)
+        public virtual void Update(ISkinLayout skinLayout, Rectangle layout, GameTime gameTime, ref bool stealFocus)
         {
             foreach (var kv in ChildrenWithLayouts(layout))
             {
@@ -112,7 +112,7 @@ namespace Protogame
             }
         }
         
-        public bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
+        public virtual bool HandleEvent(ISkinLayout skinLayout, Rectangle layout, IGameContext context, Event @event)
         {
             foreach (var kv in ChildrenWithLayouts(layout))
             {
@@ -123,6 +123,27 @@ namespace Protogame
             }
 
             return false;
+        }
+
+        protected int? GetPureChildrenSize()
+        {
+            var acc = 0;
+            foreach (var s in _sizes)
+            {
+                if (s.EndsWith("%", StringComparison.Ordinal))
+                {
+                    return null;
+                }
+                else if (s == "*")
+                {
+                    return null;
+                }
+                else
+                {
+                    acc += Convert.ToInt32(s);
+                }
+            }
+            return acc;
         }
         
         protected abstract Rectangle CreateChildLayout(Rectangle layout, int accumulated, int size);
