@@ -84,6 +84,12 @@ namespace Protogame
         public void SetCursorPosition(int x, int y)
         {
         }
+
+        public void GetCursorPosition(out int x, out int y)
+        {
+            x = 0;
+            y = 0;
+        }
     }
 }
 #endif
