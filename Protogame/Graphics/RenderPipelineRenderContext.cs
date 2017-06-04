@@ -328,6 +328,11 @@ namespace Protogame
                 this.SingleWhitePixel.SetData(new[] { Color.White });
             }
 
+            PostPreRender(context);
+        }
+
+        public void PostPreRender(IGameContext context)
+        { 
             // Update the MouseRay property of the game context.
             var mouseState = Mouse.GetState();
             var mouse = new Vector2(mouseState.X, mouseState.Y);
