@@ -216,6 +216,14 @@ namespace Protogame
             set { if (_hostGame != null) { _hostGame.IsMouseVisible = value; } }
         }
 
+        public bool IsActive
+        {
+            get
+            {
+                return _hostGame?.IsActive ?? false;
+            }
+        }
+
         /// <summary>
         /// Initializes an instance of a game in Protogame.  This constructor is always called
         /// as the base constructor to your game implementation.
