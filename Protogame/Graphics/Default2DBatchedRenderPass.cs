@@ -13,6 +13,13 @@ namespace Protogame
     /// <interface_ref>Protogame.I2DBatchedRenderPass</interface_ref>
     public class Default2DBatchedRenderPass : I2DBatchedRenderPass
     {
+        private readonly IInterlacedBatchingDepthProvider _interlacedBatchingDepthProvider;
+
+        public Default2DBatchedRenderPass(IInterlacedBatchingDepthProvider interlacedBatchingDepthProvider)
+        {
+            _interlacedBatchingDepthProvider = interlacedBatchingDepthProvider;
+        }
+
         public bool IsPostProcessingPass => false;
         public bool SkipWorldRenderBelow => false;
         public bool SkipWorldRenderAbove => false;
@@ -32,6 +39,8 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
+            _interlacedBatchingDepthProvider.Reset();
+
             renderContext.SpriteBatch.Begin(TextureSortMode, transformMatrix: TransformMatrix);
         }
 

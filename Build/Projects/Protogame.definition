@@ -438,6 +438,7 @@
     <Compile Include="Graphics\DefaultCustomPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultDebugRenderPass.cs" />
     <Compile Include="Graphics\DefaultGraphicsBlit.cs" />
+    <Compile Include="Graphics\DefaultInterlacedBatchingDepthProvider.cs" />
     <Compile Include="Graphics\DefaultInvertPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\DefaultRenderAutoCache.cs" />
     <Compile Include="Graphics\DefaultRenderCache.cs" />
@@ -486,6 +487,7 @@
     <Compile Include="Graphics\IDebugRenderPass.cs" />
     <Compile Include="Graphics\IGraphicsBlit.cs" />
     <Compile Include="Graphics\IGraphicsFactory.cs" />
+    <Compile Include="Graphics\IInterlacedBatchingDepthProvider.cs" />
     <Compile Include="Graphics\IInvertPostProcessingRenderPass.cs" />
     <Compile Include="Graphics\IRenderAutoCache.cs" />
     <Compile Include="Graphics\IRenderCache.cs" />

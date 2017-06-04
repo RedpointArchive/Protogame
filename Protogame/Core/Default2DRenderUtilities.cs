@@ -16,11 +16,14 @@ namespace Protogame
     public class Default2DRenderUtilities : I2DRenderUtilities
     {
         private readonly IStringSanitizer _stringSanitizer;
+        private readonly IInterlacedBatchingDepthProvider _interlacedBatchingDepthProvider;
 
         public Default2DRenderUtilities(
-            IStringSanitizer stringSanitizer)
+            IStringSanitizer stringSanitizer,
+            IInterlacedBatchingDepthProvider interlacedBatchingDepthProvider)
         {
             _stringSanitizer = stringSanitizer;
+            _interlacedBatchingDepthProvider = interlacedBatchingDepthProvider;
         }
         
         public Vector2 MeasureText(IRenderContext context, string text, IAssetReference<FontAsset> font)
@@ -61,8 +64,8 @@ namespace Protogame
                 angle, 
                 Vector2.Zero, 
                 new Vector2(length, width), 
-                SpriteEffects.None, 
-                0);
+                SpriteEffects.None,
+                _interlacedBatchingDepthProvider.GetDepthForCurrentInstance());
         }
         
         public void RenderRectangle(IRenderContext context, Rectangle rectangle, Color color, bool filled = false)
@@ -197,11 +200,11 @@ namespace Protogame
             // Draw shadow if required.
             if (renderShadow)
             {
-                context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx, yy) + (scale ?? Vector2.One), shadowColor.Value, rotation ?? 0, origin ?? Vector2.Zero, scale ?? Vector2.One, SpriteEffects.None, 0);
+                context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx, yy) + (scale ?? Vector2.One), shadowColor.Value, rotation ?? 0, origin ?? Vector2.Zero, scale ?? Vector2.One, SpriteEffects.None, _interlacedBatchingDepthProvider.GetDepthForCurrentInstance());
             }
 
             // Render the main text.
-            context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx, yy), textColor.Value, rotation ?? 0, origin ?? Vector2.Zero, scale ?? Vector2.One, SpriteEffects.None, 0);
+            context.SpriteBatch.DrawString(font.Asset.Font, text, new Vector2(xx, yy), textColor.Value, rotation ?? 0, origin ?? Vector2.Zero, scale ?? Vector2.One, SpriteEffects.None, _interlacedBatchingDepthProvider.GetDepthForCurrentInstance());
         }
         
         public void RenderTexture(
@@ -282,7 +285,7 @@ namespace Protogame
                 rotation,
                 rotationAnchor ?? Vector2.Zero,
                 effects,
-                0);
+                _interlacedBatchingDepthProvider.GetDepthForCurrentInstance());
         }
         
         public void RenderCircle(

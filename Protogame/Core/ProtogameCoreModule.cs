@@ -66,6 +66,8 @@ namespace Protogame
             kernel.Bind<IRenderBatcher>().To<DefaultRenderBatcher>().InSingletonScope();
 
             kernel.Bind<ILoadingScreen>().To<DefaultLoadingScreen>().InSingletonScope();
+
+            kernel.Bind<IInterlacedBatchingDepthProvider>().To<DefaultInterlacedBatchingDepthProvider>().InSingletonScope();
         }
     }
 }

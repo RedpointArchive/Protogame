@@ -11,6 +11,13 @@ namespace Protogame
     /// <interface_ref>Protogame.I2DDirectRenderPass</interface_ref>
     public class Default2DDirectRenderPass : I2DDirectRenderPass
     {
+        private readonly IInterlacedBatchingDepthProvider _interlacedBatchingDepthProvider;
+
+        public Default2DDirectRenderPass(IInterlacedBatchingDepthProvider interlacedBatchingDepthProvider)
+        {
+            _interlacedBatchingDepthProvider = interlacedBatchingDepthProvider;
+        }
+
         public bool IsPostProcessingPass => false;
         public bool SkipWorldRenderBelow => false;
         public bool SkipWorldRenderAbove => false;
@@ -26,6 +33,8 @@ namespace Protogame
 
         public void BeginRenderPass(IGameContext gameContext, IRenderContext renderContext, IRenderPass previousPass, RenderTarget2D postProcessingSource)
         {
+            _interlacedBatchingDepthProvider.Reset();
+
             // Setup the default sprite effect.
             var vp = Viewport ?? renderContext.GraphicsDevice.Viewport;
 
