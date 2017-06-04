@@ -68,6 +68,13 @@ namespace Protogame
             Mouse.SetPosition(x, y);
         }
 
+        public void GetCursorPosition(out int x, out int y)
+        {
+            var state = Mouse.GetState();
+            x = state.X;
+            y = state.Y;
+        }
+
 #if PLATFORM_WINDOWS
         public void Maximize()
         {

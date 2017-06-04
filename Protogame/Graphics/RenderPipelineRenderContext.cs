@@ -334,8 +334,9 @@ namespace Protogame
         public void PostPreRender(IGameContext context)
         { 
             // Update the MouseRay property of the game context.
-            var mouseState = Mouse.GetState();
-            var mouse = new Vector2(mouseState.X, mouseState.Y);
+            int mouseX, mouseY;
+            context.Window.GetCursorPosition(out mouseX, out mouseY);
+            var mouse = new Vector2(mouseX, mouseY);
             var nearSource = new Vector3(mouse, 0f);
             var farSource = new Vector3(mouse, 1f);
 
@@ -365,7 +366,7 @@ namespace Protogame
             // the game context if we were able to resolve the mouse ray.
             if (direction != Vector3.Zero)
             {
-                var nearSourceHorizontal = new Vector3(mouseState.X + 1, mouseState.Y, 0f);
+                var nearSourceHorizontal = new Vector3(mouseX + 1, mouseY, 0f);
                 var nearPointHorizontal = this.GraphicsDevice.Viewport.Unproject(
                     nearSourceHorizontal,
                     this.Projection,
@@ -374,7 +375,7 @@ namespace Protogame
 
                 context.MouseVerticalPlane = new Plane(nearSource, nearSource + direction, nearPointHorizontal);
 
-                var nearSourceVertical = new Vector3(mouseState.X, mouseState.Y + 1, 0f);
+                var nearSourceVertical = new Vector3(mouseX, mouseY + 1, 0f);
                 var nearPointVertical = this.GraphicsDevice.Viewport.Unproject(
                     nearSourceVertical,
                     this.Projection,
