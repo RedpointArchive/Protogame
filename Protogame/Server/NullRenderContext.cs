@@ -58,6 +58,11 @@ namespace Protogame
             throw new NotSupportedException();
         }
 
+        public void PostPreRender(IGameContext context)
+        {
+            throw new NotSupportedException();
+        }
+
         public void SetActiveTexture(Texture2D texture)
         {
             throw new NotSupportedException();

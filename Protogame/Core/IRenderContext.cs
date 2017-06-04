@@ -146,6 +146,14 @@ namespace Protogame
         void Render(IGameContext context);
 
         /// <summary>
+        /// Called by the render pipeline after entity pre-render has been done, but before entity render
+        /// has begun.  This method is where the render context updates the mouse rays and planes in
+        /// the game context, based on the current rendering configuration.
+        /// </summary>
+        /// <param name="context">The current game context.</param>
+        void PostPreRender(IGameContext context);
+
+        /// <summary>
         /// Adds the specified render pass to the render pipeline
         /// permanently.  This render pass will take effect after the
         /// start of the next frame.

@@ -409,10 +409,16 @@ namespace Protogame
                     entity.Prerender(gameContext, renderContext);
                 }
 
+                renderContext.PostPreRender(gameContext);
+
                 foreach (var entity in entities)
                 {
                     entity.Render(gameContext, renderContext);
                 }
+            }
+            else
+            {
+                renderContext.PostPreRender(gameContext);
             }
 
             if (!renderPass.SkipWorldRenderAbove && gameContext.World != null)
