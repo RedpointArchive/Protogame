@@ -62,8 +62,15 @@ namespace Protogame
                     _instance.Dispose();
                 }
 
-                _instance = _asset.Asset.Audio.CreateInstance();
-                _lastResolvedAsset.SetTarget(_asset.Asset);
+                if (_asset.IsReady)
+                {
+                    _instance = _asset.Asset.Audio.CreateInstance();
+                    _lastResolvedAsset.SetTarget(_asset.Asset);
+                }
+                else
+                {
+                    _instance = null;
+                }
             }
         }
 
