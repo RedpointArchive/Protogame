@@ -1,6 +1,7 @@
 using System;
 using Jitter;
 using Jitter.Dynamics;
+using Microsoft.Xna.Framework;
 
 namespace Protogame
 {
@@ -92,5 +93,17 @@ namespace Protogame
         {
             return _shadowWorld?.GetPhysicsMetrics() ?? new PhysicsMetrics();
         }
+
+        public bool Raycast(Ray ray, PhysicsRaycastCallback callback, ref RigidBody rigidBody, ref object owner, ref Vector3 normal, ref float distance)
+        {
+            if (_shadowWorld == null)
+            {
+                return false;
+            }
+
+            return _shadowWorld.Raycast(ray, callback, ref rigidBody, ref owner, ref normal, ref distance);
+        }
     }
+
+    public delegate bool PhysicsRaycastCallback(RigidBody body, object owner, Vector3 normal, Ray originalRay, float distance);
 }
