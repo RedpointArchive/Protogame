@@ -69,7 +69,7 @@ namespace Protogame
                 var limit = MathHelper.PiOver2 - MathHelper.ToRadians(5);
                 _firstPersonCameraComponent.Pitch = MathHelper.Clamp(_firstPersonCameraComponent.Pitch, -limit, limit);
                 
-                Mouse.SetPosition(centerX, centerY);
+                gameContext.Window.SetCursorPosition(centerX, centerY);
 
                 return true;
             }

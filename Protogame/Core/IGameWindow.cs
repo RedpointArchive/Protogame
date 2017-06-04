@@ -43,6 +43,13 @@ namespace Protogame
         Microsoft.Xna.Framework.AndroidGameWindow PlatformWindow { get; }
 #endif
 
+        /// <summary>
+        /// Sets the position of the mouse cursor on the screen, relative to the window.
+        /// </summary>
+        /// <param name="x">The horizontal position of the cursor.</param>
+        /// <param name="y">The vertical position of the cursor.</param>
+        void SetCursorPosition(int x, int y);
+
 #if PLATFORM_WINDOWS
         void Maximize();
 
