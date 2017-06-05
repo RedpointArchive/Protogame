@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Threading;
 #if PLATFORM_LINUX
 using System;
@@ -21,6 +22,23 @@ namespace Protogame
         private bool _hasStartedDelayLoad;
         private bool _shouldLoadContentOnDelayedGame;
 
+        /// <summary>
+        /// Whether resize events can be handled.
+        /// </summary>
+        private bool _shouldHandleResize;
+
+        /// <summary>
+        /// The current known window width, this is used to detect window maximize / minimize, which
+        /// doesn't seem to fire OnClientSizeChanged.
+        /// </summary>
+        private int _windowWidth;
+
+        /// <summary>
+        /// The current known window height, this is used to detect window maximize / minimize, which
+        /// doesn't seem to fire OnClientSizeChanged.
+        /// </summary>
+        private int _windowHeight;
+
 #if PLATFORM_ANDROID
         public HostGame(AndroidGameActivity gameActivity)
 #else
@@ -36,6 +54,9 @@ namespace Protogame
             if (_coreGame != null)
             {
                 _coreGame.AssignHost(this);
+                _shouldHandleResize = true;
+                _windowWidth = Window.ClientBounds.Width;
+                _windowHeight = Window.ClientBounds.Height;
                 _coreGame.PrepareGraphicsDeviceManager(_graphicsDeviceManager);
                 _graphicsDeviceManager.PreparingDeviceSettings +=
                     (sender, e) =>
@@ -111,6 +132,37 @@ namespace Protogame
             // Construct a platform-independent game window.
             ProtogameWindow = ConstructGameWindow();
 
+#if PLATFORM_ANDROID
+            // On Android, disable viewport / backbuffer scaling because we expect games
+            // to make use of the full display area.
+            this.GraphicsDeviceManager.IsFullScreen = true;
+            this.GraphicsDeviceManager.PreferredBackBufferHeight = this.Window.ClientBounds.Height;
+            this.GraphicsDeviceManager.PreferredBackBufferWidth = this.Window.ClientBounds.Width;
+#endif
+
+#if PLATFORM_WINDOWS
+            // Register for the window resize event so we can scale
+            // the window correctly.
+            Window.ClientSizeChanged += OnClientSizeChanged;
+
+            // Register for the window close event so we can dispatch
+            // it correctly.
+            var form = System.Windows.Forms.Control.FromHandle(Window.Handle) as System.Windows.Forms.Form;
+            if (form != null)
+            {
+                form.FormClosing += (sender, args) =>
+                {
+                    bool cancel = false;
+                    _coreGame?.CloseRequested(out cancel);
+
+                    if (cancel)
+                    {
+                        args.Cancel = true;
+                    }
+                };
+            }
+#endif
+
             if (_coreGame != null)
             {
                 _coreGame.LoadContent();
@@ -161,6 +213,17 @@ namespace Protogame
 
             if (_coreGame != null)
             {
+#if PLATFORM_WINDOWS
+                if (Window != null)
+                {
+                    if (_windowWidth != Window.ClientBounds.Width ||
+                        _windowHeight != Window.ClientBounds.Height)
+                    {
+                        OnClientSizeChanged(this, EventArgs.Empty);
+                    }
+                }
+#endif
+
                 _coreGame.Update(gameTime);
                 return;
             }
@@ -201,6 +264,22 @@ namespace Protogame
             }
         }
 
+        private void OnClientSizeChanged(object sender, EventArgs args)
+        {
+            if (!_shouldHandleResize)
+            {
+                return;
+            }
+
+            _shouldHandleResize = false;
+            _windowWidth = Window.ClientBounds.Width;
+            _windowHeight = Window.ClientBounds.Height;
+            _graphicsDeviceManager.PreferredBackBufferWidth = _windowWidth;
+            _graphicsDeviceManager.PreferredBackBufferHeight = _windowHeight;
+            _graphicsDeviceManager.ApplyChanges();
+            _shouldHandleResize = true;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (_coreGame != null)
@@ -221,7 +300,7 @@ namespace Protogame
         private IGameWindow ConstructGameWindow()
         {
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX || PLATFORM_WEB || PLATFORM_IOS
-            return new DefaultGameWindow(base.Window);
+            return new DefaultGameWindow(this, base.Window);
 #elif PLATFORM_ANDROID || PLATFORM_OUYA
             return new AndroidGameWindow((Microsoft.Xna.Framework.AndroidGameWindow)base.Window);
 #endif

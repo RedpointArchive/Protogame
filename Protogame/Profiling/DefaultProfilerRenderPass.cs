@@ -63,9 +63,9 @@ namespace Protogame
 
             foreach (var visualiser in Visualisers)
             {
-                var height = visualiser.GetHeight(size.Y);
+                var height = visualiser.GetHeight(size.Height);
                 var rect = new Rectangle(
-                    Position == ProfilerPosition.TopLeft ? 0 : (size.X - 300),
+                    Position == ProfilerPosition.TopLeft ? 0 : (size.Width - 300),
                     y,
                     300,
                     height);

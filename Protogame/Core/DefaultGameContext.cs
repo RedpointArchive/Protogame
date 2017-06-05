@@ -30,7 +30,6 @@ namespace Protogame
             IKernel kernel,
             IAnalyticsEngine analyticsEngine,
             ICoreGame game, 
-            GraphicsDeviceManager graphics, 
             IGameWindow window, 
             IWorld world, 
             IWorldManager worldManager)
@@ -40,7 +39,6 @@ namespace Protogame
             _coroutine = kernel.Get<ICoroutine>();
 
             Game = game;
-            Graphics = graphics;
             World = world;
             WorldManager = worldManager;
             Window = window;
@@ -53,8 +51,6 @@ namespace Protogame
         public ICoreGame Game { get; }
         
         public GameTime GameTime { get; set; }
-        
-        public GraphicsDeviceManager Graphics { get; }
         
         public IGameWindow Window { get; }
         
@@ -123,9 +119,7 @@ namespace Protogame
                 return;
             }
 
-            Graphics.PreferredBackBufferWidth = width;
-            Graphics.PreferredBackBufferHeight = height;
-            Graphics.ApplyChanges();
+            Window.Resize(width, height);
         }
         
         public void SwitchWorld<T>() where T : IWorld

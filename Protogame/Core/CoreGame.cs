@@ -164,23 +164,6 @@ namespace Protogame
         private IHostGame _hostGame;
 
         /// <summary>
-        /// Whether resize events can be handled.
-        /// </summary>
-        private bool _shouldHandleResize;
-
-        /// <summary>
-        /// The current known window width, this is used to detect window maximize / minimize, which
-        /// doesn't seem to fire OnClientSizeChanged.
-        /// </summary>
-        private int _windowWidth;
-
-        /// <summary>
-        /// The current known window height, this is used to detect window maximize / minimize, which
-        /// doesn't seem to fire OnClientSizeChanged.
-        /// </summary>
-        private int _windowHeight;
-
-        /// <summary>
         /// Gets the current game context.  You should not generally access this property; outside
         /// an explicit Update or Render loop, the state of the game context is not guaranteed.  Inside
         /// the context of an Update or Render loop, the game context is already provided.
@@ -308,14 +291,6 @@ namespace Protogame
         public GraphicsDevice GraphicsDevice => _hostGame?.GraphicsDevice;
 
         /// <summary>
-        /// The graphics device manager used by the game.
-        /// </summary>
-        /// <value>
-        /// The graphics device manager.
-        /// </value>
-        public GraphicsDeviceManager GraphicsDeviceManager => _hostGame?.GraphicsDeviceManager;
-
-        /// <summary>
         /// The number of frames to skip before updating or rendering.
         /// </summary>
         public int SkipFrames { get; set; }
@@ -333,11 +308,7 @@ namespace Protogame
         {
             _hostGame = hostGame;
             _hostGame.Exiting += _hostGame_Exiting;
-
-            _shouldHandleResize = true;
-            _windowWidth = _hostGame.Window.ClientBounds.Width;
-            _windowHeight = _hostGame.Window.ClientBounds.Height;
-
+            
             var assetContentManager = new AssetContentManager(_hostGame.Services);
             _hostGame.Content = assetContentManager;
             _kernel.Bind<IAssetContentManager>().ToMethod(x => assetContentManager);
@@ -405,61 +376,11 @@ namespace Protogame
 #endif
         }
 
-        private void OnClientSizeChanged()
-        {
-            if (!_shouldHandleResize)
-            {
-                return;
-            }
-
-            _shouldHandleResize = false;
-            _windowWidth = _hostGame.Window.ClientBounds.Width;
-            _windowHeight = _hostGame.Window.ClientBounds.Height;
-            GameContext.Graphics.PreferredBackBufferWidth = _windowWidth;
-            GameContext.Graphics.PreferredBackBufferHeight = _windowHeight;
-            GameContext.Graphics.ApplyChanges();
-            _shouldHandleResize = true;
-        }
-
         protected virtual async Task LoadContentAsync()
         {
             if (!_hasDoneInitialLoadContent)
             {
                 _hasDoneInitialLoadContent = true;
-
-#if PLATFORM_ANDROID
-                // On Android, disable viewport / backbuffer scaling because we expect games
-                // to make use of the full display area.
-                this.GraphicsDeviceManager.IsFullScreen = true;
-                this.GraphicsDeviceManager.PreferredBackBufferHeight = this.Window.ClientBounds.Height;
-                this.GraphicsDeviceManager.PreferredBackBufferWidth = this.Window.ClientBounds.Width;
-#endif
-
-#if PLATFORM_WINDOWS
-                // Register for the window resize event so we can scale
-                // the window correctly.
-                _hostGame.Window.ClientSizeChanged += (sender, e) =>
-                {
-                    OnClientSizeChanged();
-                };
-
-                // Register for the window close event so we can dispatch
-                // it correctly.
-                var form = System.Windows.Forms.Control.FromHandle(_hostGame.Window.Handle) as System.Windows.Forms.Form;
-                if (form != null)
-                {
-                    form.FormClosing += (sender, args) =>
-                    {
-                        bool cancel;
-                        CloseRequested(out cancel);
-
-                        if (cancel)
-                        {
-                            args.Cancel = true;
-                        }
-                    };
-                }
-#endif
 
                 // Allow the user to configure the game window now.
                 PrepareGameWindow(Window);
@@ -476,7 +397,6 @@ namespace Protogame
                     new IConstructorArgument[]
                     {
                         new NamedConstructorArgument("game", this),
-                        new NamedConstructorArgument("graphics", _hostGame.GraphicsDeviceManager),
                         new NamedConstructorArgument("world", null),
                         new NamedConstructorArgument("worldManager", worldManager),
                         new NamedConstructorArgument("window", _hostGame.ProtogameWindow)
@@ -555,6 +475,11 @@ namespace Protogame
         {
             if (!_isReadyForMainRenderTakeover)
             {
+                if (_loadContentTask != null && _loadContentTask.IsFaulted)
+                {
+                    throw new AggregateException(_loadContentTask.Exception);
+                }
+
                 // LoadContent hasn't finished running yet.  At this point, we don't even have
                 // the engine hooks loaded, so manually update the coroutine scheduler.
                 if (_hasDoneEarlyRender)
@@ -573,14 +498,6 @@ namespace Protogame
 
                 StartupTrace.EmittedTimingEntries = true;
             }
-            
-#if PLATFORM_WINDOWS
-            if (_windowWidth != _hostGame.Window.ClientBounds.Width ||
-                _windowHeight != _hostGame.Window.ClientBounds.Height)
-            {
-                OnClientSizeChanged();
-            }
-#endif
 
             using (_profiler.Measure("update", GameContext.FrameCount.ToString()))
             {
@@ -658,7 +575,7 @@ namespace Protogame
 
 #if PLATFORM_ANDROID
                 // Recorrect the viewport on Android, which seems to be completely bogus by default.
-                this.GameContext.Graphics.GraphicsDevice.Viewport = new Viewport(
+                _hostGame.GraphicsDevice.Viewport = new Viewport(
                     this.Window.ClientBounds.Left,
                     this.Window.ClientBounds.Top,
                     this.Window.ClientBounds.Width,
@@ -720,7 +637,6 @@ namespace Protogame
 #if PLATFORM_WINDOWS
             // This will select the highest available multisampling.
             deviceInformation.PresentationParameters.MultiSampleCount = 32;
-            _hostGame.GraphicsDeviceManager.PreferMultiSampling = true;
 #else
             // On non-Windows platforms, MonoGame's support for multisampling is
             // just totally broken.  Even if we ask for it here, the maximum
@@ -733,7 +649,6 @@ namespace Protogame
             // the render targets on OpenGL platforms aren't initialised to a valid
             // state for the GPU to use.
             deviceInformation.PresentationParameters.MultiSampleCount = 0;
-            _hostGame.GraphicsDeviceManager.PreferMultiSampling = false;
 #endif
         }
     }

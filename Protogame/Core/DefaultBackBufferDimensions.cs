@@ -5,9 +5,9 @@ namespace Protogame
 {
     public class DefaultBackBufferDimensions : IBackBufferDimensions
     {
-        public Point GetSize(GraphicsDevice graphicsDevice)
+        public BackBufferSize GetSize(GraphicsDevice graphicsDevice)
         {
-            return new Point(
+            return new BackBufferSize(
                 graphicsDevice.PresentationParameters.BackBufferWidth,
                 graphicsDevice.PresentationParameters.BackBufferHeight);
         }

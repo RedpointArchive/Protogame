@@ -51,8 +51,8 @@ namespace Protogame
                 renderContext.GraphicsDevice.Viewport = new Viewport(
                     0,
                     0,
-                    size.X,
-                    size.Y);
+                    size.Width,
+                    size.Height);
             }
 
 #if PLATFORM_WINDOWS

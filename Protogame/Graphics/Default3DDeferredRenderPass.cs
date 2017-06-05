@@ -107,12 +107,12 @@ namespace Protogame
                 return;
             }
 
-            _colorRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_colorRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.Depth24, null);
-            _normalRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_normalRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, null);
-            _depthRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_depthRenderTarget, gameContext, SurfaceFormat.Single, DepthFormat.None, null);
-            _specularRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_specularRenderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, null);
-            _diffuseLightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_diffuseLightRenderTarget, gameContext, null, DepthFormat.None, null);
-            _specularLightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_specularLightRenderTarget, gameContext, null, DepthFormat.None, null);
+            _colorRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_colorRenderTarget, renderContext, SurfaceFormat.Color, DepthFormat.Depth24, null);
+            _normalRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_normalRenderTarget, renderContext, SurfaceFormat.Color, DepthFormat.None, null);
+            _depthRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_depthRenderTarget, renderContext, SurfaceFormat.Single, DepthFormat.None, null);
+            _specularRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_specularRenderTarget, renderContext, SurfaceFormat.Color, DepthFormat.None, null);
+            _diffuseLightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_diffuseLightRenderTarget, renderContext, null, DepthFormat.None, null);
+            _specularLightRenderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_specularLightRenderTarget, renderContext, null, DepthFormat.None, null);
 
             if (_rasterizerStateCullNone == null)
             {
@@ -245,8 +245,8 @@ namespace Protogame
                 _rasterizerStateCullClockwiseFace,
                 _rasterizerStateCullCounterClockwiseFace,
                 new Vector2(
-                    0.5f/size.X,
-                    0.5f/size.Y));
+                    0.5f/size.Width,
+                    0.5f/size.Height));
 
             var lights = new List<ILight>();
 

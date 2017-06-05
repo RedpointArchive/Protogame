@@ -12,8 +12,6 @@ namespace Protogame
 
         GraphicsDevice GraphicsDevice { get; }
 
-        GraphicsDeviceManager GraphicsDeviceManager { get; }
-
         IGameContext GameContext { get; }
         
         IRenderContext RenderContext { get; }

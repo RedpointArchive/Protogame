@@ -5,6 +5,6 @@ namespace Protogame
 {
     public interface IBackBufferDimensions
     {
-        Point GetSize(GraphicsDevice graphicsDevice);
+        BackBufferSize GetSize(GraphicsDevice graphicsDevice);
     }
 }

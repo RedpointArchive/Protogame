@@ -315,16 +315,16 @@ namespace Protogame
         /// </param>
         public void Render(IGameContext context)
         {
-            this.GraphicsDevice = context.Graphics.GraphicsDevice;
+            this.GraphicsDevice = context.Game.GraphicsDevice;
 
             if (this.SpriteBatch == null)
             {
-                this.SpriteBatch = new SpriteBatch(context.Graphics.GraphicsDevice);
+                this.SpriteBatch = new SpriteBatch(context.Game.GraphicsDevice);
             }
 
             if (this.SingleWhitePixel == null)
             {
-                this.SingleWhitePixel = new Texture2D(context.Graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+                this.SingleWhitePixel = new Texture2D(context.Game.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
                 this.SingleWhitePixel.SetData(new[] { Color.White });
             }
 

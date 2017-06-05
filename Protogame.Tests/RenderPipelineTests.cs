@@ -114,7 +114,7 @@ namespace Protogame.Tests
                         return;
                     }
 
-                    _renderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_renderTarget, gameContext, SurfaceFormat.Color, DepthFormat.None, 1);
+                    _renderTarget = _renderTargetBackBufferUtilities.UpdateCustomRenderTarget(_renderTarget, renderContext, SurfaceFormat.Color, DepthFormat.None, 1);
 
                     // Blit to the capture target.
                     _graphicsBlit.Blit(renderContext, d, _renderTarget);
@@ -314,8 +314,8 @@ namespace Protogame.Tests
             {
                 base.PrepareDeviceSettings(deviceInformation);
 
-                this.GraphicsDeviceManager.PreferredBackBufferWidth = Width;
-                this.GraphicsDeviceManager.PreferredBackBufferHeight = Height;
+                deviceInformation.PresentationParameters.BackBufferWidth = Width;
+                deviceInformation.PresentationParameters.BackBufferHeight = Height;
             }
         }
 

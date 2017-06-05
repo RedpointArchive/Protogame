@@ -29,7 +29,7 @@ namespace Protogame
             float farPlaneDistance)
         {
             var size = _backBufferDimensions.GetSize(renderContext.GraphicsDevice);
-            var aspectRatio = size.X / (float)size.Y;
+            var aspectRatio = size.Width / (float)size.Height;
 
             up = up ?? Vector3.Up;
             renderContext.CameraPosition = position;
