@@ -41,8 +41,10 @@ namespace Protogame
             kernel.Bind<IAssetFsLayer>().To<SourceEmbeddedAssetFsLayer>().InSingletonScope();
             kernel.Bind<IAssetFsLayer>().To<CompiledEmbeddedAssetFsLayer>().InSingletonScope();
 #if PLATFORM_WINDOWS || PLATFORM_MACOS || PLATFORM_LINUX
+#if DEBUG
             kernel.Bind<IAssetFsLayer>().To<SourceDirLocalFilesystemAssetFsLayer>().InSingletonScope();
             kernel.Bind<IAssetFsLayer>().To<CurrentDirLocalFilesystemAssetFsLayer>().InSingletonScope();
+#endif
             kernel.Bind<IAssetFsLayer>().To<CurrentDirPlatformLocalFilesystemAssetFsLayer>().InSingletonScope();
 #elif PLATFORM_ANDROID
 #if DEBUG
