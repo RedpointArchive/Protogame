@@ -1,4 +1,10 @@
-﻿using System;
+﻿
+
+
+
+
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,6 +14,7 @@ namespace Protogame
 {
 	public partial class ComponentizedObject
 	{
+
 		private class ImplementedComponentCallable<T> : IInternalComponentCallable, IComponentCallable where T : class
 		{
 			private readonly Action<T> _method;
@@ -47,6 +54,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1> : IInternalComponentCallable, IComponentCallable<T1> where T : class
 		{
 			private readonly Action<T, T1> _method;
@@ -86,6 +94,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2> : IInternalComponentCallable, IComponentCallable<T1, T2> where T : class
 		{
 			private readonly Action<T, T1, T2> _method;
@@ -125,6 +134,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3> : IInternalComponentCallable, IComponentCallable<T1, T2, T3> where T : class
 		{
 			private readonly Action<T, T1, T2, T3> _method;
@@ -164,6 +174,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4> _method;
@@ -203,6 +214,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5> _method;
@@ -242,6 +254,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6> _method;
@@ -281,6 +294,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7> _method;
@@ -320,6 +334,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7, T8> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7, T8> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7, T8> _method;
@@ -359,6 +374,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7, T8, T9> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> _method;
@@ -398,6 +414,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> _method;
@@ -437,6 +454,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> _method;
@@ -476,6 +494,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> _method;
@@ -515,6 +534,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> _method;
@@ -554,6 +574,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> _method;
@@ -593,6 +614,7 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 		private class ImplementedComponentCallable<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : IInternalComponentCallable, IComponentCallable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> where T : class
 		{
 			private readonly Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> _method;
@@ -632,5 +654,6 @@ namespace Protogame
 			_knownCallablesForSync.Add(callable);
 			return callable;
 		}
+
 	}
 }
