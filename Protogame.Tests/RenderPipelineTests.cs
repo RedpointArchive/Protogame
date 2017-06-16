@@ -340,9 +340,16 @@ namespace Protogame.Tests
             kernel.Bind<ITestAttachment>().ToMethod(x => _testAttachment);
             kernel.Bind<IRawLaunchArguments>().ToMethod(x => new DefaultRawLaunchArguments(new string[0]));
 
-            using (var game = new HostGame(new RenderPipelineGame(kernel)))
+            try
             {
-                game.Run();
+                using (var game = new HostGame(new RenderPipelineGame(kernel)))
+                {
+                    game.Run();
+                }
+            }
+            catch (Microsoft.Xna.Framework.Graphics.NoSuitableGraphicsDeviceException)
+            {
+                System.Console.Error.WriteLine("WARNING: Unable to perform render pipeline tests as no graphics device could be found!");
             }
         }
     }
