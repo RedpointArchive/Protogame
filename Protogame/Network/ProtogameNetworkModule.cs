@@ -18,6 +18,8 @@ namespace Protogame
 
             kernel.Bind<INetworkMessage>().To<EntityCreateMessage>().InSingletonScope();
             kernel.Bind<INetworkMessage>().To<EntityPropertiesMessage>().InSingletonScope();
+            
+            kernel.Bind<ICommand>().To<NetIDCommand>().DiscardNodeOnResolve();
         }
     }
 }
