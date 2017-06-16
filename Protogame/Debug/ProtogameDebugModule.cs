@@ -16,6 +16,7 @@ namespace Protogame
         public void Load(IKernel kernel)
         {
             kernel.Rebind<IDebugRenderer>().To<DefaultDebugRenderer>().InSingletonScope();
+            kernel.Bind<IEngineHook>().To<GraphicsDebugEngineHook>().InSingletonScope();
         }
     }
 }
