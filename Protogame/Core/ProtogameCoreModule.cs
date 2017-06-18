@@ -31,7 +31,6 @@ namespace Protogame
             kernel.Bind<ICommand>().To<ExitCommand>().DiscardNodeOnResolve();
             kernel.Bind<ICommand>().To<HelpCommand>().DiscardNodeOnResolve();
             kernel.Bind<ICommand>().To<GCCommand>().DiscardNodeOnResolve();
-            kernel.Bind<ICommand>().To<NetIDCommand>().DiscardNodeOnResolve();
 
             kernel.Bind<IRenderContext>().To<RenderPipelineRenderContext>().InParentScope();
             kernel.Bind<IRenderPipeline>().To<DefaultRenderPipeline>().InParentScope();
