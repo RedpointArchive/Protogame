@@ -356,6 +356,7 @@
     <Compile Include="Coroutine\ICoroutineScheduler.cs" />
     <Compile Include="Coroutine\ProtogameCoroutineModule.cs" />
     <Compile Include="Debug\DefaultDebugRenderer.cs" />
+    <Compile Include="Debug\GraphicsDebugEngineHook.cs" />
     <Compile Include="Debug\IDebugLayer.cs" />
     <Compile Include="Debug\IDebugRenderer.cs" />
     <Compile Include="Debug\NullDebugRenderer.cs" />
