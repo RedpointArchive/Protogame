@@ -1,4 +1,7 @@
 ﻿using System;
+#if PLATFORM_MACOS
+using System.IO;
+#endif
 
 namespace Protogame
 {
