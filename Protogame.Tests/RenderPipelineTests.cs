@@ -329,6 +329,10 @@ namespace Protogame.Tests
         
         public void PerformRenderPipelineTest()
         {
+#if PLATFORM_LINUX
+            return;
+#endif
+
             // We must change directory to the location of the assembly, because
             // Linux doesn't load SDL DLLs properly.
             Environment.CurrentDirectory = new FileInfo(Assembly.GetEntryAssembly().Location).DirectoryName;
