@@ -1,6 +1,8 @@
 Protogame
 ==========
 
+## **❗❗❗ This project has been sunset as of 1st Jan 2018 and is no longer supported or maintained. Please read the announcement for more information: [Sunsetting Protogame](https://medium.com/redpoint/sunsetting-protogame-a18e1f03af43). ❗❗❗**
+
 _A powerful cross-platform game engine for C#_
 
 Protogame is a cross-platform game engine for C#, built on top of MonoGame.  It is highly modular and flexible, built on the ideal that you should only have to pull in dependencies for what you want to use.  Many parts of Protogame can be used either together or seperately, and you can use many of the APIs without adopting the core architecture.
